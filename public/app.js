@@ -283,25 +283,27 @@ function selectStudent(npm) {
     alertBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
   }
 
-  // Ranking pill & stat
-  const rank = currentStudent.akademik.ranking || 1;
-  const tot = currentStudent.akademik.total_ranking || 35;
+  // Profil Indeks Kompetensi Mandiri & Kesiapan Profesi (Pengganti Ranking Kelas)
+  const statusKompetensi = currentStudent.akademik.status_kompetensi || "Kompeten Unggul";
+  const kesiapanProfesi = currentStudent.akademik.kesiapan_profesi || "Kesiapan Industri Tinggi";
+  const indeksKesiapan = currentStudent.akademik.indeks_kesiapan || 95;
+
   const rankPill = document.getElementById("mhs-ranking-pill");
   if (rankPill) {
-    if (rank <= 3) {
-      rankPill.innerText = `🏆 RANKING #${rank} DARI ${tot}`;
-      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono";
-    } else if (rank <= 10) {
-      rankPill.innerText = `✨ RANKING #${rank} DARI ${tot}`;
-      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 font-mono";
+    rankPill.innerText = `🎯 INDEKS KESIAPAN: ${indeksKesiapan}% (${statusKompetensi.toUpperCase()})`;
+    if (indeksKesiapan >= 90) {
+      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono";
+    } else if (indeksKesiapan >= 80) {
+      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono";
     } else {
-      rankPill.innerText = `🎯 RANKING #${rank} DARI ${tot} (POTENSI BERKEMBANG)`;
-      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-mono";
+      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono";
     }
   }
 
-  const statRanking = document.getElementById("mhs-stat-ranking");
-  if (statRanking) statRanking.innerText = `#${rank} / ${tot}`;
+  const statKompetensi = document.getElementById("mhs-stat-kompetensi");
+  if (statKompetensi) statKompetensi.innerText = statusKompetensi;
+  const statKesiapan = document.getElementById("mhs-stat-kesiapan");
+  if (statKesiapan) statKesiapan.innerText = `Kesiapan: ${indeksKesiapan}%`;
 
   // Quick stats
   document.getElementById("mhs-stat-kehadiran").innerText = currentStudent.kehadiran.persentase + "%";
@@ -313,10 +315,19 @@ function selectStudent(npm) {
   // Render Radar Competency Chart
   renderRadarCompetencyChart(currentStudent.akademik.kompetensi);
 
-  // Render AI SWOT Card
-  document.getElementById("ai-kekuatan").innerText = currentStudent.ai_diagnosis.kekuatan;
-  document.getElementById("ai-kelemahan").innerText = currentStudent.ai_diagnosis.kelemahan;
-  document.getElementById("ai-saran").innerText = currentStudent.ai_diagnosis.saran_wali_murid;
+  // Render 4 Deep AI Narrative Sections
+  const ai = currentStudent.ai_diagnosis;
+  const elKarakter = document.getElementById("ai-karakter-spasial");
+  if (elKarakter) elKarakter.innerText = ai.analisis_karakter_spasial || ai.kekuatan || "";
+  const elPotensi = document.getElementById("ai-potensi-kedepan");
+  if (elPotensi) elPotensi.innerText = ai.potensi_kedepan || "";
+  const elCatatan = document.getElementById("ai-catatan-mahasiswa");
+  if (elCatatan) elCatatan.innerText = ai.catatan_khusus_mahasiswa || ai.kelemahan || "";
+  const elPanduan = document.getElementById("ai-panduan-wali");
+  if (elPanduan) elPanduan.innerText = ai.panduan_wali_murid || ai.saran_wali_murid || "";
+
+  // Render 10 Real Future Careers Matrix
+  renderCareerMatrix(ai.matriks_karier_10 || []);
 
   // Render Session Cards
   renderStudentSessionCards(currentStudent.kehadiran.detail);
@@ -419,12 +430,80 @@ function renderStudentSessionCards(detailList) {
       <div class="flex items-center gap-3">
         ${statPill}
         <div class="text-right">
-          <div class="text-xs font-mono font-bold text-amber-400">${item.skor_sesi}</div>
+          <div class="text-xs font-mono font-bold text-amber-400">${item.skor !== undefined ? item.skor : (item.skor_sesi || 85)}</div>
           <div class="text-[10px] text-slate-500">Nilai Praktikum</div>
         </div>
       </div>
     `;
     container.appendChild(card);
+  });
+}
+
+function renderCareerMatrix(careers) {
+  const tbody = document.getElementById("career-matrix-rows");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  if (!careers || careers.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-slate-500 italic">Data matriks karier belum dikompilasi.</td></tr>`;
+    return;
+  }
+
+  careers.forEach((item, idx) => {
+    const tr = document.createElement("tr");
+    tr.className = "hover:bg-slate-850/60 transition border-b border-slate-850/80";
+
+    const score = item.kecocokan_persen || 85;
+    let badgeClass = "bg-slate-700 text-slate-300";
+    let scoreColor = "text-amber-400";
+    let barGradient = "from-amber-500 to-yellow-400";
+
+    if (item.kategori_kecocokan === "Sangat Tinggi" || score >= 95) {
+      badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+      scoreColor = "text-emerald-400";
+      barGradient = "from-emerald-500 to-teal-400";
+    } else if (item.kategori_kecocokan === "Tinggi" || score >= 90) {
+      badgeClass = "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40";
+      scoreColor = "text-cyan-400";
+      barGradient = "from-cyan-500 to-blue-400";
+    } else {
+      badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/40";
+      scoreColor = "text-amber-400";
+      barGradient = "from-amber-500 to-orange-400";
+    }
+
+    const skills = item.keterampilan_kunci ? item.keterampilan_kunci.split(",") : [];
+    const skillsHtml = skills.map(sk => `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700/80 text-[10px] text-slate-300 font-mono">${sk.trim()}</span>`).join("");
+
+    tr.innerHTML = `
+      <td class="py-3 px-3 text-center font-mono font-bold text-slate-400">${item.id || idx + 1}</td>
+      <td class="py-3 px-4">
+        <div class="font-bold text-white text-xs">${item.profesi}</div>
+        <div class="text-[11px] text-slate-400 font-mono mt-0.5">${item.bidang_industri}</div>
+      </td>
+      <td class="py-3 px-4 w-44">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-xs font-mono font-bold ${scoreColor}">${score}%</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${badgeClass}">${item.kategori_kecocokan}</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+          <div class="h-1.5 rounded-full bg-gradient-to-r ${barGradient}" style="width: ${score}%"></div>
+        </div>
+      </td>
+      <td class="py-3 px-4">
+        <div class="flex flex-wrap gap-1 max-w-xs">
+          ${skillsHtml}
+        </div>
+      </td>
+      <td class="py-3 px-4 text-xs leading-relaxed">
+        <p class="text-slate-200 mb-1.5 text-justify">${item.analisis_potensi}</p>
+        <div class="p-1.5 rounded bg-slate-900/90 border border-amber-500/30 text-amber-300 text-[11px] flex items-start gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5"></i>
+          <span><strong>Langkah Pengembangan:</strong> ${item.saran_pengembangan}</span>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
   });
 }
 
@@ -624,27 +703,28 @@ function copyInstagramCaption() {
 function renderWhatsAppSimulation(student) {
   document.getElementById("wa-recipient-name").innerText = `Wali Murid ${student.nama}`;
   
-  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik dan Portofolio Pembelajaran ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* untuk periode semester berjalan:`;
+  const courseName = (masterData && masterData.course && masterData.course.nama_mk) ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
+  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* untuk periode semester berjalan:`;
   document.getElementById("wa-opening-text").innerText = openingText;
 
   const sanitizedName = student.nama.replace(/\s+/g, "_");
   document.getElementById("wa-card-file-1").innerText = `01_rekap_kehadiran_${student.npm}.pdf`;
-  document.getElementById("wa-card-file-2").innerText = `02_rapor_akhir_ranking_${student.npm}.pdf`;
+  document.getElementById("wa-card-file-2").innerText = `02_rapor_akhir_kompetensi_${student.npm}.pdf`;
   document.getElementById("wa-card-file-3").innerText = `05_deckcraft_portofolio_${student.npm}.pdf`;
 }
 
 function copyWhatsAppMessage() {
   if (!currentStudent) return;
-  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
+  const courseName = (masterData && masterData.course && masterData.course.nama_mk) ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
   const fullMsg = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\n` +
     `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
     `Salam hangat dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n` +
-    `Melalui pesan ini, kami menyampaikan Surat Resmi Perkembangan Akademik dan Portofolio Pembelajaran ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* periode semester berjalan.\n\n` +
+    `Melalui pesan ini, kami menyampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* periode semester berjalan.\n\n` +
     `Bersama pesan ini, kami lampirkan 3 Dokumen Resmi Terverifikasi:\n` +
-    `1. 📎 Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n` +
-    `2. 📎 Rapor Hasil Evaluasi Akhir & Ranking Kelas (Capaian Kompetensi & Analisis Bakat)\n` +
-    `3. 📎 Portofolio Karya & Dokumentasi Studio Arsitektur (Slide Deck Presentasi 16:9)\n\n` +
-    `Bapak/Ibu dapat mengunduh dan meninjau berkas PDF terlampir. Terima kasih atas doa, bimbingan, dan dukungan yang senantiasa Bapak/Ibu berikan kepada ananda tercinta di rumah.\n\n` +
+    `1. 📎 Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi Praktikum)\n` +
+    `2. 📎 Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan (Capaian Kompetensi & Kesiapan Profesi)\n` +
+    `3. 📎 Portofolio Karya & Dokumentasi Studio Arsitektur (Slide Deck Presentasi 16:9 Widescreen)\n\n` +
+    `Bapak/Ibu dapat mengunduh dan meninjau berkas PDF terlampir. Terima kasih atas doa, bimbingan, dan cinta kasih yang senantiasa Bapak/Ibu berikan kepada ananda tercinta di rumah.\n\n` +
     `Hormat kami,\n` +
     `*Ketua Program Studi Arsitektur*\n` +
     `*Fielda Roza, S.T., M.T.*\n` +

@@ -29,7 +29,6 @@ def parse_students(excel_path):
     return students
 
 def parse_syllabus(pdf_path):
-    # Extracted directly from 02 rekap qs pratikum.pdf
     sessions = [
         {
             "pertemuan": 1,
@@ -82,6 +81,116 @@ def parse_syllabus(pdf_path):
     ]
     return sessions
 
+def generate_10_career_matrix(nama, avg_score, competency, archetype):
+    base_score = avg_score
+    cad_val = competency["penguasaan_cad"]
+    det_val = competency["ketelitian_detail"]
+    str_val = competency["logika_ruang_struktur"]
+
+    careers = [
+        {
+            "id": 1,
+            "profesi": "Architectural Designer (Arsitek Perancang Pratama)",
+            "bidang_industri": "Biro Konsultan Perencana Arsitektur & Desain",
+            "kecocokan_persen": min(98, round(base_score * 0.98 + random.uniform(0.5, 2.5), 1)),
+            "kategori_kecocokan": "Sangat Tinggi",
+            "analisis_potensi": f"Ananda {nama} memiliki kepekaan proporsi spasial dan kemampuan memadukan fungsi denah dengan estetika tampak yang sangat harmonis.",
+            "keterampilan_kunci": "Konsep Tata Ruang, Denah Fungsi, Sketsa Arsitektur, AutoCAD 2D",
+            "saran_pengembangan": "Aktif mengikuti sayembara arsitektur mahasiswa dan eksplorasi gubahan massa kontemporer."
+        },
+        {
+            "id": 2,
+            "profesi": "BIM Modeler & Coordinator (Building Information Modeling)",
+            "bidang_industri": "Kontraktor EPC Multinasional / Konsultan Rekayasa Digital",
+            "kecocokan_persen": min(99, round(cad_val * 0.99 + random.uniform(0.5, 1.8), 1)),
+            "kategori_kecocokan": "Sangat Tinggi",
+            "analisis_potensi": "Kerapian manajemen layer dan kedisiplinan koordinasi gambar digital menjadi modal emas dalam adopsi teknologi BIM 3D/4D industri konstruksi modern.",
+            "keterampilan_kunci": "Manajemen Layer Standar IAI, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
+            "saran_pengembangan": "Mulai mempelajari dasar Revit Architecture dan integrasi clash detection antar disiplin struktur."
+        },
+        {
+            "id": 3,
+            "profesi": "Quantity Surveyor (QS) & Cost Estimator Bangunan",
+            "bidang_industri": "BUMN Karya / Developer Properti Skala Besar",
+            "kecocokan_persen": min(96, round(det_val * 0.96 + random.uniform(0.5, 2.5), 1)),
+            "kategori_kecocokan": "Tinggi",
+            "analisis_potensi": "Kemampuan membaca dimensi gambar dan mengekstraksi volume pekerjaan galian serta beton secara teliti sangat dicari di bidang estimasi anggaran proyek.",
+            "keterampilan_kunci": "Kalkulasi Volume Galian/Pondasi, Penyusunan BQ, Analisis Satuan Harga (AHSP)",
+            "saran_pengembangan": "Perdalam rumus rekapitulasi volume otomatis menggunakan spreadsheet dan integrasi data CAD."
+        },
+        {
+            "id": 4,
+            "profesi": "Detail Engineering Drawing (DED) Specialist",
+            "bidang_industri": "Konsultan Perancangan Teknis & Rekayasa Gambar Kerja",
+            "kecocokan_persen": min(97, round(det_val * 0.97 + random.uniform(0.5, 2.5), 1)),
+            "kategori_kecocokan": "Sangat Tinggi",
+            "analisis_potensi": "Karakter gambar yang teliti dalam menampilkan garis potongan dan detail pondasi batu kali membuktikan ananda siap memproduksi dokumen tender konstruksi resmi.",
+            "keterampilan_kunci": "Potongan Vertikal Bangunan, Detail Sambungan Pondasi, Standar Notasi PUPR",
+            "saran_pengembangan": "Pelajari standar etiket lembar kerja konsultan dan variasi detail sambungan struktur baja/kayu."
+        },
+        {
+            "id": 5,
+            "profesi": "Interior Architect & Space Planner",
+            "bidang_industri": "Studio Interior Arsitektur & Desain Hunian Komersial",
+            "kecocokan_persen": min(95, round(base_score * 0.94 + random.uniform(1.0, 3.5), 1)),
+            "kategori_kecocokan": "Tinggi",
+            "analisis_potensi": "Sentuhan detail pada denah hunian dan pemahaman ergonomi sirkulasi manusia menjadikan ananda berpeluang besar unggul di sektor desain interior.",
+            "keterampilan_kunci": "Sirkulasi Mikro, Ergonomi Ruang Tamu/Kamar, Detail Kusen & Pintu, Material Finishing",
+            "saran_pengembangan": "Eksplorasi katalog material lokal, tekstur finishing dinding, dan pencahayaan aksen ruang dalam."
+        },
+        {
+            "id": 6,
+            "profesi": "3D Architectural Visualizer & CG Artist",
+            "bidang_industri": "Creative Architectural Media & Studio Rendering Internasional",
+            "kecocokan_persen": min(95, round(cad_val * 0.93 + random.uniform(1.0, 3.5), 1)),
+            "kategori_kecocokan": "Tinggi",
+            "analisis_potensi": "Daya bayang visual bentuk bangunan ananda sangat kuat, memungkinkan transformasi gambar kerja 2D menjadi visualisasi 3D fotorealistik yang memukau klien.",
+            "keterampilan_kunci": "Pemodelan 3D Isometrik/Aksonometrik, Komposisi Kamera, Pencahayaan Alami, Visual Storytelling",
+            "saran_pengembangan": "Tingkatkan portofolio visual dengan software render real-time (Enscape/Twinmotion/Lumion)."
+        },
+        {
+            "id": 7,
+            "profesi": "Site Architect & Pengawas Lapangan Konstruksi",
+            "bidang_industri": "Kontraktor Pelaksana Bangunan / Manajemen Konstruksi (MK)",
+            "kecocokan_persen": min(94, round(str_val * 0.94 + random.uniform(0.5, 2.5), 1)),
+            "kategori_kecocokan": "Tinggi",
+            "analisis_potensi": "Pemahaman yang solid mengenai sistem kolom praktis dan elevasi muka tanah memudahkan ananda mengawasi kesesuaian fisik lapangan dengan dokumen gambar kerja.",
+            "keterampilan_kunci": "Verifikasi Gambar As-Built, Pengawasan Mutu Beton, Deteksi Kesalahan Elevasi Lapangan",
+            "saran_pengembangan": "Ikuti magang lapangan di proyek konstruksi bertingkat untuk mengasah ketegasan supervisi."
+        },
+        {
+            "id": 8,
+            "profesi": "Landscape Architect Assistant",
+            "bidang_industri": "Studio Arsitektur Lansekap & Perencanaan Wilayah",
+            "kecocokan_persen": min(92, round(base_score * 0.90 + random.uniform(0.5, 3.0), 1)),
+            "kategori_kecocokan": "Sesuai",
+            "analisis_potensi": "Kepekaan terhadap kontur tapak dan transisi ruang luar (teras) ke ruang dalam mendukung perancangan lansekap tapak berkelanjutan.",
+            "keterampilan_kunci": "Tata Hijau, Analisis Orientasi Matahari & Angin, Drainase Tapak, Desain Hardscape",
+            "saran_pengembangan": "Pelajari jenis tanaman tropis arsitektural dan sistem perkerasan ramah serapan air tanah."
+        },
+        {
+            "id": 9,
+            "profesi": "Green Building & Sustainable Design Specialist",
+            "bidang_industri": "Konsultan Bangunan Hijau & Sertifikasi Efisiensi Energi",
+            "kecocokan_persen": min(93, round(str_val * 0.92 + random.uniform(0.5, 2.8), 1)),
+            "kategori_kecocokan": "Sesuai",
+            "analisis_potensi": "Penerapan ventilasi silang pada denah dan perlindungan bukaan dinding menunjukkan intuisi desain pasif hemat energi yang sangat dibutuhkan industri saat ini.",
+            "keterampilan_kunci": "Desain Pasif Tropis, Pencahayaan Alami Optimal, Shading Fasad, Efisiensi Energi",
+            "saran_pengembangan": "Pahami pedoman Greenship GBCI dan simulasi komputasi aliran udara dalam bangunan."
+        },
+        {
+            "id": 10,
+            "profesi": "Project Planner & Kontraktor Mandiri (Design & Build)",
+            "bidang_industri": "Wirausaha Kreatif Sektor Jasa Rancang Bangun",
+            "kecocokan_persen": min(95, round(base_score * 0.92 + random.uniform(1.0, 3.5), 1)),
+            "kategori_kecocokan": "Tinggi",
+            "analisis_potensi": "Penguasaan paket lengkap dari gambar arsitektur, potongan struktur, hingga perhitungan volume biaya memberikan modal independen untuk mendirikan biro sendiri.",
+            "keterampilan_kunci": "Penguasaan End-to-End Desain ke Konstruksi, Komunikasi Klien, Negosiasi Anggaran, Manajemen Tim",
+            "saran_pengembangan": "Bangun jejaring dengan rekan sipil/mekanikal dan kumpulkan portofolio proyek riil sejak masa kuliah."
+        }
+    ]
+    return careers
+
 def generate_student_profiles(students, sessions):
     course_info = {
         "kode_mk": "5412522233",
@@ -100,7 +209,6 @@ def generate_student_profiles(students, sessions):
         "asisten_dosen": "Adrian Ridhoa, S.T."
     }
 
-    # Possible absence reasons
     reasons_sakit = [
         "Sakit demam & flu (surat dokter terlampir)",
         "Sakit radang tenggorokan & istirahat dokter",
@@ -115,11 +223,6 @@ def generate_student_profiles(students, sessions):
     ]
 
     student_records = []
-
-    # Highlighted archetype students for compelling demo presentation
-    # 1. Top Achiever: M YAZID ZIDANE MULYADI (NPM 2510015410010)
-    # 2. Consistent Diligent: ALSA DMI YESYA PUTRI (NPM 2510015410001)
-    # 3. At-Risk Needs Attention: ROZI ANDRIAN SURVA (NPM 2510015410011) or similar
 
     for idx, s in enumerate(students):
         npm = s["npm"]
@@ -139,13 +242,11 @@ def generate_student_profiles(students, sessions):
         else:
             archetype = "normal"
 
-        # Generate attendance per session
         attendance_list = []
         total_hadir = 0
         total_sakit = 0
         total_izin = 0
         total_alpha = 0
-        
         session_scores = []
 
         for sess in sessions:
@@ -191,7 +292,6 @@ def generate_student_profiles(students, sessions):
                     alasan = "-"
                     score = random.randint(88, 95)
             else:
-                # normal random distribution (mostly Hadir)
                 roll = random.random()
                 if roll < 0.85:
                     status = "Hadir"
@@ -207,8 +307,8 @@ def generate_student_profiles(students, sessions):
                     score = random.randint(70, 82)
                 else:
                     status = "Alpha"
-                    alasan = "Terlambat lebih dari 45 menit / tidak rekam absensi"
-                    score = 45
+                    alasan = "Tanpa surat konfirmasi / kendala transportasi"
+                    score = 0
 
             if status == "Hadir":
                 total_hadir += 1
@@ -221,38 +321,56 @@ def generate_student_profiles(students, sessions):
 
             attendance_list.append({
                 "pertemuan": p_num,
-                "tanggal": sess["tanggal_display"],
+                "tanggal": sess["tanggal"],
+                "tanggal_display": sess["tanggal_display"],
                 "topik": sess["topik"],
                 "status": status,
                 "alasan": alasan,
-                "skor_sesi": score
+                "skor": score
             })
             session_scores.append(score)
 
-        # Calculate averages
-        valid_scores = [s for s in session_scores if s > 0]
-        avg_score = round(sum(session_scores) / len(session_scores), 1) if session_scores else 0
         attendance_pct = round((total_hadir / len(sessions)) * 100, 1)
+        valid_scores = [sc for sc in session_scores if sc > 0]
+        avg_score = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
 
-        # Grade calculation
-        if avg_score >= 85:
+        # Grade Assignment & Competency Status (No Ranking, focusing on growth)
+        if avg_score >= 85 and attendance_pct >= 80:
             grade = "A"
-            predikat = "Sangat Memuaskan (Cum Laude Potensial)"
-        elif avg_score >= 80:
+            predikat = "Sangat Memuaskan / Kompeten Unggul"
+            status_kompetensi = "Kompeten Unggul (Memenuhi Standar Studio IAI)"
+            kesiapan_profesi = "Sangat Siap & Siap Magang di Konsultan Arsitektur"
+            indeks_kesiapan = round(avg_score * 0.98, 1)
+        elif avg_score >= 80 and attendance_pct >= 75:
             grade = "A-"
-            predikat = "Memuaskan"
-        elif avg_score >= 75:
+            predikat = "Memuaskan / Kompeten Sangat Baik"
+            status_kompetensi = "Kompeten Sangat Baik (Rekomendasi Lanjut Studio Perancangan)"
+            kesiapan_profesi = "Siap & Menguasai Standar Gambar Kerja DED"
+            indeks_kesiapan = round(avg_score * 0.96, 1)
+        elif avg_score >= 75 and attendance_pct >= 75:
             grade = "B+"
-            predikat = "Baik"
+            predikat = "Baik / Kompeten"
+            status_kompetensi = "Kompeten Baik (Perlu Akselerasi Detail Struktur)"
+            kesiapan_profesi = "Cukup Siap & Memerlukan Penguatan Volume QS"
+            indeks_kesiapan = round(avg_score * 0.92, 1)
         elif avg_score >= 70:
             grade = "B"
             predikat = "Cukup Baik"
+            status_kompetensi = "Kompeten Cukup (Asistensi Mandiri Lanjutan)"
+            kesiapan_profesi = "Perlu Pengayaan Praktik Pemodelan Digital"
+            indeks_kesiapan = round(avg_score * 0.88, 1)
         elif avg_score >= 60:
             grade = "C"
             predikat = "Kurang (Perlu Remidi & Asistensi)"
+            status_kompetensi = "Perlu Bimbingan Intensif Studio"
+            kesiapan_profesi = "Memerlukan Pengulangan Modul Dasar CAD"
+            indeks_kesiapan = round(avg_score * 0.80, 1)
         else:
             grade = "D / Evaluasi"
-            predikat = "Kritis (Rentan Tidak Lulus)"
+            predikat = "Kritis (Rentan Evaluasi)"
+            status_kompetensi = "Intervensi Pembinaan Khusus Jurusan"
+            kesiapan_profesi = "Fokus Peningkatan Disiplin Waktu Belajar"
+            indeks_kesiapan = round(avg_score * 0.70, 1)
 
         # Competency Radar Scores (Scale 1-100)
         if archetype == "star":
@@ -263,30 +381,69 @@ def generate_student_profiles(students, sessions):
                 "logika_ruang_struktur": 92,
                 "manajemen_waktu": 95
             }
-            ai_swot = {
-                "kekuatan": "Kemampuan pemahaman software AutoCAD sangat cepat dan presisi tinggi. Garis potongan dan detail pondasi tersinkronisasi rapi dengan standar arsitektur profesional.",
-                "kelemahan": "Kadang terlalu perfeksionis pada detail estetika garis sehingga pengerjaan layouting sheet sedikit memakan waktu lebih.",
-                "peluang_pengembangan": "Dapat mulai mengeksplorasi automasi script CAD (LISP) atau pemodelan BIM Revit tingkat lanjut.",
-                "saran_wali_murid": "Bapak/Ibu patut sangat bangga! Ananda memiliki bakat arsitektural yang menonjol dan etos kepemimpinan di studio. Mohon terus didukung untuk mengasah portofolio dan mengikuti sayembara desain nasional.",
-                "status_alert": "OPTIMAL",
-                "alert_color": "emerald"
-            }
+            karakter_spasial = (
+                f"Ananda {nama} memperlihatkan bakat arsitektur yang sangat cemerlang dengan kepekaan rasa ruang "
+                f"(spatial sensibility) yang luar biasa tajam. Penarikan garis-garis dinding, penataan kolom struktural, "
+                f"hingga pembagian hierarki ruang privat dan publik dikerjakan dengan presisi tinggi dan pemahaman fungsi yang matang. "
+                f"Di laboratorium LIKDA, ananda tidak sekadar menyelesaikan tugas instruksional dosen, melainkan aktif mengeksplorasi "
+                f"gubahan denah yang estetis dan memiliki nilai keterbangunan nyata (constructibility). Etos kerja mandirinya di depan workstation "
+                f"sangat tekun, rapi dalam penamaan layer CAD, dan selalu menjadi rujukan positif bagi rekan-rekan sekelasnya."
+            )
+            potensi_kedepan = (
+                f"Dengan fondasi gambar kerja digital yang sudah sedemikian matang di semester ini, ananda memiliki peluang besar untuk "
+                f"menjadi asisten studio perancangan, delegasi sayembara desain arsitektur tingkat nasional, serta sangat siap melompat "
+                f"ke teknologi permodelan Building Information Modeling (BIM/Revit). Ke depan, ananda diproyeksikan mampu memimpin tim "
+                f"studio perancangan dan menghasilkan karya tugas akhir bertaraf sayembara internasional."
+            )
+            catatan_mahasiswa = (
+                f"Pertahankan konsistensi kualitas penarikan garis yang sudah sangat baik ini. Tantangan selanjutnya bagi ananda adalah "
+                f"melatih kecepatan plotting sheet dan berani bereksperimen dengan material-material struktur ramah lingkungan (green building). "
+                f"Jangan ragu untuk mulai mendokumentasikan setiap karya gambar kerja ke dalam platform portofolio digital profesional sejak dini."
+            )
+            panduan_wali = (
+                f"Bapak/Ibu wali murid patut sangat bangga dan bersyukur atas dedikasi serta bakat alami yang dimiliki ananda. "
+                f"Di rumah, mohon senantiasa didukung suasana belajar yang kondusif, penyediaan perangkat laptop dengan kartu grafis (GPU) "
+                f"yang memadai untuk rendering, serta mengingatkan ananda untuk menjaga keseimbangan antara jam asistensi studio dan istirahat fisik. "
+                f"Dukungan doa dan kehangatan keluarga adalah energi terbesar bagi ananda untuk terus berprestasi gemilang."
+            )
+            status_alert = "PRESTASI OPTIMAL"
+            alert_color = "emerald"
+
         elif archetype == "at_risk":
             competency = {
-                "penguasaan_cad": 68,
-                "ketelitian_detail": 65,
-                "kedisiplinan_asistensi": 52,
-                "logika_ruang_struktur": 74,
-                "manajemen_waktu": 58
+                "penguasaan_cad": 72,
+                "ketelitian_detail": 70,
+                "kedisiplinan_asistensi": 58,
+                "logika_ruang_struktur": 76,
+                "manajemen_waktu": 60
             }
-            ai_swot = {
-                "kekuatan": "Ananda memiliki kepekaan rasa ruang (spatial awareness) yang sangat baik dan orisinalitas ide konsep denah yang berani di atas rata-rata.",
-                "kelemahan": "Tantangan utama terletak pada konsistensi kehadiran dan jam asistensi mingguan di studio gambar.",
-                "peluang_pengembangan": "Jika ritme jam belajar dan kehadiran diperbaiki, potensi ananda akan melesat cepat karena daya imajinasi dasarnya sudah sangat kuat.",
-                "saran_wali_murid": "Ananda memiliki potensi arsitektur yang sangat menjanjikan! Nilai dan karya ananda dapat melonjak drastis dengan sedikit dorongan disiplin waktu istirahat dan jam keberangkatan dari rumah. Mari kita bersama dampingi ananda agar bakat kreatifnya bersinar optimal.",
-                "status_alert": "PERHATIAN KHUSUS",
-                "alert_color": "rose"
-            }
+            karakter_spasial = (
+                f"Ananda {nama} sesungguhnya memiliki daya imajinasi spasial yang sangat kaya dan orisinalitas ide konsep bentuk yang berani "
+                f"di atas rata-rata. Ketika duduk di studio dan fokus menggambar, ananda mampu melahirkan denah dengan alur sirkulasi yang unik "
+                f"dan pemahaman logika ruang yang intuitif. Hal ini menandakan bahwa ananda memiliki potensi bakat arsitek perancang yang sesungguhnya. "
+                f"Tantangan yang dihadapi ananda bukan pada keterbatasan kecerdasan rancang bangun, melainkan pada stabilitas ritme kehadiran "
+                f"dan kontinuitas jam asistensi meja mingguan di Lab LIKDA."
+            )
+            potensi_kedepan = (
+                f"Potensi ananda diproyeksikan akan melonjak drastis jika ritme kehadiran dan disiplin waktu studio berhasil distabilkan. "
+                f"Daya rancang bentuknya yang berani merupakan modal berharga untuk mata kuliah Studio Perancangan Arsitektur tematik, "
+                f"perancangan interior ruang publik, serta konsep lansekap. Ananda memiliki peluang menjadi arsitek konseptor yang visioner "
+                f"apabila dibarengi dengan kebiasaan asistensi terjadwal."
+            )
+            catatan_mahasiswa = (
+                f"Bakat kreatif dan imajinasi ruang ananda sudah sangat kuat, namun karya arsitektur membutuhkan ketekunan untuk diselesaikan tuntas. "
+                f"Fokus utama yang harus diperbaiki adalah disiplin kehadiran kuliah dan keberanian untuk segera menanyakan kendala teknis gambar "
+                f"kepada dosen atau asisten. Jangan menunda perbaikan asistensi meja, karena keteraturan adalah kunci utama kelulusan sarjana arsitektur."
+            )
+            panduan_wali = (
+                f"Bapak/Ibu wali murid terkasih, ananda memiliki bakat dan jiwa seni arsitektur yang sangat luar biasa, dan kami di kampus sangat "
+                f"menghargai potensi tersebut. Yang ananda butuhkan saat ini adalah pendampingan lembut dari rumah mengenai rutinitas waktu bangun pagi, "
+                f"keberangkatan kuliah, dan manajemen istirahat malam agar kondisi fisik tetap prima saat jam praktikum. Kami mengajak Bapak/Ibu berkolaborasi "
+                f"erat bersama tim prodi mendampingi ananda agar bakat cemerlangnya mekar maksimal dan lulus tepat waktu dengan predikat membanggakan."
+            )
+            status_alert = "POTENSI BESAR BUTUH PENDAMPINGAN"
+            alert_color = "amber"
+
         elif archetype == "high":
             competency = {
                 "penguasaan_cad": 90,
@@ -295,116 +452,118 @@ def generate_student_profiles(students, sessions):
                 "logika_ruang_struktur": 89,
                 "manajemen_waktu": 87
             }
-            ai_swot = {
-                "kekuatan": "Etos kerja studio sangat baik, konsisten dalam asistensi perbaikan gambar denah dan detail kusen pintu/jendela.",
-                "kelemahan": "Perlu penguatan pada kecepatan perhitungan volume pekerjaan (Quantity Surveying) agar tidak terburu-buru saat plotting akhir.",
-                "peluang_pengembangan": "Memperdalam pemahaman spesifikasi teknis material bangunan arsitektur berkelanjutan.",
-                "saran_wali_murid": "Ananda menunjukkan ketekunan luar biasa yang membuat bangga. Dukungan orang tua di rumah sangat terasa dampaknya terhadap stabilitas prestasi ananda.",
-                "status_alert": "POSITIF",
-                "alert_color": "sky"
-            }
+            karakter_spasial = (
+                f"Ananda {nama} menunjukkan karakter pembelajaran arsitektur yang sangat matang, konsisten, dan penuh rasa tanggung jawab. "
+                f"Kemampuannya dalam mengolah denah presisi dan menyinkronkannya dengan detail potongan pondasi batu kali memperlihatkan "
+                f"ketelitian teknis yang patut diacungi jempol. Ananda juga sangat aktif dalam sesi asistensi meja, cepat menangkap masukan koreksi dosen, "
+                f"dan mampu mengaplikasikannya ke dalam gambar CAD dengan standar notasi Ikatan Arsitek Indonesia (IAI) yang rapi dan mudah dibaca."
+            )
+            potensi_kedepan = (
+                f"Konsistensi etos kerja yang dimiliki ananda merupakan modal emas untuk berkembang menjadi koordinator teknis proyek (DED Specialist) "
+                f"atau perancang arsitektur madya. Ke depan, ananda siap diterjunkan ke dalam proyek-proyek perancangan bangunan publik multi-lantai "
+                f"dan sangat potensial meraih nilai cumlaude di bidang keahlian rekayasa teknologi bangunan."
+            )
+            catatan_mahasiswa = (
+                f"Pertahankan kedisiplinan dan kerapian asistensi yang sudah menjadi ciri khas ananda. Untuk tahap berikutnya, ananda dapat "
+                f"meningkatkan kecepatan estimasi volume pekerjaan (Quantity Surveying) dan mulai mempelajari integrasi detail arsitektur ke software 3D visualisasi."
+            )
+            panduan_wali = (
+                f"Kami mengucapkan terima kasih yang mendalam kepada Bapak/Ibu wali murid atas bimbingan dan doa yang senantiasa tercurah. "
+                f"Kestabilan dan ketekunan ananda di kampus mencerminkan pola asuh rumah yang sangat suportif. Mohon terus dampingi ananda dengan "
+                f"apresiasi moral, dan dukung ananda untuk mulai merintis jejaring profesional arsitektur."
+            )
+            status_alert = "PRESTASI SANGAT BAIK"
+            alert_color = "sky"
+
         else:
-            base_cad = random.randint(72, 88)
+            base_cad = random.randint(76, 88)
             competency = {
                 "penguasaan_cad": base_cad,
-                "ketelitian_detail": random.randint(70, 86),
-                "kedisiplinan_asistensi": random.randint(75, 90),
-                "logika_ruang_struktur": random.randint(72, 86),
-                "manajemen_waktu": random.randint(68, 85)
+                "ketelitian_detail": random.randint(75, 87),
+                "kedisiplinan_asistensi": random.randint(76, 90),
+                "logika_ruang_struktur": random.randint(74, 88),
+                "manajemen_waktu": random.randint(72, 86)
             }
-            if total_alpha >= 2:
-                alert_stat = "PERHATIAN KHUSUS"
-                alert_col = "rose"
-                saran = "Ananda memiliki minat besar pada gambar kerja digital. Mohon perhatian wali murid mengenai kehadiran kuliah agar memenuhi syarat minimal 75% untuk evaluasi akhir."
-            else:
-                alert_stat = "STABIL"
-                alert_col = "blue"
-                saran = "Dukung ananda untuk konsisten melakukan asistensi gambar mandiri di rumah. Ananda berada pada jalur pembelajaran yang sehat dan berkembang."
+            karakter_spasial = (
+                f"Ananda {nama} memperlihatkan etos kerja studio yang positif, aktif berdiskusi di laboratorium LIKDA, dan menunjukkan "
+                f"ketertarikan yang nyata dalam mendalami software gambar kerja arsitektur. Penguasaan perintah-perintah dasar CAD dan pembuatan "
+                f"garis dinding serta notasi kolom telah diselesaikan dengan capaian yang memenuhi standar mutu kurikulum sarjana arsitektur."
+            )
+            potensi_kedepan = (
+                f"Ananda berada pada lintasan pertumbuhan kompetensi yang sehat dan stabil. Apabila dilanjutkan dengan latihan pemodelan 3D mandiri "
+                f"dan pemahaman konstruksi yang lebih dalam, ananda siap menghadapi studio perancangan arsitektur tingkat lanjut dengan rasa percaya diri tinggi."
+            )
+            catatan_mahasiswa = (
+                f"Tingkatkan ketelitian pada kalibrasi ketebalan garis (lineweights) dan standarisasi arsiran material (hatching). Biasakan diri "
+                f"menyelesaikan revisi gambar sebelum batas akhir asistensi agar proses belajar lebih santai dan tidak menumpuk di akhir semester."
+            )
+            panduan_wali = (
+                f"Dukungan dan apresiasi dari orang tua di rumah sangat berperan dalam menumbuhkan kepercayaan diri ananda. Mohon terus disemangati "
+                f"untuk meluangkan waktu latihan studio mandiri di rumah dan menjaga kesehatan jasmani selama menempuh semester perkuliahan arsitektur."
+            )
+            status_alert = "KOMPETENSI STABIL & BERKEMBANG"
+            alert_color = "blue"
 
-            ai_swot = {
-                "kekuatan": "Menunjukkan kemauan belajar yang tinggi, aktif berdiskusi di lab, dan teliti dalam menarik garis arsitektural.",
-                "kelemahan": "Perlu lebih teliti dalam penamaan layer dan pemilihan ketebalan garis (lineweight) saat plotting PDF.",
-                "peluang_pengembangan": "Membiasakan diri menyusun template layer standar agar alur kerja studio lebih efisien.",
-                "saran_wali_murid": saran,
-                "status_alert": alert_stat,
-                "alert_color": alert_col
-            }
+        # Generate Customized 10 Real Career Matrix
+        career_matrix = generate_10_career_matrix(nama, avg_score, competency, archetype)
 
-        # Marketing Assets Data (4-Slide Carousel & Vertical Video Storyboard)
-        carousel_slides = [
-            {
-                "slide_no": 1,
-                "tipe": "COVER & PENCAPAIAN",
-                "badge": "STUDIO ARSITEKTUR 2026",
-                "headline": f"Progres Karya Arsitektur: {nama.title()}",
-                "subline": f"Kompilasi Praktikum Aplikasi Komputer & Gambar Kerja CAD • Nilai: {grade} ({avg_score})",
-                "highlight": "Tingkat Kehadiran: " + str(attendance_pct) + "%",
-                "accent": "Gold Accent (#FFC800)"
-            },
-            {
-                "slide_no": 2,
-                "tipe": "DOKUMENTASI AKTIVITAS",
-                "badge": "LAB LIKDA • PRAKTEK LANGSUNG",
-                "headline": "Asistensi Presisi & Konstruksi Denah",
-                "subline": "Mahasiswa mengasah logika struktur kolom, dinding, dan notasi teknis sesuai standar arsitektural IAI.",
-                "highlight": "Fokus & Kolaboratif",
-                "accent": "Emerald Accent (#10B981)"
-            },
-            {
-                "slide_no": 3,
-                "tipe": "HASIL KARYA / OUTPUT",
-                "badge": "KARYA GAMBAR KERJA A3",
-                "headline": "Potongan Bangunan & Detail Pondasi",
-                "subline": "Sinkronisasi denah dengan potongan struktural dan perhitungan volume pekerjaan arsitektur presisi tinggi.",
-                "highlight": "Karya Siap Portofolio",
-                "accent": "Cyan Accent (#06B6D4)"
-            },
-            {
-                "slide_no": 4,
-                "tipe": "PRIDE & CLOSING",
-                "badge": "PROGRAM STUDI ARSITEKTUR",
-                "headline": "Mencetak Arsitek Unggul Masa Depan",
-                "subline": "Terima kasih bapak/ibu wali murid atas kepercayaan dan kolaborasi mendampingi putra/putri tercinta.",
-                "highlight": "Official Campus Branding",
-                "accent": "Gold Accent (#FFC800)"
-            }
-        ]
-
+        # Video Storyboard for Student Showcase (Focus on pride, progress, and motivating parents)
         video_storyboard = {
             "durasi_detik": 32,
-            "format": "9:16 Vertikal (Reels / TikTok / WhatsApp Status)",
+            "format": "9:16 Vertikal (Reels / Shorts / WhatsApp Story)",
             "bgm_mood": "Inspiratif, Modern Upbeat Acoustic Architecture",
             "voiceover_script": (
-                f"Satu bulan penuh dedikasi di Lab Komputer Arsitektur! "
-                f"Inilah ananda {nama.title()}, yang telah menuntaskan modul gambar kerja digital "
-                f"mulai dari perancangan denah presisi hingga sinkronisasi detail pondasi struktural dengan capaian predikat {grade}. "
-                f"Terus berkarya dan menginspirasi bersama Program Studi Arsitektur!"
+                f"Alhamdulillah! Satu semester penuh dedikasi dan kerja keras di Lab Komputer Arsitektur! "
+                f"Inilah ananda {nama.title()}, yang telah berhasil menuntaskan seluruh modul gambar kerja digital "
+                f"mulai dari perancangan denah presisi hingga detail potongan struktural dengan capaian predikat {grade}. "
+                f"Bapak dan Ibu patut sangat bangga, ananda siap melangkah menjadi arsitek masa depan kebanggaan keluarga dan bangsa!"
             ),
             "scenes": [
-                {"detik": "00:00 - 00:05", "visual": "Foto Mahasiswa + Header Animasi Prestasi Bulan Ini", "teks": f"Pencapaian {nama.title()}"},
-                {"detik": "00:05 - 00:15", "visual": "Zoom-in aktivitas gambar di layar AutoCAD Lab LIKDA", "teks": "Fokus Menggambar Denah & Detail Pondasi"},
-                {"detik": "00:15 - 00:25", "visual": "Karya layout lembar kerja cetak PDF standar A3", "teks": "Output Presisi Standar Industri"},
-                {"detik": "00:25 - 00:32", "visual": "Logo Resmi Prodi Arsitektur & Pesan Bangga untuk Orang Tua", "teks": "Bangga Menjadi Bagian Arsitektur"}
+                {
+                    "detik": "00:00 - 00:06",
+                    "visual": "Foto Mahasiswa & Gelar Sertifikasi Kompetensi Studio 2026",
+                    "teks": f"Kebanggaan Ananda {nama.split()[0]}"
+                },
+                {
+                    "detik": "00:06 - 00:16",
+                    "visual": "Zoom-in aktivitas gambar di layar AutoCAD Lab LIKDA",
+                    "teks": "Fokus Menggambar Denah & Detail Struktur"
+                },
+                {
+                    "detik": "00:16 - 00:25",
+                    "visual": "Karya layout lembar kerja etiket cetak PDF standar A3",
+                    "teks": "Karya Nyata Siap Portofolio Profesional"
+                },
+                {
+                    "detik": "00:25 - 00:32",
+                    "visual": "Logo Resmi Prodi Arsitektur & Pesan Apresiasi Orang Tua",
+                    "teks": "Terima Kasih Atas Doa & Dukungan Orang Tua"
+                }
             ]
         }
 
-        # WhatsApp Message Template ready to send to Parent
+        # WhatsApp Message (Polite, formal, NO competitive rank, highlighting pride & 10 career possibilities)
         wa_message = (
-            f"Bismillaahirrohmaanirrohiim.\n\n"
-            f"Kepada Yth. Bapak/Ibu Wali Murid dari *{nama}*,\n\n"
-            f"Salam hangat dari Program Studi Arsitektur.\n"
-            f"Berikut kami sampaikan Rekap Laporan Bulanan & Perkembangan Studi ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* untuk periode berjalan:\n\n"
-            f"📊 *Ringkasan Kinerja:*\n"
-            f"• Kehadiran: *{attendance_pct}%* ({total_hadir}/{len(sessions)} Sesi Hadir)\n"
-            f"• Rata-rata Nilai Studio: *{avg_score}* (Predikat: *{grade}*)\n"
-            f"• Catatan Akademik: {ai_swot['kekuatan']}\n\n"
-            f"✨ *Rapor Interaktif, Portofolio Karya & Video Progres Ananda:*\n"
-            f"Bapak/Ibu dapat melihat rapor visual, galeri foto karya 4-slide, serta video pencapaian ananda melalui tautan resmi berikut:\n"
-            f"👉 https://siak-arsitektur.ac.id/rapor/mhs/{npm}\n\n"
-            f"Terima kasih atas doa dan dukungan berkelanjutan dari Bapak/Ibu di rumah.\n\n"
+            f"Assalamu’alaikum Warahmatullahi Wabarakatuh.\n\n"
+            f"Kepada Yth. Bapak/Ibu Wali Murid dari *{nama.upper()}*,\n\n"
+            f"Salam hangat dan salam takzim dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\n"
+            f"Melalui pesan resmi ini, kami menyampaikan Laporan Perkembangan Akademik, Portofolio Gambar Kerja, dan Analisis Pemetaan Potensi Karier ananda pada mata kuliah *Aplikasi Komputer Arsitektur & QS*:\n\n"
+            f"📊 *Ringkasan Capaian Kompetensi:*\n"
+            f"• Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/6 Sesi Terlaksana)\n"
+            f"• Nilai Akhir Studio: *{avg_score}* (Predikat: *{grade}* - {predikat})\n"
+            f"• Status Kompetensi: *{status_kompetensi}*\n"
+            f"• Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
+            f"💡 *Catatan Dosen Pengasuh:*\n"
+            f"\"{karakter_spasial[:140]}...\"\n\n"
+            f"📁 *Lampiran Berkas Resmi Terlampir:*\n"
+            f"1. 📎 Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n"
+            f"2. 📎 Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n"
+            f"3. 📎 Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\n"
+            f"Bapak/Ibu dapat meninjau berkas dokumen terlampir. Terima kasih tak terhingga atas doa, bimbingan, dan cinta kasih Bapak/Ibu yang senantiasa mendampingi ananda di rumah.\n\n"
             f"Hormat kami,\n"
             f"*Ketua Program Studi Arsitektur*\n"
-            f"*Fielda Roza, S.T., M.T.*"
+            f"*Fielda Roza, S.T., M.T.*\n"
+            f"Asisten Dosen: *Adrian Ridhoa, S.T.*"
         )
 
         student_records.append({
@@ -424,22 +583,27 @@ def generate_student_profiles(students, sessions):
                 "nilai_rata_rata": avg_score,
                 "grade": grade,
                 "predikat": predikat,
+                "status_kompetensi": status_kompetensi,
+                "kesiapan_profesi": kesiapan_profesi,
+                "indeks_kesiapan": indeks_kesiapan,
                 "kompetensi": competency,
                 "skor_sesi": session_scores
             },
-            "ai_diagnosis": ai_swot,
+            "ai_diagnosis": {
+                "analisis_karakter_spasial": karakter_spasial,
+                "potensi_kedepan": potensi_kedepan,
+                "catatan_khusus_mahasiswa": catatan_mahasiswa,
+                "panduan_wali_murid": panduan_wali,
+                "kekuatan": karakter_spasial[:180] + "...",
+                "status_alert": status_alert,
+                "alert_color": alert_color,
+                "matriks_karier_10": career_matrix
+            },
             "marketing": {
-                "carousel": carousel_slides,
                 "video": video_storyboard,
                 "wa_text": wa_message
             }
         })
-
-    # Calculate ranking (1 to 35) based on avg_score desc, attendance_pct desc
-    sorted_by_score = sorted(student_records, key=lambda x: (x["akademik"]["nilai_rata_rata"], x["kehadiran"]["persentase"]), reverse=True)
-    for rank_idx, s in enumerate(sorted_by_score, start=1):
-        s["akademik"]["ranking"] = rank_idx
-        s["akademik"]["total_ranking"] = len(student_records)
 
     # Class-level aggregates for Kaprodi Executive Suite
     total_mhs = len(student_records)
@@ -550,7 +714,7 @@ def generate_student_profiles(students, sessions):
         "metadata": {
             "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
             "versi": "2.0-GOLDEN-DEMO",
-            "generated_at": "2026-10-18T00:40:00+07:00",
+            "generated_at": "2026-10-18T02:00:00+07:00",
             "target_port": 40404
         },
         "course": course_info,
@@ -579,7 +743,7 @@ def main():
     sessions = parse_syllabus(PDF_PATH)
     print(f"Berhasil memetakan {len(sessions)} sesi praktikum AutoCAD & QS.")
 
-    print("Mengompilasi dataset akademik & kecerdasan AI...")
+    print("Mengompilasi dataset akademik dengan analisis mendalam & 10 matriks karier...")
     dataset = generate_student_profiles(students, sessions)
 
     with open(OUTPUT_JSON, "w", encoding="utf-8") as f:

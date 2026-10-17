@@ -1,0 +1,12 @@
+{
+  "status": "PROCESSED_SUCCESS",
+  "course_name": "Aplikasi Komputer Arsitektur & QS",
+  "course_code": "5412522233",
+  "course_folder": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+  "timestamp": "2026-10-18_02-09-24",
+  "processed_at": "2026-10-18 02:09:24",
+  "raw_source_dir": "E:\\WORKSPACE\\KAMPUS_01\\input\\raw\\APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS\\2026-10-18_02-09-24",
+  "processed_dir": "E:\\WORKSPACE\\KAMPUS_01\\input\\processed\\APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS\\2026-10-18_02-09-24",
+  "total_mahasiswa": 35,
+  "total_sesi": 6
+}

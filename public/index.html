@@ -80,8 +80,8 @@
           <span>2. Rapor Wali Murid</span>
         </button>
         <button onclick="switchTab('marketing')" id="tab-btn-marketing" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
-          <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
-          <span>3. Viral Marketing (Carousel & Video)</span>
+          <i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>
+          <span>3. Portofolio & Video Progres</span>
         </button>
         <button onclick="switchTab('whatsapp')" id="tab-btn-whatsapp" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
           <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
@@ -331,7 +331,7 @@
               <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i> Unduh PDF 1: Kehadiran Bulanan
             </button>
             <button onclick="downloadCurrentStudentFinalPDF()" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-extrabold shadow-lg shadow-amber-500/20 flex items-center gap-1.5 transition">
-              <i data-lucide="award" class="w-4 h-4"></i> Unduh PDF 2: Rapor Final & Ranking
+              <i data-lucide="award" class="w-4 h-4"></i> Unduh PDF 2: Rapor Capaian & Karier
             </button>
           </div>
         </div>
@@ -354,8 +354,8 @@
                 <span id="mhs-alert-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   OPTIMAL
                 </span>
-                <span id="mhs-ranking-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
-                  🏆 RANKING #1 DARI 35
+                <span id="mhs-ranking-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">
+                  🎯 INDEKS KESIAPAN: 96% (KOMPETEN UNGGUL)
                 </span>
               </div>
               <div class="flex items-center gap-4 text-xs text-slate-400 mt-1.5 flex-wrap font-mono">
@@ -370,10 +370,10 @@
 
           <!-- Quick Stats Pills -->
           <div class="flex items-center flex-wrap gap-3">
-            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-amber-500/50 text-center">
-              <div class="text-[11px] text-amber-300 font-medium">Ranking Kelas</div>
-              <div class="text-xl font-black text-amber-400 mt-0.5 font-mono" id="mhs-stat-ranking">#1 / 35</div>
-              <div class="text-[10px] text-amber-300/80">Kelas TEKZA</div>
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-cyan-500/50 text-center">
+              <div class="text-[11px] text-cyan-300 font-medium">Status Kompetensi</div>
+              <div class="text-base font-black text-cyan-400 mt-0.5" id="mhs-stat-kompetensi">Kompeten Unggul</div>
+              <div class="text-[10px] text-slate-400" id="mhs-stat-kesiapan">Kesiapan: 96%</div>
             </div>
 
             <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
@@ -446,34 +446,44 @@
               </span>
             </div>
 
-            <div class="space-y-3 text-xs">
-              <!-- Kekuatan -->
-              <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                <div class="font-bold text-emerald-400 flex items-center gap-1.5 mb-1">
-                  <i data-lucide="check" class="w-3.5 h-3.5"></i> KEKUATAN & TALENTA MAHASISWA:
+            <div class="space-y-3.5 text-xs">
+              <!-- 1. Karakter Spasial & Etos Studio -->
+              <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
+                <div class="font-bold text-emerald-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="compass" class="w-4 h-4"></i> 1. Karakter Spasial & Etos Kerja Studio:
                 </div>
-                <p class="text-slate-200 leading-relaxed" id="ai-kekuatan">
-                  Kemampuan pemahaman software AutoCAD sangat cepat dan presisi tinggi. Garis potongan dan detail pondasi tersinkronisasi rapi dengan standar arsitektur profesional.
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-karakter-spasial">
+                  Memuat narasi analisis mendalam mengenai pemahaman ruang, kedisiplinan asistensi meja, dan kualitas penarikan garis arsitektur...
                 </p>
               </div>
 
-              <!-- Kelemahan -->
-              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                <div class="font-bold text-amber-400 flex items-center gap-1.5 mb-1">
-                  <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> AREA YANG PERLU DITINGKATKAN:
+              <!-- 2. Proyeksi Potensi Kedepan -->
+              <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25">
+                <div class="font-bold text-cyan-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i> 2. Proyeksi Potensi Perkembangan Kedepan:
                 </div>
-                <p class="text-slate-200 leading-relaxed" id="ai-kelemahan">
-                  Kadang terlalu perfeksionis pada detail kecil sehingga pengerjaan layouting sheet sedikit memakan waktu lebih.
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-potensi-kedepan">
+                  Memuat proyeksi arah akselerasi kompetensi di semester atas, sayembara desain, dan pemodelan BIM tingkat lanjut...
                 </p>
               </div>
 
-              <!-- Saran Wali Murid -->
-              <div class="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/20">
-                <div class="font-bold text-sky-400 flex items-center gap-1.5 mb-1">
-                  <i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i> SARAN KHUSUS UNTUK BAPAK/IBU WALI MURID:
+              <!-- 3. Hal yang Mesti Ditingkatkan Mahasiswa -->
+              <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                <div class="font-bold text-amber-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="target" class="w-4 h-4"></i> 3. Catatan Khusus Penguatan Mahasiswa:
                 </div>
-                <p class="text-slate-200 leading-relaxed" id="ai-saran">
-                  Dukungan orang tua sangat diapresiasi! Ananda memiliki bakat kepemimpinan di studio arsitektur, disarankan terus didukung untuk mengikuti sayembara desain arsitektur tingkat nasional.
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-catatan-mahasiswa">
+                  Catatan konstruktif langsung bagi ananda untuk memperdalam teknik detail struktur dan efisiensi workflow...
+                </p>
+              </div>
+
+              <!-- 4. Panduan Khusus Wali Murid di Rumah -->
+              <div class="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/25">
+                <div class="font-bold text-sky-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="heart-handshake" class="w-4 h-4"></i> 4. Panduan Pendampingan Khusus Wali Murid di Rumah:
+                </div>
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-panduan-wali">
+                  Saran praktis bagi orang tua dalam mendukung perangkat kerja, menjaga kebugaran, dan memberikan apresiasi moral...
                 </p>
               </div>
             </div>
@@ -491,6 +501,46 @@
 
         </div>
 
+      </div>
+
+      <!-- MATRIKS 10 PELUANG KARIER RIIL MASA DEPAN (FULL WIDTH) -->
+      <div class="bg-[#0f172a] rounded-2xl p-6 border border-cyan-500/30 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+              <i data-lucide="briefcase" class="w-4 h-4"></i> Pemetaan Potensi Karier Industri & Profesi Masa Depan
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1">
+              Matriks 10 Rekomendasi Profesi Riil Berdasarkan Talenta Mahasiswa
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Dianalisis secara komprehensif berdasarkan perpaduan kompetensi CAD, detail konstruksi, logika struktur, dan pemahaman volume QS.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-bold">
+              10 Profesi Terakreditasi IAI & PUPR
+            </span>
+          </div>
+        </div>
+
+        <!-- Career Matrix Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono text-[11px] border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3 w-12 text-center">No</th>
+                <th class="py-3 px-4">Profesi Riil & Sektor Industri</th>
+                <th class="py-3 px-4 w-44">Tingkat Kecocokan</th>
+                <th class="py-3 px-4">Keterampilan Kunci</th>
+                <th class="py-3 px-4">Analisis Potensi & Langkah Pengembangan</th>
+              </tr>
+            </thead>
+            <tbody id="career-matrix-rows" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Dynamically populated via app.js -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </section>
@@ -781,15 +831,15 @@
                 </button>
               </div>
 
-              <!-- PDF Card 2: Rapor Final & Ranking -->
+              <!-- PDF Card 2: Rapor Capaian & Pemetaan Karier -->
               <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-emerald-500/30 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentFinalPDF()">
                 <div class="flex items-center gap-2.5 min-w-0">
                   <div class="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
                     PDF
                   </div>
                   <div class="min-w-0">
-                    <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-2">02_rapor_akhir_semester_ranking.pdf</div>
-                    <div class="text-[10px] text-emerald-200/80 font-mono">227 KB • Rapor Final & Radar Kompetensi</div>
+                    <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-2">02_rapor_akhir_semester_kompetensi.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">227 KB • Rapor Capaian & Matriks Karier</div>
                   </div>
                 </div>
                 <button class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0">

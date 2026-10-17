@@ -49,58 +49,55 @@ flowchart TD
   * At-Risk Student Alert: Sistem otomatis menandai mahasiswa dengan akumulasi Alpha $\ge 2$ atau kehadiran $< 75\%$ untuk intervensi dini sebelum ujian.
 
 #### 2. Modul Evaluasi Kinerja & Analisis AI (Wali Murid View)
-* **Tujuan**: Laporan berkala yang humanis, komprehensif, dan mudah dipahami orang tua.
+* **Tujuan**: Laporan berkala yang humanis, membanggakan, dan berorientasi masa depan bagi orang tua tanpa stigma urutan ranking buncit.
 * **Fitur**:
-  * Pemilihan Mahasiswa Instan: Dapat berganti profil antar 35 mahasiswa.
+  * **Profil Indeks Kompetensi Mandiri & Kesiapan Profesi** (Pengganti Ranking Kelas): Menggantikan angka ranking kompetitif dengan indeks kualitatif (`Kompeten Unggul`, `Indeks Kesiapan: 96%`) berstandar Ikatan Arsitek Indonesia (IAI).
+  * Pemilihan Mahasiswa Instan: Dapat berganti profil antar 35 mahasiswa secara reaktif.
   * Radar Chart 5 Dimensi: Penguasaan CAD, Ketelitian Detail, Kedisiplinan Asistensi, Logika Ruang/Struktur, Manajemen Waktu.
-  * AI SWOT Card:
-    * 🟢 **Kekuatan**: Menyoroti potensi bakat unik mahasiswa.
-    * 🟡 **Kelemahan**: Aspek teknis yang perlu diperbaiki.
-    * 💡 **Saran Wali Murid**: Rekomendasi peran orang tua di rumah untuk mendampingi putra/putrinya.
+  * **4 Analisis Naratif Mendalam (Gemini Academic Engine)**:
+    1. *Karakter Spasial & Etos Kerja Studio*: Ulasan detail kepekaan rasa ruang, penarikan garis presisi, dan etos kerja di workstation studio.
+    2. *Proyeksi Potensi Perkembangan Kedepan*: Proyeksi kesiapan sayembara arsitektur, pemodelan BIM Revit, dan studio perancangan tematik tingkat atas.
+    3. *Catatan Khusus Penguatan Mahasiswa*: Arahan teknis konstruktif langsung bagi ananda.
+    4. *Panduan Khusus Pendampingan Wali Murid di Rumah*: Langkah konkret pendampingan orang tua (fasilitas perangkat GPU, nutrisi, dan dukungan psikologis).
+  * **Matriks 10 Rekomendasi Profesi Riil Masa Depan**: Pemetaan 10 karier nyata industri arsitektur (Architectural Designer, BIM Modeler, QS & Estimator, DED Specialist, Interior Architect, 3D Visualizer, Site Architect, Landscape Designer, Green Building Specialist, Project Planner/Contractor) lengkap dengan persentase kecocokan, keterampilan kunci, dan aksi penguatan.
 
-#### 3. Modul Mesin Viral Marketing (Creative Media Loop)
-* **Tujuan**: Mengubah kebanggaan orang tua menjadi corong promosi organik kampus di WhatsApp Status dan Instagram.
+#### 3. Modul Portofolio Digital & Video Progres Belajar (DeckCraft & Video Story)
+* **Tujuan**: Mengubah kebanggaan orang tua menjadi portofolio profesional dan media audio-visual yang siap dipresentasikan atau dibagikan ke keluarga besar.
 * **Fitur**:
-  * **4-Slide Instagram Carousel (Rasio 4:5 Portrait)**:
-    * *Slide 1 (Cover)*: Foto mahasiswa + badge resmi prestasi prodi arsitektur.
-    * *Slide 2 (Aktivitas)*: Foto proses asistensi dan dinamika di Lab Komputer LIKDA.
-    * *Slide 3 (Karya)*: Gambar kerja digital nyata (Denah, Potongan Struktural, Detail Pondasi).
-    * *Slide 4 (Pride & Closing)*: Watermark resmi prodi, pesan inspiratif, dan ajakan kuliah di Arsitektur.
-  * **Vertical Video Recap (9:16 Reels/Shorts)**:
-    * Simulasi video gerak vertikal 32 detik.
-    * Narasi suara AI (Voiceover) yang mendeskripsikan progres belajar anak.
-    * Format mobile-ready untuk dipajang langsung di status media sosial.
+  * **DeckCraft Presentation Engine (16:9 Widescreen)**: Slide deck portofolio arsitektur elegan 4-slide lengkap dengan diagram vektor aksonometri 3D, denah skala 1:100, potongan pondasi, dan segel verifikasi resmi.
+  * **Vertical Video Story (9:16 Shorts/Status)**: Simulasi video gerak vertikal 32 detik dengan narasi voiceover afirmatif, menonjolkan karya nyata dan dedikasi ananda di lab.
 
 #### 4. Modul Simulator Distribusi WhatsApp
-* **Tujuan**: Memudahkan pengiriman laporan tanpa perlu mengetik ulang manual.
+* **Tujuan**: Memudahkan pengiriman laporan resmi ke wali murid langsung dari sistem.
 * **Fitur**:
-  * Format template pesan WA yang santun, formal, dan mencantumkan ringkasan nilai serta link rapor interaktif unik per mahasiswa.
+  * Format pesan santun dan resmi menyertakan 3 berkas lampiran PDF resmi (`01_rekap_kehadiran_*.pdf`, `02_rapor_akhir_kompetensi_*.pdf`, `05_deckcraft_portofolio_*.pdf`).
   * Tombol 1-klik `Salin Pesan WA` dan `Buka WhatsApp Web`.
 
 #### 5. Modul Generator Dokumen PDF Resmi (Playwright & DeckCraft Engine)
 * **Tujuan**: Memproduksi dokumen resmi siap cetak, arsip dekanat, dan berkas pengesahan yudisium.
-* **4 Paket Dokumen**:
+* **Paket Dokumen**:
   1. `PDF 1A`: **Rekap Kehadiran Mahasiswa Bulanan** (Untuk Wali Murid — Presensi, Alasan, Stempel Resmi).
-  2. `PDF 1B`: **Rapor Portofolio Akhir Semester & Ranking Afirmatif** (Untuk Wali Murid — Ranking Kelas, Radar Chart 5 Dimensi, AI Diagnosis yang mengangkat kebanggaan orang tua).
+  2. `PDF 1B`: **Rapor Portofolio Akhir Semester & Pemetaan 10 Karier Masa Depan** (Format 2 Halaman A4 — Page 1: Rapor & 4 Narasi Mendalam; Page 2: Matriks 10 Profesi Riil & Tanda Tangan Resmi).
   3. `PDF 1C / DeckCraft`: **Portofolio Slide Deck Presentasi 16:9 Widescreen** (4 Slide Widescreen per mahasiswa untuk showcase portofolio arsitektur).
   4. `PDF 2`: **Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (Untuk Kaprodi — Format Landscape A4, Nilai Sesi P1-P6, Grade, Kelulusan).
   5. `PDF 3`: **Laporan Evaluasi Dosen & Keselarasan Modul RPS** (Dari Kaprodi ke Dosen — Presensi Tim Dosen 100%, Audit Kesesuaian Kurikulum 96.0%, CPMK & CPL).
 
 #### 6. Modul Manajemen File & Folder Hierarkis
-* **Tujuan**: Mengorganisasi output secara berjenjang dan terisolasi agar file tersimpan rapi, tidak saling menimpa, dan memiliki riwayat timestamp yang jelas.
+* **Tujuan**: Mengorganisasi input dan output secara simetris dan terisolasi per mata kuliah dan timestamp.
 * **Arsitektur Direktori**:
   ```text
+  input/
+  ├── raw/<NAMA_MATA_KULIAH>/<TIMESTAMP>/           (Excel & Silabus PDF mentah)
+  └── processed/<NAMA_MATA_KULIAH>/<TIMESTAMP>/     (Dataset terstandarisasi & manifest)
+
   output/
-  ├── latest_run.json
-  └── <NAMA_MATA_KULIAH>/
-      ├── latest_run.json
-      └── <TIMESTAMP_WAKTU_DIBIKIN>/
-          ├── 01_rekap_kehadiran_bulanan_*.pdf
-          ├── 02_rapor_akhir_semester_*.pdf
-          ├── 03_laporan_penilaian_kaprodi_master_gradebook.pdf
-          ├── 04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf
-          ├── 05_deckcraft_portofolio_arsitektur_*.pdf
-          └── manifest.json (Metadata berkas & ukuran file)
+  └── <NAMA_MATA_KULIAH>/<TIMESTAMP>/
+      ├── 01_rekap_kehadiran_bulanan_*.pdf
+      ├── 02_rapor_akhir_semester_*.pdf (2 Halaman: Rapor & Matriks 10 Karier)
+      ├── 03_laporan_penilaian_kaprodi_master_gradebook.pdf
+      ├── 04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf
+      ├── 05_deckcraft_portofolio_arsitektur_*.pdf
+      └── manifest.json (Metadata berkas & ukuran file)
   ```
 
 ---
@@ -108,7 +105,6 @@ flowchart TD
 ### 🔗 Integrasi dengan Ekosistem OpenCraft MCP (`E:\WORKSHOP\OPEN_CRAFT_MCP`)
 Sistem ini terhubung secara arsitektural dengan framework otomasi konten kreatif:
 1. **DesignCraft Skill**: Mengotomasi perakitan tata letak grafis dokumen arsitektur dan format rapor.
-2. **Carousel-Template Skill**: Merender kartu carousel 4-slide menjadi file PNG/JPG resolusi tinggi (1080x1350) secara batch.
+2. **DeckCraft Skill**: Merender portofolio dan bahan tayang presentasi 16:9 widescreen (`scripts/deckcraft_builder.py`).
 3. **FilmCraft / Shorts-Template Skill**: Merender video rekapan vertikal 9:16 menggunakan programmatic timeline dan background music prodi.
-4. **DeckCraft Skill**: Merender portofolio dan bahan tayang presentasi 16:9 widescreen (`scripts/deckcraft_builder.py`).
 

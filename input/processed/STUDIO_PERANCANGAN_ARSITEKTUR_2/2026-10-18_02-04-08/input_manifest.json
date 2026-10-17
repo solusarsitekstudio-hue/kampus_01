@@ -1,0 +1,12 @@
+{
+  "status": "PROCESSED_SUCCESS",
+  "course_name": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+  "course_code": "5412522404",
+  "course_folder": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+  "timestamp": "2026-10-18_02-04-08",
+  "processed_at": "2026-10-18 02:04:08",
+  "raw_source_dir": "E:\\WORKSPACE\\KAMPUS_01\\input\\raw\\STUDIO_PERANCANGAN_ARSITEKTUR_2\\2026-10-18_02-04-08",
+  "processed_dir": "E:\\WORKSPACE\\KAMPUS_01\\input\\processed\\STUDIO_PERANCANGAN_ARSITEKTUR_2\\2026-10-18_02-04-08",
+  "total_mahasiswa": 35,
+  "total_sesi": 6
+}

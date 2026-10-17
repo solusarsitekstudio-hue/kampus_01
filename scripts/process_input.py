@@ -97,12 +97,11 @@ DEFAULT_COURSES = {
     }
 }
 
-def load_or_create_course_dataset(course_folder_name):
-    # If course exists in data/courses/<name>.json, load it
+def load_or_create_course_dataset(course_folder_name, force_reload=True):
     course_path = os.path.join(COURSES_DIR, f"{course_folder_name}.json")
     master_path = os.path.join(DATA_DIR, "academic_data.json")
     
-    if os.path.exists(course_path):
+    if os.path.exists(course_path) and not force_reload:
         with open(course_path, "r", encoding="utf-8") as f:
             return json.load(f)
 

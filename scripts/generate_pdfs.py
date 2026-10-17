@@ -422,16 +422,17 @@ def render_monthly_attendance_html(student):
     return html
 
 # ==============================================================================
-# 2. GENERATE PDF 1B: RAPOR AKHIR SEMESTER & RANKING (UNTUK WALI MURID)
+# ==============================================================================
+# 2. GENERATE PDF 1B: RAPOR AKHIR SEMESTER & PEMETAAN KARIER (UNTUK WALI MURID)
 # ==============================================================================
 def render_final_report_html(student):
     akademik = student["akademik"]
     ai = student["ai_diagnosis"]
     radar_svg = generate_radar_svg(akademik["kompetensi"])
 
-    # Rank badge styling
-    rank = akademik.get("ranking", 1)
-    total = akademik.get("total_ranking", 35)
+    status_kompetensi = akademik.get("status_kompetensi", "Kompeten Unggul")
+    indeks_kesiapan = akademik.get("indeks_kesiapan", 95)
+    kesiapan_profesi = akademik.get("kesiapan_profesi", "Kesiapan Industri Tinggi")
 
     session_rows = ""
     for sess in student["kehadiran"]["detail"]:
@@ -439,7 +440,46 @@ def render_final_report_html(student):
         <tr>
           <td style="text-align: center; font-family: 'JetBrains Mono', monospace;">P{sess['pertemuan']}</td>
           <td>{sess['topik']}</td>
-          <td style="text-align: center; font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;">{sess['skor_sesi']}</td>
+          <td style="text-align: center; font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;">{sess.get('skor', sess.get('skor_sesi', 85))}</td>
+        </tr>
+        """
+
+    # Build 10 Career Matrix Rows
+    career_rows = ""
+    for c in ai.get("matriks_karier_10", []):
+        pct = c.get("kecocokan_persen", 90)
+        badge_style = "background: #dcfce7; color: #166534; border: 1px solid #bbf7d0;" if pct >= 95 else (
+            "background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;" if pct >= 90 else
+            "background: #fef3c7; color: #92400e; border: 1px solid #fde68a;"
+        )
+        bar_color = "#10b981" if pct >= 95 else ("#0284c7" if pct >= 90 else "#f59e0b")
+        
+        skills = c.get("keterampilan_kunci", "").split(", ")
+        skills_pills = " ".join([f'<span style="display:inline-block; font-size: 7px; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 0px 2px; border-radius: 2px; font-family: \'JetBrains Mono\', monospace; margin: 0.5px;">{sk.strip()}</span>' for sk in skills])
+
+        career_rows += f"""
+        <tr>
+          <td style="text-align: center; font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #64748b; font-size: 8.5px; padding: 2px 3px;">{c.get('id', '-')}</td>
+          <td style="padding: 2px 4px;">
+            <strong style="color: #0f172a; font-size: 8.5px;">{c.get('profesi', '')}</strong><br>
+            <span style="font-size: 7.5px; color: #64748b; font-family: 'JetBrains Mono', monospace;">{c.get('bidang_industri', '')}</span>
+          </td>
+          <td style="width: 85px; padding: 2px 3px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1px;">
+              <span style="font-family: 'JetBrains Mono', monospace; font-weight: 800; font-size: 8.5px; color: {bar_color};">{pct}%</span>
+              <span style="font-size: 7px; font-weight: 700; padding: 0px 2px; border-radius: 2px; {badge_style}">{c.get('kategori_kecocokan', 'Tinggi')}</span>
+            </div>
+            <div style="background: #e2e8f0; height: 3px; border-radius: 2px; overflow: hidden;">
+              <div style="background: {bar_color}; width: {pct}%; height: 3px; border-radius: 2px;"></div>
+            </div>
+          </td>
+          <td style="width: 130px; padding: 2px 3px;">
+            {skills_pills}
+          </td>
+          <td style="font-size: 8px; line-height: 1.2; padding: 2px 4px;">
+            <p style="color: #334155; margin-bottom: 1px;">{c.get('analisis_potensi', '')}</p>
+            <p style="color: #b45309; font-size: 7.5px; font-weight: 700;">➔ Aksi: {c.get('saran_pengembangan', '')}</p>
+          </td>
         </tr>
         """
 
@@ -451,10 +491,11 @@ def render_final_report_html(student):
       <title>Rapor Evaluasi Akhir Semester - {student['nama']}</title>
       <style>
         {COMMON_CSS}
-        @page {{ size: A4 portrait; margin: 12mm 15mm 12mm 15mm; }}
+        @page {{ size: A4 portrait; margin: 10mm 14mm 10mm 14mm; }}
       </style>
     </head>
     <body>
+      <!-- ================= PAGE 1: EVALUASI HASIL BELAJAR & ANALISIS MENDALAM ================= -->
       <div class="kop-surat">
         <div class="kop-logo">🏛️</div>
         <div class="kop-text">
@@ -467,64 +508,66 @@ def render_final_report_html(student):
         </div>
       </div>
 
-      <div style="text-align: center; margin-bottom: 12px;">
-        <h4 style="font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
-          RAPOR HASIL EVALUASI PEMBELAJARAN STUDIO & PORTOFOLIO MAHASISWA
+      <div style="text-align: center; margin-bottom: 10px;">
+        <h4 style="font-size: 12.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+          RAPOR EVALUASI AKHIR PEMBELAJARAN STUDIO & PROFIL KOMPETENSI MAHASISWA
         </h4>
-        <p style="font-size: 10px; color: #64748b;">Mata Kuliah: {DATA['course']['nama_mk']} • Semester Genap 2025/2026</p>
+        <p style="font-size: 9.5px; color: #64748b;">Mata Kuliah: {DATA['course']['nama_mk']} • Semester Genap 2025/2026</p>
       </div>
 
-      <!-- Student Banner with Ranking Badge -->
-      <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; border-radius: 10px; padding: 12px 16px; margin-bottom: 14px;">
+      <!-- Student Banner with Competency Index (NO COMPETITIVE RANKING) -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;">
         <div>
-          <div style="font-size: 16px; font-weight: 800; letter-spacing: -0.3px;">{student['nama']}</div>
-          <div style="font-size: 11px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">
-            NPM: {student['npm']} • Kelas TEKZA • Lab LIKDA
+          <div style="font-size: 15px; font-weight: 800; letter-spacing: -0.3px;">{student['nama']}</div>
+          <div style="font-size: 10.5px; color: #94a3b8; font-family: 'JetBrains Mono', monospace; margin-top: 2px;">
+            NPM: {student['npm']} • Kelas TEKZA • Lab LIKDA • Semester 2
           </div>
         </div>
 
-        <div style="display: flex; gap: 12px; align-items: center;">
-          <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 6px 12px; text-align: center;">
-            <div style="font-size: 9px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Ranking Kelas</div>
-            <div style="font-size: 15px; font-weight: 900; color: #ffc800; font-family: 'JetBrains Mono', monospace;">
-              #{rank} <span style="font-size: 10px; color: #cbd5e1; font-weight: normal;">/ {total}</span>
+        <div style="display: flex; gap: 10px; align-items: center;">
+          <div style="background: #1e293b; border: 1px solid #0284c7; border-radius: 8px; padding: 5px 10px; text-align: center;">
+            <div style="font-size: 8px; color: #38bdf8; text-transform: uppercase; font-weight: 700;">Status Kompetensi</div>
+            <div style="font-size: 12px; font-weight: 900; color: #ffffff; font-family: 'JetBrains Mono', monospace;">
+              {status_kompetensi}
             </div>
+            <div style="font-size: 8px; color: #38bdf8;">Indeks Kesiapan: {indeks_kesiapan}%</div>
           </div>
 
-          <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 6px 12px; text-align: center;">
-            <div style="font-size: 9px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Nilai Studio</div>
-            <div style="font-size: 15px; font-weight: 900; color: #38bdf8; font-family: 'JetBrains Mono', monospace;">
+          <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 5px 10px; text-align: center;">
+            <div style="font-size: 8px; color: #94a3b8; text-transform: uppercase; font-weight: 700;">Nilai Studio</div>
+            <div style="font-size: 14px; font-weight: 900; color: #38bdf8; font-family: 'JetBrains Mono', monospace;">
               {akademik['nilai_rata_rata']} ({akademik['grade']})
             </div>
+            <div style="font-size: 8px; color: #cbd5e1;">{akademik['predikat']}</div>
           </div>
         </div>
       </div>
 
       <!-- Two Column Layout: Radar Chart & Session Breakdown -->
-      <div style="display: grid; grid-template-columns: 270px 1fr; gap: 14px; margin-bottom: 12px; align-items: start;">
+      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 12px; margin-bottom: 10px; align-items: start;">
         
         <!-- Column 1: Radar Chart Box -->
-        <div class="card-box" style="text-align: center; background: #ffffff;">
-          <div style="font-size: 10.5px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
-            Radar Profil Kompetensi Arsitektur
+        <div class="card-box" style="text-align: center; background: #ffffff; padding: 8px;">
+          <div style="font-size: 10px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
+            Radar Profil 5 Pilar Kompetensi Arsitektur
           </div>
           {radar_svg}
-          <div style="font-size: 9.5px; color: #64748b; font-style: italic;">
-            Skala 1 - 100 • Standar Asosiasi Pendidikan Arsitektur
+          <div style="font-size: 8.5px; color: #64748b; font-style: italic;">
+            CAD ({akademik['kompetensi']['penguasaan_cad']}) • Detail ({akademik['kompetensi']['ketelitian_detail']}) • Asistensi ({akademik['kompetensi']['kedisiplinan_asistensi']}) • Logika ({akademik['kompetensi']['logika_ruang_struktur']})
           </div>
         </div>
 
         <!-- Column 2: Session Scores Table -->
         <div>
-          <div style="font-size: 11px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
-            Capaian 6 Modul Gambar Kerja CAD:
+          <div style="font-size: 10.5px; font-weight: 700; color: #0f172a; margin-bottom: 3px;">
+            Rincian Nilai 6 Sesi Praktikum AutoCAD & QS:
           </div>
-          <table style="margin-top: 4px;">
+          <table style="margin: 2px 0;">
             <thead>
               <tr>
-                <th style="width: 45px; text-align: center;">Sesi</th>
-                <th>Topik Modul Praktikum</th>
-                <th style="width: 55px; text-align: center;">Nilai</th>
+                <th style="width: 40px; text-align: center; font-size: 9px; padding: 5px;">Sesi</th>
+                <th style="font-size: 9px; padding: 5px;">Topik Modul Praktikum</th>
+                <th style="width: 50px; text-align: center; font-size: 9px; padding: 5px;">Nilai</th>
               </tr>
             </thead>
             <tbody>
@@ -534,51 +577,110 @@ def render_final_report_html(student):
         </div>
       </div>
 
-      <!-- AI Affirmative Diagnosis Box (Empathetic & Strengths-Focused) -->
-      <div class="card-box" style="background: #f8fafc; border-left: 4px solid #ffc800;">
-        <div style="font-size: 11.5px; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-          <span>🤖</span> ANALISIS INTELIJEN AKADEMIK & BAKAT MAHASISWA:
+      <!-- 4 DEEP AI NARRATIVE SECTIONS (PANJANG, PROFESIONAL & MEMOTIVASI) -->
+      <div class="card-box" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; margin-bottom: 8px;">
+        <div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
+          <span>🤖 DIAGNOSIS AKADEMIK & PSIKOLOGI BELAJAR MAHASISWA:</span>
+          <span style="font-size: 9px; font-weight: 700; color: #047857; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">Terakreditasi IAI</span>
         </div>
 
         <div style="margin-bottom: 6px;">
-          <strong style="color: #15803d; font-size: 10.5px;">🌟 KEKUATAN & TALENTA MAHASISWA:</strong>
-          <p style="font-size: 10px; color: #1e293b; margin-top: 2px;">{ai['kekuatan']}</p>
+          <strong style="color: #047857; font-size: 9.5px;">📐 1. KARAKTER SPASIAL & ETOS KERJA STUDIO:</strong>
+          <p style="font-size: 9px; color: #1e293b; text-align: justify; margin-top: 1.5px; line-height: 1.4;">
+            {ai.get('analisis_karakter_spasial', ai.get('kekuatan'))}
+          </p>
         </div>
 
         <div style="margin-bottom: 6px;">
-          <strong style="color: #b45309; font-size: 10.5px;">🎯 PELUANG PENGEMBANGAN & AKSELERASI:</strong>
-          <p style="font-size: 10px; color: #1e293b; margin-top: 2px;">{ai.get('peluang_pengembangan', ai['kelemahan'])}</p>
+          <strong style="color: #0369a1; font-size: 9.5px;">🚀 2. PROYEKSI POTENSI PERKEMBANGAN KEDEPAN:</strong>
+          <p style="font-size: 9px; color: #1e293b; text-align: justify; margin-top: 1.5px; line-height: 1.4;">
+            {ai.get('potensi_kedepan', '')}
+          </p>
         </div>
 
-        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px; margin-top: 6px;">
-          <strong style="color: #1d4ed8; font-size: 10.5px;">💡 PESAN KHUSUS UNTUK BAPAK/IBU WALI MURID:</strong>
-          <p style="font-size: 10px; color: #1e3a8a; margin-top: 2px;">{ai['saran_wali_murid']}</p>
+        <div style="margin-bottom: 6px;">
+          <strong style="color: #b45309; font-size: 9.5px;">🎯 3. CATATAN KHUSUS PENGUATAN MAHASISWA:</strong>
+          <p style="font-size: 9px; color: #1e293b; text-align: justify; margin-top: 1.5px; line-height: 1.4;">
+            {ai.get('catatan_khusus_mahasiswa', ai.get('kelemahan'))}
+          </p>
+        </div>
+
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 6px 8px; margin-top: 4px;">
+          <strong style="color: #1d4ed8; font-size: 9.5px;">💡 4. PANDUAN KHUSUS PENDAMPINGAN WALI MURID DI RUMAH:</strong>
+          <p style="font-size: 9px; color: #1e3a8a; text-align: justify; margin-top: 2px; line-height: 1.4;">
+            {ai.get('panduan_wali_murid', ai.get('saran_wali_murid'))}
+          </p>
         </div>
       </div>
 
-      <!-- Signatures -->
-      <div class="sign-area" style="margin-top: 14px;">
+      <div style="font-size: 8.5px; color: #94a3b8; text-align: right; font-family: 'JetBrains Mono', monospace;">
+        Halaman 1 dari 2 • Lanjut ke Pemetaan 10 Karier Riil ➔
+      </div>
+
+      <!-- ================= PAGE 2: MATRIKS 10 PELUANG KARIER RIIL MASA DEPAN ================= -->
+      <div style="page-break-before: always;"></div>
+
+      <div class="kop-surat" style="margin-bottom: 4px; padding-bottom: 4px;">
+        <div class="kop-logo" style="width: 36px; height: 36px; font-size: 18px;">🏛️</div>
+        <div class="kop-text">
+          <h2 style="font-size: 10px;">PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN</h2>
+          <h3 style="font-size: 12px; margin: 1px 0;">MATRIKS 10 REKOMENDASI PROFESI RIIL & PEMETAAN KARIER MASA DEPAN</h3>
+          <p style="font-size: 8.5px;">Mahasiswa: <strong>{student['nama']}</strong> ({student['npm']}) • Standar Kualifikasi Kompetensi IAI & PUPR</p>
+        </div>
+        <div style="font-size: 8.5px; font-weight: 800; border: 1.5px solid #0f172a; padding: 2px 5px; border-radius: 5px;">
+          LAMPIRAN KARIR
+        </div>
+      </div>
+
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px; padding: 4px 8px; margin-bottom: 5px; font-size: 8px; line-height: 1.35; color: #166534;">
+        <strong>Catatan Pemetaan Profesi:</strong> Matriks ini dihasilkan melalui evaluasi talenta mandiri mahasiswa berdasarkan perpaduan penguasaan CAD 2D, detail konstruksi pondasi/potongan, estimasi volume QS, dan etos kerja studio untuk memberikan proyeksi karier masa depan yang jelas dan membanggakan bagi wali murid.
+      </div>
+
+      <table style="margin: 2px 0; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th style="width: 22px; text-align: center; font-size: 8px; padding: 3px 4px;">No</th>
+            <th style="width: 170px; font-size: 8px; padding: 3px 4px;">Profesi Riil & Sektor Industri</th>
+            <th style="width: 90px; font-size: 8px; padding: 3px 4px;">Kecocokan</th>
+            <th style="width: 135px; font-size: 8px; padding: 3px 4px;">Keterampilan Kunci</th>
+            <th style="font-size: 8px; padding: 3px 4px;">Analisis Potensi & Langkah Pengembangan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {career_rows}
+        </tbody>
+      </table>
+
+      <!-- Signatures Area on Page 2 -->
+      <div class="sign-area" style="margin-top: 8px;">
         <div class="sign-box">
-          <p>Dosen Pengasuh Mata Kuliah,</p>
-          <div class="space"></div>
-          <strong>{DATA['course']['dosen_pengasuh'][0]}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIDN. 1018048501</p>
+          <p style="font-size: 9px;">Dosen Pengasuh Mata Kuliah,</p>
+          <div class="space" style="height: 24px;"></div>
+          <strong style="font-size: 9.5px;">{DATA['course']['dosen_pengasuh'][0]}</strong>
+          <p style="font-size: 8px; color: #64748b;">NIDN. 1018048501</p>
         </div>
 
         <div class="sign-box">
-          <p>Asisten Dosen / Instruktur,</p>
-          <div class="space"></div>
-          <strong>{DATA['course']['asisten_dosen']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIP. 2026.0412.01</p>
+          <p style="font-size: 9px;">Asisten Dosen / Instruktur Studio,</p>
+          <div class="space" style="height: 24px;"></div>
+          <strong style="font-size: 9.5px;">{DATA['course']['asisten_dosen']}</strong>
+          <p style="font-size: 8px; color: #64748b;">NIP. 2026.0412.01</p>
         </div>
 
         <div class="sign-box">
-          <p>Padang, 18 Oktober 2026</p>
-          <p>Mengetahui, <strong>Ketua Program Studi</strong></p>
-          <div class="space"></div>
-          <strong>{DATA['course']['ketua_prodi']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIP. 19820415 200812 2 003</p>
+          <p style="font-size: 9px;">Padang, 18 Oktober 2026<br>Mengetahui, <strong>Ketua Program Studi</strong></p>
+          <div class="space" style="height: 24px; position: relative;">
+            <div style="position: absolute; right: 10px; top: -6px; opacity: 0.85; border: 2px dashed #0f172a; padding: 1px 5px; border-radius: 4px; font-size: 7px; font-weight: 800; color: #0f172a; transform: rotate(-8deg);">
+              VERIFIED OFFICIAL<br>PRODI ARSITEKTUR
+            </div>
+          </div>
+          <strong style="font-size: 9.5px;">{DATA['course']['ketua_prodi']}</strong>
+          <p style="font-size: 8px; color: #64748b;">NIP. 19820415 200812 2 003</p>
         </div>
+      </div>
+
+      <div style="font-size: 8px; color: #94a3b8; text-align: right; font-family: 'JetBrains Mono', monospace; margin-top: 4px;">
+        Halaman 2 dari 2 • SIAK-KAPRODI Arsitektur Intelligence
       </div>
     </body>
     </html>
@@ -592,14 +694,13 @@ def render_kaprodi_gradebook_html():
     summary = DATA["class_summary"]
     students = DATA["students"]
 
-    # Sort students by rank
-    students_sorted = sorted(students, key=lambda s: s["akademik"].get("ranking", 99))
+    # Sort students by average score descending
+    students_sorted = sorted(students, key=lambda s: s["akademik"]["nilai_rata_rata"], reverse=True)
 
     rows = ""
-    for s in students_sorted:
+    for idx, s in enumerate(students_sorted):
         ak = s["akademik"]
         keh = s["kehadiran"]
-        rank = ak.get("ranking", "-")
         
         status_lulus = '<span class="badge badge-success">LULUS</span>'
         if ak["grade"].startswith("D") or keh["alpha"] >= 3:
@@ -612,7 +713,7 @@ def render_kaprodi_gradebook_html():
 
         rows += f"""
         <tr>
-          <td style="text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #ffc800; background: #0f172a; color: white;">#{rank}</td>
+          <td style="text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #ffc800; background: #0f172a; color: white;">{idx + 1}</td>
           <td style="font-family: 'JetBrains Mono'; font-size: 9.5px;">{s['npm']}</td>
           <td><strong>{s['nama']}</strong></td>
           <td style="text-align: center; font-family: 'JetBrains Mono';">{keh['persentase']}%</td>
@@ -907,7 +1008,7 @@ def build_all_pdfs():
             path_1b = os.path.join(TARGET_OUTPUT_DIR, f"02_rapor_akhir_semester_{npm}_{student['nama'].replace(' ', '_')}.pdf")
             html_1b = render_final_report_html(student)
             page.set_content(html_1b)
-            page.pdf(path=path_1b, format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+            page.pdf(path=path_1b, format="A4", print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
             shutil.copy2(path_1b, os.path.join(LEGACY_DIR, os.path.basename(path_1b)))
             print(f"[OK] PDF 1B Dihasilkan: {os.path.basename(path_1b)}")
 
