@@ -53,6 +53,23 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(b'{"error": "Mahasiswa tidak ditemukan"}')
             return
 
+        # Serving Generated PDF Documents
+        if self.path.startswith("/generated_pdfs/"):
+            filename = self.path.split("/generated_pdfs/")[1].split("?")[0]
+            filepath = os.path.join(BASE_DIR, "generated_pdfs", filename)
+            if os.path.exists(filepath):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/pdf")
+                self.send_header("Content-Disposition", f'inline; filename="{filename}"')
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b"PDF file not found")
+            return
+
         # Fallback to serving static files from public/
         return super().do_GET()
 

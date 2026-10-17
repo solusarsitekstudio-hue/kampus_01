@@ -269,6 +269,26 @@ function selectStudent(npm) {
     alertBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
   }
 
+  // Ranking pill & stat
+  const rank = currentStudent.akademik.ranking || 1;
+  const tot = currentStudent.akademik.total_ranking || 35;
+  const rankPill = document.getElementById("mhs-ranking-pill");
+  if (rankPill) {
+    if (rank <= 3) {
+      rankPill.innerText = `🏆 RANKING #${rank} DARI ${tot}`;
+      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono";
+    } else if (rank <= 10) {
+      rankPill.innerText = `✨ RANKING #${rank} DARI ${tot}`;
+      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40 font-mono";
+    } else {
+      rankPill.innerText = `🎯 RANKING #${rank} DARI ${tot} (POTENSI BERKEMBANG)`;
+      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-mono";
+    }
+  }
+
+  const statRanking = document.getElementById("mhs-stat-ranking");
+  if (statRanking) statRanking.innerText = `#${rank} / ${tot}`;
+
   // Quick stats
   document.getElementById("mhs-stat-kehadiran").innerText = currentStudent.kehadiran.persentase + "%";
   document.getElementById("mhs-stat-absen-desc").innerText = `${currentStudent.kehadiran.hadir} / 6 Sesi Hadir`;
@@ -603,4 +623,29 @@ function exportDataJSON() {
   document.body.appendChild(a);
   a.click();
   a.remove();
+}
+
+// =============================================================================
+// PDF DOWNLOAD CONTROLLER FUNCTIONS
+// =============================================================================
+function downloadKaprodiGradebook() {
+  window.open("/generated_pdfs/03_laporan_penilaian_kaprodi_master_gradebook.pdf", "_blank");
+}
+
+function downloadDosenAuditPDF() {
+  window.open("/generated_pdfs/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf", "_blank");
+}
+
+function downloadCurrentStudentMonthlyPDF() {
+  if (!currentStudent) return;
+  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
+  const filename = `01_rekap_kehadiran_bulanan_${currentStudent.npm}_${sanitizedName}.pdf`;
+  window.open(`/generated_pdfs/${filename}`, "_blank");
+}
+
+function downloadCurrentStudentFinalPDF() {
+  if (!currentStudent) return;
+  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
+  const filename = `02_rapor_akhir_semester_${currentStudent.npm}_${sanitizedName}.pdf`;
+  window.open(`/generated_pdfs/${filename}`, "_blank");
 }

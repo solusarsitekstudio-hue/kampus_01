@@ -12,6 +12,11 @@ if not exist "data\academic_data.json" (
     python scripts\parse_data.py
 )
 
+if not exist "generated_pdfs\03_laporan_penilaian_kaprodi_master_gradebook.pdf" (
+    echo Menggenerate paket dokumen PDF resmi arsitektur...
+    python scripts\generate_pdfs.py
+)
+
 echo Membuka browser ke http://localhost:%PORT% ...
 start http://localhost:%PORT%
 

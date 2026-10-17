@@ -71,6 +71,34 @@ Untuk kemudahan demonstrasi di depan Kaprodi, gunakan tombol demo cepat di pojok
 
 ---
 
+## 📄 Generator Dokumen PDF Resmi (4 Paket Dokumen)
+Sistem dilengkapi engine perender dokumen PDF berkualitas penerbitan (Playwright Engine) yang dapat digenerate kapan saja via `generate_all_pdfs.bat` atau tombol unduh di browser:
+
+### 1. Dokumen untuk Wali Murid (2 Jenis PDF):
+* **PDF 1A: Rekap Kehadiran Mahasiswa Bulanan** (`01_rekap_kehadiran_bulanan_*.pdf`):
+  * Dikirim rutin tiap 1 bulan sekali ke orang tua.
+  * Memuat kop resmi fakultas, ringkasan persentase kehadiran, rekap sakit/izin/alpha, rincian tanggal pertemuan, topik materi, alasan ketidakhadiran, serta stempel verifikasi Kaprodi.
+* **PDF 1B: Rapor Evaluasi Akhir Semester & Ranking Afirmatif** (`02_rapor_akhir_semester_*.pdf`):
+  * Dikirim di akhir semester sebagai laporan portofolio final.
+  * **Peringkat/Ranking Kelas**: Menampilkan posisi mahasiswa di antara 35 mahasiswa kelas (misal: `#1 / 35`).
+  * **Psikologi Afirmatif**: Walaupun mahasiswa berada di peringkat bawah (seperti studi kasus Rozi Andrian Surva), sistem secara elegan **menonjolkan kelebihan, daya imajinasi spasial, dan potensi uniknya**, serta membingkai kelemahan sebagai peluang akselerasi agar wali murid tetap bangga dan termotivasi mendampingi anaknya di rumah.
+  * **Radar Chart Visual**: Profil kompetensi 5 pilar arsitektur (AutoCAD, Detail Gambar, Kedisiplinan, Logika Struktur, Waktu).
+
+### 2. Dokumen untuk Kaprodi (1 Jenis PDF):
+* **PDF 2: Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (`03_laporan_penilaian_kaprodi_master_gradebook.pdf`):
+  * Format **A4 Landscape** eksekutif untuk arsip rapat yudisium dan akreditasi jurusan.
+  * Rekap matriks 35 mahasiswa lengkap: presensi %, nilai sesi P1 s/d P6, nilai akhir, grade huruf, ranking kelas, dan status kelulusan (Lulus, Remidi, Evaluasi).
+  * Statistik makro: rata-rata kelas (81.0 / A-), kelulusan 97.1%, dan daftar intervensi at-risk.
+
+### 3. Dokumen untuk Dosen dari Kaprodi (1 Jenis PDF):
+* **PDF 3: Laporan Evaluasi Dosen & Keselarasan Kurikulum / Modul RPS** (`04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf`):
+  * Laporan audit mutu pengajaran (QA Dosen) dari Kaprodi kepada tim pengampu (Aprilia Yunita, Duddy Fajriansyah, dan Adrian Ridhoa).
+  * Realisasi presensi tim pengajar (100% terlaksana).
+  * **Audit Kesesuaian Materi vs Modul RPS**: Evaluasi materi per sesi terhadap capaian CPMK/CPL dengan skor keselarasan rata-rata **96.0% (Terakreditasi Sangat Baik / Unggul)**.
+  * Rapor performa kelas yang diampu beserta catatan evaluasi peningkatan mutu dari Kaprodi.
+
+---
+
 ## 🔗 Keterhubungan dengan Framework OpenCraft MCP
 Aplikasi ini dirancang modular agar terhubung langsung dengan engine otomasi di:
 `E:\WORKSHOP\OPEN_CRAFT_MCP`

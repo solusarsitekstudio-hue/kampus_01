@@ -117,12 +117,15 @@
               Pemantauan terpusat presensi 35 mahasiswa, verifikasi alasan ketidakhadiran, distribusi capaian studio CAD, dan sistem deteksi dini mahasiswa berisiko (At-Risk Intervention).
             </p>
           </div>
-          <div class="flex items-center gap-3">
-            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-600 flex items-center gap-2 transition">
-              <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan Kaprodi
+          <div class="flex items-center flex-wrap gap-2.5">
+            <button onclick="downloadKaprodiGradebook()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/40 flex items-center gap-2 transition shadow-lg">
+              <i data-lucide="sheet" class="w-4 h-4 text-emerald-400"></i> PDF Gradebook 35 Mhs (Landscape)
             </button>
-            <button onclick="exportDataJSON()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
-              <i data-lucide="download" class="w-4 h-4"></i> Export Data Portal (.JSON)
+            <button onclick="downloadDosenAuditPDF()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-bold rounded-xl border border-purple-500/40 flex items-center gap-2 transition shadow-lg">
+              <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i> PDF Audit Dosen & Modul RPS
+            </button>
+            <button onclick="exportDataJSON()" class="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
+              <i data-lucide="download" class="w-4 h-4"></i> Export JSON
             </button>
           </div>
         </div>
@@ -287,11 +290,22 @@
           <p class="text-xs text-slate-400">Laporan bulanan komprehensif siap cetak atau dikirim via tautan privat ke orang tua</p>
         </div>
 
-        <div class="flex items-center gap-3">
-          <label for="student-dropdown" class="text-xs text-slate-300 font-medium whitespace-nowrap">Pilih Mahasiswa:</label>
-          <select id="student-dropdown" onchange="onStudentSelect(this.value)" class="bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 transition min-w-[280px]">
-            <!-- Populated via app.js -->
-          </select>
+        <div class="flex items-center flex-wrap gap-2.5">
+          <div class="flex items-center gap-2">
+            <label for="student-dropdown" class="text-xs text-slate-300 font-medium whitespace-nowrap">Pilih Mahasiswa:</label>
+            <select id="student-dropdown" onchange="onStudentSelect(this.value)" class="bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 transition min-w-[260px]">
+              <!-- Populated via app.js -->
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="downloadCurrentStudentMonthlyPDF()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/40 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg">
+              <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i> Unduh PDF 1: Kehadiran Bulanan
+            </button>
+            <button onclick="downloadCurrentStudentFinalPDF()" class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-extrabold shadow-lg shadow-amber-500/20 flex items-center gap-1.5 transition">
+              <i data-lucide="award" class="w-4 h-4"></i> Unduh PDF 2: Rapor Final & Ranking
+            </button>
+          </div>
         </div>
       </div>
 
@@ -312,6 +326,9 @@
                 <span id="mhs-alert-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                   OPTIMAL
                 </span>
+                <span id="mhs-ranking-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 font-mono">
+                  🏆 RANKING #1 DARI 35
+                </span>
               </div>
               <div class="flex items-center gap-4 text-xs text-slate-400 mt-1.5 flex-wrap font-mono">
                 <span>NPM: <strong class="text-slate-200" id="mhs-npm">2510015410010</strong></span>
@@ -324,7 +341,13 @@
           </div>
 
           <!-- Quick Stats Pills -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center flex-wrap gap-3">
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-amber-500/50 text-center">
+              <div class="text-[11px] text-amber-300 font-medium">Ranking Kelas</div>
+              <div class="text-xl font-black text-amber-400 mt-0.5 font-mono" id="mhs-stat-ranking">#1 / 35</div>
+              <div class="text-[10px] text-amber-300/80">Kelas TEKZA</div>
+            </div>
+
             <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
               <div class="text-[11px] text-slate-400 font-medium">Kehadiran</div>
               <div class="text-xl font-bold text-emerald-400 mt-0.5" id="mhs-stat-kehadiran">100%</div>

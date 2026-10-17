@@ -265,23 +265,25 @@ def generate_student_profiles(students, sessions):
             }
             ai_swot = {
                 "kekuatan": "Kemampuan pemahaman software AutoCAD sangat cepat dan presisi tinggi. Garis potongan dan detail pondasi tersinkronisasi rapi dengan standar arsitektur profesional.",
-                "kelemahan": "Kadang terlalu perfeksionis pada detail kecil sehingga pengerjaan layouting sheet sedikit memakan waktu lebih.",
-                "saran_wali_murid": "Dukungan orang tua sangat diapresiasi! Ananda memiliki bakat kepemimpinan di studio arsitektur, disarankan terus didukung untuk mengikuti sayembara desain arsitektur tingkat nasional.",
+                "kelemahan": "Kadang terlalu perfeksionis pada detail estetika garis sehingga pengerjaan layouting sheet sedikit memakan waktu lebih.",
+                "peluang_pengembangan": "Dapat mulai mengeksplorasi automasi script CAD (LISP) atau pemodelan BIM Revit tingkat lanjut.",
+                "saran_wali_murid": "Bapak/Ibu patut sangat bangga! Ananda memiliki bakat arsitektural yang menonjol dan etos kepemimpinan di studio. Mohon terus didukung untuk mengasah portofolio dan mengikuti sayembara desain nasional.",
                 "status_alert": "OPTIMAL",
                 "alert_color": "emerald"
             }
         elif archetype == "at_risk":
             competency = {
-                "penguasaan_cad": 62,
-                "ketelitian_detail": 58,
-                "kedisiplinan_asistensi": 45,
-                "logika_ruang_struktur": 65,
-                "manajemen_waktu": 50
+                "penguasaan_cad": 68,
+                "ketelitian_detail": 65,
+                "kedisiplinan_asistensi": 52,
+                "logika_ruang_struktur": 74,
+                "manajemen_waktu": 58
             }
             ai_swot = {
-                "kekuatan": "Memiliki intuisi perancangan ruang yang cukup kreatif saat sesi diskusi konsep denah awal.",
-                "kelemahan": "Kedisiplinan presensi sangat rendah (tercatat 2x Alpha & 1x Sakit). Tugas detail potongan dan arsiran material belum terselesaikan tepat waktu.",
-                "saran_wali_murid": "Mohon bantuan dan perhatian bapak/ibu wali murid untuk memantau jam tidur dan jadwal keberangkatan kuliah pagi. Ananda sangat perlu asistensi khusus susulan di Lab LIKDA agar tidak tertinggal evaluasi semester.",
+                "kekuatan": "Ananda memiliki kepekaan rasa ruang (spatial awareness) yang sangat baik dan orisinalitas ide konsep denah yang berani di atas rata-rata.",
+                "kelemahan": "Tantangan utama terletak pada konsistensi kehadiran dan jam asistensi mingguan di studio gambar.",
+                "peluang_pengembangan": "Jika ritme jam belajar dan kehadiran diperbaiki, potensi ananda akan melesat cepat karena daya imajinasi dasarnya sudah sangat kuat.",
+                "saran_wali_murid": "Ananda memiliki potensi arsitektur yang sangat menjanjikan! Nilai dan karya ananda dapat melonjak drastis dengan sedikit dorongan disiplin waktu istirahat dan jam keberangkatan dari rumah. Mari kita bersama dampingi ananda agar bakat kreatifnya bersinar optimal.",
                 "status_alert": "PERHATIAN KHUSUS",
                 "alert_color": "rose"
             }
@@ -295,8 +297,9 @@ def generate_student_profiles(students, sessions):
             }
             ai_swot = {
                 "kekuatan": "Etos kerja studio sangat baik, konsisten dalam asistensi perbaikan gambar denah dan detail kusen pintu/jendela.",
-                "kelemahan": "Perlu penguatan pada kecepatan perhitungan volume pekerjaan (Quantity Surveying) agar tidak buru-buru saat plotting akhir.",
-                "saran_wali_murid": "Pertahankan ritme belajar yang sehat di rumah. Ananda berada pada jalur prestasi yang sangat positif di Program Studi Arsitektur.",
+                "kelemahan": "Perlu penguatan pada kecepatan perhitungan volume pekerjaan (Quantity Surveying) agar tidak terburu-buru saat plotting akhir.",
+                "peluang_pengembangan": "Memperdalam pemahaman spesifikasi teknis material bangunan arsitektur berkelanjutan.",
+                "saran_wali_murid": "Ananda menunjukkan ketekunan luar biasa yang membuat bangga. Dukungan orang tua di rumah sangat terasa dampaknya terhadap stabilitas prestasi ananda.",
                 "status_alert": "POSITIF",
                 "alert_color": "sky"
             }
@@ -306,21 +309,22 @@ def generate_student_profiles(students, sessions):
                 "penguasaan_cad": base_cad,
                 "ketelitian_detail": random.randint(70, 86),
                 "kedisiplinan_asistensi": random.randint(75, 90),
-                "logika_ruang_struktur": random.randint(70, 85),
+                "logika_ruang_struktur": random.randint(72, 86),
                 "manajemen_waktu": random.randint(68, 85)
             }
             if total_alpha >= 2:
                 alert_stat = "PERHATIAN KHUSUS"
                 alert_col = "rose"
-                saran = "Mohon perhatian wali murid mengenai kehadiran kuliah agar memenuhi syarat minimal 75% untuk mengikuti ujian akhir."
+                saran = "Ananda memiliki minat besar pada gambar kerja digital. Mohon perhatian wali murid mengenai kehadiran kuliah agar memenuhi syarat minimal 75% untuk evaluasi akhir."
             else:
                 alert_stat = "STABIL"
                 alert_col = "blue"
-                saran = "Dukung ananda untuk konsisten melakukan asistensi gambar mandiri di luar jam kuliah."
+                saran = "Dukung ananda untuk konsisten melakukan asistensi gambar mandiri di rumah. Ananda berada pada jalur pembelajaran yang sehat dan berkembang."
 
             ai_swot = {
-                "kekuatan": "Menunjukkan kemauan belajar yang tinggi dan aktif bertanya saat materi gambar potongan dan detail pondasi.",
+                "kekuatan": "Menunjukkan kemauan belajar yang tinggi, aktif berdiskusi di lab, dan teliti dalam menarik garis arsitektural.",
                 "kelemahan": "Perlu lebih teliti dalam penamaan layer dan pemilihan ketebalan garis (lineweight) saat plotting PDF.",
+                "peluang_pengembangan": "Membiasakan diri menyusun template layer standar agar alur kerja studio lebih efisien.",
                 "saran_wali_murid": saran,
                 "status_alert": alert_stat,
                 "alert_color": alert_col
@@ -431,6 +435,12 @@ def generate_student_profiles(students, sessions):
             }
         })
 
+    # Calculate ranking (1 to 35) based on avg_score desc, attendance_pct desc
+    sorted_by_score = sorted(student_records, key=lambda x: (x["akademik"]["nilai_rata_rata"], x["kehadiran"]["persentase"]), reverse=True)
+    for rank_idx, s in enumerate(sorted_by_score, start=1):
+        s["akademik"]["ranking"] = rank_idx
+        s["akademik"]["total_ranking"] = len(student_records)
+
     # Class-level aggregates for Kaprodi Executive Suite
     total_mhs = len(student_records)
     class_hadir_pct = round(sum(s["kehadiran"]["persentase"] for s in student_records) / total_mhs, 1)
@@ -465,6 +475,77 @@ def generate_student_profiles(students, sessions):
             "hadir_pct": round((hadir_count / total_mhs) * 100, 1)
         })
 
+    # Lecturer and Curriculum Audit Data (for Kaprodi -> Dosen QA Report)
+    dosen_audit = {
+        "tim_pengajar": [
+            {
+                "nama": "Aprilia Yunita, S.T., M.T.",
+                "peran": "Dosen Pengasuh Utama",
+                "kehadiran": "6 / 6 Pertemuan (100%)",
+                "status": "Sangat Baik & Tepat Waktu"
+            },
+            {
+                "nama": "Duddy Fajriansyah, S.T., M.T.",
+                "peran": "Dosen Pengasuh Pendamping",
+                "kehadiran": "6 / 6 Pertemuan (100%)",
+                "status": "Sangat Baik & Tepat Waktu"
+            },
+            {
+                "nama": "Adrian Ridhoa, S.T.",
+                "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
+                "kehadiran": "6 / 6 Pertemuan (100%)",
+                "status": "Aktif Membimbing Asistensi Teknis"
+            }
+        ],
+        "evaluasi_kurikulum_rps": [
+            {
+                "sesi": 1,
+                "topik_rps": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands, Import Gambar denah",
+                "realisasi_kelas": "Materi tersampaikan penuh, 35 mahasiswa berhasil import denah referensi & setup workspace.",
+                "skor_keselarasan": 98,
+                "cpmk": "CPMK-1: Mampu mengoperasikan antarmuka CAD standar industri"
+            },
+            {
+                "sesi": 2,
+                "topik_rps": "Medium Drawing: Menggambar dan Mengedit kolom, dinding, notasi dan dimensi",
+                "realisasi_kelas": "Praktek penarikan garis kolom beton, dinding bata 15cm, dan penarikan dimensi presisi tuntas.",
+                "skor_keselarasan": 96,
+                "cpmk": "CPMK-2: Menguasai teknik penggambaran elemen arsitektur 2D presisi"
+            },
+            {
+                "sesi": 3,
+                "topik_rps": "Medium Drawing: Layer, Memberi Arsiran (Hatch), Blok Kusen Jendela & Pintu",
+                "realisasi_kelas": "Pengaturan layer lineweight standar IAI dan pembuatan dynamic block pintu/jendela terverifikasi.",
+                "skor_keselarasan": 95,
+                "cpmk": "CPMK-2: Menguasai teknik penggambaran elemen arsitektur 2D presisi"
+            },
+            {
+                "sesi": 4,
+                "topik_rps": "Medium Drawing: Menggambar Potongan A-A & B-B, sinkronisasi denah, Detail Pondasi",
+                "realisasi_kelas": "Mahasiswa memproyeksikan garis denah ke potongan vertikal dan detail pondasi batu kali 1:20.",
+                "skor_keselarasan": 94,
+                "cpmk": "CPMK-3: Mampu menyusun gambar potongan dan detail konstruksi bangunan"
+            },
+            {
+                "sesi": 5,
+                "topik_rps": "Publishing Drawing: Layout, Pengenalan Sheet, Plot ke PDF dan dasar list volume",
+                "realisasi_kelas": "Setting viewport layout skala 1:100 pada etiket resmi dan export ke lembar PDF cetak A3.",
+                "skor_keselarasan": 97,
+                "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
+            },
+            {
+                "sesi": 6,
+                "topik_rps": "Scheduling Drawing: Menghitung Volume pekerjaan dari gambar dan plotting final",
+                "realisasi_kelas": "Ekstraksi luasan dinding, volume pondasi, dan kompilasi tabel Quantity Surveying selesai 100%.",
+                "skor_keselarasan": 96,
+                "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
+            }
+        ],
+        "skor_keselarasan_rata_rata": 96.0,
+        "keterangan_akreditasi": "Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik",
+        "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
+    }
+
     dataset = {
         "metadata": {
             "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
@@ -482,6 +563,7 @@ def generate_student_profiles(students, sessions):
             "distribusi_grade": grades_count,
             "tren_kehadiran_sesi": session_attendance_trend
         },
+        "dosen_audit": dosen_audit,
         "students": student_records
     }
 

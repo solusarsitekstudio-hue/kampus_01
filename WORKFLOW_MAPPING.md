@@ -77,6 +77,14 @@ flowchart TD
   * Format template pesan WA yang santun, formal, dan mencantumkan ringkasan nilai serta link rapor interaktif unik per mahasiswa.
   * Tombol 1-klik `Salin Pesan WA` dan `Buka WhatsApp Web`.
 
+#### 5. Modul Generator Dokumen PDF Resmi (Playwright Engine)
+* **Tujuan**: Memproduksi dokumen resmi siap cetak, arsip dekanat, dan berkas pengesahan yudisium.
+* **4 Paket Dokumen**:
+  1. `PDF 1A`: **Rekap Kehadiran Mahasiswa Bulanan** (Untuk Wali Murid — Presensi, Alasan, Stempel Resmi).
+  2. `PDF 1B`: **Rapor Portofolio Akhir Semester & Ranking Afirmatif** (Untuk Wali Murid — Ranking Kelas, Radar Chart 5 Dimensi, AI Diagnosis yang mengangkat kebanggaan orang tua).
+  3. `PDF 2`: **Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (Untuk Kaprodi — Format Landscape A4, Nilai Sesi P1-P6, Grade, Kelulusan).
+  4. `PDF 3`: **Laporan Evaluasi Dosen & Keselarasan Modul RPS** (Dari Kaprodi ke Dosen — Presensi Tim Dosen 100%, Audit Kesesuaian Kurikulum 96.0%, CPMK & CPL).
+
 ---
 
 ### 🔗 Integrasi dengan Ekosistem OpenCraft MCP (`E:\WORKSHOP\OPEN_CRAFT_MCP`)
