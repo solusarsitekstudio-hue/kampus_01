@@ -285,12 +285,21 @@ def generate_radar_svg(comp):
     """
 
 def generate_monthly_attendance_charts_svg(student):
-    # Generates Donut Progress Ring + 6 Session Bars for PDF 1A
+    # Generates Donut Progress Ring + Session Bars for PDF 1A
     kehadiran = student["kehadiran"]
     detail = kehadiran.get("detail", [])
-    pct = float(kehadiran.get("persentase", 100.0))
+    # FIX TAHAP B: tolerate null. float(None) melempar TypeError.
+    try:
+        pct = float(kehadiran.get("persentase") or 0)
+    except (TypeError, ValueError):
+        pct = 0.0
+    pct = max(0.0, min(100.0, pct))
 
-    circ = 226.2
+    # FIX TAHAP B: keliling HARUS sesuai radius lingkaran yang benar-benar digambar.
+    # Dulu circ=226.2 (=2*pi*36) tapi circle-nya r=34 (keliling 213.6), jadi
+    # SETIAP nilai:~6% lebih penuh dari seharusnya (83.3% tampil ~88%).
+    ring_radius = 34.0
+    circ = 2 * math.pi * ring_radius
     stroke_offset = circ - (circ * (pct / 100.0))
     ring_color = "#10b981" if pct >= 85 else ("#0284c7" if pct >= 75 else "#e11d48")
 
@@ -301,6 +310,11 @@ def generate_monthly_attendance_charts_svg(student):
     max_h = 65
     base_y = 95
 
+    # FIX TAHAP B: tinggi bar SEKARANG benar-benar mencerminkan kehadiran.
+    # Dulu Sick = Izin = 75% tinggi dan Alpha = 8 unit kecil, sehingga bar
+    # chart tampak ~94% sementara donut di sebelahnya menulis 83.3%.
+    # Dua visual dalam satu kotak tidak boleh berbeda.
+    total_sesi = max(len(detail), 1)
     for i, sess in enumerate(detail[:6]):
         x = start_x + i * (bar_width + gap)
         st = sess.get("status", "Hadir")
@@ -311,37 +325,45 @@ def generate_monthly_attendance_charts_svg(student):
             pill_bg = "#dcfce7"
             pill_fg = "#166534"
         elif st == "Sakit":
-            h = max_h * 0.75
+            h = max_h * 0.28
             b_color = "#f59e0b"
             pill_text = "Sakit"
             pill_bg = "#fef3c7"
             pill_fg = "#92400e"
         elif st == "Izin":
-            h = max_h * 0.75
+            h = max_h * 0.28
             b_color = "#0284c7"
             pill_text = "Izin"
             pill_bg = "#e0f2fe"
             pill_fg = "#075985"
         else:
-            h = 8
+            h = max_h * 0.05
             b_color = "#f43f5e"
             pill_text = "Alpha"
             pill_bg = "#ffe4e6"
             pill_fg = "#9f1239"
+        h = max(h, 3)
 
         y = base_y - h
         bar_svg += f'<rect x="{x}" y="{y}" width="{bar_width}" height="{h}" rx="4" fill="{b_color}" />\n'
         bar_svg += f'<rect x="{x - 2}" y="{y - 13}" width="{bar_width + 4}" height="11" rx="3" fill="{pill_bg}" stroke="{b_color}" stroke-width="0.75" />\n'
         bar_svg += f'<text x="{x + bar_width/2}" y="{y - 4.5}" text-anchor="middle" font-size="7.5" font-weight="700" fill="{pill_fg}">{pill_text}</text>\n'
         bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 11}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#0f172a">Sesi {sess.get("pertemuan", i+1)}</text>\n'
-        date_short = sess.get("tanggal", "").split()[:2]
-        date_str = " ".join(date_short) if date_short else f"P{i+1}"
-        bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 20}" text-anchor="middle" font-size="7" font-family="monospace" fill="#64748b">{date_str}</text>\n'
+        # FIX TAHAP B: pakai tanggal_display ("03 Juni 2026"), bukan ISO mentah
+        date_str = sess.get("tanggal_display") or sess.get("tanggal") or f"P{i+1}"
+        bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 20}" text-anchor="middle" font-size="6.5" font-family="monospace" fill="#64748b">{date_str}</text>\n'
 
-    bench_y = base_y - (max_h * 0.833)
+    # FIX TAHAP B: benchmark dibaca dari data, bukan ditulis 83.3%.
+    summary = DATA.get("class_summary", {}) or {}
+    try:
+        bench_pct = float(summary.get("rata_kehadiran") or 0) / 100.0
+    except (TypeError, ValueError):
+        bench_pct = 0.0
+    bench_pct = max(0.0, min(1.0, bench_pct))
+    bench_y = base_y - (max_h * bench_pct)
     bench_line = f"""
     <line x1="165" y1="{bench_y}" x2="615" y2="{bench_y}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />
-    <text x="490" y="{bench_y - 3.5}" font-size="7" font-weight="700" font-family="monospace" fill="#64748b">Benchmark Kelas: 83.3%</text>
+    <text x="490" y="{bench_y - 3.5}" font-size="7" font-weight="700" font-family="monospace" fill="#64748b">Benchmark Kelas: {round(bench_pct*100,1)}%</text>
     """
 
     svg = f"""
@@ -368,11 +390,15 @@ def generate_monthly_attendance_charts_svg(student):
     return svg
 
 def generate_session_bars_svg(detail):
-    # Generates 6 mini progress bars for the 6 practical sessions
+    # Generates one mini progress bar per practical session
     rows = ""
     y = 4
-    for sess in detail[:6]:
-        score = sess.get("skor", sess.get("skor_sesi", 85))
+    for sess in detail[:8]:
+        # FIX TAHAP B: "skor_sesi" tidak pernah ada di object sesi (itu key array
+        # di akademik), jadi fallback 85 itu reachable dan diam-diam menipu.
+        score = sess.get("skor")
+        if score is None:
+            score = 0
         p = sess.get("pertemuan", 1)
         w = int(score * 1.25)
         bar_col = "#10b981" if score >= 95 else ("#0284c7" if score >= 90 else "#f59e0b")
@@ -396,16 +422,25 @@ def generate_kaprodi_class_charts_svg(summary):
     # Generates Session Attendance Trend + Grade Distribution for PDF 2
     trends = summary.get("tren_kehadiran_sesi", [])
     bar_svg = ""
-    max_mhs = summary.get("total_mahasiswa", 35)
+    # FIX TAHAP B: jangan hardcode 35 dan jangan biarkan 0 (dividing by zero).
+    # Fallback ke jumlah sesi paling panjang, lalu 1 sebagai jaring pengaman.
+    max_mhs = summary.get("total_mahasiswa") or (trends[0].get("hadir", 1) if trends else 1) or 1
+    try:
+        max_mhs = float(max_mhs)
+    except (TypeError, ValueError):
+        max_mhs = 1.0
+    if max_mhs <= 0:
+        max_mhs = 1.0
     chart_h = 70
     base_y = 90
     start_x = 35
     w = 26
     gap = 20
+    n_tren = min(len(trends), 6)
 
     for i, t in enumerate(trends[:6]):
         x = start_x + i * (w + gap)
-        hadir = t.get("hadir", 30)
+        hadir = t.get("hadir", 0)
         absen = t.get("sakit", 0) + t.get("izin", 0) + t.get("alpha", 0)
         h_hadir = (hadir / max_mhs) * chart_h
         h_absen = (absen / max_mhs) * chart_h
@@ -418,18 +453,25 @@ def generate_kaprodi_class_charts_svg(summary):
         bar_svg += f'<text x="{x + w/2}" y="{base_y + 11}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#334155">S{t.get("pertemuan", i+1)}</text>\n'
         bar_svg += f'<text x="{x + w/2}" y="{y_hadir + 9}" text-anchor="middle" font-size="7" font-weight="800" fill="#ffffff">{hadir}</text>\n'
 
-    dist = summary.get("distribusi_grade", {"A": 18, "B+": 10, "B": 5, "C": 1, "D": 1})
+    # FIX TAHAP B: fallback lama = {"A":18,"B+":10,"B":5,"C":1,"D":1} tidak punya
+    # kunci "A-" DAN jumlahnya tidak mungkin cocok dengan total_mahasiswa.
+    dist = summary.get("distribusi_grade") or {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0}
+    total_mhs_int = int(max_mhs)
     grade_bars = ""
     g_x = 420
     g_w = 32
     g_gap = 22
-    g_colors = {"A": "#10b981", "B+": "#0284c7", "B": "#3b82f6", "C": "#f59e0b", "D": "#ef4444"}
+    # FIX TAHAP B: "A-" tidak ada di kamus warna -> bar TERBESAR kelas (21/35 = 60%)
+    # digambar abu-abu netral padahal semua bar lain berwarna. Grafik sempat
+    # mempresentasikan kelas secara keliru.
+    g_colors = {"A": "#10b981", "A-": "#22c55e", "B+": "#0284c7",
+                "B": "#3b82f6", "C": "#f59e0b", "D": "#ef4444"}
 
     for i, (g_name, g_cnt) in enumerate(dist.items()):
         gx = g_x + i * (g_w + g_gap)
         gh = (g_cnt / max_mhs) * chart_h
         gy = base_y - gh
-        col = g_colors.get(g_name, "#64748b")
+        col = g_colors.get(g_name, "#94a3b8")
         grade_bars += f'<rect x="{gx}" y="{gy}" width="{g_w}" height="{gh}" fill="{col}" rx="3" />\n'
         grade_bars += f'<text x="{gx + g_w/2}" y="{gy - 3}" text-anchor="middle" font-size="8" font-weight="800" fill="{col}">{g_cnt}</text>\n'
         grade_bars += f'<text x="{gx + g_w/2}" y="{base_y + 11}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155">{g_name}</text>\n'
@@ -437,7 +479,7 @@ def generate_kaprodi_class_charts_svg(summary):
     return f"""
     <svg width="100%" height="110" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg">
       <rect x="10" y="2" width="345" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="20" y="16" font-size="8.5" font-weight="800" fill="#0f172a">📊 TREN KEHADIRAN KELAS (SESI 1 - 6)</text>
+      <text x="20" y="16" font-size="8.5" font-weight="800" fill="#0f172a">TREN KEHADIRAN KELAS (SESI 1 - {n_tren})</text>
       <circle cx="250" cy="13" r="3.5" fill="#10b981" />
       <text x="256" y="15" font-size="7" fill="#334155">Hadir</text>
       <circle cx="285" cy="13" r="3.5" fill="#f43f5e" />
@@ -445,11 +487,47 @@ def generate_kaprodi_class_charts_svg(summary):
       {bar_svg}
 
       <rect x="380" y="2" width="370" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="390" y="16" font-size="8.5" font-weight="800" fill="#0f172a">📈 DISTRIBUSI GRADE NILAI KELAS</text>
-      <text x="680" y="16" font-size="7.5" font-family="monospace" fill="#64748b">Total: {max_mhs} Mhs</text>
+      <text x="390" y="16" font-size="8.5" font-weight="800" fill="#0f172a">DISTRIBUSI GRADE NILAI KELAS</text>
+      <text x="680" y="16" font-size="7.5" font-family="monospace" fill="#64748b">Total: {total_mhs_int} Mhs</text>
       {grade_bars}
     </svg>
     """
+
+def class_stats():
+    """FIX TAHAP B: statistik kelas dihitung SATU KALI dan dipakai bersama.
+
+    Dulu tiap PDF menghitung sendiri-sendiri:
+      - Gradebook tulis "97.1%" dan "(A-)" literal
+      - Audit Dosen tulis "97.1% (34 Mahasiswa Lulus, 1 ...)" literal
+    Sekarang semua angka berasal dari satu sumber data.
+    """
+    summary = DATA.get("class_summary", {}) or {}
+    students = DATA.get("students", []) or []
+    dist = summary.get("distribusi_grade", {}) or {}
+
+    total_mhs = summary.get("total_mahasiswa") or len(students) or 1
+    grade_modus = summary.get("grade_modus") or (
+        max(dist.items(), key=lambda kv: kv[1])[0] if dist else "-")
+    n_lulus = sum(1 for s in students
+                  if not s.get("at_risk") and s["akademik"]["nilai_rata_rata"] >= 60)
+    n_bantuan = len(students) - n_lulus
+    try:
+        persen_lulus = n_lulus / total_mhs * 100
+    except ZeroDivisionError:
+        persen_lulus = 0.0
+    n_at_risk = summary.get("total_at_risk",
+                            sum(1 for s in students if s.get("at_risk")))
+    return {
+        "summary": summary,
+        "students": students,
+        "total_mhs": total_mhs,
+        "grade_modus": grade_modus,
+        "n_lulus": n_lulus,
+        "n_bantuan": n_bantuan,
+        "persen_lulus": persen_lulus,
+        "n_at_risk": n_at_risk,
+    }
+
 
 # ==============================================================================
 # 1. GENERATE PDF 1A: REKAP KEHADIRAN BULANAN (UNTUK WALI MURID)
@@ -473,7 +551,7 @@ def render_monthly_attendance_html(student):
         rows += f"""
         <tr>
           <td style="text-align: center; font-family: 'JetBrains Mono', monospace;">P{sess['pertemuan']}</td>
-          <td style="font-family: 'JetBrains Mono', monospace;">{sess['tanggal']}</td>
+          <td style="font-family: 'JetBrains Mono', monospace;">{sess.get('tanggal_display') or sess['tanggal']}</td>
           <td><strong>{sess['topik']}</strong></td>
           <td style="text-align: center;">{badge}</td>
           <td style="font-style: italic; color: #475569;">{sess['alasan']}</td>
@@ -524,7 +602,7 @@ def render_monthly_attendance_html(student):
         <div class="card-box" style="background: #ecfdf5; border-color: #a7f3d0; text-align: center;">
           <div style="font-size: 10px; color: #047857; font-weight: 600;">Total Kehadiran</div>
           <div style="font-size: 20px; font-weight: 900; color: #065f46;">{kehadiran['persentase']}%</div>
-          <div style="font-size: 9.5px; color: #047857;">{kehadiran['hadir']} dari 6 Sesi</div>
+          <div style="font-size: 9.5px; color: #047857;">{kehadiran['hadir']} dari {len(detail)} Sesi</div>
         </div>
         <div class="card-box" style="background: #fefce8; border-color: #fef08a; text-align: center;">
           <div style="font-size: 10px; color: #a16207; font-weight: 600;">Sakit (Izin Medis)</div>
@@ -539,7 +617,7 @@ def render_monthly_attendance_html(student):
         <div class="card-box" style="background: #fff1f2; border-color: #fecdd3; text-align: center;">
           <div style="font-size: 10px; color: #be123c; font-weight: 600;">Tanpa Keterangan</div>
           <div style="font-size: 20px; font-weight: 900; color: #9f1239;">{kehadiran['alpha']}x</div>
-          <div style="font-size: 9.5px; color: #be123c;">Maksimal 3x Alpha</div>
+          <div style="font-size: 9.5px; color: #be123c;">{AT_RISK_KEHADIRAN_MIN:.0f}% (sudah intervenasi)</div>
         </div>
       </div>
 
@@ -738,7 +816,7 @@ def render_final_report_html(student):
         <!-- Column 2: Session Scores Table & Mini Progress Bars -->
         <div>
           <div style="font-size: 10px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
-            Rincian Nilai 6 Sesi Praktikum AutoCAD & QS:
+            Rincian Nilai {len(akademik.get('skor_sesi', []))} Sesi Praktikum:
           </div>
           <table style="margin: 2px 0 5px 0;">
             <thead>
@@ -876,26 +954,48 @@ def render_kaprodi_gradebook_html():
     summary = DATA["class_summary"]
     students = DATA["students"]
 
-    # Sort students by average score descending
-    students_sorted = sorted(students, key=lambda s: s["akademik"]["nilai_rata_rata"], reverse=True)
+    # =====================================================================
+    # FIX TAHAP B: HAPUS RANKING.
+    # README menjanjikan "Zero Competitive Ranking" untuk melindungi martabat
+    # mahasiswa. Tabel diurutkan by NPM; kolom pertama = nomor absen resmi.
+    # =====================================================================
+    students_sorted = sorted(students, key=lambda s: str(s["npm"]))
+
+    n_sesi = len(DATA.get("sessions", [])) or max(
+        (len(s["kehadiran"].get("detail", [])) for s in students), default=6)
+    # FIX TAHAP B: header P1..Pn mengikuti jumlah sesi yang sebenarnya (dulu
+    # diketik 6 butiran). Width 32px WAJIB ikut, kalau dilepas kolomnya
+    # mengembang dan seluruh tabel meluber keluar area cetak A4 landscape.
+    p_headers = "".join(
+        f'<th style="width: 32px; text-align: center;">P{i+1}</th>' for i in range(n_sesi))
 
     rows = ""
     for idx, s in enumerate(students_sorted):
         ak = s["akademik"]
         keh = s["kehadiran"]
-        
-        status_lulus = '<span class="badge badge-success">LULUS</span>'
-        if ak["grade"].startswith("D") or keh["alpha"] >= 3:
-            status_lulus = '<span class="badge badge-danger">EVALUASI</span>'
-        elif ak["grade"].startswith("C"):
-            status_lulus = '<span class="badge badge-warning">REMIDI</span>'
 
-        scores = ak["skor_sesi"]
-        p_cells = "".join([f'<td style="text-align: center; font-family: \'JetBrains Mono\';">{sc}</td>' for sc in scores])
+        # FIX TAHAP B: status kelulusan memakai ATURUSame dengan dashboard.
+        # Dulu: D atau alpha>=3 = EVALUASI, C = REMIDI, selain itu LULUS.
+        # At-risk di dashboard adalah alpha>=2 ATAU hadir<75%, jadi
+        # "LULUS" di sini tidak sama dengan "tidak berisiko" di dashboard.
+        if s.get("at_risk"):
+            status_lulus = '<span class="badge badge-warning">ASISTENSI</span>'
+        elif ak["nilai_rata_rata"] < 60:
+            status_lulus = '<span class="badge badge-danger">EVALUASI</span>'
+        else:
+            status_lulus = '<span class="badge badge-success">LULUS</span>'
+
+        scores = list(ak.get("skor_sesi", []))[:n_sesi]
+        scores += [None] * (n_sesi - len(scores))
+        p_cells = "".join(
+            (f'<td style="text-align: center; font-family: \'JetBrains Mono\';">{sc}</td>'
+             if sc is not None else '<td style="text-align: center; color: #cbd5e1;">-</td>')
+            for sc in scores
+        )
 
         rows += f"""
         <tr>
-          <td style="text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; color: #ffc800; background: #0f172a; color: white;">{idx + 1}</td>
+          <td style="text-align: center; font-family: 'JetBrains Mono'; font-weight: 700; background: #0f172a; color: white;">{idx + 1}</td>
           <td style="font-family: 'JetBrains Mono'; font-size: 9.5px;">{s['npm']}</td>
           <td><strong>{s['nama']}</strong></td>
           <td style="text-align: center; font-family: 'JetBrains Mono';">{keh['persentase']}%</td>
@@ -905,6 +1005,20 @@ def render_kaprodi_gradebook_html():
           <td style="text-align: center;">{status_lulus}</td>
         </tr>
         """
+
+    # FIX TAHAP B: angka statistik dihitung dari data, bukan diketik manual.
+    # Dulu: "(A-)" menempel pada rata_nilai_studio, dan "97.1% (34 Mahasiswa
+    # Lulus, 1 Mahasiswa dalam Asistensi Susulan)" ditulis literal. Hari ini
+    # kebetulan cocok; besok begitu data berubah, PDF-nya bohong tanpa error.
+    st_ = class_stats()
+    summary = st_["summary"]
+    students = st_["students"]
+    grade_modus = st_["grade_modus"]
+    total_mhs = st_["total_mhs"]
+    n_lulus = st_["n_lulus"]
+    n_bantuan = st_["n_bantuan"]
+    persen_lulus = st_["persen_lulus"]
+    n_at_risk = st_["n_at_risk"]
 
     html = f"""
     <!DOCTYPE html>
@@ -943,15 +1057,15 @@ def render_kaprodi_gradebook_html():
         </div>
         <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; text-align: center;">
           <div style="font-size: 8.5px; color: #64748b; text-transform: uppercase;">Rata-rata Nilai Studio</div>
-          <div style="font-size: 14px; font-weight: 800; color: #0284c7;">{summary['rata_nilai_studio']} (A-)</div>
+          <div style="font-size: 14px; font-weight: 800; color: #0284c7;">{summary['rata_nilai_studio']} ({grade_modus})</div>
         </div>
         <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; text-align: center;">
           <div style="font-size: 8.5px; color: #64748b; text-transform: uppercase;">Tingkat Kelulusan</div>
-          <div style="font-size: 14px; font-weight: 800; color: #16a34a;">97.1%</div>
+          <div style="font-size: 14px; font-weight: 800; color: #16a34a;">{persen_lulus:.1f}%</div>
         </div>
         <div style="background: #fff1f2; border: 1px solid #fecdd3; border-radius: 6px; padding: 6px 10px; text-align: center;">
           <div style="font-size: 8.5px; color: #be123c; text-transform: uppercase;">Mahasiswa At-Risk</div>
-          <div style="font-size: 14px; font-weight: 800; color: #e11d48;">{summary['total_at_risk']} Orang</div>
+          <div style="font-size: 14px; font-weight: 800; color: #e11d48;">{n_at_risk} Orang</div>
         </div>
       </div>
 
@@ -964,19 +1078,14 @@ def render_kaprodi_gradebook_html():
       <table>
         <thead>
           <tr>
-            <th style="width: 38px; text-align: center;">Rank</th>
-            <th style="width: 85px;">NPM</th>
+            <th style="width: 38px; text-align: center;">No</th>
+            <th style="width: 78px;">NPM</th>
             <th>Nama Mahasiswa</th>
-            <th style="width: 48px; text-align: center;">Absen</th>
-            <th style="width: 32px; text-align: center;">P1</th>
-            <th style="width: 32px; text-align: center;">P2</th>
-            <th style="width: 32px; text-align: center;">P3</th>
-            <th style="width: 32px; text-align: center;">P4</th>
-            <th style="width: 32px; text-align: center;">P5</th>
-            <th style="width: 32px; text-align: center;">P6</th>
-            <th style="width: 45px; text-align: center;">Akhir</th>
-            <th style="width: 40px; text-align: center;">Grade</th>
-            <th style="width: 65px; text-align: center;">Status</th>
+            <th style="width: 44px; text-align: center;">Absen</th>
+            {p_headers}
+            <th style="width: 42px; text-align: center;">Akhir</th>
+            <th style="width: 38px; text-align: center;">Grade</th>
+            <th style="width: 74px; text-align: center;">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -1020,6 +1129,15 @@ def render_dosen_curriculum_audit_html():
     audit = DATA.get("dosen_audit", {})
     tim = audit.get("tim_pengajar", [])
     evaluasi = audit.get("evaluasi_kurikulum_rps", [])
+
+    # FIX TAHAP B: pakai statistik yang sama dengan Gradebook (sumber tunggal).
+    # Dulu baris ini menulis "97.1% (34 Mahasiswa Lulus, 1 ...)" sebagai literal.
+    st_ = class_stats()
+    grade_modus = st_["grade_modus"]
+    n_lulus = st_["n_lulus"]
+    n_bantuan = st_["n_bantuan"]
+    persen_lulus = st_["persen_lulus"]
+    n_at_risk = st_["n_at_risk"]
 
     tim_rows = ""
     for t in tim:
@@ -1077,7 +1195,7 @@ def render_dosen_curriculum_audit_html():
 
       <div class="info-grid">
         <div class="info-item"><span class="info-label">Mata Kuliah</span><span class="info-value">: {DATA['course']['nama_mk']} ({DATA['course']['kode_mk']})</span></div>
-        <div class="info-item"><span class="info-label">Semester / SKS</span><span class="info-value">: Genap 2025/2026 / 2 SKS</span></div>
+        <div class="info-item"><span class="info-label">Semester / SKS</span><span class="info-value">: {DATA['course'].get('semester', '-')} / {DATA['course'].get('sks', '-')} SKS</span></div>
         <div class="info-item"><span class="info-label">Kelas / Lab</span><span class="info-value">: {DATA['course']['kelas']}</span></div>
         <div class="info-item"><span class="info-label">Ketua Program Studi</span><span class="info-value">: {DATA['course']['ketua_prodi']}</span></div>
       </div>
@@ -1106,7 +1224,7 @@ def render_dosen_curriculum_audit_html():
           2. Audit Keselarasan Materi Pembelajaran vs Modul RPS (Rencana Pembelajaran Semester):
         </span>
         <span class="badge badge-gold" style="font-size: 10.5px;">
-          RATA-RATA KESELARASAN: {audit.get('skor_keselarasan_rata_rata', 96.0)}%
+          RATA-RATA KESELARASAN: {audit.get('skor_keselarasan_rata_rata', '-')}%
         </span>
       </div>
       <table>
@@ -1130,9 +1248,10 @@ def render_dosen_curriculum_audit_html():
           3. Rapor Performa Kelas Mahasiswa yang Diampu:
         </div>
         <p style="font-size: 10px; color: #334155; line-height: 1.5;">
-          • Rata-rata Nilai Studio Kelas: <strong>{DATA['class_summary']['rata_nilai_studio']} (Grade A-)</strong><br>
+          • Rata-rata Nilai Studio Kelas: <strong>{DATA['class_summary']['rata_nilai_studio']} (Grade {grade_modus})</strong><br>
           • Tingkat Partisipasi Mahasiswa: <strong>{DATA['class_summary']['rata_kehadiran']}%</strong><br>
-          • Tingkat Kelulusan Evaluasi Modul: <strong>97.1% (34 Mahasiswa Lulus, 1 Mahasiswa dalam Asistensi Susulan)</strong>
+          • Tingkat Kelulusan Evaluasi Modul: <strong>{persen_lulus:.1f}% ({n_lulus} Mahasiswa Lulus{', ' + str(n_bantuan) + ' Mahasiswa Perlu Pendampingan' if n_bantuan else ''})</strong>
+          • Aturan deteksi at-risk: <strong>Alpha ≥ {AT_RISK_ALPHA_MIN}x atau kehadiran &lt; {AT_RISK_KEHADIRAN_MIN:.0f}%</strong> ({n_at_risk} mahasiswa teridentifikasi)
         </p>
 
         <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
@@ -1271,6 +1390,11 @@ def build_all_pdfs():
     print(f"              └── 📋 manifest.json")
     print(f"[INFO] File juga disinkronkan ke 'generated_pdfs/' untuk live web preview.")
     print("=" * 65)
+
+# Aturan kelas - cerminan dari parse_data.py (sumber kebenaran tunggal).
+# PDF WAJIB konsisten dengan dashboard, bukan punya aturan sendiri.
+AT_RISK_ALPHA_MIN = 2
+AT_RISK_KEHADIRAN_MIN = 75.0
 
 PDF_TYPE_PER_STUDENT = ("monthly", "presensi", "rapor", "final", "deckcraft", "portofolio")
 PDF_TYPE_CLASS_LEVEL = ("gradebook", "kaprodi", "audit", "dosen")

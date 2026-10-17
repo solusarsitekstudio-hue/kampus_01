@@ -6,6 +6,10 @@ import shutil
 import tempfile
 from datetime import datetime
 
+# Satu sumber aturan yang sama dengan parse_data.py
+AT_RISK_ALPHA_MIN = 2
+AT_RISK_KEHADIRAN_MIN = 75.0
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -63,9 +67,41 @@ def backup_file(path):
 
 
 def sanitize_folder_name(name):
-    clean = re.sub(r'[\\/*?:"<>|]', "", name)
-    clean = clean.replace("&", "DAN").strip().replace(" ", "_").upper()
-    return clean
+    """Normalisasi nama mata kuliah menjadi nama folder yang ROUND-TRIP.
+
+    FIX TAHAP B: versi lama hanya menghapus `\\/*?:"<>|`, jadi kurung, koma,
+    dan tanda kutip TETAP ADA:
+        "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)"
+        -> STUDIO_PERANCANGAN_ARSITEKTUR_2_(DESAIN_RUMAH_TINGGAL)
+    Tapi kuncinya di disk adalah STUDIO_PERANCANGAN_ARSITEKTUR_2.
+    Akibatnya-course 2 & 3 tidak ketemu saat dicari, dan pencarian foto
+    mahasiswa jatuh ke fallback (dulu: folder D:\\Desktop milik developer).
+
+    Sekarang: kurung/koma/kutip -> "_",underscore dirapatkan,
+    nama terlarang Windows (CON, PRN, AUX, NUL, COM1..9) di-prefix.
+    """
+    if name is None:
+        return ""
+    clean = re.sub(r'[\\/:*?"<>|().,\'’“”]+', "_", str(name))
+    clean = clean.replace("&", "DAN")
+    clean = re.sub(r"\s+", "_", clean.strip())
+    clean = re.sub(r"_+", "_", clean).strip("_").upper()
+    if not clean:
+        return ""
+    if re.match(r"^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\.|$)", clean):
+        clean = "MK_" + clean
+    return clean[:120]
+
+
+def course_folder_key(nama_mk):
+    """Kunci katalog yang stabil: ambil bagian sebelum kurung buka.
+
+    "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)" -> STUDIO_PERANCANGAN_ARSITEKTUR_2
+    Dipakai supaya DEFAULT_COURSES (kunci polos) dan nama folder di disk
+    selalu cocok.
+    """
+    base = re.split(r"[(\[]", str(nama_mk))[0]
+    return sanitize_folder_name(base)
 
 # Course Catalog Templates for Architecture Department
 DEFAULT_COURSES = {
@@ -165,22 +201,120 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
     # Generate specialized dataset for this course
     import copy
     new_data = copy.deepcopy(base_data)
+    new_sessions = cfg["sessions"]
+    n_sesi = len(new_sessions)
+
     new_data["course"]["kode_mk"] = cfg["kode_mk"]
     new_data["course"]["nama_mk"] = cfg["nama_mk"]
     new_data["course"]["sks"] = cfg["sks"]
     new_data["course"]["kelas"] = cfg["kelas"]
     new_data["course"]["jadwal"] = cfg["jadwal"]
     new_data["course"]["dosen_pengasuh"] = cfg["dosen_pengasuh"]
-    new_data["sessions"] = cfg["sessions"]
+    new_data["sessions"] = new_sessions
+
+    # ------------------------------------------------------------------
+    # FIX TAHAP B - bug paling diam-diam di seluruh sistem:
+    # Hanya blok "sessions" yang diganti. Akibatnya saat mata kuliah
+    # di-switch ke Struktur/Beton:
+    #   students[].kehadiran.detail[].topik  -> masih "Pengenalan AutoCAD"
+    #   class_summary.tren_kehadiran_sesi[].topik -> masih "Pengenalan AutoCAD"
+    #   tanggal/tanggal_display -> masih tanggal AutoCAD
+    # Jadi header dashboard berubah ke "Struktur", tapi grafik, tabel rekap,
+    # dan kartu sesi tetap menampilkan AutoCAD. Tabel berbohong.
+    # ------------------------------------------------------------------
+    lama_ke_sesi_baru = {}
+    for i, s in enumerate(new_sessions):
+        lama_ke_sesi_baru[i] = s
+
+    for st in new_data.get("students", []):
+        detail = st.get("kehadiran", {}).get("detail", [])
+        for i, item in enumerate(detail):
+            if i >= n_sesi:
+                break
+            s_baru = lama_ke_sesi_baru[i]
+            item["pertemuan"] = s_baru["pertemuan"]
+            item["tanggal"] = s_baru["tanggal"]
+            item["tanggal_display"] = s_baru["tanggal_display"]
+            item["topik"] = s_baru["topik"]
+
+    # Hitung ulang agregat kelas yang bergantung pada sesi
+    students_baru = new_data.get("students", [])
+    if students_baru:
+        n_mhs = len(students_baru)
+        # bobot sesi ikut berubah kalau template-nya beda
+        bobot = [s.get("bobot", 0) for s in new_sessions]
+        total_bobot = sum(bobot) or len(new_sessions)
+        for st in students_baru:
+            skor = [d.get("skor", 0) for d in st["kehadiran"]["detail"][:n_sesi]]
+            if len(skor) == n_sesi and total_bobot:
+                st["akademik"]["nilai_rata_rata"] = round(
+                    sum(s * b for s, b in zip(skor, bobot)) / total_bobot, 1)
+                st["akademik"]["bobot_diperiksa"] = bobot
+
+        tren = []
+        for s_baru in new_sessions:
+            p = s_baru["pertemuan"]
+            baris = [st["kehadiran"]["detail"][p - 1] for st in students_baru
+                     if len(st["kehadiran"]["detail"]) >= p]
+            hadir = sum(1 for b in baris if b["status"] == "Hadir")
+            tren.append({
+                "pertemuan": p,
+                "tanggal": s_baru["tanggal_display"],
+                "topik": s_baru["topik"],
+                "hadir": hadir,
+                "sakit": sum(1 for b in baris if b["status"] == "Sakit"),
+                "izin": sum(1 for b in baris if b["status"] == "Izin"),
+                "alpha": sum(1 for b in baris if b["status"] == "Alpha"),
+                "hadir_pct": round((hadir / n_mhs) * 100, 1),
+            })
+        cs = new_data.setdefault("class_summary", {})
+        cs["total_mahasiswa"] = n_mhs
+        cs["tren_kehadiran_sesi"] = tren
+        cs["rata_kehadiran"] = round(
+            sum(st["kehadiran"]["persentase"] for st in students_baru) / n_mhs, 1)
+        cs["rata_nilai_studio"] = round(
+            sum(st["akademik"]["nilai_rata_rata"] for st in students_baru) / n_mhs, 1)
+        # At-risk dihitung ulang dengan aturan yang sama (alpha>=2 atau hadir<75%)
+        at_risk = [st for st in students_baru if st.get("at_risk")]
+        cs["total_at_risk"] = len(at_risk)
+        cs["at_risk_alpha"] = sum(1 for st in students_baru
+                                  if st["kehadiran"]["alpha"] >= AT_RISK_ALPHA_MIN)
+        cs["at_risk_kehadiran"] = sum(1 for st in students_baru
+                                      if st["kehadiran"]["persentase"] < AT_RISK_KEHADIRAN_MIN)
+        cs["at_risk_npm"] = [st["npm"] for st in at_risk]
+        dist = {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0}
+        for st in students_baru:
+            g = st["akademik"]["grade"].split(" ")[0]
+            dist[g if g in dist else "D"] += 1
+        cs["distribusi_grade"] = dist
+        cs["grade_modus"] = max(dist.items(), key=lambda kv: kv[1])[0]
+        cs["total_lulus"] = sum(1 for st in students_baru
+                                if not st.get("at_risk")
+                                and st["akademik"]["nilai_rata_rata"] >= 70)
 
     # Update audit RPS
     new_data["dosen_audit"]["nama_mk"] = cfg["nama_mk"]
     new_data["dosen_audit"]["kode_mk"] = cfg["kode_mk"]
-    if "evaluasi_kurikulum_rps" in new_data.get("dosen_audit", {}):
-        for i, s in enumerate(new_data["sessions"]):
-            if i < len(new_data["dosen_audit"]["evaluasi_kurikulum_rps"]):
-                new_data["dosen_audit"]["evaluasi_kurikulum_rps"][i]["topik_rps"] = s["topik"]
-                new_data["dosen_audit"]["evaluasi_kurikulum_rps"][i]["realisasi_kelas"] = f"Materi '{s['topik']}' tersampaikan penuh sesuai RPS dan modul praktikum."
+    rps = new_data.get("dosen_audit", {}).get("evaluasi_kurikulum_rps", [])
+    for i, s in enumerate(new_sessions):
+        if i < len(rps):
+            rps[i]["sesi"] = s["pertemuan"]
+            rps[i]["topik_rps"] = s["topik"]
+            rps[i]["realisasi_kelas"] = (
+                f"Materi '{s['topik']}' tersampaikan penuh sesuai RPS dan modul praktikum.")
+
+    # Tim pengajar mengikuti template mata kuliah
+    pengajar = new_data.get("dosen_audit", {}).get("tim_pengajar", [])
+    if pengajar:
+        # Sisakan entri terakhir untuk asisten dosen
+        for i, nama in enumerate(cfg["dosen_pengasuh"]):
+            if i < len(pengajar):
+                pengajar[i]["nama"] = nama
+        pengajar[-1]["nama"] = cfg["asisten_dosen"]
+        for p in pengajar:
+            p["kehadiran"] = f"{n_sesi} / {n_sesi} Pertemuan (100%)"
+
+    new_data["metadata"]["course_folder"] = course_folder_name
 
     # Save to courses library (atomic)
     atomic_write_json(course_path, new_data)
@@ -188,7 +322,7 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
     return new_data
 
 def process_raw_input(course_name, timestamp_str=None):
-    course_folder = sanitize_folder_name(course_name)
+    course_folder = course_folder_key(course_name)
     if not timestamp_str:
         timestamp_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 

@@ -249,6 +249,23 @@ function renderKaprodiDashboard() {
     setText("kpi-predikat-desc", modal ? `${modal[0]} (${modal[1]} mahasiswa)` : "-");
   }
 
+  // Ringkasan at-risk kelas dihitung dari data, bukan teks hardcoded
+  setText("kpi-at-risk-desc",
+    (masterData.metadata && masterData.metadata.aturan_at_risk)
+      ? masterData.metadata.aturan_at_risk
+      : "Alpha >= 2x atau kehadiran < 75%");
+  const note = document.getElementById("kaprodi-note");
+  if (note && masterData.class_summary) {
+    const s = masterData.class_summary;
+    const dist = s.distribusi_grade || {};
+    const modus = s.grade_modus || (Object.entries(dist).sort((a, b) => b[1] - a[1])[0] || ["-"])[0];
+    note.innerText =
+      `Predikat dominan kelas ${modus}. Rata-rata nilai studio ${s.rata_nilai_studio} ` +
+      `dengan rata-rata kehadiran ${s.rata_kehadiran}%. ` +
+      `${s.total_at_risk} mahasiswa teridentifikasi perlu pendampingan ` +
+      `(${s.at_risk_alpha ?? "-"} berdasarkan alpha, ${s.at_risk_kehadiran ?? "-"} berdasarkan kehadiran).`;
+  }
+
   renderAttendanceTrendChart(summary.tren_kehadiran_sesi || []);
   renderGradeDistChart(summary.distribusi_grade || {});
   renderAttendanceTable();
@@ -342,8 +359,10 @@ function renderAttendanceTable() {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Alpha</span>`;
       }
 
+      // FIX: badge TIDAK lagi ditebak dari alpha saja. Gunakan flag at_risk
+      // dari server supaya sama persis dengan KPI & PDF.
       let alphaBadge = `<span class="font-mono text-slate-400">${s.kehadiran.alpha}x</span>`;
-      if (s.kehadiran.alpha >= 2) {
+      if (s.at_risk) {
         alphaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 font-mono">${s.kehadiran.alpha}x (At-Risk)</span>`;
       }
 
@@ -426,6 +445,10 @@ function selectStudent(npm) {
   setText("mhs-nama", student.nama);
   setText("mhs-npm", student.npm);
 
+  // Alert badge
+  // FIX TAHAP B: sumber kebenaran = flag at_risk dari server (dihitung dengan
+  // aturan yang sama dengan PDF). Dulu badge hanyaBirth dari warnanya, dan
+  // tabel memakai "alpha>=2 saja" - tiga aturan berbeda dalam satu layar.
   const alertBadge = document.getElementById("mhs-alert-badge");
   if (alertBadge) {
     const palette = {
@@ -436,6 +459,16 @@ function selectStudent(npm) {
     };
     alertBadge.innerText = ai.status_alert || "-";
     alertBadge.className = palette[ai.alert_color] || palette.emerald;
+  }
+
+  // Info at-risk memakai flag yang sama (bukan ditebak ulang di frontend)
+  const riskNote = document.getElementById("mhs-risk-note");
+  if (riskNote) {
+    const reasons = student.alasan_at_risk || [];
+    riskNote.textContent = student.at_risk
+      ? `At-Risk: ${reasons.join(" + ") || "sesuai aturan deteksi dini"}`
+      : "Tidak terdeteksi sebagai mahasiswa berisiko";
+    riskNote.className = "text-[10px] " + (student.at_risk ? "text-rose-300" : "text-emerald-400");
   }
 
   // Indeks Kesiapan (pengganti ranking kelas)

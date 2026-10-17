@@ -4,3 +4,10 @@ __pycache__/
 .vscode/
 .idea/
 *.log
+
+# Backup & Workspace sementara (bukan bagian dari deliverable)
+scratch/
+data/_backup/
+
+# Preview PNG hasil inspeksi visual
+public/preview_pdf_*.png

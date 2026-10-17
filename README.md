@@ -3,6 +3,98 @@
 
 ---
 
+## 📐 Metodologi & Aturan Resmi Sistem
+
+Bagian ini adalah **sumber kebenaran tunggal**. Semua angka di dashboard, PDF, dan
+pesan wali murid berasal dari sini — bukan dari teks yang diketik manual.
+
+### 1. Perhitungan Nilai (Rata-rata TERBEBOT)
+
+```
+Nilai Akhir = Σ (Skor Sesi × Bobot Sesi) / Σ Bobot Sesi
+Bobot: 15 / 15 / 15 / 20 / 15 / 20  (total 100)
+```
+
+* **Alpha bernilai 0 dan DIHITUNG** sebagai bagian dari rata-rata.
+  Mahasiswa yang tidak hadir **tidak** mendapat nilai gratis.
+* Sesi **Sakit** dan **Izin** tetap dinilai 70–85 (student tetap berkarya).
+Sebelumnya kode memakai `valid_scores = [sc for sc in session_scores if sc > 0]`
+  yang membuang nilai 0, sehingga mahasiswa dengan Alpha tidak kehilangan nilai.
+* Kolom nilai Transparency: `akademik.nilai_rata_rata` (terbobot),
+  `akademik.nilai_rata_sederhana` (rata-rata biasa) — untuk audit.
+
+### 2. Predikat Grade
+
+| Grade | Syarat | Arti |
+|---|---|---|
+| **A** | rata-rata ≥ 85 **dan** kehadiran ≥ 80% | Kompeten Unggul |
+| **A-** | rata-rata ≥ 80 **dan** kehadiran ≥ 75% | Kompeten Sangat Baik |
+| **B+** | rata-rata ≥ 75 **dan** kehadiran ≥ 75% | Kompeten Baik |
+| **B** | rata-rata ≥ 70 | Kompeten Cukup |
+| **C** | rata-rata ≥ 60 | Kurang (Perlu Bimbingan Intensif) |
+| **D / Evaluasi** | rata-rata < 60 | Kritis (Rentan Evaluasi) |
+
+### 3. Deteksi Dini At-Risk (ATURAN SATU-SATUNYA)
+
+```
+At-Risk  ⇔  (Alpha ≥ 2x)  ATAU  (Kehadiran < 75%)
+```
+
+> ⚠️ **Tidak ada lagi aturan lain.** Sebelumnya sistem punya 4 aturan berbeda
+> dalam 1 aplikasi (KPI dashboard = 1 orang, README = 10 orang, badge tabel
+> = alpha saja, PDF wali = "maksimal 3x alpha"). Sekarang fungsi
+> `is_at_risk()` di `scripts/parse_data.py` adalah satu-satunya sumber, dan
+> hasilnya disimpan per mahasiswa sebagai `at_risk` + `alasan_at_risk`.
+> Dashboard, badge tabel, PDF Gradebook, dan PDF Audit membacanya dari sana.
+
+### 4. Badge Kecocokan Karier (dihitung, bukan diketik)
+
+| Skor | Kategoria | Warna |
+|---|---|---|
+| ≥ 95% | Sangat Tinggi | Hijau |
+| ≥ 85% | Tinggi | Cyan |
+| ≥ 70% | Sedang | Amber |
+| < 70% | Rendah | Merah |
+
+> Badge, warna bar, dan lebar bar **selalu berasal dari satu angka** yang sama.
+> Sebelumnya tiap baris matriks karier punya kategori yang diketik manual
+> sehingga bisa muncul "Sangat Tinggi" untuk skor 67%.
+
+### 5. Zero Competitive Ranking — DIHORMATI SEPENUHNYA
+
+Portal wali murid **dan** PDF Gradebook Kaprodi **tidak memuat peringkat**.
+Tabel disortir berdasarkan NPM; kolom pertama adalah nomor urut absen resmi.
+Tidak ada dokumen yang menampilkan peringkat mahasiswa.
+
+---
+
+## 📊 Angka Ril Demo Saat Ini (build `2026-10-18_04-12`)
+
+| Metrik | Nilai |
+|---|---|
+| Total Mahasiswa | 35 |
+| Rata-rata Kehadiran | 83.3% |
+| Rata-rata Nilai Studio | **80.6** (predikat dominan A-, 19 mahasiswa) |
+| Mahasiswa At-Risk | **10** (1 berdasarkan alpha, 10 berdasarkan kehadiran) |
+| Distribusi Grade | A=3, A-=19, B+=0, B=10, C=2, D=1 |
+| Tingkat Kelulusan | 71.4% (25 lulus / 10 perlu pendampingan) |
+
+### 3 Kasus Studi (angka terbaru)
+
+1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**
+   * Kehadiran 100%, Grade A (94.2), Indeks Kesiapan 92.3%.
+   * Cocok untuk BIM Modeler & Architectural Designer.
+2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**
+   * Kehadiran 50% (3/6), **2x Alpha**, 1x Sakit.
+   * **Grade D / Evaluasi (44.5)** — bobot 0 pada sesi Alpha menurunkan
+     nilai secara signifikan. Teridentifikasi At-Risk.
+   * Tujuan utama: demonstrate how the system **menjaga martabat** —
+     tetap fokus pada talenta, dengan panduan pendampingan orang tua yang hangat.
+3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**
+   * Kehadiran 83.3%, Grade A (91.7), izin delegasi lomba arsitektur.
+
+---
+
 ## 🌟 Latar Belakang & Nilai Strategis
 Sistem ini dirancang khusus untuk memecahkan beban administratif Ketua Program Studi (Kaprodi) dan Dosen, sekaligus mengubah data perkuliahan menjadi aset komunikasi bermartabat ke wali murid dan instrumen publikasi berkualitas tinggi bagi institusi kampus.
 
@@ -13,7 +105,7 @@ Sistem mengintegrasikan **4 Pilar Utama**:
    * Deteksi dini mahasiswa berisiko (*At-Risk Intervention*) bagi yang memiliki Alpha $\ge 2$x atau kehadiran $< 75\%$.
    * Dilengkapi grafik web interaktif: Donut Progress Ring dan Bar Chart 6 Sesi Pertemuan dengan garis patokan Benchmark Kelas (83.3%).
 2. **Pilar Rapor Interaktif & Pemetaan 10 Karier Masa Depan (Wali Murid)**:
-   * **Zero Competitive Ranking**: Menghapus sistem ranking kompetitif kelas (seperti `#35 / 35`) untuk melindungi martabat mahasiswa dan perasaan wali murid. Digantikan dengan **Status Kompetensi**, **Indeks Kesiapan Profesi (%)**, dan **Predikat Capaian Individu**.
+   * **Zero Competitive Ranking**: Menghapus sistem ranking kompetitif kelas (seperti `#35 / 35`) untuk melindungi martabat mahasiswa dan perasaan wali murid. Digantikan dengan **Status Kompetensi**, **Indeks Kesiapan Profesi (%)**, dan **Predikat Capaian Individu**. Berlaku juga untuk **PDF Gradebook Kaprodi** — tabel disortir by NPM, kolom pertama = nomor absen.
    * **Visualisasi Spider-Web Radar 5 Dimensi**: Mengukur 5 pilar arsitektur (*AutoCAD*, *Detail & Presisi*, *Kedisiplinan Asistensi*, *Logika Ruang & Struktur*, dan *Manajemen Waktu*) dengan jaring laba-laba konsentris (20%, 40%, 60%, 80%, 100%).
    * **Diagnosis AI Mendalam (4 Kuadran Narasi)**:
      1. *Karakter Spasial & Etos Kerja Studio*
@@ -80,7 +172,7 @@ Untuk kemudahan demonstrasi di depan Kaprodi, gunakan tombol demo cepat di pojok
    * Profil mahasiswa unggul (Kompeten Unggul), Kehadiran 100%, Grade A (94.2).
    * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.5%) dan Architectural Designer (93.3%).
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**:
-   * Profil mahasiswa yang membutuhkan perhatian (Perlu Asistensi Lanjutan), 2x Sakit & 1x Alpha, Grade C (68.5).
+   * Profil mahasiswa yang membutuhkan pendampingan (2x Alpha + 1x Sakit, Kehadiran 50%), **Grade D / Evaluasi (44.5)**.
    * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya (Site Architect 87.0%) dengan panduan pendampingan orang tua yang hangat dan suportif di rumah.
 3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**:
    * Profil mahasiswa kreatif konsisten, Kehadiran 83.3% (izin delegasi lomba arsitektur), Grade A (91.8).
@@ -115,7 +207,7 @@ Sistem dilengkapi endpoint **Dynamic On-Demand PDF Generation** (`/api/pdf/downl
   * **Grafik Web Analitik Kelas**:
     1. **Tren Kehadiran Sesi 1 s.d. 6**: Stacked bar chart mahasiswa Hadir vs Absen.
     2. **Distribusi Grade Nilai Kelas**: Histogram sebaran grade nilai huruf (A, A-, B+, B, C, D) seluruh 35 mahasiswa.
-  * Master Table 35 mahasiswa terurut ranking internal dengan log nilai P1-P6 dan status kelulusan.
+  * Master Table 35 mahasiswa **terurut berdasarkan NPM** (tanpa peringkat) dengan log nilai per sesi berbobot dan status kelulusan. Angka kelulusan, predikat modus, dan jumlah at-risk dihitung dari data, bukan ditulis manual.
 
 ### 3. Dokumen untuk Dosen dari Kaprodi:
 * **PDF 3: Laporan Evaluasi Dosen & Keselarasan Kurikulum / Modul RPS** (`04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf`):

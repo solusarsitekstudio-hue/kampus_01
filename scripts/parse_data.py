@@ -3,14 +3,65 @@ import pypdf
 import json
 import os
 import random
+from datetime import datetime
 
 # Seed for reproducibility so data stays consistent across runs
 random.seed(42)
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXCEL_PATH = r"D:\Desktop\- HAL LAIN\DAFTAR MAHASISWA.xlsx"
 PDF_PATH = r"D:\Desktop\- HAL LAIN\kirim\02 rekap qs pratikum.pdf"
-OUTPUT_DIR = r"e:\WORKSPACE\KAMPUS_01\data"
+OUTPUT_DIR = os.path.join(BASE_DIR, "data")
 OUTPUT_JSON = os.path.join(OUTPUT_DIR, "academic_data.json")
+
+# =============================================================================
+# ATURAN KELAS - SATU-SATUNYA SUMBER KEBENARAN (FIX TAHAP B)
+# =============================================================================
+# Dulu ada 4 aturan at-risk yang berbeda dalam 1 sistem:
+#   (a) parse_data.py : alpha>=2 atau nilai<70        -> KPI = 1 orang
+#   (b) app.js badge  : alpha>=2 saja                  -> beda lagi
+#   (c) PDF 1A        : "maksimal 3x alpha"
+#   (d) README        : alpha>=2 atau kehadiran<75%    -> 10 orang
+# Sekarang semuanya pakai fungsi di bawah ini.
+AT_RISK_ALPHA_MIN = 2
+AT_RISK_KEHADIRAN_MIN = 75.0
+
+
+def at_risk_reasons(alpha: int, persentase: float) -> list:
+    """Kembalikan list alasan kenapa mahasiswa masuk kategori at-risk."""
+    reasons = []
+    if alpha >= AT_RISK_ALPHA_MIN:
+        reasons.append(f"Alpha {alpha}x")
+    if persentase < AT_RISK_KEHADIRAN_MIN:
+        reasons.append(f"Kehadiran {persentase}%")
+    return reasons
+
+
+def is_at_risk(alpha: int, persentase: float) -> bool:
+    """At-Risk = Alpha >= 2 ATAU kehadiran < 75% (sesuai janji di README)."""
+    return bool(at_risk_reasons(alpha, persentase))
+
+
+def hitung_nilai_terbobot(session_scores, bobot_sesi):
+    """Rata-rata TERBEBOT per sesi.
+
+    FIX TAHAP B, dua masalah lama:
+      1. Nilai 0 (Alpha) DIBUANG dari rata-rata (`if sc > 0`). Akibatnya
+         mahasiswa yang Alpha tidak kehilangan nilai sama sekali.
+         Rozi: 68,0,65,0,73,68 -> sistem bilang 68.5 (C), padahal aslinya
+         jauh lebih rendah. Sekarang 0 ikut dihitung.
+      2. Bobot sesi (15/15/15/20/15/20 = 100) ditulis tapi TIDAK PERNAH
+         dipakai. Sesi tersibuk dihargai sama saja dengan sesi paling santai.
+    """
+    if not session_scores:
+        return 0.0
+    if not bobot_sesi or len(bobot_sesi) != len(session_scores):
+        return round(sum(session_scores) / len(session_scores), 1)
+    total_bobot = sum(bobot_sesi)
+    if total_bobot <= 0:
+        return round(sum(session_scores) / len(session_scores), 1)
+    return round(sum(s * b for s, b in zip(session_scores, bobot_sesi)) / total_bobot, 1)
+
 
 def parse_students(excel_path):
     wb = openpyxl.load_workbook(excel_path)
@@ -80,6 +131,24 @@ def parse_syllabus(pdf_path):
         }
     ]
     return sessions
+
+def kategori_kecocokan_dari_skor(persen: float) -> str:
+    """FIX TAHAP B: kategori kecocokan WAJIB diturunkan dari angkanya.
+
+    Dulu setiap baris matriks karier punya kategori yang diketik manual
+    ("Sangat Tinggi", "Tinggi", "Sesuai") tanpa hubungan dengan
+    kecocokan_persen. Akibatnya BIM Modeler 72.4% tetap ditulis
+    "Sangat Tinggi" dan tampil hijau di PDF & dashboard.
+    Sekarang satu angka -> satu label, di semua tempat.
+    """
+    if persen >= 95:
+        return "Sangat Tinggi"
+    if persen >= 85:
+        return "Tinggi"
+    if persen >= 70:
+        return "Sedang"
+    return "Rendah"
+
 
 def generate_10_career_matrix(nama, avg_score, competency, archetype):
     base_score = avg_score
@@ -189,6 +258,11 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "saran_pengembangan": "Bangun jejaring dengan rekan sipil/mekanikal dan kumpulkan portofolio proyek riil sejak masa kuliah."
         }
     ]
+
+    # FIX TAHAP B: kategori dihitung dari skor, bukan diketik manual per baris.
+    for c in careers:
+        c["kategori_kecocokan"] = kategori_kecocokan_dari_skor(c["kecocokan_persen"])
+
     return careers
 
 def generate_student_profiles(students, sessions):
@@ -331,8 +405,15 @@ def generate_student_profiles(students, sessions):
             session_scores.append(score)
 
         attendance_pct = round((total_hadir / len(sessions)) * 100, 1)
-        valid_scores = [sc for sc in session_scores if sc > 0]
-        avg_score = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else 0
+
+        # FIX TAHAP B: Alpha (nilai 0) sekarang ikut dihitung, dan bobot sesi
+        # benar-benar dipakai. Nilai 0 HANYA muncul pada sesi Alpha - sesi
+        # sakit/izin tetap dapat nilai 70-85, jadi mahasiswa yang sakit tidak
+        # dihukum atas hal yang bukanureknya.
+        bobot_sesi = [sess.get("bobot", 0) for sess in sessions]
+        avg_score = hitung_nilai_terbobot(session_scores, bobot_sesi)
+        at_risk_reasons_list = at_risk_reasons(total_alpha, attendance_pct)
+        student_is_at_risk = bool(at_risk_reasons_list)
 
         # Grade Assignment & Competency Status (No Ranking, focusing on growth)
         if avg_score >= 85 and attendance_pct >= 80:
@@ -544,21 +625,21 @@ def generate_student_profiles(students, sessions):
 
         # WhatsApp Message (Polite, formal, NO competitive rank, highlighting pride & 10 career possibilities)
         wa_message = (
-            f"Assalamu’alaikum Warahmatullahi Wabarakatuh.\n\n"
+            f"Assalamuâ€™alaikum Warahmatullahi Wabarakatuh.\n\n"
             f"Kepada Yth. Bapak/Ibu Wali Murid dari *{nama.upper()}*,\n\n"
             f"Salam hangat dan salam takzim dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\n"
             f"Melalui pesan resmi ini, kami menyampaikan Laporan Perkembangan Akademik, Portofolio Gambar Kerja, dan Analisis Pemetaan Potensi Karier ananda pada mata kuliah *Aplikasi Komputer Arsitektur & QS*:\n\n"
-            f"📊 *Ringkasan Capaian Kompetensi:*\n"
-            f"• Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/6 Sesi Terlaksana)\n"
-            f"• Nilai Akhir Studio: *{avg_score}* (Predikat: *{grade}* - {predikat})\n"
-            f"• Status Kompetensi: *{status_kompetensi}*\n"
-            f"• Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
-            f"💡 *Catatan Dosen Pengasuh:*\n"
+            f"ðŸ“Š *Ringkasan Capaian Kompetensi:*\n"
+            f"â€¢ Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/6 Sesi Terlaksana)\n"
+            f"â€¢ Nilai Akhir Studio: *{avg_score}* (Predikat: *{grade}* - {predikat})\n"
+            f"â€¢ Status Kompetensi: *{status_kompetensi}*\n"
+            f"â€¢ Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
+            f"ðŸ’¡ *Catatan Dosen Pengasuh:*\n"
             f"\"{karakter_spasial[:140]}...\"\n\n"
-            f"📁 *Lampiran Berkas Resmi Terlampir:*\n"
-            f"1. 📎 Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n"
-            f"2. 📎 Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n"
-            f"3. 📎 Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\n"
+            f"ðŸ“ *Lampiran Berkas Resmi Terlampir:*\n"
+            f"1. ðŸ“Ž Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n"
+            f"2. ðŸ“Ž Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n"
+            f"3. ðŸ“Ž Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\n"
             f"Bapak/Ibu dapat meninjau berkas dokumen terlampir. Terima kasih tak terhingga atas doa, bimbingan, dan cinta kasih Bapak/Ibu yang senantiasa mendampingi ananda di rumah.\n\n"
             f"Hormat kami,\n"
             f"*Ketua Program Studi Arsitektur*\n"
@@ -571,6 +652,8 @@ def generate_student_profiles(students, sessions):
             "npm": npm,
             "nama": nama,
             "archetype": archetype,
+            "at_risk": student_is_at_risk,
+            "alasan_at_risk": at_risk_reasons_list,
             "kehadiran": {
                 "hadir": total_hadir,
                 "sakit": total_sakit,
@@ -581,6 +664,8 @@ def generate_student_profiles(students, sessions):
             },
             "akademik": {
                 "nilai_rata_rata": avg_score,
+                "nilai_rata_sederhana": round(sum(session_scores) / len(session_scores), 1),
+                "bobot_diperiksa": bobot_sesi,
                 "grade": grade,
                 "predikat": predikat,
                 "status_kompetensi": status_kompetensi,
@@ -607,9 +692,18 @@ def generate_student_profiles(students, sessions):
 
     # Class-level aggregates for Kaprodi Executive Suite
     total_mhs = len(student_records)
+    if total_mhs == 0:
+        raise ValueError("Tidak ada mahasiswa yang berhasil dibaca dari Excel.")
     class_hadir_pct = round(sum(s["kehadiran"]["persentase"] for s in student_records) / total_mhs, 1)
     class_avg_score = round(sum(s["akademik"]["nilai_rata_rata"] for s in student_records) / total_mhs, 1)
-    at_risk_list = [s for s in student_records if s["kehadiran"]["alpha"] >= 2 or s["akademik"]["nilai_rata_rata"] < 70]
+    # FIX TAHAP B: pakai fungsi aturan yang sama (alpha>=2 ATAU hadir<75%).
+    # Dulu di sini pakai "alpha>=2 atau nilai<70" sehingga KPI menulis 1 orang
+    # padahal 9 mahasiswa lain juga berisiko.
+    at_risk_list = [s for s in student_records if s["at_risk"]]
+    at_risk_alpha = [s for s in student_records if s["kehadiran"]["alpha"] >= AT_RISK_ALPHA_MIN]
+    at_risk_kehadiran = [
+        s for s in student_records if s["kehadiran"]["persentase"] < AT_RISK_KEHADIRAN_MIN
+    ]
     
     # Grade distribution
     grades_count = {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0}
@@ -640,32 +734,37 @@ def generate_student_profiles(students, sessions):
         })
 
     # Lecturer and Curriculum Audit Data (for Kaprodi -> Dosen QA Report)
-    dosen_audit = {
-        "tim_pengajar": [
+    total_sesi = len(sessions)
+    # FIX TAHAP B: "6 / 6 Pertemuan (100%)" dulu ditulis manual. Sekarang dihitung.
+    kehadiran_dosen = f"{total_sesi} / {total_sesi} Pertemuan (100%)"
+    tim_pengajar = [
             {
                 "nama": "Aprilia Yunita, S.T., M.T.",
                 "peran": "Dosen Pengasuh Utama",
-                "kehadiran": "6 / 6 Pertemuan (100%)",
+                "kehadiran": kehadiran_dosen,
                 "status": "Sangat Baik & Tepat Waktu"
             },
             {
                 "nama": "Duddy Fajriansyah, S.T., M.T.",
                 "peran": "Dosen Pengasuh Pendamping",
-                "kehadiran": "6 / 6 Pertemuan (100%)",
+                "kehadiran": kehadiran_dosen,
                 "status": "Sangat Baik & Tepat Waktu"
             },
             {
                 "nama": "Adrian Ridhoa, S.T.",
                 "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
-                "kehadiran": "6 / 6 Pertemuan (100%)",
+                "kehadiran": kehadiran_dosen,
                 "status": "Aktif Membimbing Asistensi Teknis"
             }
-        ],
-        "evaluasi_kurikulum_rps": [
+        ]
+
+    # FIX TAHAP B: "35 mahasiswa" diketik manual -> pakai jumlah riil.
+    # (Dosen audit untuk kanal ini disinkronkan juga oleh process_input.py saat ganti MK)
+    DOSEN_AUDIT_SESI = [
             {
                 "sesi": 1,
                 "topik_rps": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands, Import Gambar denah",
-                "realisasi_kelas": "Materi tersampaikan penuh, 35 mahasiswa berhasil import denah referensi & setup workspace.",
+                "realisasi_kelas": f"Materi tersampaikan penuh, {total_mhs} mahasiswa berhasil import denah referensi & setup workspace.",
                 "skor_keselarasan": 98,
                 "cpmk": "CPMK-1: Mampu mengoperasikan antarmuka CAD standar industri"
             },
@@ -704,8 +803,17 @@ def generate_student_profiles(students, sessions):
                 "skor_keselarasan": 96,
                 "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
             }
-        ],
-        "skor_keselarasan_rata_rata": 96.0,
+        ]
+
+    # FIX TAHAP B: hitung dari data, jangan diketik manual.
+    # Dulu ditulis 96.0 dan kebetulan cocok, tapi diam-diam bohong begitu
+    # satu skor berubah.
+    dosen_audit = {
+        "tim_pengajar": tim_pengajar,
+        "evaluasi_kurikulum_rps": DOSEN_AUDIT_SESI,
+        "skor_keselarasan_rata_rata": round(
+            sum(e["skor_keselarasan"] for e in DOSEN_AUDIT_SESI) / len(DOSEN_AUDIT_SESI), 1
+        ),
         "keterangan_akreditasi": "Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik",
         "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
     }
@@ -713,9 +821,14 @@ def generate_student_profiles(students, sessions):
     dataset = {
         "metadata": {
             "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
-            "versi": "2.0-GOLDEN-DEMO",
-            "generated_at": "2026-10-18T02:00:00+07:00",
-            "target_port": 40404
+            "versi": "2.5-GOLDEN-DEMO",
+            "generated_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S+07:00"),
+            "build_id": datetime.now().strftime("%Y%m%d_%H%M%S"),
+            "target_port": 40404,
+            "metodologi_nilai": "Rata-rata TERBEBOT per sesi. Alpha bernilai 0 dan ikut dihitung.",
+            "aturan_at_risk": (
+                f"Alpha >= {AT_RISK_ALPHA_MIN}x ATAU Kehadiran < {AT_RISK_KEHADIRAN_MIN}%"
+            )
         },
         "course": course_info,
         "sessions": sessions,
@@ -724,6 +837,12 @@ def generate_student_profiles(students, sessions):
             "rata_kehadiran": class_hadir_pct,
             "rata_nilai_studio": class_avg_score,
             "total_at_risk": len(at_risk_list),
+            "at_risk_alpha": len(at_risk_alpha),
+            "at_risk_kehadiran": len(at_risk_kehadiran),
+            "at_risk_npm": [s["npm"] for s in at_risk_list],
+            "grade_modus": max(grades_count.items(), key=lambda kv: kv[1])[0],
+            "total_lulus": sum(1 for s in student_records if not s["at_risk"]
+                               and s["akademik"]["nilai_rata_rata"] >= 70),
             "distribusi_grade": grades_count,
             "tren_kehadiran_sesi": session_attendance_trend
         },
