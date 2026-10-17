@@ -47,9 +47,25 @@
   background-size: 24px 24px;
 }
 
+/* Toast Animation (FIX TAHAP A: ganti window.alert yang memblokir) */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(8px) scale(0.96); }
+}
+.animate-toast-in {
+  animation: toast-in 220ms cubic-bezier(0.21, 1.02, 0.73, 1) both;
+}
+.animate-toast-out {
+  animation: toast-out 260ms ease-in both;
+}
+
 /* Print Optimization */
 @media print {
-  header, #nav-tabs, button, footer {
+  header, #nav-tabs, button, footer { 
     display: none !important;
   }
   body {

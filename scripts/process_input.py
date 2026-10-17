@@ -3,9 +3,8 @@ import sys
 import json
 import re
 import shutil
+import tempfile
 from datetime import datetime
-import openpyxl
-import pypdf
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -24,6 +23,44 @@ os.makedirs(RAW_DIR, exist_ok=True)
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 os.makedirs(COURSES_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+def atomic_write_json(path, payload):
+    """Tulis JSON lewat file .tmp lalu os.replace() (atomic di Windows & POSIX).
+    FIX TAHAP A: dulu open(path,"w") langsung men-truncate file. Kalau listrik
+    mati di tengah json.dump, academic_data.json jadi 0 byte dan SEMUA endpoint
+    server mati total. Sekarang file lama utuh sampai file baru siap 100%."""
+    directory = os.path.dirname(path)
+    os.makedirs(directory, exist_ok=True)
+    fd, tmp_path = tempfile.mkstemp(dir=directory, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, path)
+    except Exception:
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+        raise
+
+
+def backup_file(path):
+    """Simpan 1 salinan bertimestamp sebelum ditimpa."""
+    if not os.path.exists(path):
+        return None
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    bak_dir = os.path.join(BASE_DIR, "data", "_backup")
+    os.makedirs(bak_dir, exist_ok=True)
+    bak_path = os.path.join(bak_dir, f"{os.path.basename(path)}.{stamp}.bak")
+    try:
+        shutil.copy2(path, bak_path)
+        return bak_path
+    except OSError:
+        return None
+
 
 def sanitize_folder_name(name):
     clean = re.sub(r'[\\/*?:"<>|]', "", name)
@@ -115,11 +152,19 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
 
     cfg = DEFAULT_COURSES.get(course_folder_name)
     if not cfg:
-        # Fallback to base data course
-        return base_data
+        # FIX TAHAP A: dulu_unknown course di-return apa adanya (base_data),
+        # lalu process_raw_input TETAP menimpa academic_data.json - artinya
+        # "ganti mata kuliah" diam-diam merusak dataset aktif. Sekarang stop.
+        raise ValueError(
+            f"Mata kuliah '{course_folder_name}' tidak dikenal.\n"
+            f"Pilihan yang tersedia:\n"
+            + "\n".join(f"  - {k}" for k in DEFAULT_COURSES)
+            + "\n\nLihat juga folder: data/courses/"
+        )
 
     # Generate specialized dataset for this course
-    new_data = json.loads(json.dumps(base_data))
+    import copy
+    new_data = copy.deepcopy(base_data)
     new_data["course"]["kode_mk"] = cfg["kode_mk"]
     new_data["course"]["nama_mk"] = cfg["nama_mk"]
     new_data["course"]["sks"] = cfg["sks"]
@@ -137,9 +182,8 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
                 new_data["dosen_audit"]["evaluasi_kurikulum_rps"][i]["topik_rps"] = s["topik"]
                 new_data["dosen_audit"]["evaluasi_kurikulum_rps"][i]["realisasi_kelas"] = f"Materi '{s['topik']}' tersampaikan penuh sesuai RPS dan modul praktikum."
 
-    # Save to courses library
-    with open(course_path, "w", encoding="utf-8") as f:
-        json.dump(new_data, f, indent=2, ensure_ascii=False)
+    # Save to courses library (atomic)
+    atomic_write_json(course_path, new_data)
 
     return new_data
 
@@ -162,10 +206,9 @@ def process_raw_input(course_name, timestamp_str=None):
     # 1. Process dataset
     dataset = load_or_create_course_dataset(course_folder)
 
-    # 2. Save to processed target
+    # 2. Save to processed target (atomic)
     processed_json_path = os.path.join(processed_target_dir, "academic_data.json")
-    with open(processed_json_path, "w", encoding="utf-8") as f:
-        json.dump(dataset, f, indent=2, ensure_ascii=False)
+    atomic_write_json(processed_json_path, dataset)
 
     # 3. Create manifest in processed
     manifest = {
@@ -180,8 +223,7 @@ def process_raw_input(course_name, timestamp_str=None):
         "total_mahasiswa": len(dataset.get("students", [])),
         "total_sesi": len(dataset.get("sessions", []))
     }
-    with open(os.path.join(processed_target_dir, "input_manifest.json"), "w", encoding="utf-8") as f:
-        json.dump(manifest, f, indent=2, ensure_ascii=False)
+    atomic_write_json(os.path.join(processed_target_dir, "input_manifest.json"), manifest)
 
     # 4. Update pointer in input/processed/latest_input.json
     latest_input_pointer = {
@@ -190,15 +232,17 @@ def process_raw_input(course_name, timestamp_str=None):
         "processed_directory": processed_target_dir,
         "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
-    with open(os.path.join(PROCESSED_DIR, "latest_input.json"), "w", encoding="utf-8") as f:
-        json.dump(latest_input_pointer, f, indent=2, ensure_ascii=False)
-    with open(os.path.join(PROCESSED_DIR, course_folder, "latest_input.json"), "w", encoding="utf-8") as f:
-        json.dump(latest_input_pointer, f, indent=2, ensure_ascii=False)
+    atomic_write_json(os.path.join(PROCESSED_DIR, "latest_input.json"), latest_input_pointer)
+    atomic_write_json(
+        os.path.join(PROCESSED_DIR, course_folder, "latest_input.json"), latest_input_pointer)
 
     # 5. Set as current active dataset in data/academic_data.json
+    # FIX TAHAP A: backup dulu + atomic write. Tidak ada lagi file 0-byte.
     active_master_path = os.path.join(DATA_DIR, "academic_data.json")
-    with open(active_master_path, "w", encoding="utf-8") as f:
-        json.dump(dataset, f, indent=2, ensure_ascii=False)
+    bak = backup_file(active_master_path)
+    atomic_write_json(active_master_path, dataset)
+    if bak:
+        print(f"[BACKUP] Salinan aman dataset sebelumnya: {os.path.relpath(bak, BASE_DIR)}")
 
     print(f"[OK] Data berhasil diproses dan disimpan di: {processed_target_dir}")
     print(f"[OK] Master aktif diperbarui ke: {dataset['course']['nama_mk']}")

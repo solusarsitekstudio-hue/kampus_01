@@ -1,0 +1,16 @@
+# Windows batch WAJIB CRLF. Dulu file .bat LF-only, blok if/else bisa parse salah.
+*.bat text eol=crlf
+
+# Python / JS / HTML / CSS / JSON pakai LF
+*.py text eol=lf
+*.js text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+
+# Artefak besar / generated - jangan masuk git
+output/** binary
+generated_pdfs/** binary
+public/videos/** binary
+scratch/** binary

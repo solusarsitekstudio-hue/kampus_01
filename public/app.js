@@ -1,54 +1,209 @@
+// ============================================================================
 // App Controller for SIAK-KAPRODI (Arsitektur Intelligence)
+//
+// FIX TAHAP A (UI):
+//   * Carousel 4-slide DIHAPUS. Data marketing.carousel tidak pernah ada di
+//     academic_data.json, jadi tombol prev/next/thumb mati total (klik tidak
+//     terjadi apa-apa). Sekarang panel DeckCraft hanya menampilkan tombol yang
+//     benar-benar bekerja: Fullscreen Interaktif + Unduh PDF 16:9.
+//   * Chart DIREDUCK / DESTROY lebih dulu -> tidak ada object ApexCharts numpuk
+//   * Semua data dari JSON di-escape sebelum masuk innerHTML (XSS / HTML rusak)
+//   * Ditambah: loading skeleton + banner error + toast (ganti alert())
+//   * Header, dropdown MK, dan filter sesi disinkronkan ke course AKTIF
+//   * Video tidak di-load ulang tiap pilih mahasiswa
+// ============================================================================
 
 let masterData = null;
 let currentStudent = null;
-let currentSlideIndex = 0;
-let videoPlaying = false;
-let videoTimerInterval = null;
-let videoCurrentSecond = 0;
+let videoLoadedNpm = null;   // NPM yang videonya sudah dimuat (hindari reload)
+let videoGenerating = false;
 
 // Chart instances
 let attendanceTrendChart = null;
 let gradeDistChart = null;
 let radarCompetencyChart = null;
 
+// =============================================================================
+// UTILITAS
+// =============================================================================
+
+/** Escape HTML - dipakai untuk SEMUA data dari JSON sebelum masuk innerHTML. */
+function esc(value) {
+  if (value === null || value === undefined) return "";
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = value;
+}
+
+/** Buat chart, hancurkan yang lama supaya tidak menumpuk di memory. */
+function mountChart(current, containerSelector, options) {
+  const container = document.querySelector(containerSelector);
+  if (!container) return null;
+  if (current && typeof current.destroy === "function") {
+    try { current.destroy(); } catch (e) { /* abaikan */ }
+  }
+  container.innerHTML = "";
+  const chart = new ApexCharts(container, options);
+  chart.render();
+  return chart;
+}
+
+// ---------------------------------------------------------------- TOAST
+const TOAST_STYLES = {
+  success: { bg: "bg-emerald-600", icon: "check-circle-2" },
+  error:   { bg: "bg-rose-600",    icon: "alert-triangle" },
+  info:    { bg: "bg-sky-600",     icon: "info" },
+  warn:    { bg: "bg-amber-600",   icon: "alert-circle" }
+};
+
+function toast(message, type = "info", ms = 4000) {
+  const host = document.getElementById("toast-host");
+  if (!host) { console.log(`[${type}] ${message}`); return; }
+  const style = TOAST_STYLES[type] || TOAST_STYLES.info;
+  const el = document.createElement("div");
+  el.className = `${style.bg} text-white text-xs font-semibold rounded-xl px-4 py-3 shadow-2xl border border-white/20 flex items-start gap-2.5 max-w-sm pointer-events-auto animate-toast-in`;
+  el.innerHTML = `<i data-lucide="${style.icon}" class="w-4 h-4 flex-shrink-0 mt-px"></i><span>${esc(message)}</span>`;
+  host.appendChild(el);
+  if (window.lucide) lucide.createIcons();
+  setTimeout(() => {
+    el.classList.add("animate-toast-out");
+    setTimeout(() => el.remove(), 300);
+  }, ms);
+}
+
+// ------------------------------------------------------- LOADING / ERROR UI
+function setAppState(state, message) {
+  const loading = document.getElementById("app-loading");
+  const errorBox = document.getElementById("app-error");
+  const main = document.getElementById("app-main");
+  const footer = document.getElementById("app-footer");
+  const tabs = document.getElementById("nav-tabs");
+
+  if (loading) loading.classList.toggle("hidden", state !== "loading");
+  if (errorBox) errorBox.classList.toggle("hidden", state !== "error");
+
+  // Sembunyikan konten utama saat masih loading / gagal, supaya user tidak
+  // salah mengira angka placeholder (mis. "35", "82.4%") sebagai data asli.
+  const isLoading = state === "loading";
+  const isError = state === "error";
+  if (main) main.classList.toggle("hidden", isLoading || isError);
+  if (footer) footer.classList.toggle("hidden", isLoading || isError);
+  if (tabs) tabs.classList.toggle("opacity-40", isLoading || isError);
+
+  const msgEl = document.getElementById("app-error-message");
+  if (msgEl && message) msgEl.innerText = message;
+}
+
 // On Page Load
 document.addEventListener("DOMContentLoaded", async () => {
+  setAppState("loading");
   await loadAcademicData();
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 });
+
+async function retryLoad() {
+  setAppState("loading");
+  await loadAcademicData();
+  if (window.lucide) lucide.createIcons();
+}
 
 // Fetch Data from Server API
 async function loadAcademicData() {
   try {
-    const res = await fetch("/api/data");
+    const res = await fetch("/api/data", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status} - ${res.statusText}`);
     masterData = await res.json();
-    console.log("Master Academic Data loaded:", masterData);
 
-    renderKaprodiDashboard();
-    populateStudentDropdown();
-    
-    // Select first student by default (M Yazid Zidane Mulyadi)
-    if (masterData.students && masterData.students.length > 0) {
-      selectStudent(masterData.students[0].npm);
+    if (!masterData || !Array.isArray(masterData.students)) {
+      throw new Error("Format data tidak dikenali (field 'students' tidak ada).");
     }
 
-    // Fetch Output Run Hierarchy Info
+    setAppState("ready");
+    syncActiveCourseToUi(masterData.course);
+    renderKaprodiDashboard();
+    populateStudentDropdown();
+    populateSessionFilter();
+
+    const preferred = currentStudent
+      ? masterData.students.find(s => s.npm === currentStudent.npm)
+      : null;
+    if (preferred) {
+      selectStudent(preferred.npm);
+    } else if (masterData.students.length > 0) {
+      selectStudent(masterData.students[0].npm);
+    } else {
+      toast("Dataset aktif tidak memuat satu pun mahasiswa.", "warn");
+    }
+
     fetch("/api/runs")
       .then(r => r.json())
       .then(runsData => {
         if (runsData && runsData.latest && runsData.latest.latest_timestamp) {
-          const folderEl = document.getElementById("output-folder-display");
-          const timeEl = document.getElementById("output-timestamp-text");
-          if (folderEl) folderEl.innerText = `output/${runsData.latest.latest_course}/${runsData.latest.latest_timestamp}/`;
-          if (timeEl) timeEl.innerText = `Sesi Terakhir: ${runsData.latest.latest_timestamp}`;
+          setText("output-folder-display",
+            `output/${runsData.latest.latest_course}/${runsData.latest.latest_timestamp}/`);
+          setText("output-timestamp-text", `Sesi Terakhir: ${runsData.latest.latest_timestamp}`);
         }
       })
-      .catch(e => console.log("Runs info fetch error:", e));
+      .catch(() => { /* info output bukan kritis */ });
 
   } catch (err) {
     console.error("Failed to load academic data:", err);
+    setAppState("error",
+      "Gagal memuat data akademik dari server. Pastikan run_server.bat masih berjalan. " +
+      `(${err.message})`);
   }
+}
+
+/** Sinkronkan header + dropdown MK ke mata kuliah yang SEDANG AKTIF di server. */
+function syncActiveCourseToUi(course) {
+  if (!course || !course.nama_mk) return;
+  setText("current-course-title", course.nama_mk);
+
+  const selector = document.getElementById("course-selector");
+  if (selector) {
+    let matched = false;
+    Array.from(selector.options).forEach(opt => {
+      if (opt.value === course.nama_mk || opt.textContent.trim() === course.nama_mk) {
+        selector.value = opt.value;
+        matched = true;
+      }
+    });
+    if (!matched) {
+      // Mata kuliah aktif tidak ada di daftar dropdown -> tambahkan supaya tidak menyesatkan
+      const opt = document.createElement("option");
+      opt.value = course.nama_mk;
+      opt.textContent = course.nama_mk;
+      opt.selected = true;
+      selector.appendChild(opt);
+    }
+  }
+
+  setText("kpi-kelas-desc", course.kelas || "");
+  setText("kpi-jadwal-desc", course.jadwal || "");
+}
+
+/** Filter sesi dibangun dari data, bukan dari topik AutoCAD yang diketik manual. */
+function populateSessionFilter() {
+  const sel = document.getElementById("filter-session");
+  if (!sel || !masterData) return;
+  const current = sel.value;
+  sel.innerHTML = `<option value="all">Semua Sesi (${masterData.sessions.length})</option>`;
+  masterData.sessions.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.pertemuan;
+    const topic = (s.topik || "").length > 34 ? s.topik.slice(0, 34) + "..." : (s.topik || "");
+    opt.textContent = `Sesi ${s.pertemuan}: ${topic}`;
+    sel.appendChild(opt);
+  });
+  sel.value = current || "all";
 }
 
 // Switch Active Navigation Tabs
@@ -68,11 +223,11 @@ function switchTab(tabName) {
     activeBtn.classList.remove("text-slate-400");
   }
 
-  // Refresh charts if needed
+  // Radar digambar saat section masih hidden -> lebarnya 0. Redraw setelah tampil.
   if (tabName === "wali" && radarCompetencyChart) {
-    setTimeout(() => radarCompetencyChart.render(), 100);
+    setTimeout(() => { try { radarCompetencyChart.render(); } catch (e) { /* noop */ } }, 120);
   }
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 }
 
 // =============================================================================
@@ -81,119 +236,102 @@ function switchTab(tabName) {
 function renderKaprodiDashboard() {
   if (!masterData) return;
 
-  const summary = masterData.class_summary;
-  document.getElementById("kpi-total-mhs").innerText = summary.total_mahasiswa;
-  document.getElementById("kpi-kehadiran").innerText = summary.rata_kehadiran + "%";
-  document.getElementById("kpi-nilai").innerText = summary.rata_nilai_studio;
-  document.getElementById("kpi-at-risk").innerText = `${summary.total_at_risk} Mahasiswa`;
+  const summary = masterData.class_summary || {};
+  setText("kpi-total-mhs", summary.total_mahasiswa ?? "-");
+  setText("kpi-kehadiran", `${summary.rata_kehadiran ?? "-"}%`);
+  setText("kpi-nilai", summary.rata_nilai_studio ?? "-");
+  setText("kpi-at-risk", `${summary.total_at_risk ?? 0} Mahasiswa`);
 
-  renderAttendanceTrendChart(summary.tren_kehadiran_sesi);
-  renderGradeDistChart(summary.distribusi_grade);
+  // Predikat kelas dihitung dari distribusi, bukan teks hardcoded
+  if (summary.distribusi_grade) {
+    const modal = Object.entries(summary.distribusi_grade)
+      .sort((a, b) => b[1] - a[1])[0];
+    setText("kpi-predikat-desc", modal ? `${modal[0]} (${modal[1]} mahasiswa)` : "-");
+  }
+
+  renderAttendanceTrendChart(summary.tren_kehadiran_sesi || []);
+  renderGradeDistChart(summary.distribusi_grade || {});
   renderAttendanceTable();
 }
 
 function renderAttendanceTrendChart(trends) {
-  const categories = trends.map(t => `Sesi ${t.pertemuan}`);
-  const hadirData = trends.map(t => t.hadir);
-  const absentData = trends.map(t => t.sakit + t.izin + t.alpha);
+  if (!trends.length) {
+    attendanceTrendChart = null;
+    const c = document.querySelector("#chart-attendance-trend");
+    if (c) c.innerHTML = `<p class="text-xs text-slate-500 italic py-8 text-center">Data tren kehadiran belum tersedia.</p>`;
+    return;
+  }
 
   const options = {
     series: [
-      { name: "Hadir di Lab", data: hadirData, color: "#10b981" },
-      { name: "Izin / Sakit / Alpha", data: absentData, color: "#f43f5e" }
+      { name: "Hadir di Lab", data: trends.map(t => t.hadir), color: "#10b981" },
+      { name: "Izin / Sakit / Alpha", data: trends.map(t => (t.sakit || 0) + (t.izin || 0) + (t.alpha || 0)), color: "#f43f5e" }
     ],
-    chart: {
-      type: "bar",
-      height: 260,
-      stacked: true,
-      toolbar: { show: false },
-      background: "transparent"
-    },
+    chart: { type: "bar", height: 260, stacked: true, toolbar: { show: false }, background: "transparent" },
     theme: { mode: "dark" },
-    plotOptions: {
-      bar: {
-        borderRadius: 6,
-        columnWidth: "40%"
-      }
-    },
+    plotOptions: { bar: { borderRadius: 6, columnWidth: "40%" } },
     xaxis: {
-      categories: categories,
+      categories: trends.map(t => `Sesi ${t.pertemuan}`),
       labels: { style: { colors: "#94a3b8", fontSize: "11px" } },
       axisBorder: { color: "#334155" }
     },
     yaxis: {
-      max: masterData.class_summary.total_mahasiswa,
+      max: (masterData.class_summary && masterData.class_summary.total_mahasiswa) || undefined,
       labels: { style: { colors: "#94a3b8", fontSize: "11px" } }
     },
-    legend: {
-      position: "top",
-      horizontalAlign: "right",
-      labels: { colors: "#cbd5e1" }
-    },
+    legend: { position: "top", horizontalAlign: "right", labels: { colors: "#cbd5e1" } },
     grid: { borderColor: "#1e293b" }
   };
 
-  const chartContainer = document.querySelector("#chart-attendance-trend");
-  chartContainer.innerHTML = "";
-  attendanceTrendChart = new ApexCharts(chartContainer, options);
-  attendanceTrendChart.render();
+  attendanceTrendChart = mountChart(attendanceTrendChart, "#chart-attendance-trend", options);
 }
 
 function renderGradeDistChart(dist) {
   const labels = Object.keys(dist);
-  const series = Object.values(dist);
-
+  if (!labels.length) {
+    gradeDistChart = null;
+    const c = document.querySelector("#chart-grade-dist");
+    if (c) c.innerHTML = `<p class="text-xs text-slate-500 italic py-8 text-center">Data distribusi grade belum tersedia.</p>`;
+    return;
+  }
   const options = {
-    series: series,
-    chart: {
-      type: "donut",
-      height: 230,
-      background: "transparent"
-    },
+    series: Object.values(dist),
+    chart: { type: "donut", height: 230, background: "transparent" },
     labels: labels,
-    colors: ["#10b981", "#06b6d4", "#3b82f6", "#f59e0b", "#f97316", "#ef4444"],
+    colors: ["#10b981", "#22c55e", "#06b6d4", "#3b82f6", "#f59e0b", "#ef4444"],
     theme: { mode: "dark" },
-    legend: {
-      position: "bottom",
-      labels: { colors: "#cbd5e1", fontSize: "10px" }
-    },
+    legend: { position: "bottom", labels: { colors: "#cbd5e1", fontSize: "10px" } },
     stroke: { width: 2, colors: ["#0f172a"] },
-    dataLabels: {
-      enabled: true,
-      style: { fontSize: "10px" }
-    }
+    dataLabels: { enabled: true, style: { fontSize: "10px" } }
   };
-
-  const chartContainer = document.querySelector("#chart-grade-dist");
-  chartContainer.innerHTML = "";
-  gradeDistChart = new ApexCharts(chartContainer, options);
-  gradeDistChart.render();
+  gradeDistChart = mountChart(gradeDistChart, "#chart-grade-dist", options);
 }
 
 function renderAttendanceTable() {
   const tbody = document.getElementById("attendance-table-body");
+  if (!tbody || !masterData) return;
   tbody.innerHTML = "";
 
-  const searchVal = document.getElementById("table-search").value.toLowerCase();
-  const sessionVal = document.getElementById("filter-session").value;
-  const statusVal = document.getElementById("filter-status").value;
+  const searchEl = document.getElementById("table-search");
+  const sessionEl = document.getElementById("filter-session");
+  const statusEl = document.getElementById("filter-status");
+  const searchVal = (searchEl.value || "").trim().toLowerCase();
+  const sessionVal = sessionEl.value;
+  const statusVal = statusEl.value;
+
+  let rowCount = 0;
 
   masterData.students.forEach((s) => {
-    // Check search match
-    const matchSearch = s.nama.toLowerCase().includes(searchVal) || s.npm.includes(searchVal);
-    if (!matchSearch) return;
+    const nama = (s.nama || "").toLowerCase();
+    const npm = String(s.npm || "");
+    if (searchVal && !(nama.includes(searchVal) || npm.includes(searchVal))) return;
 
-    s.kehadiran.detail.forEach((sess) => {
-      // Check session filter
-      if (sessionVal !== "all" && sess.pertemuan.toString() !== sessionVal) return;
-      // Check status filter
+    (s.kehadiran.detail || []).forEach((sess) => {
+      if (sessionVal !== "all" && String(sess.pertemuan) !== sessionVal) return;
       if (statusVal !== "all" && sess.status !== statusVal) return;
+      rowCount++;
 
-      const tr = document.createElement("tr");
-      tr.className = "hover:bg-slate-800/40 transition";
-
-      // Status pill styling
-      let statusBadge = "";
+      let statusBadge;
       if (sess.status === "Hadir") {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Hadir</span>`;
       } else if (sess.status === "Sakit") {
@@ -204,23 +342,24 @@ function renderAttendanceTable() {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Alpha</span>`;
       }
 
-      // Alpha count pill
       let alphaBadge = `<span class="font-mono text-slate-400">${s.kehadiran.alpha}x</span>`;
       if (s.kehadiran.alpha >= 2) {
         alphaBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30 font-mono">${s.kehadiran.alpha}x (At-Risk)</span>`;
       }
 
+      const tr = document.createElement("tr");
+      tr.className = "hover:bg-slate-800/40 transition";
       tr.innerHTML = `
-        <td class="px-4 py-3 text-slate-400">${s.no}</td>
-        <td class="px-4 py-3 font-mono text-amber-400 font-semibold">${s.npm}</td>
-        <td class="px-4 py-3 text-white font-medium">${s.nama}</td>
-        <td class="px-4 py-3 text-slate-300 font-mono">Sesi ${sess.pertemuan} • ${sess.tanggal}</td>
-        <td class="px-4 py-3 text-slate-300 max-w-xs truncate" title="${sess.topik}">${sess.topik}</td>
+        <td class="px-4 py-3 text-slate-400">${esc(s.no)}</td>
+        <td class="px-4 py-3 font-mono text-amber-400 font-semibold">${esc(s.npm)}</td>
+        <td class="px-4 py-3 text-white font-medium">${esc(s.nama)}</td>
+        <td class="px-4 py-3 text-slate-300 font-mono">Sesi ${esc(sess.pertemuan)} • ${esc(sess.tanggal_display || sess.tanggal)}</td>
+        <td class="px-4 py-3 text-slate-300 max-w-xs truncate" title="${esc(sess.topik)}">${esc(sess.topik)}</td>
         <td class="px-4 py-3">${statusBadge}</td>
-        <td class="px-4 py-3 text-slate-400 italic">${sess.alasan}</td>
+        <td class="px-4 py-3 text-slate-400 italic">${esc(sess.alasan)}</td>
         <td class="px-4 py-3 text-center">${alphaBadge}</td>
         <td class="px-4 py-3 text-right">
-          <button onclick="selectQuickStudent('${s.npm}')" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-300 rounded-lg text-[11px] font-medium transition flex items-center gap-1 ml-auto">
+          <button onclick="selectQuickStudent('${esc(s.npm)}')" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-300 rounded-lg text-[11px] font-medium transition flex items-center gap-1 ml-auto">
             <span>Rapor</span> <i data-lucide="chevron-right" class="w-3 h-3"></i>
           </button>
         </td>
@@ -229,7 +368,12 @@ function renderAttendanceTable() {
     });
   });
 
-  lucide.createIcons();
+  if (rowCount === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="py-8 text-center text-slate-500 italic">
+      Tidak ada baris yang cocok dengan filter saat ini.</td></tr>`;
+  }
+
+  if (window.lucide) lucide.createIcons();
 }
 
 function filterTable() {
@@ -241,11 +385,12 @@ function filterTable() {
 // =============================================================================
 function populateStudentDropdown() {
   const dropdown = document.getElementById("student-dropdown");
+  if (!dropdown || !masterData) return;
   dropdown.innerHTML = "";
   masterData.students.forEach(s => {
     const opt = document.createElement("option");
     opt.value = s.npm;
-    opt.innerText = `${s.nama} (${s.npm}) - Grade: ${s.akademik.grade}`;
+    opt.textContent = `${s.nama} (${s.npm}) - Grade: ${s.akademik.grade}`;
     dropdown.appendChild(opt);
   });
 }
@@ -260,153 +405,125 @@ function selectQuickStudent(npm) {
 }
 
 function selectStudent(npm) {
-  currentStudent = masterData.students.find(s => s.npm === npm);
-  if (!currentStudent) return;
+  if (!masterData) return;
+  const student = masterData.students.find(s => s.npm === npm);
+  if (!student) {
+    toast(`Mahasiswa NPM ${npm} tidak ada di dataset aktif.`, "error");
+    return;
+  }
+  currentStudent = student;
 
-  // Sync dropdown
-  document.getElementById("student-dropdown").value = npm;
+  const dropdown = document.getElementById("student-dropdown");
+  if (dropdown) dropdown.value = npm;
 
-  // Render Profile Hero
-  const initials = currentStudent.nama.split(" ").map(w => w[0]).slice(0, 2).join("");
-  document.getElementById("mhs-avatar").innerText = initials;
-  document.getElementById("mhs-nama").innerText = currentStudent.nama;
-  document.getElementById("mhs-npm").innerText = currentStudent.npm;
+  const ak = student.akademik;
+  const kh = student.kehadiran;
+  const ai = student.ai_diagnosis;
 
-  // Alert badge
+  // Profile Hero
+  const initials = (student.nama || "").split(" ").filter(Boolean).map(w => w[0]).slice(0, 2).join("");
+  setText("mhs-avatar", initials || "?");
+  setText("mhs-nama", student.nama);
+  setText("mhs-npm", student.npm);
+
   const alertBadge = document.getElementById("mhs-alert-badge");
-  alertBadge.innerText = currentStudent.ai_diagnosis.status_alert;
-  if (currentStudent.ai_diagnosis.alert_color === "rose") {
-    alertBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30";
-  } else if (currentStudent.ai_diagnosis.alert_color === "sky") {
-    alertBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30";
-  } else {
-    alertBadge.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+  if (alertBadge) {
+    const palette = {
+      rose:   "px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30",
+      sky:    "px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30",
+      amber:  "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30",
+      emerald:"px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+    };
+    alertBadge.innerText = ai.status_alert || "-";
+    alertBadge.className = palette[ai.alert_color] || palette.emerald;
   }
 
-  // Profil Indeks Kompetensi Mandiri & Kesiapan Profesi (Pengganti Ranking Kelas)
-  const statusKompetensi = currentStudent.akademik.status_kompetensi || "Kompeten Unggul";
-  const kesiapanProfesi = currentStudent.akademik.kesiapan_profesi || "Kesiapan Industri Tinggi";
-  const indeksKesiapan = currentStudent.akademik.indeks_kesiapan || 95;
+  // Indeks Kesiapan (pengganti ranking kelas)
+  const statusKompetensi = ak.status_kompetensi || "Kompeten Unggul";
+  const indeksKesiapan = ak.indeks_kesiapan ?? 95;
 
   const rankPill = document.getElementById("mhs-ranking-pill");
   if (rankPill) {
     rankPill.innerText = `🎯 INDEKS KESIAPAN: ${indeksKesiapan}% (${statusKompetensi.toUpperCase()})`;
-    if (indeksKesiapan >= 90) {
-      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono";
-    } else if (indeksKesiapan >= 80) {
-      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono";
-    } else {
-      rankPill.className = "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono";
-    }
+    rankPill.className = indeksKesiapan >= 90
+      ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono"
+      : indeksKesiapan >= 80
+        ? "px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono"
+        : "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono";
   }
 
-  const statKompetensi = document.getElementById("mhs-stat-kompetensi");
-  if (statKompetensi) statKompetensi.innerText = statusKompetensi;
-  const statKesiapan = document.getElementById("mhs-stat-kesiapan");
-  if (statKesiapan) statKesiapan.innerText = `Kesiapan: ${indeksKesiapan}%`;
+  setText("mhs-stat-kompetensi", statusKompetensi);
+  setText("mhs-stat-kesiapan", `Kesiapan: ${indeksKesiapan}%`);
+  setText("mhs-stat-kehadiran", `${kh.persentase}%`);
+  const totalSesi = (kh.detail || []).length;
+  setText("mhs-stat-absen-desc", `${kh.hadir} / ${totalSesi} Sesi Hadir`);
+  setText("mhs-stat-nilai", ak.nilai_rata_rata);
+  setText("mhs-stat-grade", `Grade: ${ak.grade}`);
+  setText("mhs-stat-alpha", `${kh.alpha}x`);
 
-  // Quick stats
-  document.getElementById("mhs-stat-kehadiran").innerText = currentStudent.kehadiran.persentase + "%";
-  document.getElementById("mhs-stat-absen-desc").innerText = `${currentStudent.kehadiran.hadir} / 6 Sesi Hadir`;
-  document.getElementById("mhs-stat-nilai").innerText = currentStudent.akademik.nilai_rata_rata;
-  document.getElementById("mhs-stat-grade").innerText = `Grade: ${currentStudent.akademik.grade}`;
-  document.getElementById("mhs-stat-alpha").innerText = `${currentStudent.kehadiran.alpha}x`;
+  renderRadarCompetencyChart(ak.kompetensi || {});
 
-  // Render Radar Competency Chart
-  renderRadarCompetencyChart(currentStudent.akademik.kompetensi);
+  // 4 Kuadran Narasi AI
+  setText("ai-karakter-spasial", ai.analisis_karakter_spasial || ai.kekuatan || "-");
+  setText("ai-potensi-kedepan", ai.potensi_kedepan || "-");
+  setText("ai-catatan-mahasiswa", ai.catatan_khusus_mahasiswa || "-");
+  setText("ai-panduan-wali", ai.panduan_wali_murid || "-");
 
-  // Render 4 Deep AI Narrative Sections
-  const ai = currentStudent.ai_diagnosis;
-  const elKarakter = document.getElementById("ai-karakter-spasial");
-  if (elKarakter) elKarakter.innerText = ai.analisis_karakter_spasial || ai.kekuatan || "";
-  const elPotensi = document.getElementById("ai-potensi-kedepan");
-  if (elPotensi) elPotensi.innerText = ai.potensi_kedepan || "";
-  const elCatatan = document.getElementById("ai-catatan-mahasiswa");
-  if (elCatatan) elCatatan.innerText = ai.catatan_khusus_mahasiswa || ai.kelemahan || "";
-  const elPanduan = document.getElementById("ai-panduan-wali");
-  if (elPanduan) elPanduan.innerText = ai.panduan_wali_murid || ai.saran_wali_murid || "";
-
-  // Render 10 Real Future Careers Matrix
   renderCareerMatrix(ai.matriks_karier_10 || []);
+  renderStudentSessionCards(kh.detail || []);
 
-  // Render Session Cards
-  renderStudentSessionCards(currentStudent.kehadiran.detail);
+  renderVideoStory(student);
+  renderWhatsAppSimulation(student);
 
-  // Update Marketing Engine Components (Tabs 3 & 4)
-  currentSlideIndex = 0;
-  renderCarouselSlide(currentSlideIndex);
-  renderVideoStory(currentStudent);
-  renderWhatsAppSimulation(currentStudent);
-
-  lucide.createIcons();
+  if (window.lucide) lucide.createIcons();
 }
 
 function renderRadarCompetencyChart(comp) {
-  document.getElementById("radar-val-cad").innerText = comp.penguasaan_cad;
-  document.getElementById("radar-val-detail").innerText = comp.ketelitian_detail;
-  document.getElementById("radar-val-disiplin").innerText = comp.kedisiplinan_asistensi;
-  document.getElementById("radar-val-ruang").innerText = comp.logika_ruang_struktur;
+  setText("radar-val-cad", comp.penguasaan_cad ?? "-");
+  setText("radar-val-detail", comp.ketelitian_detail ?? "-");
+  setText("radar-val-disiplin", comp.kedisiplinan_asistensi ?? "-");
+  setText("radar-val-ruang", comp.logika_ruang_struktur ?? "-");
+  // FIX: sumbu ke-5 (Manajemen Waktu) sebelumnya tidak pernah punya nilai di UI
+  setText("radar-val-waktu", comp.manajemen_waktu ?? "-");
+
+  const values = [
+    comp.penguasaan_cad ?? 0,
+    comp.ketelitian_detail ?? 0,
+    comp.kedisiplinan_asistensi ?? 0,
+    comp.logika_ruang_struktur ?? 0,
+    comp.manajemen_waktu ?? 0
+  ];
 
   const options = {
-    series: [
-      {
-        name: "Skor Mahasiswa",
-        data: [
-          comp.penguasaan_cad,
-          comp.ketelitian_detail,
-          comp.kedisiplinan_asistensi,
-          comp.logika_ruang_struktur,
-          comp.manajemen_waktu
-        ]
-      }
-    ],
-    chart: {
-      type: "radar",
-      height: 290,
-      toolbar: { show: false },
-      background: "transparent"
-    },
-    labels: [
-      "Penguasaan CAD",
-      "Detail & Presisi",
-      "Kedisiplinan Studio",
-      "Logika Ruang/Struktur",
-      "Manajemen Waktu"
-    ],
+    series: [{ name: "Skor Mahasiswa", data: values }],
+    chart: { type: "radar", height: 290, toolbar: { show: false }, background: "transparent" },
+    labels: ["Penguasaan CAD", "Detail & Presisi", "Kedisiplinan Studio", "Logika Ruang/Struktur", "Manajemen Waktu"],
     colors: ["#f59e0b"],
     markers: { size: 4, colors: ["#ffc800"] },
     fill: { opacity: 0.35, colors: ["#f59e0b"] },
-    yaxis: {
-      max: 100,
-      show: false
-    },
-    xaxis: {
-      labels: {
-        style: {
-          colors: ["#cbd5e1", "#cbd5e1", "#cbd5e1", "#cbd5e1", "#cbd5e1"],
-          fontSize: "11px",
-          fontWeight: 600
-        }
-      }
-    },
+    yaxis: { max: 100, show: false },
+    xaxis: { labels: { style: { colors: Array(5).fill("#cbd5e1"), fontSize: "11px", fontWeight: 600 } } },
     theme: { mode: "dark" }
   };
 
-  const chartContainer = document.querySelector("#chart-radar-competency");
-  chartContainer.innerHTML = "";
-  radarCompetencyChart = new ApexCharts(chartContainer, options);
-  radarCompetencyChart.render();
+  radarCompetencyChart = mountChart(radarCompetencyChart, "#chart-radar-competency", options);
 }
 
 function renderStudentSessionCards(detailList) {
   const container = document.getElementById("student-session-cards");
+  if (!container) return;
   container.innerHTML = "";
+
+  if (!detailList.length) {
+    container.innerHTML = `<p class="text-xs text-slate-500 italic py-4 text-center">Rincian sesi belum tersedia.</p>`;
+    return;
+  }
 
   detailList.forEach(item => {
     const card = document.createElement("div");
     card.className = "p-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3 text-xs";
 
-    let statPill = "";
+    let statPill;
     if (item.status === "Hadir") {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">Hadir</span>`;
     } else if (item.status === "Sakit") {
@@ -417,20 +534,21 @@ function renderStudentSessionCards(detailList) {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400">Alpha</span>`;
     }
 
+    const skor = item.skor !== undefined && item.skor !== null ? item.skor : "-";
     card.innerHTML = `
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center font-mono font-bold text-amber-400 text-xs">
-          P${item.pertemuan}
+          P${esc(item.pertemuan)}
         </div>
         <div>
-          <div class="font-bold text-white">${item.topik}</div>
-          <div class="text-[11px] text-slate-400 font-mono">${item.tanggal} • ${item.alasan}</div>
+          <div class="font-bold text-white">${esc(item.topik)}</div>
+          <div class="text-[11px] text-slate-400 font-mono">${esc(item.tanggal_display || item.tanggal)} • ${esc(item.alasan)}</div>
         </div>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-shrink-0">
         ${statPill}
         <div class="text-right">
-          <div class="text-xs font-mono font-bold text-amber-400">${item.skor !== undefined ? item.skor : (item.skor_sesi || 85)}</div>
+          <div class="text-xs font-mono font-bold text-amber-400">${esc(skor)}</div>
           <div class="text-[10px] text-slate-500">Nilai Praktikum</div>
         </div>
       </div>
@@ -453,53 +571,64 @@ function renderCareerMatrix(careers) {
     const tr = document.createElement("tr");
     tr.className = "hover:bg-slate-850/60 transition border-b border-slate-850/80";
 
-    const score = item.kecocokan_persen || 85;
-    let badgeClass = "bg-slate-700 text-slate-300";
-    let scoreColor = "text-amber-400";
-    let barGradient = "from-amber-500 to-yellow-400";
+    const score = Number(item.kecocokan_persen ?? 0);
 
-    if (item.kategori_kecocokan === "Sangat Tinggi" || score >= 95) {
+    // FIX: badge SEBELUMNYA ikut memakai item.kategori_kecocokan yang di-hardcode
+    // di sisi server ("Sangat Tinggi" padahal skornya 67%). Sekarang badge,
+    // warna bar, dan lebar bar semuanya diturunkan dari SATU angka: score.
+    let badgeClass, scoreColor, barGradient, kategori;
+    if (score >= 95) {
+      kategori = "Sangat Tinggi";
       badgeClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
       scoreColor = "text-emerald-400";
       barGradient = "from-emerald-500 to-teal-400";
-    } else if (item.kategori_kecocokan === "Tinggi" || score >= 90) {
+    } else if (score >= 85) {
+      kategori = "Tinggi";
       badgeClass = "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40";
       scoreColor = "text-cyan-400";
       barGradient = "from-cyan-500 to-blue-400";
-    } else {
+    } else if (score >= 70) {
+      kategori = "Sedang";
       badgeClass = "bg-amber-500/20 text-amber-300 border border-amber-500/40";
       scoreColor = "text-amber-400";
       barGradient = "from-amber-500 to-orange-400";
+    } else {
+      kategori = "Rendah";
+      badgeClass = "bg-rose-500/20 text-rose-300 border border-rose-500/40";
+      scoreColor = "text-rose-400";
+      barGradient = "from-rose-500 to-red-400";
     }
 
-    const skills = item.keterampilan_kunci ? item.keterampilan_kunci.split(",") : [];
-    const skillsHtml = skills.map(sk => `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700/80 text-[10px] text-slate-300 font-mono">${sk.trim()}</span>`).join("");
+    const skills = item.keterampilan_kunci
+      ? String(item.keterampilan_kunci).split(",").map(sk => sk.trim()).filter(Boolean)
+      : [];
+    const skillsHtml = skills
+      .map(sk => `<span class="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700/80 text-[10px] text-slate-300 font-mono">${esc(sk)}</span>`)
+      .join("");
 
     tr.innerHTML = `
-      <td class="py-3 px-3 text-center font-mono font-bold text-slate-400">${item.id || idx + 1}</td>
+      <td class="py-3 px-3 text-center font-mono font-bold text-slate-400">${esc(item.id || idx + 1)}</td>
       <td class="py-3 px-4">
-        <div class="font-bold text-white text-xs">${item.profesi}</div>
-        <div class="text-[11px] text-slate-400 font-mono mt-0.5">${item.bidang_industri}</div>
+        <div class="font-bold text-white text-xs">${esc(item.profesi)}</div>
+        <div class="text-[11px] text-slate-400 font-mono mt-0.5">${esc(item.bidang_industri)}</div>
       </td>
       <td class="py-3 px-4 w-44">
-        <div class="flex justify-between items-center mb-1">
+        <div class="flex justify-between items-center mb-1 gap-2">
           <span class="text-xs font-mono font-bold ${scoreColor}">${score}%</span>
-          <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${badgeClass}">${item.kategori_kecocokan}</span>
+          <span class="text-[10px] px-2 py-0.5 rounded-full font-semibold ${badgeClass}">${kategori}</span>
         </div>
         <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
-          <div class="h-1.5 rounded-full bg-gradient-to-r ${barGradient}" style="width: ${score}%"></div>
+          <div class="h-1.5 rounded-full bg-gradient-to-r ${barGradient}" style="width: ${Math.max(0, Math.min(100, score))}%"></div>
         </div>
       </td>
       <td class="py-3 px-4">
-        <div class="flex flex-wrap gap-1 max-w-xs">
-          ${skillsHtml}
-        </div>
+        <div class="flex flex-wrap gap-1 max-w-xs">${skillsHtml}</div>
       </td>
       <td class="py-3 px-4 text-xs leading-relaxed">
-        <p class="text-slate-200 mb-1.5 text-justify">${item.analisis_potensi}</p>
+        <p class="text-slate-200 mb-1.5 text-justify">${esc(item.analisis_potensi)}</p>
         <div class="p-1.5 rounded bg-slate-900/90 border border-amber-500/30 text-amber-300 text-[11px] flex items-start gap-1.5">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5"></i>
-          <span><strong>Langkah Pengembangan:</strong> ${item.saran_pengembangan}</span>
+          <span><strong>Langkah Pengembangan:</strong> ${esc(item.saran_pengembangan)}</span>
         </div>
       </td>
     `;
@@ -508,141 +637,46 @@ function renderCareerMatrix(careers) {
 }
 
 // =============================================================================
-// TAB 3: VIRAL MARKETING ENGINE (CAROUSEL & VIDEO 9:16)
+// TAB 3: VIDEO 9:16
 // =============================================================================
-function renderCarouselSlide(index) {
-  if (!currentStudent || !currentStudent.marketing.carousel) return;
-  const slides = currentStudent.marketing.carousel;
-  const slide = slides[index];
-
-  document.getElementById("carousel-indicator").innerText = `Slide ${index + 1} / ${slides.length}`;
-  document.getElementById("slide-stage-counter").innerText = `0${index + 1} / 0${slides.length}`;
-  document.getElementById("slide-stage-badge").innerText = slide.badge;
-  document.getElementById("slide-stage-title").innerText = slide.headline;
-  document.getElementById("slide-stage-desc").innerText = slide.subline;
-  document.getElementById("slide-stage-highlight").innerText = slide.highlight;
-
-  // Active thumb highlights
-  for (let i = 0; i < 4; i++) {
-    const thumb = document.getElementById(`thumb-${i}`);
-    if (thumb) {
-      if (i === index) {
-        thumb.classList.add("active-thumb");
-      } else {
-        thumb.classList.remove("active-thumb");
-      }
-    }
-  }
-
-  // Visual Box Architectural Vector Rendering (Eye-Catching Vector Blueprints)
-  const visualBox = document.getElementById("slide-visual-box");
-  if (index === 0) {
-    // Slide 1: 3D Axonometric Wireframe House in glowing SVG
-    visualBox.innerHTML = `
-      <div class="w-full h-full flex flex-col items-center justify-center p-1 bg-slate-950/80 rounded-lg">
-        <svg viewBox="0 0 160 100" class="w-full h-24">
-          <polygon points="80,75 135,50 80,25 25,50" fill="rgba(0,240,255,0.12)" stroke="#00f0ff" stroke-width="1.5"/>
-          <polygon points="50,40 105,15 105,45 50,70" fill="rgba(56,189,248,0.22)" stroke="#38bdf8" stroke-width="1.2"/>
-          <polygon points="40,35 90,10 145,38 95,62" fill="rgba(255,183,3,0.18)" stroke="#ffb703" stroke-width="1.8"/>
-          <line x1="50" y1="70" x2="50" y2="78" stroke="#00f0ff" stroke-width="2"/>
-          <line x1="105" y1="65" x2="105" y2="73" stroke="#00f0ff" stroke-width="2"/>
-        </svg>
-        <div class="text-[9.5px] font-mono text-cyan-300 font-bold tracking-wider">3D AXONOMETRIC WIREFRAME</div>
-      </div>
-    `;
-  } else if (index === 1) {
-    // Slide 2: Interactive CAD Layer Palette & Lineweight Specs
-    visualBox.innerHTML = `
-      <div class="w-full h-full flex flex-col justify-center p-2.5 bg-slate-950/80 rounded-lg font-mono text-[9px] space-y-1">
-        <div class="flex justify-between text-cyan-400 font-bold border-b border-slate-800 pb-1"><span>LAYER CAD</span><span>TEBAL</span></div>
-        <div class="flex justify-between text-slate-300"><span>• Dinding 15cm</span><span class="text-cyan-300">0.50 mm</span></div>
-        <div class="flex justify-between text-slate-300"><span>• Kusen Pintu</span><span class="text-sky-300">0.25 mm</span></div>
-        <div class="flex justify-between text-slate-300"><span>• Garis Dimensi</span><span class="text-amber-300">0.13 mm</span></div>
-        <div class="flex justify-between text-slate-400"><span>• Arsiran Hatch</span><span>0.05 mm</span></div>
-      </div>
-    `;
-  } else if (index === 2) {
-    // Slide 3: Architectural Floor Plan Blueprint (Scale 1:100)
-    visualBox.innerHTML = `
-      <div class="w-full h-full flex flex-col items-center justify-center p-1 bg-slate-950/80 rounded-lg">
-        <svg viewBox="0 0 150 90" class="w-full h-20">
-          <rect x="25" y="15" width="100" height="60" fill="none" stroke="#00f0ff" stroke-width="1.5"/>
-          <line x1="75" y1="15" x2="75" y2="75" stroke="#00f0ff" stroke-width="1.2"/>
-          <line x1="25" y1="45" x2="75" y2="45" stroke="#00f0ff" stroke-width="1.2"/>
-          <circle cx="25" cy="15" r="3" fill="#ffb703"/>
-          <circle cx="75" cy="15" r="3" fill="#ffb703"/>
-          <circle cx="125" cy="15" r="3" fill="#ffb703"/>
-          <text x="35" y="32" fill="#fff" font-size="6" font-family="Plus Jakarta Sans">K. TIDUR</text>
-          <text x="85" y="45" fill="#fff" font-size="6" font-family="Plus Jakarta Sans">R. TAMU</text>
-          <line x1="25" y1="82" x2="125" y2="82" stroke="#ffb703" stroke-width="0.8"/>
-          <text x="65" y="87" fill="#ffb703" font-size="6" font-family="JetBrains Mono">7.50 m</text>
-        </svg>
-        <div class="text-[9.5px] font-mono text-cyan-300 font-bold">DENAH DWG SCALE 1:100</div>
-      </div>
-    `;
-  } else {
-    // Slide 4: Official Certificate Seal
-    visualBox.innerHTML = `
-      <div class="w-full h-full flex flex-col items-center justify-center p-1 text-center bg-slate-950/80 rounded-lg">
-        <div class="w-12 h-12 rounded-full border-2 border-dashed border-amber-400 flex flex-col items-center justify-center bg-amber-500/10 shadow-lg shadow-amber-500/20 mb-1">
-          <span class="text-base">🏛️</span>
-          <span class="text-[6.5px] font-black text-amber-400 font-mono">IAI UNGGUL</span>
-        </div>
-        <div class="text-[9.5px] font-bold text-white uppercase">SERTIFIKASI STUDIO</div>
-        <div class="text-[8.5px] font-mono text-amber-400">Akreditasi BAN-PT</div>
-      </div>
-    `;
-  }
-}
-
-function nextSlide() {
-  if (!currentStudent) return;
-  currentSlideIndex = (currentSlideIndex + 1) % 4;
-  renderCarouselSlide(currentSlideIndex);
-}
-
-function prevSlide() {
-  if (!currentStudent) return;
-  currentSlideIndex = (currentSlideIndex - 1 + 4) % 4;
-  renderCarouselSlide(currentSlideIndex);
-}
-
-function goToSlide(index) {
-  currentSlideIndex = index;
-  renderCarouselSlide(currentSlideIndex);
-}
-
-// Real 9:16 Video Player & Asset Folder Tracker
 async function renderVideoStory(student) {
-  const vid = student.marketing.video;
-  const scriptEl = document.getElementById("video-full-script");
-  if (scriptEl) scriptEl.innerText = `"${vid.voiceover_script}"`;
+  const vid = (student.marketing && student.marketing.video) || {};
+  setText("video-full-script", `"${vid.voiceover_script || "Naskah voiceover belum tersedia."}"`);
 
-  // Detect student progress photos
   await detectStudentProgressPhotos(student.npm);
 
-  // Set video source
+  // FIX: dulu videoEl.load() dipanggil tiap pilih mahasiswa -> video ter-buffer
+  // ulang dari 0 dan muter-muter. Sekarang hanya kalau NPM-nya memang beda.
+  if (videoLoadedNpm === student.npm) return;
+
   const videoEl = document.getElementById("student-real-video");
   const videoSrc = document.getElementById("student-video-src");
   if (videoEl && videoSrc) {
     const videoUrl = `/videos/video_portofolio_${student.npm}.mp4?t=${Date.now()}`;
     videoSrc.src = videoUrl;
     videoEl.load();
+    videoLoadedNpm = student.npm;
+
+    videoEl.addEventListener("error", () => {
+      toast(`Video untuk ${student.nama} belum ada. Tekan "Render Video MP4" dulu.`, "warn");
+    }, { once: true });
   }
 }
 
 async function detectStudentProgressPhotos(npm) {
+  const countEl = document.getElementById("detected-photo-count");
+  const folderEl = document.getElementById("detected-photo-folder");
+  const chipsEl = document.getElementById("detected-photo-chips");
+  if (countEl) countEl.innerText = "Memuat...";
+
   try {
-    const res = await fetch(`/api/student/images?npm=${npm}`);
+    const res = await fetch(`/api/student/images?npm=${encodeURIComponent(npm)}`);
     const data = await res.json();
-    
-    const countEl = document.getElementById("detected-photo-count");
-    const folderEl = document.getElementById("detected-photo-folder");
-    const chipsEl = document.getElementById("detected-photo-chips");
-    
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
     if (countEl) countEl.innerText = `${data.count} Foto Terdeteksi`;
     if (folderEl) folderEl.innerText = data.folder || `input/progress_mahasiswa/.../${npm}`;
-    
+
     if (chipsEl) {
       chipsEl.innerHTML = "";
       if (data.filenames && data.filenames.length > 0) {
@@ -650,65 +684,73 @@ async function detectStudentProgressPhotos(npm) {
           const chip = document.createElement("span");
           chip.className = "px-2 py-0.5 rounded bg-slate-800 text-[10px] text-amber-300 font-mono border border-slate-700/80 truncate max-w-[140px]";
           chip.innerText = fn;
+          chip.title = fn;
           chipsEl.appendChild(chip);
         });
       } else {
-        chipsEl.innerHTML = `<span class="text-[10px] text-slate-500 italic">Folder masih kosong (menggunakan sample default studio).</span>`;
+        chipsEl.innerHTML = `<span class="text-[10px] text-slate-500 italic">Folder kosong. Taruh foto (.jpg/.png) di folder di atas, lalu Render Video.</span>`;
       }
     }
   } catch (err) {
     console.error("Error detecting photos:", err);
+    if (countEl) countEl.innerText = "Gagal deteksi";
+    if (chipsEl) chipsEl.innerHTML = `<span class="text-[10px] text-rose-400 italic">${esc(err.message)}</span>`;
   }
 }
 
 async function openStudentProgressFolder() {
   if (!currentStudent) return;
   try {
-    const res = await fetch(`/api/open_folder?npm=${currentStudent.npm}`);
+    const res = await fetch(`/api/open_folder?npm=${encodeURIComponent(currentStudent.npm)}`);
     const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     if (data.success) {
-      console.log("[FOLDER OPENED]", data.folder);
+      toast(`Folder dibuka: ${data.folder}`, "success");
     }
   } catch (err) {
-    console.error("Error opening folder:", err);
+    toast(`Gagal membuka folder: ${err.message}`, "error", 6000);
   }
 }
 
 async function generateCurrentStudentVideo() {
-  if (!currentStudent) return;
+  if (!currentStudent || videoGenerating) return;
   const btn = document.getElementById("btn-generate-video");
   const origHtml = btn ? btn.innerHTML : "";
+  videoGenerating = true;
+
   if (btn) {
     btn.disabled = true;
-    btn.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Rendering MP4...`;
-    lucide.createIcons();
+    btn.classList.add("opacity-70", "cursor-not-allowed");
+    btn.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Rendering...`;
+    if (window.lucide) lucide.createIcons();
   }
 
   try {
-    const res = await fetch(`/api/video/generate?npm=${currentStudent.npm}`);
+    const res = await fetch(`/api/video/generate?npm=${encodeURIComponent(currentStudent.npm)}`);
     const data = await res.json();
-    if (data.success) {
-      alert(`Video Portofolio 9:16 untuk ${currentStudent.nama} berhasil dirender! (${data.duration}s)`);
-      // Reload video player
-      const videoEl = document.getElementById("student-real-video");
-      const videoSrc = document.getElementById("student-video-src");
-      if (videoEl && videoSrc) {
-        videoSrc.src = data.video_url;
-        videoEl.load();
-        videoEl.play();
-      }
-      // Re-detect photos
-      await detectStudentProgressPhotos(currentStudent.npm);
-    } else {
-      alert("Gagal merender video: " + (data.error || "Unknown error"));
+
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    if (!data.success) throw new Error(data.error || "Render video gagal tanpa pesan.");
+
+    toast(`Video 9:16 untuk ${currentStudent.nama} selesai (${data.duration}s).`, "success", 6000);
+
+    const videoEl = document.getElementById("student-real-video");
+    const videoSrc = document.getElementById("student-video-src");
+    if (videoEl && videoSrc) {
+      videoSrc.src = data.video_url;
+      videoEl.load();
+      videoEl.play().catch(() => { /* autoplay bisa diblokir browser */ });
     }
+    await detectStudentProgressPhotos(currentStudent.npm);
   } catch (err) {
-    alert("Error rendering video: " + err.message);
+    toast(`Gagal render video: ${err.message}`, "error", 9000);
   } finally {
+    videoGenerating = false;
     if (btn) {
       btn.disabled = false;
+      btn.classList.remove("opacity-70", "cursor-not-allowed");
       btn.innerHTML = origHtml;
-      lucide.createIcons();
+      if (window.lucide) lucide.createIcons();
     }
   }
 }
@@ -731,31 +773,29 @@ function copyInstagramCaption() {
     `Mulai dari perancangan denah presisi hingga kalkulasi detail potongan dan estimasi volume, karya nyata siap portofolio telah tuntas dengan predikat ${currentStudent.akademik.grade}.\n\n` +
     `Bangga bersama Program Studi Arsitektur!\n` +
     `#Arsitektur #MahasiswaArsitektur #KaryaArsitektur #AutoCAD #DesainBangunan #GenerasiUnggul`;
-  
-  navigator.clipboard.writeText(caption).then(() => {
-    alert("Caption Instagram & Hashtag berhasil disalin ke Clipboard!");
-  });
+  copyToClipboard(caption, "Caption Instagram & hashtag berhasil disalin!");
 }
 
 // =============================================================================
-// TAB 4: WHATSAPP SIMULATOR RENDERING (DENGAN LAMPIRAN PDF)
+// TAB 4: WHATSAPP SIMULATOR
 // =============================================================================
 function renderWhatsAppSimulation(student) {
-  document.getElementById("wa-recipient-name").innerText = `Wali Murid ${student.nama}`;
-  
-  const courseName = (masterData && masterData.course && masterData.course.nama_mk) ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
-  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* untuk periode semester berjalan:`;
-  document.getElementById("wa-opening-text").innerText = openingText;
+  setText("wa-recipient-name", `Wali Murid ${student.nama}`);
 
-  const sanitizedName = student.nama.replace(/\s+/g, "_");
-  document.getElementById("wa-card-file-1").innerText = `01_rekap_kehadiran_${student.npm}.pdf`;
-  document.getElementById("wa-card-file-2").innerText = `02_rapor_akhir_kompetensi_${student.npm}.pdf`;
-  document.getElementById("wa-card-file-3").innerText = `05_deckcraft_portofolio_${student.npm}.pdf`;
+  const courseName = (masterData && masterData.course && masterData.course.nama_mk)
+    ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
+  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* untuk periode semester berjalan:`;
+  setText("wa-opening-text", openingText);
+
+  setText("wa-card-file-1", `01_rekap_kehadiran_${student.npm}.pdf`);
+  setText("wa-card-file-2", `02_rapor_akhir_kompetensi_${student.npm}.pdf`);
+  setText("wa-card-file-3", `05_deckcraft_portofolio_${student.npm}.pdf`);
 }
 
 function copyWhatsAppMessage() {
   if (!currentStudent) return;
-  const courseName = (masterData && masterData.course && masterData.course.nama_mk) ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
+  const courseName = (masterData && masterData.course && masterData.course.nama_mk)
+    ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
   const fullMsg = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\n` +
     `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
     `Salam hangat dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n` +
@@ -770,9 +810,36 @@ function copyWhatsAppMessage() {
     `*Fielda Roza, S.T., M.T.*\n` +
     `Asisten Dosen: *Adrian Ridhoa, S.T.*`;
 
-  navigator.clipboard.writeText(fullMsg).then(() => {
-    alert("Pesan pembuka resmi & daftar lampiran WhatsApp berhasil disalin!");
-  });
+  copyToClipboard(fullMsg, "Pesan pembuka resmi & daftar lampiran berhasil disalin!");
+}
+
+/** Clipboard + fallback untuk browser yang menolak navigator.clipboard (non-secure context). */
+function copyToClipboard(text, successMessage) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => toast(successMessage, "success"))
+      .catch(() => legacyCopy(text, successMessage));
+  } else {
+    legacyCopy(text, successMessage);
+  }
+}
+
+function legacyCopy(text, successMessage) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    const ok = document.execCommand("copy");
+    toast(ok ? successMessage : "Gagal menyalin otomatis. Tekan Ctrl+C manual.",
+          ok ? "success" : "error", 6000);
+  } catch (e) {
+    toast("Gagal menyalin otomatis. Tekan Ctrl+C manual.", "error", 6000);
+  }
+  ta.remove();
 }
 
 function openWhatsAppDirect() {
@@ -781,8 +848,7 @@ function openWhatsAppDirect() {
     `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
     `Berikut kami sampaikan berkas Laporan Hasil Belajar & Portofolio Arsitektur ananda dalam 3 lampiran dokumen PDF resmi terverifikasi. Terima kasih atas bimbingan dan dukungan Bapak/Ibu di rumah.\n\n` +
     `Hormat kami,\nProgram Studi Arsitektur`;
-  const encoded = encodeURIComponent(fullMsg);
-  window.open(`https://api.whatsapp.com/send?text=${encoded}`, "_blank");
+  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullMsg)}`, "_blank", "noopener");
 }
 
 function exportDataJSON() {
@@ -797,62 +863,94 @@ function exportDataJSON() {
 }
 
 // =============================================================================
-// PDF DOWNLOAD CONTROLLER FUNCTIONS (LIVE ON-DEMAND DYNAMIC SYNC)
+// PDF DOWNLOAD CONTROLLERS
 // =============================================================================
+/** Buka PDF on-demand. Dulu pakai window.open -> kalau gagal, user cuma lihat
+ *  tab kosong tanpa tahu apa yang salah. Sekarang errornya ditampilkan. */
+async function openPdf(url, label) {
+  const win = window.open("", "_blank");
+  if (!win) {
+    toast("Popup diblokir browser. Izinkan popup untuk situs ini lalu coba lagi.", "warn", 7000);
+  }
+  try {
+    const res = await fetch(url);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+    const blob = await res.blob();
+    const objUrl = URL.createObjectURL(blob);
+    if (win) {
+      win.location.href = objUrl;
+    } else {
+      window.open(objUrl, "_blank");
+    }
+    setTimeout(() => URL.revokeObjectURL(objUrl), 60000);
+    toast(`${label} siap.`, "success");
+  } catch (err) {
+    if (win) win.close();
+    toast(`Gagal membuat ${label}: ${err.message}`, "error", 9000);
+  }
+}
+
 function downloadKaprodiGradebook() {
-  window.open("/api/pdf/download?type=gradebook", "_blank");
+  openPdf("/api/pdf/download?type=gradebook", "PDF Gradebook Kaprodi");
 }
 
 function downloadDosenAuditPDF() {
-  window.open("/api/pdf/download?type=audit", "_blank");
+  openPdf("/api/pdf/download?type=audit", "PDF Audit Dosen");
 }
 
 function downloadCurrentStudentMonthlyPDF() {
   if (!currentStudent) return;
-  window.open(`/api/pdf/download?type=monthly&npm=${currentStudent.npm}`, "_blank");
+  openPdf(`/api/pdf/download?type=monthly&npm=${encodeURIComponent(currentStudent.npm)}`,
+           "PDF Rekap Kehadiran");
 }
 
 function downloadCurrentStudentFinalPDF() {
   if (!currentStudent) return;
-  window.open(`/api/pdf/download?type=rapor&npm=${currentStudent.npm}`, "_blank");
+  openPdf(`/api/pdf/download?type=rapor&npm=${encodeURIComponent(currentStudent.npm)}`,
+           "PDF Rapor Capaian & Karier");
 }
 
 function downloadCurrentStudentDeckcraftPDF() {
   if (!currentStudent) return;
-  window.open(`/api/pdf/download?type=deckcraft&npm=${currentStudent.npm}`, "_blank");
+  openPdf(`/api/pdf/download?type=deckcraft&npm=${encodeURIComponent(currentStudent.npm)}`,
+           "PDF DeckCraft 16:9");
 }
 
 function downloadAll3StudentPDFs() {
   if (!currentStudent) return;
-  downloadCurrentStudentMonthlyPDF();
-  setTimeout(() => downloadCurrentStudentFinalPDF(), 400);
-  setTimeout(() => downloadCurrentStudentDeckcraftPDF(), 800);
+  const npm = encodeURIComponent(currentStudent.npm);
+  openPdf(`/api/pdf/download?type=monthly&npm=${npm}`, "PDF 1: Rekap Kehadiran");
+  setTimeout(() => openPdf(`/api/pdf/download?type=rapor&npm=${npm}`, "PDF 2: Rapor"), 900);
+  setTimeout(() => openPdf(`/api/pdf/download?type=deckcraft&npm=${npm}`, "PDF 3: DeckCraft"), 1800);
 }
 
-// Live Interactive 16:9 Presentation Viewer
 function openLiveDeckcraft() {
   if (!currentStudent) return;
-  window.open(`/api/deckcraft_html?npm=${currentStudent.npm}`, "_blank");
+  window.open(`/api/deckcraft_html?npm=${encodeURIComponent(currentStudent.npm)}`, "_blank", "noopener");
 }
 
 // Dynamic Course Switcher
 async function switchActiveCourse(courseId) {
+  if (!courseId) return;
+  const selector = document.getElementById("course-selector");
   try {
+    selector.disabled = true;
     const res = await fetch(`/api/switch_course?course=${encodeURIComponent(courseId)}`);
     const resData = await res.json();
-    if (resData.success) {
-      console.log("[COURSE SWITCHED] Active:", resData.active_course.nama_mk);
-      // Reload entire academic dataset & views
-      await loadAcademicData();
-      const titleEl = document.getElementById("current-course-title");
-      if (titleEl) titleEl.innerText = resData.active_course.nama_mk;
-      
-      // Update select value if not matching
-      const sel = document.getElementById("course-selector");
-      if (sel) sel.value = courseId;
-    }
+    if (!res.ok) throw new Error(resData.error || `HTTP ${res.status}`);
+    if (!resData.success) throw new Error(resData.error || "Gagal berganti mata kuliah.");
+
+    toast(`Mata kuliah aktif: ${resData.active_course.nama_mk}`, "success");
+    // Muat ulang seluruh dataset; loadAcademicData() akan menyinkronkan header
+    // dan dropdown ke course yang baru (bukan lagi ke pilihan pertama).
+    await loadAcademicData();
+    if (selector) selector.value = courseId;
   } catch (err) {
-    console.error("Failed to switch course:", err);
+    toast(`Gagal berganti mata kuliah: ${err.message}`, "error", 8000);
+  } finally {
+    if (selector) selector.disabled = false;
   }
 }
-

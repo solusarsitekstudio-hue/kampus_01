@@ -1,17 +1,25 @@
+"""
+Video Composer 9:16 - Generator video short portofolio mahasiswa.
+
+FIX TAHAP A:
+  * Import berat (numpy / playwright / edge-tts) dipindah ke dalam fungsi.
+    Dulu module-level, padahal server.py cuma import modul ini untuk
+    find_student_images() yang read-only. Akibatnya setiap panggilan
+    /api/student/images bayar 1-2 detik import + gagal total (ImportError)
+    di install yang belum punya paketnya.
+  * Fallback foto random dari D:\\Desktop dihapus. Tidak boleh lagi
+    "karya mahasiswa" berisi foto orang lain.
+  * find_student_images memakai regex ketat, bukan substring bebas.
+"""
 import os
 import sys
 import json
 import re
 import math
-import asyncio
 import subprocess
-import wave
-import shutil
-import numpy as np
-from datetime import datetime
-from playwright.sync_api import sync_playwright
-import edge_tts
 import base64
+import shutil
+import tempfile
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -34,39 +42,44 @@ def sanitize_folder_name(name):
 
 def find_student_images(npm, course_name="APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"):
     """
-    Scans input/progress_mahasiswa/<course>/ for student images.
-    Matches folder starting with npm (e.g., '2510015410010' or '2510015410010_M_YAZID_ZIDANE_MULYADI').
-    Falls back to sample images in D:\\Desktop\\- HAL LAIN if folder is empty or not found.
+    Cari foto karya mahasiswa di input/progress_mahasiswa/<mata_kuliah>/<npm>*.*
+
+    FIX TAHAP A:
+      - Folder HARUS diawali NPM lalu dipisah penanda (_ / spasi / -) atau Berakhiran
+        di NPM. Dulu pakai `npm in entry` + break, jadi folder orang lain bisa
+        kebaca kalau nama foldernya kebetulan memuat digit NPM yang sama.
+      - Tidak ada fallback ke D:\\Desktop lagi. Kalau folder kosong, hasilnya 0 foto
+        dan pemanggil yang memutuskan (tidak diam-diam pakai foto orang lain).
     """
+    target = str(npm).strip()
     clean_course = sanitize_folder_name(course_name)
+    if not clean_course:
+        return [], None
     course_dir = os.path.join(PROGRESS_ROOT, clean_course)
-    
+
     images = []
     student_folder = None
-    
+
     if os.path.exists(course_dir):
+        matches = []
         for entry in os.listdir(course_dir):
             full_entry = os.path.join(course_dir, entry)
-            if os.path.isdir(full_entry) and (entry.startswith(str(npm)) or str(npm) in entry):
-                student_folder = full_entry
-                break
-                
+            if not os.path.isdir(full_entry):
+                continue
+            # Ketat: mulai dengan NPM, lalu batas yang jelas (underscore/spasi/strip)
+            if re.match(rf"^{re.escape(target)}([_\s-]|$)", entry) or entry == target:
+                matches.append(full_entry)
+            elif re.match(rf"^[_\s-]", entry) and entry.endswith(target):
+                matches.append(full_entry)
+        if matches:
+            # Ambil yang paling pendek = paling mungkin folder Intensity asli
+            student_folder = sorted(matches, key=len)[0]
+
     if student_folder and os.path.exists(student_folder):
         valid_exts = ('.jpg', '.jpeg', '.png', '.webp')
-        files = sorted(os.listdir(student_folder))
-        for f in files:
+        for f in sorted(os.listdir(student_folder)):
             if f.lower().endswith(valid_exts):
                 images.append(os.path.join(student_folder, f))
-
-    # Fallback to authentic samples from Desktop if empty
-    if not images:
-        fallback_dir = r"D:\Desktop\- HAL LAIN"
-        if os.path.exists(fallback_dir):
-            sample_candidates = ["ar a1 ar dg.jpeg", "ar 2a ar dg.jpeg", "QS 1.jpeg", "ar b1.jpeg"]
-            for cand in sample_candidates:
-                cand_path = os.path.join(fallback_dir, cand)
-                if os.path.exists(cand_path):
-                    images.append(cand_path)
 
     return images, student_folder
 
@@ -75,6 +88,9 @@ def generate_ambient_bgm(duration_sec, output_wav):
     Synthesizes a warm, gentle ambient acoustic chord progression in numpy and writes to WAV.
     Harmonic chords: Cmaj7 -> Am7 -> Fmaj7 -> G7 (soft, inspiring, and cinematic).
     """
+    import wave
+    import numpy as np  # lazy import - hanya dibutuhkan saat render video
+
     sr = 44100
     total_samples = int(duration_sec * sr)
     t = np.linspace(0, duration_sec, total_samples, endpoint=False)
@@ -138,17 +154,58 @@ async def async_generate_voiceover(text, output_mp3):
     """
     Generates high-definition Indonesian female neural voiceover using edge-tts (id-ID-GadisNeural).
     """
+    import edge_tts  # lazy import - butuh internet + paket, tidak untuk semua endpoint
+
     comm = edge_tts.Communicate(text, "id-ID-GadisNeural", rate="+2%", pitch="+1Hz")
     await comm.save(output_mp3)
 
+
+def _run_ffmpeg(cmd, stage: str):
+    """Jalankan ffmpeg dengan pesan error yang berguna.
+
+    FIX TAHAP A: sebelumnya check=True + stderr=DEVNULL menghasilkan
+    CalledProcessError yang pesannya cuma argv - nol informasi. FFmpeg juga
+    bisa nyantol di console, dan tidak ada batas waktu.
+    """
+    if shutil.which(cmd[0]) is None:
+        raise RuntimeError(
+            f"'{cmd[0]}' tidak ditemukan di PATH. Install FFmpeg lalu tambahkan ke PATH. "
+            f"(Gagal saat tahap: {stage})"
+        )
+    try:
+        subprocess.run(
+            cmd, check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.DEVNULL,
+            timeout=900,
+        )
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError(f"FFmpeg timeout (>15 menit) saat tahap: {stage}") from e
+    except subprocess.CalledProcessError as e:
+        tail = (e.stderr or b"").decode("utf-8", errors="replace")[-1200:]
+        raise RuntimeError(f"FFmpeg gagal saat tahap {stage}:\n{tail}") from e
+
+
+def _probe_duration(path, fallback=28.0):
+    """Durasi audio via ffprobe. Kalau ffprobe tidak ada / file rusak, pakai fallback
+    (dulu float('') melempar ValueError dan video gagal dirender)."""
+    try:
+        raw = subprocess.check_output([
+            "ffprobe", "-i", path,
+            "-show_entries", "format=duration",
+            "-v", "quiet", "-of", "csv=p=0"
+        ], stderr=subprocess.DEVNULL).decode().strip()
+        return float(raw) if raw else fallback
+    except Exception:
+        return fallback
+
+
 def generate_voiceover(text, output_mp3):
+    import asyncio  # lazy import
+
     asyncio.run(async_generate_voiceover(text, output_mp3))
-    dur_str = subprocess.check_output([
-        "ffprobe", "-i", output_mp3,
-        "-show_entries", "format=duration",
-        "-v", "quiet", "-of", "csv=p=0"
-    ]).decode().strip()
-    return float(dur_str)
+    return _probe_duration(output_mp3)
 
 def get_radar_svg_mini(comp):
     labels = ["CAD", "Detail", "Asistensi", "Logika", "Waktu"]
@@ -547,70 +604,112 @@ def compile_video_mp4(student, course_info, images, output_mp4):
     4. Compiles final 9:16 MP4 via FFmpeg with Ken Burns motion & audio mixing.
     """
     npm = student["npm"]
-    script_text = student["marketing"]["video"]["voiceover_script"]
-    
-    # 1. Voiceover
-    vo_path = os.path.join(TEMP_DIR, f"vo_{npm}.mp3")
-    vo_duration = generate_voiceover(script_text, vo_path)
-    total_duration = max(vo_duration + 1.5, 28.0)
-    
-    # 2. Ambient BGM
-    bgm_path = os.path.join(TEMP_DIR, f"bgm_{npm}.wav")
-    generate_ambient_bgm(total_duration, bgm_path)
-    
-    # 3. Render HTML Slides to PNG
-    slides_html = render_vertical_slides_html(student, course_info, images)
-    slide_pngs = []
-    
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page(viewport={"width": 1080, "height": 1920})
-        for i, s_html in enumerate(slides_html):
-            png_path = os.path.join(TEMP_DIR, f"slide_{npm}_{i}.png")
-            page.set_content(s_html)
-            page.screenshot(path=png_path)
-            slide_pngs.append(png_path)
-        browser.close()
-        
-    # 4. Generate Video using FFmpeg
-    # Each slide duration = total_duration / 4
-    slide_dur = total_duration / 4.0
-    
-    # Create input concat list for ffmpeg with crossfade or simple duration
-    concat_txt = os.path.join(TEMP_DIR, f"concat_{npm}.txt")
-    with open(concat_txt, "w", encoding="utf-8") as f:
-        for png in slide_pngs:
-            clean_p = png.replace("\\", "/")
-            f.write(f"file '{clean_p}'\n")
-            f.write(f"duration {slide_dur:.2f}\n")
-        # Final frame repeat for smooth ending
-        clean_last = slide_pngs[-1].replace("\\", "/")
-        f.write(f"file '{clean_last}'\n")
+    script_text = (student.get("marketing", {}).get("video", {}) or {}).get("voiceover_script")
+    if not script_text:
+        raise ValueError(
+            f"Data mahasiswa NPM {npm} tidak punya naskah voiceover "
+            f"(marketing.video.voiceover_script kosong). Regenerasi academic_data.json dulu."
+        )
 
-    mixed_audio = os.path.join(TEMP_DIR, f"mixed_audio_{npm}.wav")
-    # Mix Voiceover (1.0 volume) + BGM (0.12 volume)
-    cmd_audio = [
-        "ffmpeg", "-y",
-        "-i", vo_path,
-        "-i", bgm_path,
-        "-filter_complex", "[0:a]volume=1.0[vo];[1:a]volume=0.12[bgm];[vo][bgm]amix=inputs=2:duration=first:dropout_transition=2[aout]",
-        "-map", "[aout]",
-        mixed_audio
-    ]
-    subprocess.run(cmd_audio, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    
-    # Final Video Encoding: 1080x1920, H.264, AAC
-    cmd_video = [
-        "ffmpeg", "-y",
-        "-f", "concat", "-safe", "0", "-i", concat_txt,
-        "-i", mixed_audio,
-        "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-b:a", "192k",
-        "-shortest",
-        output_mp4
-    ]
-    subprocess.run(cmd_video, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    
+    # FIX TAHAP A: temp folder per-render. Dulu semua artefak ditulis ke satu
+    # folder global dengan nama vo_<npm>.mp3 -> 2 render bersamaan saling tabrak,
+    # dan 7 file per render numpuk selamanya tanpa pernah dihapus.
+    os.makedirs(TEMP_DIR, exist_ok=True)
+    run_tmp = tempfile.mkdtemp(prefix=f"r_{npm}_", dir=TEMP_DIR)
+
+    try:
+        # 1. Voiceover
+        vo_path = os.path.join(run_tmp, "vo.mp3")
+        vo_duration = generate_voiceover(script_text, vo_path)
+        total_duration = max(vo_duration + 1.5, 28.0)
+
+        # 2. Ambient BGM
+        bgm_path = os.path.join(run_tmp, "bgm.wav")
+        generate_ambient_bgm(total_duration, bgm_path)
+
+        # 3. Render HTML Slides to PNG
+        from playwright.sync_api import sync_playwright  # lazy import
+        slides_html = render_vertical_slides_html(student, course_info, images)
+        slide_pngs = []
+
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            try:
+                page = browser.new_page(viewport={"width": 1080, "height": 1920})
+                for i, s_html in enumerate(slides_html):
+                    png_path = os.path.join(run_tmp, f"slide_{i}.png")
+                    page.set_content(s_html)
+                    page.screenshot(path=png_path)
+                    slide_pngs.append(png_path)
+            finally:
+                try:
+                    browser.close()
+                except Exception:
+                    pass
+
+        # 4. Generate Video using FFmpeg
+        slide_dur = total_duration / 4.0
+
+        concat_txt = os.path.join(run_tmp, "concat.txt")
+
+        def _q(path):
+            # Escape single quote + pakai forward slash (demaixer concat FFmpeg)
+            return path.replace("\\", "/").replace("'", "'\\''")
+
+        # PENTING: TULIS TANPA BOM. Versi ini sempat pakai encoding="utf-8-sig"
+        # dan ffmpeg langsung gagal: "unknown keyword '﻿file'".
+        with open(concat_txt, "w", encoding="utf-8") as f:
+            for png in slide_pngs:
+                f.write(f"file '{_q(png)}'\n")
+                f.write(f"duration {slide_dur:.2f}\n")
+            # Frame terakhir diulang supaya penutup tidak terpotong
+            f.write(f"file '{_q(slide_pngs[-1])}'\n")
+
+        mixed_audio = os.path.join(run_tmp, "mixed.wav")
+        # FIX TAHAP A: amix duration=first memotong audio jadi sependek voiceover,
+        # trus -shortest memotong video. Hasilnya durasi MP4 != durasi yang dilaporkan.
+        # Sekarang voiceover di-pad agar audio total = total_duration.
+        cmd_audio = [
+            "ffmpeg", "-y", "-nostdin",
+            "-i", vo_path,
+            "-i", bgm_path,
+            "-filter_complex",
+            f"[0:a]volume=1.0,apad=pad_dur={total_duration:.2f}[vo];"
+            "[1:a]volume=0.12[bgm];"
+            "[vo][bgm]amix=inputs=2:duration=longest:dropout_transition=2,"
+            f"atrim=0:{total_duration:.2f}[aout]",
+            "-map", "[aout]",
+            mixed_audio
+        ]
+        _run_ffmpeg(cmd_audio, "mix audio")
+
+        # Tulis ke file .part.mp4 dulu, rename kalau sukses -> tidak ada MP4 korup
+        # di public/. Ekstensi .mp4 WAJIB ada di akhir nama file, kalau tidak
+        # ffmpeg gagal "Error initializing the muxer ... Invalid argument".
+        part_mp4 = output_mp4 + ".part.mp4"
+        cmd_video = [
+            "ffmpeg", "-y", "-nostdin",
+            "-f", "concat", "-safe", "0", "-i", concat_txt,
+            "-i", mixed_audio,
+            "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-pix_fmt", "yuv420p",
+            "-c:a", "aac", "-b:a", "192k",
+            "-t", f"{total_duration:.2f}",
+            "-movflags", "+faststart",
+            part_mp4
+        ]
+        try:
+            _run_ffmpeg(cmd_video, "encode video")
+            os.replace(part_mp4, output_mp4)
+        except Exception:
+            if os.path.exists(part_mp4):
+                try:
+                    os.remove(part_mp4)
+                except OSError:
+                    pass
+            raise
+    finally:
+        shutil.rmtree(run_tmp, ignore_errors=True)
+
     return {
         "success": True,
         "video_path": output_mp4,
@@ -622,22 +721,47 @@ def compile_video_mp4(student, course_info, images, output_mp4):
 def generate_video_short_for_student(npm):
     """
     High-level entry point to generate video short for any student.
+
+    FIX TAHAP A: tidak ada lagi fallback ke students[0]. Dulu NPM yang tidak
+    ketemu diam-diam merender video mahasiswa PERTAMA dan tetap melapor
+    success - WALAH (wali murid) bisa salah orang. Sekarang harus error.
     """
+    target = str(npm).strip()
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         data = json.load(f)
-        
-    student = next((s for s in data.get("students", []) if s["npm"] == str(npm)), None)
-    if not student and data.get("students"):
-        student = data["students"][0]
+
+    student = next(
+        (s for s in data.get("students", []) if str(s.get("npm", "")) == target), None
+    )
+    if not student:
+        raise ValueError(f"Mahasiswa dengan NPM {target} tidak ditemukan di dataset aktif.")
         
     course_info = data.get("course", {})
-    images, folder = find_student_images(student["npm"], course_info.get("nama_mk", ""))
-    
+    # Default wajib: string kosong akan membuat sanitize() -> "" dan pencarian
+    # picturemenyempit ke level folder mata kuliah (selalu 0 hasil).
+    course_name = course_info.get("nama_mk") or "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
+    images, folder = find_student_images(student["npm"], course_name)
+
+    if not images:
+        # FIX TAHAP A: dulu di sini diam-diam dipakai foto random dari D:\Desktop.
+        # Itu berarti "karya mahasiswa" bisa jadi foto orang lain. Sekarang stop.
+        return {
+            "success": False,
+            "error": (f"Tidak ada foto karya untuk NPM {student['npm']}. "
+                      f"Taruh foto (jpg/png) di folder: "
+                      f"input/progress_mahasiswa/{sanitize_folder_name(course_name)}/"
+                      f"{student['npm']}_NAMA/"),
+            "npm": student["npm"],
+            "student_name": student["nama"],
+            "folder_source": folder or "",
+            "images_used": 0
+        }
+
     output_mp4 = os.path.join(OUTPUT_VIDEOS_DIR, f"video_portofolio_{student['npm']}.mp4")
     result = compile_video_mp4(student, course_info, images, output_mp4)
     result["student_name"] = student["nama"]
     result["npm"] = student["npm"]
-    result["folder_source"] = folder
+    result["folder_source"] = folder or ""
     return result
 
 if __name__ == "__main__":

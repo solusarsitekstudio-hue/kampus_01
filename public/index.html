@@ -19,6 +19,27 @@
 
   <!-- Custom Stylesheet -->
   <link rel="stylesheet" href="style.css">
+
+  <!-- FIX TAHAP A: Deteksi CDN gagal load.
+       Dulu 100%{andalkan CDN: WiFi ngadat = layar putih kosong tanpa
+       penjelasan. Sekarang user diberi tahu + ada tombol muat ulang. -->
+  <script>
+    window.addEventListener("load", function () {
+      var missing = [];
+      if (typeof tailwind === "undefined") missing.push("Tailwind CSS");
+      if (typeof ApexCharts === "undefined") missing.push("ApexCharts");
+      if (typeof lucide === "undefined") missing.push("Lucide Icons");
+      var box = document.getElementById("cdn-warning");
+      if (missing.length > 0) {
+        box.classList.remove("hidden");
+        document.getElementById("cdn-warning-text").innerText =
+          "Komponen gagal dimuat: " + missing.join(", ") +
+          ". Dashboard tidak dapat ditampilkan dengan benar. Sambungkan ke internet, lalu muat ulang halaman.";
+      } else {
+        box.classList.add("hidden");
+      }
+    });
+  </script>
 </head>
 <body class="bg-[#0b0f19] text-slate-100 font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-slate-950">
 
@@ -32,15 +53,16 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
-              SIAK-KAPRODI <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-medium border border-amber-500/30">GOLDEN DEMO v2.0</span>
+              SIAK-KAPRODI <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-medium border border-amber-500/30">GOLDEN DEMO v2.5</span>
             </h1>
             <span class="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE :40404
             </span>
           </div>
           <p class="text-xs text-slate-400">
-            Program Studi Arsitektur • Mata Kuliah: <span id="current-course-title" class="text-slate-200 font-semibold">Aplikasi Komputer Arsitektur & QS</span>
+            Program Studi Arsitektur • Mata Kuliah: <span id="current-course-title" class="text-slate-200 font-semibold">-</span>
           </p>
+          <p class="text-[11px] text-slate-500 font-mono" id="kpi-jadwal-desc">-</p>
         </div>
       </div>
 
@@ -106,7 +128,7 @@
   </div>
 
   <!-- MAIN VIEWPORT CONTAINER -->
-  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+  <main id="app-main" class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
 
     <!-- ========================================================================= -->
     <!-- TAB 1: EXECUTIVE DASHBOARD KAPRODI -->
@@ -146,8 +168,8 @@
               <span class="text-xs text-slate-400 font-medium">Total Mahasiswa</span>
               <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400"><i data-lucide="users" class="w-4 h-4"></i></span>
             </div>
-            <div class="text-2xl font-bold text-white mt-2" id="kpi-total-mhs">35</div>
-            <div class="text-[11px] text-slate-400 mt-1">Kelas TEKZA (Ruang Lab LIKDA)</div>
+            <div class="text-2xl font-bold text-white mt-2" id="kpi-total-mhs">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="kpi-kelas-desc">Memuat data...</div>
           </div>
 
           <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
@@ -155,8 +177,8 @@
               <span class="text-xs text-slate-400 font-medium">Rata-rata Kehadiran</span>
               <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="check-circle-2" class="w-4 h-4"></i></span>
             </div>
-            <div class="text-2xl font-bold text-emerald-400 mt-2" id="kpi-kehadiran">82.4%</div>
-            <div class="text-[11px] text-slate-400 mt-1">Standar kelayakan ujian $\ge 75\%$</div>
+            <div class="text-2xl font-bold text-emerald-400 mt-2" id="kpi-kehadiran">-</div>
+            <div class="text-[11px] text-slate-400 mt-1">Standar kelayakan ujian &#8805; 75%</div>
           </div>
 
           <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
@@ -164,8 +186,8 @@
               <span class="text-xs text-slate-400 font-medium">Rata-rata Nilai Studio</span>
               <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="award" class="w-4 h-4"></i></span>
             </div>
-            <div class="text-2xl font-bold text-amber-300 mt-2" id="kpi-nilai">80.4</div>
-            <div class="text-[11px] text-slate-400 mt-1">Predikat: <strong>A- (Memuaskan)</strong></div>
+            <div class="text-2xl font-bold text-amber-300 mt-2" id="kpi-nilai">-</div>
+            <div class="text-[11px] text-slate-400 mt-1">Predikat kelas: <strong id="kpi-predikat-desc">-</strong></div>
           </div>
 
           <div class="bg-slate-800/60 rounded-xl p-4 border border-rose-500/30 bg-rose-500/5">
@@ -173,8 +195,8 @@
               <span class="text-xs text-rose-300 font-medium">Mahasiswa At-Risk</span>
               <span class="p-2 rounded-lg bg-rose-500/20 text-rose-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>
             </div>
-            <div class="text-2xl font-bold text-rose-400 mt-2" id="kpi-at-risk">1 Mahasiswa</div>
-            <div class="text-[11px] text-rose-300/80 mt-1">Alpha $\ge 2$x (Butuh Asistensi Khusus)</div>
+            <div class="text-2xl font-bold text-rose-400 mt-2" id="kpi-at-risk">-</div>
+            <div class="text-[11px] text-rose-300/80 mt-1">Alpha &#8805; 2x <span class="text-slate-400">atau kehadiran &lt; 75%</span> (Butuh Asistensi Khusus)</div>
           </div>
         </div>
 
@@ -233,7 +255,7 @@
             <span class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
               <i data-lucide="info" class="w-3.5 h-3.5"></i> Catatan Evaluasi Kaprodi:
             </span>
-            Mayoritas mahasiswa (68%) telah menguasai pembuatan layer, detail pondasi, dan sinkronisasi gambar potongan. 1 mahasiswa dalam status bimbingan khusus.
+            <span id="kadrodi-note">Memuat ringkasan capaian kelas...</span>
           </div>
         </div>
       </div>
@@ -256,15 +278,9 @@
               <input type="text" id="table-search" placeholder="Cari nama / NPM..." oninput="filterTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition w-44">
             </div>
 
-            <!-- Session Filter -->
+            <!-- Session Filter (diisi otomatis dari data oleh app.js) -->
             <select id="filter-session" onchange="filterTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
-              <option value="all">Semua Sesi (1-6)</option>
-              <option value="1">Sesi 1: Pengenalan AutoCAD</option>
-              <option value="2">Sesi 2: Kolom & Dinding</option>
-              <option value="3">Sesi 3: Layer & Blok Pintu</option>
-              <option value="4">Sesi 4: Potongan & Pondasi</option>
-              <option value="5">Sesi 5: Layout & Plot PDF</option>
-              <option value="6">Sesi 6: Volume Scheduling</option>
+              <option value="all">Semua Sesi</option>
             </select>
 
             <!-- Status Filter -->
@@ -344,18 +360,18 @@
             <!-- Avatar Frame -->
             <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-1 shadow-xl flex-shrink-0">
               <div class="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center text-3xl font-black text-amber-400 font-mono" id="mhs-avatar">
-                YZ
+                -
               </div>
             </div>
 
             <div>
               <div class="flex items-center gap-2.5 flex-wrap">
-                <h3 class="text-2xl font-black text-white tracking-tight" id="mhs-nama">M YAZID ZIDANE MULYADI</h3>
-                <span id="mhs-alert-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  OPTIMAL
+                <h3 class="text-2xl font-black text-white tracking-tight" id="mhs-nama">Memuat data...</h3>
+                <span id="mhs-alert-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700/40 text-slate-400 border border-slate-600/40">
+                  -
                 </span>
-                <span id="mhs-ranking-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono">
-                  🎯 INDEKS KESIAPAN: 96% (KOMPETEN UNGGUL)
+                <span id="mhs-ranking-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700/40 text-slate-400 border border-slate-600/40 font-mono">
+                  -
                 </span>
               </div>
               <div class="flex items-center gap-4 text-xs text-slate-400 mt-1.5 flex-wrap font-mono">
@@ -424,7 +440,10 @@
               <span>Kedisiplinan:</span> <strong class="text-amber-400" id="radar-val-disiplin">98</strong>
             </div>
             <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
-              <span>Logika Struktur:</span> <strong class="text-amber-400" id="radar-val-ruang">92</strong>
+              <span>Logika Struktur:</span> <strong class="text-amber-400" id="radar-val-ruang">-</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Manajemen Waktu:</span> <strong class="text-amber-400" id="radar-val-waktu">-</strong>
             </div>
           </div>
         </div>
@@ -555,11 +574,11 @@
       <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="presentation" class="w-4 h-4"></i> DeckCraft Presentation Engine (Pengganti Carousel)
+            <i data-lucide="presentation" class="w-4 h-4"></i> DeckCraft Presentation Engine
           </span>
           <h2 class="text-xl font-bold text-white mt-1">Slide Deck Portofolio Arsitektur 16:9 Widescreen (Format PDF Siap Lampir)</h2>
           <p class="text-xs text-slate-300 mt-1 max-w-2xl">
-            Konsep carousel kini diupgrade menjadi <strong>Dokumen PDF Slide Deck Presentasi 4 Halaman</strong> beresolusi tinggi. Dilengkapi mockup video vertikal 9:16 untuk media sosial!
+            Dokumen <strong>PDF Slide Deck Presentasi 4 Halaman</strong> beresolusi tinggi. Dilengkapi mockup video vertikal 9:16 untuk media sosial!
           </p>
         </div>
         <div class="flex items-center gap-2">
@@ -581,7 +600,7 @@
               </h3>
               <p class="text-xs text-slate-400">Slide presentasi portofolio interaktif & sertifikasi kurikulum IAI</p>
             </div>
-            <!-- Slide Nav & Action Buttons -->
+            <!-- Action Buttons -->
             <div class="flex items-center flex-wrap gap-2">
               <button onclick="openLiveDeckcraft()" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-bold flex items-center gap-1.5 transition">
                 <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Fullscreen Interaktif
@@ -589,94 +608,53 @@
               <button onclick="downloadCurrentStudentDeckcraftPDF()" class="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition">
                 <i data-lucide="file-down" class="w-3.5 h-3.5"></i> Unduh PDF 16:9
               </button>
-              <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded-lg p-0.5">
-                <button onclick="prevSlide()" class="p-1.5 rounded hover:bg-slate-800 text-white transition">
-                  <i data-lucide="chevron-left" class="w-4 h-4"></i>
-                </button>
-                <span id="carousel-indicator" class="text-xs font-mono font-bold text-cyan-400 px-2">1 / 4</span>
-                <button onclick="nextSlide()" class="p-1.5 rounded hover:bg-slate-800 text-white transition">
-                  <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                </button>
-              </div>
             </div>
           </div>
 
-          <!-- THE DECKCRAFT WIDESCREEN 16:9 CANVAS STAGE -->
-          <div class="relative w-full aspect-[16/9] bg-gradient-to-b from-[#080c12] via-[#0d131d] to-[#080c12] rounded-2xl border-2 border-amber-500/40 p-6 flex flex-col justify-between shadow-2xl overflow-hidden" id="carousel-stage">
-            
-            <!-- Floating Background Architectural Blueprint Mesh -->
-            <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#ffc800 1px, transparent 1px); background-size: 20px 20px;"></div>
-
-            <!-- Slide Header Bar -->
-            <div class="flex items-center justify-between relative z-10">
-              <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 px-3 py-1 rounded-full text-[11px] font-bold text-amber-400">
-                <span>🏛️ DECKCRAFT ARCHITECTURE</span>
-              </div>
-              <div class="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800" id="slide-stage-counter">
-                01 / 04
-              </div>
-            </div>
-
-            <!-- Middle Dynamic Visual Content -->
-            <div class="my-auto relative z-10 flex items-center justify-between gap-6 py-2">
-              <div class="flex-1 space-y-2 text-left">
-                <!-- Badge Tag -->
-                <div class="inline-block">
-                  <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20" id="slide-stage-badge">
-                    PORTOFOLIO AKADEMIK STUDIO 2026
-                  </span>
-                </div>
-
-                <!-- Main Slide Title & Body -->
-                <h4 class="text-lg font-black text-white tracking-tight leading-snug" id="slide-stage-title">
-                  Kompilasi Gambar Kerja CAD & Aplikasi Komputer Arsitektur
-                </h4>
-                <p class="text-xs text-slate-300 leading-relaxed max-w-md" id="slide-stage-desc">
-                  Dokumentasi capaian kompetensi perancangan denah presisi, potongan struktural, dan perhitungan volume QS.
-                </p>
-              </div>
-
-              <!-- Visual Box Vector Rendering -->
-              <div class="w-48 h-36 rounded-xl bg-slate-900/90 border border-slate-700/80 p-3 flex flex-col items-center justify-center relative overflow-hidden flex-shrink-0" id="slide-visual-box">
-                <!-- Dynamically rendered vector -->
-              </div>
-            </div>
-
-            <!-- Slide Footer Bar -->
-            <div class="pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 relative z-10">
-              <span id="slide-stage-highlight" class="font-mono text-amber-400 font-semibold">Tingkat Kehadiran: 100%</span>
-              <span class="flex items-center gap-1 text-slate-400">DECKCRAFT ENGINE • E:\WORKSHOP\OPEN_CRAFT_MCP</span>
-            </div>
-
-          </div>
-
-          <!-- Slide Thumbnail Selectors -->
-          <div class="grid grid-cols-4 gap-2.5 pt-2">
-            <button onclick="goToSlide(0)" class="slide-thumb-btn active-thumb p-2.5 rounded-xl bg-slate-900 border border-amber-500 text-left transition" id="thumb-0">
+          <!--
+            FIX TAHAP A: Carousel 4-slide interaktif DIHAPUS.
+            Alasannya: app.js membaca student.marketing.carousel, tapi key itu
+            TIDAK PERNAH ADA di academic_data.json (hanya ada video & wa_text).
+            Akibatnya tombol prev/next dan 4 thumbnail mati total - diklik tidak
+            terjadi apa-apa, stage diam-diam menampilkan teks placeholder.
+            Sekarang isi slide yang sesungguhnya ditampilkan lewat DeckCraft:
+            tekan "Fullscreen Interaktif" atau "Unduh PDF 16:9".
+          -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
               <div class="text-[10px] text-amber-400 font-mono font-bold">SLIDE 1</div>
-              <div class="text-[11px] font-semibold text-white truncate">Cover & Prestasi</div>
-            </button>
-            <button onclick="goToSlide(1)" class="slide-thumb-btn p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left transition" id="thumb-1">
-              <div class="text-[10px] text-slate-400 font-mono font-bold">SLIDE 2</div>
-              <div class="text-[11px] font-semibold text-white truncate">Aktivitas Lab</div>
-            </button>
-            <button onclick="goToSlide(2)" class="slide-thumb-btn p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left transition" id="thumb-2">
-              <div class="text-[10px] text-slate-400 font-mono font-bold">SLIDE 3</div>
-              <div class="text-[11px] font-semibold text-white truncate">Karya Gambar</div>
-            </button>
-            <button onclick="goToSlide(3)" class="slide-thumb-btn p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left transition" id="thumb-3">
-              <div class="text-[10px] text-slate-400 font-mono font-bold">SLIDE 4</div>
-              <div class="text-[11px] font-semibold text-white truncate">Pride & Closing</div>
-            </button>
+              <div class="text-xs font-bold text-white">Cover Progres & Identitas</div>
+              <div class="text-[11px] text-slate-400" id="deck-slide-1">Ringkasan mahasiswa</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-cyan-400 font-mono font-bold">SLIDE 2</div>
+              <div class="text-xs font-bold text-white">Matriks Layer CAD & Lineweight</div>
+              <div class="text-[11px] text-slate-400">Standar gambar kerja IAI</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-cyan-400 font-mono font-bold">SLIDE 3</div>
+              <div class="text-xs font-bold text-white">Karya Denah Arsitektur 1:100</div>
+              <div class="text-[11px] text-slate-400">Notasi ruang & dimensi</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-emerald-400 font-mono font-bold">SLIDE 4</div>
+              <div class="text-xs font-bold text-white">Sertifikasi Kompetensi Studio</div>
+              <div class="text-[11px] text-slate-400" id="deck-slide-4">Berstempel emas Kaprodi</div>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-2.5 p-3 rounded-xl bg-sky-500/10 border border-sky-500/25 text-[11px] text-slate-300">
+            <i data-lucide="info" class="w-4 h-4 text-sky-400 flex-shrink-0 mt-px"></i>
+            <span>Ingin melihat isi slide lengkap? Tekan <strong class="text-white">Fullscreen Interaktif</strong> (presentasi HTML 16:9) atau <strong class="text-white">Unduh PDF 16:9</strong> (siap dilampirkan ke wali murid). Keduanya memakai data mahasiswa yang sedang dipilih.</span>
           </div>
 
           <!-- OpenCraft MCP Link Banner -->
-          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs text-slate-300">
-            <div class="flex items-center gap-2">
-              <span class="p-1.5 rounded-lg bg-sky-500/20 text-sky-400"><i data-lucide="cpu" class="w-4 h-4"></i></span>
-              <span>Terhubung dengan MCP: <strong class="text-white">OPEN_CRAFT_MCP / deckcraft_builder.py</strong></span>
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="p-1.5 rounded-lg bg-sky-500/20 text-sky-400 flex-shrink-0"><i data-lucide="cpu" class="w-4 h-4"></i></span>
+              <span class="truncate">Engine DeckCraft: <strong class="text-white">deckcraft_builder.py</strong></span>
             </div>
-            <button onclick="downloadCurrentStudentDeckcraftPDF()" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition">
+            <button onclick="downloadCurrentStudentDeckcraftPDF()" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition flex-shrink-0">
               <span>Unduh File PDF</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
             </button>
           </div>
@@ -771,7 +749,7 @@
           </span>
           <h2 class="text-xl font-bold text-white mt-1">Simulator Pesan WhatsApp Resmi & Lampiran File PDF</h2>
           <p class="text-xs text-slate-300 mt-1 max-w-2xl">
-            Bukan teks panjang biasa! Pesan diawali dengan <strong>Pesan Pembuka Sopan</strong> kemudian diikuti <strong>Lampiran 3 File PDF Terverifikasi</strong> (Kehadiran Bulanan, Rapor Akhir & Ranking, serta Slide Portofolio DeckCraft).
+            Bukan teks panjang biasa! Pesan diawali dengan <strong>Pesan Pembuka Sopan</strong> kemudian diikuti <strong>Lampiran 3 File PDF Terverifikasi</strong> (Rekap Kehadiran Bulanan, Rapor Capaian & Matriks Karier, serta Slide Portofolio DeckCraft).
           </p>
         </div>
         <div class="flex items-center gap-3">
@@ -798,7 +776,7 @@
             </div>
           </div>
           <div class="text-xs text-slate-400">
-            Tujuan: <strong class="text-slate-200" id="wa-recipient-name">Wali Murid M Yazid Zidane Mulyadi</strong>
+            Tujuan: <strong class="text-slate-200" id="wa-recipient-name">-</strong>
           </div>
         </div>
 
@@ -828,7 +806,7 @@
                   </div>
                   <div class="min-w-0">
                     <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-1">01_rekap_kehadiran_bulanan.pdf</div>
-                    <div class="text-[10px] text-emerald-200/80 font-mono">215 KB • Rekap Presensi & Alasan</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">Rekap Presensi & Alasan</div>
                   </div>
                 </div>
                 <button class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0">
@@ -844,7 +822,7 @@
                   </div>
                   <div class="min-w-0">
                     <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-2">02_rapor_akhir_semester_kompetensi.pdf</div>
-                    <div class="text-[10px] text-emerald-200/80 font-mono">227 KB • Rapor Capaian & Matriks Karier</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">Rapor Capaian & Matriks Karier</div>
                   </div>
                 </div>
                 <button class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0">
@@ -860,7 +838,7 @@
                   </div>
                   <div class="min-w-0">
                     <div class="font-bold text-amber-300 truncate text-[11px]" id="wa-card-file-3">05_deckcraft_portofolio_arsitektur.pdf</div>
-                    <div class="text-[10px] text-emerald-200/80 font-mono">245 KB • 4 Slide Presentasi 16:9 Widescreen</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">4 Slide Presentasi 16:9 Widescreen</div>
                   </div>
                 </div>
                 <button class="p-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold flex-shrink-0">
@@ -910,7 +888,7 @@
   </main>
 
   <!-- FOOTER -->
-  <footer class="mt-12 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+  <footer id="app-footer" class="mt-12 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
       <div>
         <strong>SIAK-KAPRODI</strong> • Sistem Otomasi Akademik & Portofolio Program Studi Arsitektur
@@ -922,6 +900,50 @@
       </div>
     </div>
   </footer>
+
+  <!-- TOAST HOST (pengganti window.alert yang memblokir) -->
+  <div id="toast-host" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- BANNER: CDN GAGAL LOAD -->
+  <div id="cdn-warning" class="hidden bg-rose-950 border-b border-rose-800 px-4 py-2.5 text-xs text-rose-200">
+    <div class="max-w-7xl mx-auto flex items-center gap-2.5">
+      <i data-lucide="wifi-off" class="w-4 h-4 flex-shrink-0"></i>
+      <span id="cdn-warning-text" class="flex-1"></span>
+      <button onclick="location.reload()" class="px-2.5 py-1 bg-rose-800 hover:bg-rose-700 rounded-lg font-semibold flex items-center gap-1.5">
+        <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Muat Ulang
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING SKELETON -->
+  <div id="app-loading" class="max-w-7xl mx-auto px-4 lg:px-8 py-10 space-y-4">
+    <div class="h-3 w-48 rounded bg-slate-800 animate-pulse"></div>
+    <div class="h-8 w-2/3 rounded bg-slate-800 animate-pulse"></div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+    </div>
+    <p class="text-xs text-slate-500 text-center pt-2">Memuat data akademik dari server lokal...</p>
+  </div>
+
+  <!-- BANNER: DATA GAGAL DIMUAT -->
+  <div id="app-error" class="hidden max-w-2xl mx-auto px-4 py-14">
+    <div class="bg-rose-950/50 border border-rose-800/60 rounded-2xl p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center mx-auto">
+        <i data-lucide="database-zap" class="w-6 h-6 text-rose-400"></i>
+      </div>
+      <h3 class="text-base font-bold text-white">Data akademik tidak dapat dimuat</h3>
+      <p id="app-error-message" class="text-xs text-slate-300 leading-relaxed"></p>
+      <div class="flex items-center justify-center gap-2.5 pt-1">
+        <button id="btn-retry-load" onclick="retryLoad()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 transition">
+          <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Coba Lagi
+        </button>
+        <span class="text-[11px] text-slate-500">atau jalankan ulang <code class="text-amber-400 font-mono">run_server.bat</code></span>
+      </div>
+    </div>
+  </div>
 
   <!-- Script Controller -->
   <script src="app.js"></script>

@@ -1272,62 +1272,109 @@ def build_all_pdfs():
     print(f"[INFO] File juga disinkronkan ke 'generated_pdfs/' untuk live web preview.")
     print("=" * 65)
 
+PDF_TYPE_PER_STUDENT = ("monthly", "presensi", "rapor", "final", "deckcraft", "portofolio")
+PDF_TYPE_CLASS_LEVEL = ("gradebook", "kaprodi", "audit", "dosen")
+PDF_TYPE_ALL = PDF_TYPE_PER_STUDENT + PDF_TYPE_CLASS_LEVEL
+
+
 def generate_pdf_bytes_on_demand(pdf_type, npm=None):
     """
     Dynamically generates on-demand PDF bytes directly from live data in academic_data.json.
     Ensures 100% synchronization with newest edits, active course, and any of the 35 students.
+
+    FIX TAHAP A:
+      * Tidak ada lagi fallback ke students[0]. Dulu, NPM yang salah/kosong
+        diam-diam menghasilkan PDF mahasiswa PERTAMA dan tetap HTTP 200,
+        artinya rapor orang lain bisa dikirim ke wali murid yang salah.
+      * Tipe PDF yang tidak dikenal langsung error, tidak sampai boot Chromium
+        lalu balik dengan file kosong.
+      * student hanya dicari untuk dokumen per-mahasiswa.
+      * browser.close() dipaksa lewat try/finally.
     """
     global DATA
+
+    if pdf_type not in PDF_TYPE_ALL:
+        raise ValueError(
+            f"pdf_type '{pdf_type}' tidak dikenal. "
+            f"Pilihan: {', '.join(sorted(set(PDF_TYPE_ALL)))}"
+        )
+
     with open(DATA_FILE, "r", encoding="utf-8") as f:
         DATA = json.load(f)
 
     student = None
-    if npm:
-        student = next((s for s in DATA.get("students", []) if s["npm"] == str(npm)), None)
-    if not student and DATA.get("students"):
-        student = DATA["students"][0]
+    if pdf_type in PDF_TYPE_PER_STUDENT:
+        target = str(npm).strip() if npm is not None else ""
+        if not target:
+            raise ValueError(
+                f"NPM wajib diisi untuk dokumen '{pdf_type}' "
+                f"(contoh: /api/pdf/download?type={pdf_type}&npm=2510015410010)"
+            )
+        student = next(
+            (s for s in DATA.get("students", []) if str(s.get("npm", "")) == target), None
+        )
+        if not student:
+            raise ValueError(f"Mahasiswa dengan NPM {target} tidak ditemukan di dataset aktif.")
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
+        try:
+            page = browser.new_page()
 
-        pdf_bytes = b""
-        filename = "dokumen.pdf"
+            pdf_bytes = b""
+            filename = "dokumen.pdf"
 
-        if pdf_type in ("monthly", "presensi"):
-            filename = f"01_rekap_kehadiran_bulanan_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
-            html = render_monthly_attendance_html(student)
-            page.set_content(html)
-            pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
-        
-        elif pdf_type in ("rapor", "final"):
-            filename = f"02_rapor_akhir_semester_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
-            html = render_final_report_html(student)
-            page.set_content(html)
-            pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
+            if pdf_type in ("monthly", "presensi"):
+                filename = f"01_rekap_kehadiran_bulanan_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
+                html = render_monthly_attendance_html(student)
+                page.set_content(html)
+                pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
 
-        elif pdf_type in ("deckcraft", "portofolio"):
-            filename = f"05_deckcraft_portofolio_arsitektur_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
-            sys.path.append(r"E:\WORKSHOP\OPEN_CRAFT_MCP\scripts")
-            from deckcraft_builder import render_deckcraft_slides_html
-            html = render_deckcraft_slides_html(student, DATA["course"])
-            page.set_content(html)
-            pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
+            elif pdf_type in ("rapor", "final"):
+                filename = f"02_rapor_akhir_semester_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
+                html = render_final_report_html(student)
+                page.set_content(html)
+                pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
 
-        elif pdf_type in ("gradebook", "kaprodi"):
-            filename = "03_laporan_penilaian_kaprodi_master_gradebook.pdf"
-            html = render_kaprodi_gradebook_html()
-            page.set_content(html)
-            pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
+            elif pdf_type in ("deckcraft", "portofolio"):
+                filename = f"05_deckcraft_portofolio_arsitektur_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
+                _scripts_dir = os.environ.get(
+                    "OPENCRAFT_MCP_SCRIPTS", r"E:\WORKSHOP\OPEN_CRAFT_MCP\scripts")
+                if _scripts_dir not in sys.path:
+                    sys.path.append(_scripts_dir)
+                try:
+                    from deckcraft_builder import render_deckcraft_slides_html
+                except ImportError as e:
+                    raise RuntimeError(
+                        "Modul deckcraft_builder tidak ditemukan. "
+                        "Set env OPENCRAFT_MCP_SCRIPTS ke folder deckcraft_builder.py. "
+                        f"({e})"
+                    ) from e
+                html = render_deckcraft_slides_html(student, DATA["course"])
+                page.set_content(html)
+                pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
 
-        elif pdf_type in ("audit", "dosen"):
-            filename = "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf"
-            html = render_dosen_curriculum_audit_html()
-            page.set_content(html)
-            pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+            elif pdf_type in ("gradebook", "kaprodi"):
+                filename = "03_laporan_penilaian_kaprodi_master_gradebook.pdf"
+                html = render_kaprodi_gradebook_html()
+                page.set_content(html)
+                pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
 
-        browser.close()
-        return pdf_bytes, filename
+            elif pdf_type in ("audit", "dosen"):
+                filename = "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf"
+                html = render_dosen_curriculum_audit_html()
+                page.set_content(html)
+                pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+
+            return pdf_bytes, filename
+        finally:
+            # Tanpa finally, setiap exception dari page.pdf() / deckcraft_builder
+            # meninggalkan proses Chromium yatim menumpuk di memory.
+            try:
+                browser.close()
+            except Exception:
+                pass
+
 
 if __name__ == "__main__":
     build_all_pdfs()
