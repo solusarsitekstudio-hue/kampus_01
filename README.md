@@ -1,25 +1,36 @@
 # 🏛️ SIAK-KAPRODI: Sistem Intelijen Akademik & Rekap Portofolio Arsitektur
-> **Golden Demo v2.0** — Platform Otomasi Akademik, Rapor Interaktif Wali Murid, dan Mesin Viral Marketing untuk Program Studi Arsitektur.
+> **Golden Demo v2.5** — Platform Otomasi Akademik, Rapor Interaktif & Pemetaan 10 Karier Masa Depan, Slide Deck Portofolio Arsitektur, serta Generator Dokumen PDF On-Demand untuk Program Studi Arsitektur.
 
 ---
 
 ## 🌟 Latar Belakang & Nilai Strategis
-Sistem ini dirancang khusus untuk memecahkan beban administratif Ketua Program Studi (Kaprodi) dan Dosen, sekaligus mengubah data perkuliahan menjadi aset publikasi berdaya jangkau tinggi bagi institusi kampus.
+Sistem ini dirancang khusus untuk memecahkan beban administratif Ketua Program Studi (Kaprodi) dan Dosen, sekaligus mengubah data perkuliahan menjadi aset komunikasi bermartabat ke wali murid dan instrumen publikasi berkualitas tinggi bagi institusi kampus.
 
 Sistem mengintegrasikan **4 Pilar Utama**:
 1. **Pilar Presensi & Rekap Bulanan**:
    * Rekap absensi bulanan 35 mahasiswa lengkap per kelas dan per individu.
    * Pencatatan tanggal sesi, mata kuliah, status (Hadir, Sakit, Izin, Alpha), serta alasan ketidakhadiran otentik.
    * Deteksi dini mahasiswa berisiko (*At-Risk Intervention*) bagi yang memiliki Alpha $\ge 2$x atau kehadiran $< 75\%$.
-2. **Pilar Rapor Interaktif & Analisis AI (Wali Murid)**:
-   * Portal digital yang ramah orang tua dengan visualisasi Radar Chart 5 dimensi kompetensi arsitektur.
-   * Analisis AI komprehensif: **Kekuatan**, **Kelemahan/Area Peningkatan**, dan **Saran Spesifik untuk Wali Murid di Rumah**.
-3. **Pilar Mesin Viral Marketing (Word-of-Mouth)**:
-   * **4-Slide Instagram Carousel (4:5 Portrait)**: Slide 1 (Cover Prestasi), Slide 2 (Aktivitas Studio Lab LIKDA), Slide 3 (Karya Gambar Kerja A3), Slide 4 (Pride & Ajakan Kuliah di Arsitektur).
-   * **Video Vertikal 9:16 (Reels/Shorts/WA Story)**: Video 32 detik dengan narasi suara AI (Voiceover) merayakan progres dan capaian anak.
-   * *Outcome*: Wali murid bangga dan memposting pencapaian anaknya ke WhatsApp Status / Instagram Stories, menciptakan promosi organik gratis bagi kampus!
-4. **Pilar Dispatcher WhatsApp**:
-   * Generator pesan resmi siap kirim ke nomor orang tua via WhatsApp Web dengan tautan unik rapor digital.
+   * Dilengkapi grafik web interaktif: Donut Progress Ring dan Bar Chart 6 Sesi Pertemuan dengan garis patokan Benchmark Kelas (83.3%).
+2. **Pilar Rapor Interaktif & Pemetaan 10 Karier Masa Depan (Wali Murid)**:
+   * **Zero Competitive Ranking**: Menghapus sistem ranking kompetitif kelas (seperti `#35 / 35`) untuk melindungi martabat mahasiswa dan perasaan wali murid. Digantikan dengan **Status Kompetensi**, **Indeks Kesiapan Profesi (%)**, dan **Predikat Capaian Individu**.
+   * **Visualisasi Spider-Web Radar 5 Dimensi**: Mengukur 5 pilar arsitektur (*AutoCAD*, *Detail & Presisi*, *Kedisiplinan Asistensi*, *Logika Ruang & Struktur*, dan *Manajemen Waktu*) dengan jaring laba-laba konsentris (20%, 40%, 60%, 80%, 100%).
+   * **Diagnosis AI Mendalam (4 Kuadran Narasi)**:
+     1. *Karakter Spasial & Etos Kerja Studio*
+     2. *Proyeksi Potensi Perkembangan Kedepan*
+     3. *Catatan Khusus Penguatan Mahasiswa*
+     4. *Panduan Khusus Pendampingan Wali Murid di Rumah*
+   * **Matriks 10 Rekomendasi Profesi Riil Masa Depan**: Analisis kecocokan talenta ke 10 profesi nyata industri (Architectural Designer, BIM Modeler & Coordinator, Quantity Surveyor, Detail Engineering Drawing Specialist, Interior Architect, 3D Architectural Visualizer, Site Architect, Landscape Architect Assistant, Green Building Specialist, Project Planner/Kontraktor Mandiri) lengkap dengan persentase skor, badge kecocokan, keterampilan kunci, dan langkah aksi riil.
+3. **Pilar Portofolio Digital Slide Deck 16:9 (DeckCraft Visual Engine)**:
+   * Menggantikan format carousel media sosial yang kaku menjadi **Dokumen Portofolio Slide Deck Widescreen 16:9** berstandar sayembara arsitektur:
+     * *Slide 1*: Cover Progres & Identitas Mahasiswa
+     * *Slide 2*: Matriks Layer CAD, Lineweight & Standar IAI
+     * *Slide 3*: Karya Denah Arsitektur Skala 1:100 Lengkap dengan Notasi & Dimensi
+     * *Slide 4*: Sertifikasi Kompetensi Resmi Studio Berstempel Emas Kaprodi
+   * Dilengkapi penampil **Fullscreen Interaktif di Web** serta simulasi **Mockup Video Vertikal 9:16 (Shorts/Reels/WhatsApp Story)** dengan narasi AI untuk media sosial.
+4. **Pilar Dispatcher WhatsApp & On-Demand PDF Stream**:
+   * Generator pesan resmi sopan siap kirim ke nomor orang tua via WhatsApp Web dengan **3 Lampiran Berkas PDF Resmi Terverifikasi**.
+   * Terintegrasi dengan engine rendering dokumen on-demand yang langsung menghasilkan file PDF sinkron secara instan.
 
 ---
 
@@ -56,52 +67,61 @@ stop_server.bat
 setup.bat
 ```
 
+### 4. Memproses Input Baru & Mengompilasi Dokumen
+```cmd
+process_input.bat
+```
+
 ---
 
 ## 🗺️ Peta Studi Kasus Demo
 Untuk kemudahan demonstrasi di depan Kaprodi, gunakan tombol demo cepat di pojok kanan atas:
 1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**:
-   * Profil mahasiswa teladan (Top Star), Kehadiran 100%, Grade A (95.2).
-   * Contoh ideal untuk meninjau hasil carousel 4-slide dan video viral status WhatsApp.
+   * Profil mahasiswa unggul (Kompeten Unggul), Kehadiran 100%, Grade A (94.2).
+   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.5%) dan Architectural Designer (93.3%).
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**:
-   * Profil mahasiswa yang membutuhkan perhatian (At-Risk Intervention), 2x Alpha & 1x Sakit.
-   * Menunjukkan bagaimana AI memberikan diagnosis empati dan menyarankan bimbingan khusus sebelum terlambat.
+   * Profil mahasiswa yang membutuhkan perhatian (Perlu Asistensi Lanjutan), 2x Sakit & 1x Alpha, Grade C (68.5).
+   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya (Site Architect 87.0%) dengan panduan pendampingan orang tua yang hangat dan suportif di rumah.
 3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**:
-   * Profil mahasiswa konsisten kreatif dengan riwayat izin delegasi lomba arsitektur.
+   * Profil mahasiswa kreatif konsisten, Kehadiran 83.3% (izin delegasi lomba arsitektur), Grade A (91.8).
 
 ---
 
-## 📄 Generator Dokumen PDF Resmi (4 Paket Dokumen)
-Sistem dilengkapi engine perender dokumen PDF berkualitas penerbitan (Playwright Engine) yang dapat digenerate kapan saja via `generate_all_pdfs.bat` atau tombol unduh di browser:
+## 📄 Generator Dokumen PDF Resmi & Fitur Live On-Demand
 
-### 1. Dokumen untuk Wali Murid (2 Jenis PDF):
+Sistem dilengkapi endpoint **Dynamic On-Demand PDF Generation** (`/api/pdf/download?type=<TYPE>&npm=<NPM>`) di `server.py` yang langsung membaca live dataset master `data/academic_data.json`.
+* **100% Selalu Sinkron**: Setiap kali data diedit atau mata kuliah di-switch, dokumen langsung terbit sesuai kondisi terbaru tanpa delay atau berkas statis basi.
+* **Mendukung Seluruh 35 Mahasiswa**: Siapa pun mahasiswa yang dipilih di dashboard langsung dapat diunduh dokumennya tanpa kendala 404.
+* **Grafik Web Ditanamkan ke PDF ("Grafik Web")**: Seluruh grafik analitik vector SVG resolusi tinggi disematkan langsung di dalam dokumen:
+
+### 1. Dokumen untuk Wali Murid (3 Jenis Berkas):
 * **PDF 1A: Rekap Kehadiran Mahasiswa Bulanan** (`01_rekap_kehadiran_bulanan_*.pdf`):
   * Dikirim rutin tiap 1 bulan sekali ke orang tua.
-  * Memuat kop resmi fakultas, ringkasan persentase kehadiran, rekap sakit/izin/alpha, rincian tanggal pertemuan, topik materi, alasan ketidakhadiran, serta stempel verifikasi Kaprodi.
-* **PDF 1B: Rapor Evaluasi Akhir Semester & Ranking Afirmatif** (`02_rapor_akhir_semester_*.pdf`):
-  * Dikirim di akhir semester sebagai laporan portofolio final.
-  * **Peringkat/Ranking Kelas**: Menampilkan posisi mahasiswa di antara 35 mahasiswa kelas (misal: `#1 / 35`).
-  * **Psikologi Afirmatif**: Walaupun mahasiswa berada di peringkat bawah (seperti studi kasus Rozi Andrian Surva), sistem secara elegan **menonjolkan kelebihan, daya imajinasi spasial, dan potensi uniknya**, serta membingkai kelemahan sebagai peluang akselerasi agar wali murid tetap bangga dan termotivasi mendampingi anaknya di rumah.
-  * **Radar Chart Visual**: Profil kompetensi 5 pilar arsitektur (AutoCAD, Detail Gambar, Kedisiplinan, Logika Struktur, Waktu).
+  * Memuat kop resmi fakultas, ringkasan persentase kehadiran, 4 kartu metrik (Hadir, Sakit, Izin, Alpha).
+  * **Grafik Web**: **Donut Progress Ring Kehadiran** (warna adaptif hijau/biru/merah) serta **6-Session Bar Chart** dengan pill status kehadiran dan garis putus-putus **Benchmark Kehadiran Kelas (83.3%)**.
+  * Rincian log per sesi, catatan peraturan akademik, dan stempel verifikasi Kaprodi.
+* **PDF 1B: Rapor Capaian Studio & Matriks 10 Karier Masa Depan** (`02_rapor_akhir_semester_*.pdf`):
+  * Dikirim di akhir semester (2 Halaman Format A4 Portrait).
+  * **Halaman 1**: Banner profil mahasiswa dengan Indeks Kesiapan, **Spider-Web Radar Chart 5 Pilar Arsitektur** (5 cincin jaring laba-laba konsentris, bebas clipping teks), tabel rincian nilai 6 sesi praktikum, **Grafik Batang Progress Capaian P1-P6**, serta **4 Kuadran Narasi AI Mendalam**.
+  * **Halaman 2**: **Matriks 10 Rekomendasi Profesi Riil Masa Depan** (Tabel bergradien dengan visual progress bar kecocokan, badge kategori, pills keterampilan kunci, analisis potensi, dan langkah aksi konkrit).
+* **PDF 1C: Slide Deck Portofolio Arsitektur Mahasiswa (DeckCraft)** (`05_deckcraft_portofolio_arsitektur_*.pdf`):
+  * Dokumen presentasi arsitektur 4 halaman landscape 16:9 widescreen beresolusi tinggi.
+  * Visualisasi teknis: 3D Axonometric Wireframe Villa, Tabel Ketebalan Garis CAD, Denah Arsitektur Skala 1:100 dengan dimensi & notasi ruang, serta Sertifikasi Resmi Berstempel Emas.
 
-### 2. Dokumen untuk Kaprodi (1 Jenis PDF):
+### 2. Dokumen untuk Kaprodi:
 * **PDF 2: Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (`03_laporan_penilaian_kaprodi_master_gradebook.pdf`):
-  * Format **A4 Landscape** eksekutif untuk arsip rapat yudisium dan akreditasi jurusan.
-  * Rekap matriks 35 mahasiswa lengkap: presensi %, nilai sesi P1 s/d P6, nilai akhir, grade huruf, ranking kelas, dan status kelulusan (Lulus, Remidi, Evaluasi).
-  * Statistik makro: rata-rata kelas (81.0 / A-), kelulusan 97.1%, dan daftar intervensi at-risk.
+  * Format **A4 Landscape** eksekutif untuk rapat yudisium dan arsip akreditasi BAN-PT/LAM Teknik.
+  * Memuat 5 kartu statistik makro kelas.
+  * **Grafik Web Analitik Kelas**:
+    1. **Tren Kehadiran Sesi 1 s.d. 6**: Stacked bar chart mahasiswa Hadir vs Absen.
+    2. **Distribusi Grade Nilai Kelas**: Histogram sebaran grade nilai huruf (A, A-, B+, B, C, D) seluruh 35 mahasiswa.
+  * Master Table 35 mahasiswa terurut ranking internal dengan log nilai P1-P6 dan status kelulusan.
 
-### 3. Dokumen untuk Dosen dari Kaprodi (1 Jenis PDF):
+### 3. Dokumen untuk Dosen dari Kaprodi:
 * **PDF 3: Laporan Evaluasi Dosen & Keselarasan Kurikulum / Modul RPS** (`04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf`):
-  * Laporan audit mutu pengajaran (QA Dosen) dari Kaprodi kepada tim pengampu (Aprilia Yunita, Duddy Fajriansyah, dan Adrian Ridhoa).
+  * Laporan audit mutu pengajaran (QA Dosen) dari Kaprodi kepada tim pengampu.
   * Realisasi presensi tim pengajar (100% terlaksana).
   * **Audit Kesesuaian Materi vs Modul RPS**: Evaluasi materi per sesi terhadap capaian CPMK/CPL dengan skor keselarasan rata-rata **96.0% (Terakreditasi Sangat Baik / Unggul)**.
-  * Rapor performa kelas yang diampu beserta catatan evaluasi peningkatan mutu dari Kaprodi.
-
-### 4. Portofolio Presentasi 16:9 Widescreen (DeckCraft Visual Engine):
-* **PDF 1C: Slide Deck Portofolio Arsitektur Mahasiswa** (`05_deckcraft_portofolio_arsitektur_*.pdf`):
-  * 4-Slide presentasi arsitektur format landscape 16:9 widescreen berkualitas sayembara/penerbitan.
-  * **Visual Kaya & Eye-Catching**: Dilengkapi **3D Axonometric Wireframe Villa dalam SVG**, **Denah Arsitektur Skala 1:100 Lengkap dengan As & Dimensi**, **Detail Pondasi Batu Kali Skala 1:20**, serta **Sertifikat Pengesahan Resmi Berstempel Emas Kaprodi**.
-  * **Interaktif**: Dapat dibuka langsung di browser secara interaktif melalui tombol *Fullscreen Interaktif* atau diunduh sebagai PDF resolusi tinggi.
 
 ---
 
@@ -154,11 +174,19 @@ e:\WORKSPACE\KAMPUS_01\
 
 ---
 
-## 🔗 Keterhubungan dengan Framework OpenCraft MCP
-Aplikasi ini dirancang modular agar terhubung langsung dengan engine otomasi di:
-`E:\WORKSHOP\OPEN_CRAFT_MCP`
-* `deckcraft`: Merender bahan tayang portofolio presentasi 16:9 widescreen (`scripts/deckcraft_builder.py`).
-* `designcraft`: Desain tata letak visual dokumen PDF dan kartu rapor.
-* `filmcraft / shorts-template`: Merender video vertikal 9:16 dengan background musik dan voiceover audio.
-* `carousel-template`: Merender kartu slide media sosial resolusi tinggi.
-
+## 🎬 Rencana Arsitektur Video Short Portofolio (9:16 Vertikal)
+Untuk memaksimalkan kebanggaan wali murid dan daya jangkau promosi jurusan (Word-of-Mouth), fitur **Video Short Portofolio 9:16** dirancang dengan spesifikasi:
+1. **Format Output**: Video vertikal 1080x1920 (9:16) MP4 durasi 30–35 detik, optimal untuk WhatsApp Status, Instagram Reels, dan YouTube Shorts.
+2. **Sumber Aset Riil**:
+   * Foto/screenshot karya asli mahasiswa (gambar denah AutoCAD, 3D render, foto maket/asistensi studio di PC).
+   * Logo resmi kampus dan identitas nama mahasiswa + program studi.
+3. **Pipeline Audio & Narasi AI (TTS)**:
+   * Narasi suara AI profesional (Bahasa Indonesia berwibawa, hangat, dan bangga).
+   * Struktur narasi:
+     * *Detik 00-06*: Apresiasi dedikasi dan kerja keras ananda.
+     * *Detik 06-18*: Sorotan keterampilan teknis (AutoCAD, detail konstruksi, pondasi).
+     * *Detik 18-28*: Apresiasi karya nyata dan potensi profesi masa depan.
+     * *Detik 28-32*: Penutup kebanggaan keluarga & branding Program Studi Arsitektur.
+   * Background music akustik/sinematik lembut bebas hak cipta.
+4. **Engine Rendering**:
+   * Otomasi assembly timeline via **FFmpeg Engine** atau **OpenCraft FilmCraft MCP** (`E:\WORKSHOP\OPEN_CRAFT_MCP`).
