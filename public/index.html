@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIAK-KAPRODI | Intelijen Akademik Arsitektur</title>
+  
+  <!-- Fonts & Tailwind CSS CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- ApexCharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-[#0b0f19] text-slate-100 font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-50 bg-[#0f172a]/90 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-3.5">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div class="flex items-center gap-3.5">
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 font-black text-xl">
+          🏛️
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
+              SIAK-KAPRODI <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-medium border border-amber-500/30">GOLDEN DEMO v2.0</span>
+            </h1>
+            <span class="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE :40404
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">
+            Program Studi Arsitektur • Mata Kuliah: <span class="text-slate-200 font-medium">Aplikasi Komputer (AutoCAD & Gambar Kerja)</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Governance Badges -->
+      <div class="flex items-center flex-wrap gap-2 text-xs text-slate-300">
+        <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Kaprodi: <strong class="text-white">Fielda Roza, S.T., M.T.</strong></span>
+        </div>
+        <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
+          <i data-lucide="shield" class="w-3.5 h-3.5 text-sky-400"></i>
+          <span>Asisten: <strong class="text-white">Adrian Ridhoa, S.T.</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SUBHEADER / TAB NAVIGATION -->
+  <div class="bg-[#111827] border-b border-slate-800 px-4 lg:px-8 py-2 sticky top-[69px] z-40">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
+      <nav class="flex items-center gap-2" id="nav-tabs">
+        <button onclick="switchTab('kaprodi')" id="tab-btn-kaprodi" class="tab-btn active-tab flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+          <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+          <span>1. Dashboard Kaprodi</span>
+        </button>
+        <button onclick="switchTab('wali')" id="tab-btn-wali" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
+          <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+          <span>2. Rapor Wali Murid</span>
+        </button>
+        <button onclick="switchTab('marketing')" id="tab-btn-marketing" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+          <span>3. Viral Marketing (Carousel & Video)</span>
+        </button>
+        <button onclick="switchTab('whatsapp')" id="tab-btn-whatsapp" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
+          <i data-lucide="message-square" class="w-4 h-4 text-emerald-400"></i>
+          <span>4. Simulator WhatsApp</span>
+        </button>
+      </nav>
+
+      <!-- Quick Archetype Selectors -->
+      <div class="hidden lg:flex items-center gap-2 text-xs">
+        <span class="text-slate-400 font-medium">Demo Cepat:</span>
+        <button onclick="selectQuickStudent('2510015410010')" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 rounded border border-amber-500/30 font-medium transition">
+          🌟 Yazid (Top Star)
+        </button>
+        <button onclick="selectQuickStudent('2510015410011')" class="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded border border-rose-500/30 font-medium transition">
+          ⚠️ Rozi (At-Risk)
+        </button>
+        <button onclick="selectQuickStudent('2510015410001')" class="px-2.5 py-1 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 rounded border border-sky-500/30 font-medium transition">
+          ✨ Alsa (Konsisten)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN VIEWPORT CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: EXECUTIVE DASHBOARD KAPRODI -->
+    <!-- ========================================================================= -->
+    <section id="section-kaprodi" class="tab-section block space-y-6">
+      
+      <!-- Top Overview Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <i data-lucide="compass" class="w-4 h-4"></i> Rekap Monitoring Perkuliahan Bulanan
+            </div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">Executive Academic Suite — Prodi Arsitektur</h2>
+            <p class="text-sm text-slate-300 mt-1 max-w-2xl">
+              Pemantauan terpusat presensi 35 mahasiswa, verifikasi alasan ketidakhadiran, distribusi capaian studio CAD, dan sistem deteksi dini mahasiswa berisiko (At-Risk Intervention).
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-slate-600 flex items-center gap-2 transition">
+              <i data-lucide="printer" class="w-4 h-4"></i> Cetak Laporan Kaprodi
+            </button>
+            <button onclick="exportDataJSON()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
+              <i data-lucide="download" class="w-4 h-4"></i> Export Data Portal (.JSON)
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI CARDS -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Total Mahasiswa</span>
+              <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400"><i data-lucide="users" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-white mt-2" id="kpi-total-mhs">35</div>
+            <div class="text-[11px] text-slate-400 mt-1">Kelas TEKZA (Ruang Lab LIKDA)</div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Rata-rata Kehadiran</span>
+              <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="check-circle-2" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-emerald-400 mt-2" id="kpi-kehadiran">82.4%</div>
+            <div class="text-[11px] text-slate-400 mt-1">Standar kelayakan ujian $\ge 75\%$</div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Rata-rata Nilai Studio</span>
+              <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="award" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-amber-300 mt-2" id="kpi-nilai">80.4</div>
+            <div class="text-[11px] text-slate-400 mt-1">Predikat: <strong>A- (Memuaskan)</strong></div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-rose-500/30 bg-rose-500/5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-rose-300 font-medium">Mahasiswa At-Risk</span>
+              <span class="p-2 rounded-lg bg-rose-500/20 text-rose-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-rose-400 mt-2" id="kpi-at-risk">1 Mahasiswa</div>
+            <div class="text-[11px] text-rose-300/80 mt-1">Alpha $\ge 2$x (Butuh Asistensi Khusus)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Attendance Trend Chart -->
+        <div class="lg:col-span-2 bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Tren Kehadiran & Partisipasi per Sesi (Pertemuan 1 - 6)
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Pemantauan volume mahasiswa hadir vs berhalangan di Lab LIKDA</p>
+            </div>
+            <span class="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">6 Pertemuan</span>
+          </div>
+          <div id="chart-attendance-trend" class="min-h-[260px]"></div>
+        </div>
+
+        <!-- Grade Distribution Chart -->
+        <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i> Distribusi Nilai Studio
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Sebaran grade evaluasi tugas AutoCAD</p>
+              </div>
+            </div>
+            <div id="chart-grade-dist" class="min-h-[220px]"></div>
+          </div>
+          
+          <!-- Alert summary box -->
+          <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300">
+            <span class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
+              <i data-lucide="info" class="w-3.5 h-3.5"></i> Catatan Evaluasi Kaprodi:
+            </span>
+            Mayoritas mahasiswa (68%) telah menguasai pembuatan layer, detail pondasi, dan sinkronisasi gambar potongan. 1 mahasiswa dalam status bimbingan khusus.
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE REKAP BULANAN -->
+      <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg overflow-hidden">
+        <div class="p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="table" class="w-4 h-4 text-sky-400"></i> Rekap Presensi & Riwayat Ketidakhadiran Mahasiswa
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Menampilkan status kehadiran, tanggal matkul, dan catatan alasan per individu</p>
+          </div>
+
+          <!-- Controls & Filters -->
+          <div class="flex items-center flex-wrap gap-2.5">
+            <!-- Search -->
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="table-search" placeholder="Cari nama / NPM..." oninput="filterTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition w-44">
+            </div>
+
+            <!-- Session Filter -->
+            <select id="filter-session" onchange="filterTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
+              <option value="all">Semua Sesi (1-6)</option>
+              <option value="1">Sesi 1: Pengenalan AutoCAD</option>
+              <option value="2">Sesi 2: Kolom & Dinding</option>
+              <option value="3">Sesi 3: Layer & Blok Pintu</option>
+              <option value="4">Sesi 4: Potongan & Pondasi</option>
+              <option value="5">Sesi 5: Layout & Plot PDF</option>
+              <option value="6">Sesi 6: Volume Scheduling</option>
+            </select>
+
+            <!-- Status Filter -->
+            <select id="filter-status" onchange="filterTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
+              <option value="all">Semua Status</option>
+              <option value="Hadir">Hadir</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Alpha">Alpha</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- The Table -->
+        <div class="overflow-x-auto max-h-[480px] overflow-y-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono tracking-wider sticky top-0 border-b border-slate-800 z-10">
+              <tr>
+                <th class="px-4 py-3">No</th>
+                <th class="px-4 py-3">NPM</th>
+                <th class="px-4 py-3">Nama Mahasiswa</th>
+                <th class="px-4 py-3">Sesi & Tanggal</th>
+                <th class="px-4 py-3">Topik Pembelajaran</th>
+                <th class="px-4 py-3">Status</th>
+                <th class="px-4 py-3">Alasan Ketidakhadiran</th>
+                <th class="px-4 py-3 text-center">Akumulasi Alpha</th>
+                <th class="px-4 py-3 text-right">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="attendance-table-body" class="divide-y divide-slate-800/60 font-medium">
+              <!-- Rendered via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: PORTAL RAPOR WALI MURID (INDIVIDUAL VIEW) -->
+    <!-- ========================================================================= -->
+    <section id="section-wali" class="tab-section hidden space-y-6">
+      
+      <!-- Student Selector & Mode Header -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="eye" class="w-4 h-4"></i> Tampilan Wali Murid (Orang Tua)
+          </span>
+          <h2 class="text-xl font-bold text-white mt-1">Rapor Perkembangan & Kecerdasan Belajar Mahasiswa</h2>
+          <p class="text-xs text-slate-400">Laporan bulanan komprehensif siap cetak atau dikirim via tautan privat ke orang tua</p>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <label for="student-dropdown" class="text-xs text-slate-300 font-medium whitespace-nowrap">Pilih Mahasiswa:</label>
+          <select id="student-dropdown" onchange="onStudentSelect(this.value)" class="bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 transition min-w-[280px]">
+            <!-- Populated via app.js -->
+          </select>
+        </div>
+      </div>
+
+      <!-- STUDENT DETAIL PROFILE HERO -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-800/90 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="flex items-center gap-5">
+            <!-- Avatar Frame -->
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-1 shadow-xl flex-shrink-0">
+              <div class="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center text-3xl font-black text-amber-400 font-mono" id="mhs-avatar">
+                YZ
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h3 class="text-2xl font-black text-white tracking-tight" id="mhs-nama">M YAZID ZIDANE MULYADI</h3>
+                <span id="mhs-alert-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  OPTIMAL
+                </span>
+              </div>
+              <div class="flex items-center gap-4 text-xs text-slate-400 mt-1.5 flex-wrap font-mono">
+                <span>NPM: <strong class="text-slate-200" id="mhs-npm">2510015410010</strong></span>
+                <span>•</span>
+                <span>Prodi: <strong class="text-slate-200">Arsitektur (S1)</strong></span>
+                <span>•</span>
+                <span>Dosen Asisten: <strong class="text-slate-200">Adrian Ridhoa, S.T.</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stats Pills -->
+          <div class="flex items-center gap-3">
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
+              <div class="text-[11px] text-slate-400 font-medium">Kehadiran</div>
+              <div class="text-xl font-bold text-emerald-400 mt-0.5" id="mhs-stat-kehadiran">100%</div>
+              <div class="text-[10px] text-slate-400" id="mhs-stat-absen-desc">6 / 6 Sesi</div>
+            </div>
+
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
+              <div class="text-[11px] text-slate-400 font-medium">Nilai Rata-rata</div>
+              <div class="text-xl font-bold text-amber-400 mt-0.5" id="mhs-stat-nilai">95.2</div>
+              <div class="text-[10px] text-amber-300" id="mhs-stat-grade">Grade: A</div>
+            </div>
+
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
+              <div class="text-[11px] text-slate-400 font-medium">Akumulasi Alpha</div>
+              <div class="text-xl font-bold text-slate-200 mt-0.5" id="mhs-stat-alpha">0x</div>
+              <div class="text-[10px] text-emerald-400">Tertib & Disiplin</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RADAR CHART & EVALUATION GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Radar Competency Chart (5 Cols) -->
+        <div class="lg:col-span-5 bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="radar" class="w-4 h-4 text-amber-400"></i> Radar Kompetensi Arsitektural
+              </h4>
+              <span class="text-[11px] text-slate-400">Skala 1 - 100</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-2">5 pilar keahlian: Software CAD, Detail Gambar, Asistensi, Logika Ruang, & Waktu.</p>
+            <div id="chart-radar-competency" class="min-h-[290px]"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-800 mt-2 font-mono">
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Penguasaan CAD:</span> <strong class="text-amber-400" id="radar-val-cad">96</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Detail Gambar:</span> <strong class="text-amber-400" id="radar-val-detail">94</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Kedisiplinan:</span> <strong class="text-amber-400" id="radar-val-disiplin">98</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Logika Struktur:</span> <strong class="text-amber-400" id="radar-val-ruang">92</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI DIAGNOSTICS & SESSION LOGS (7 Cols) -->
+        <div class="lg:col-span-7 space-y-5">
+          
+          <!-- AI SWOT Intelligent Card -->
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-amber-500/30 shadow-lg relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                  <i data-lucide="bot" class="w-4 h-4"></i>
+                </span>
+                <h4 class="text-sm font-bold text-white">Analisis AI: Diagnosis & Rekomendasi Personal</h4>
+              </div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono border border-amber-500/20">
+                Gemini Academic Engine
+              </span>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              <!-- Kekuatan -->
+              <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <div class="font-bold text-emerald-400 flex items-center gap-1.5 mb-1">
+                  <i data-lucide="check" class="w-3.5 h-3.5"></i> KEKUATAN & TALENTA MAHASISWA:
+                </div>
+                <p class="text-slate-200 leading-relaxed" id="ai-kekuatan">
+                  Kemampuan pemahaman software AutoCAD sangat cepat dan presisi tinggi. Garis potongan dan detail pondasi tersinkronisasi rapi dengan standar arsitektur profesional.
+                </p>
+              </div>
+
+              <!-- Kelemahan -->
+              <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                <div class="font-bold text-amber-400 flex items-center gap-1.5 mb-1">
+                  <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> AREA YANG PERLU DITINGKATKAN:
+                </div>
+                <p class="text-slate-200 leading-relaxed" id="ai-kelemahan">
+                  Kadang terlalu perfeksionis pada detail kecil sehingga pengerjaan layouting sheet sedikit memakan waktu lebih.
+                </p>
+              </div>
+
+              <!-- Saran Wali Murid -->
+              <div class="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/20">
+                <div class="font-bold text-sky-400 flex items-center gap-1.5 mb-1">
+                  <i data-lucide="heart-handshake" class="w-3.5 h-3.5"></i> SARAN KHUSUS UNTUK BAPAK/IBU WALI MURID:
+                </div>
+                <p class="text-slate-200 leading-relaxed" id="ai-saran">
+                  Dukungan orang tua sangat diapresiasi! Ananda memiliki bakat kepemimpinan di studio arsitektur, disarankan terus didukung untuk mengikuti sayembara desain arsitektur tingkat nasional.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Breakdown Table -->
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
+              <i data-lucide="list-ordered" class="w-4 h-4 text-sky-400"></i> Rincian Nilai & Evaluasi 6 Sesi Praktikum
+            </h4>
+            <div class="space-y-2" id="student-session-cards">
+              <!-- Rendered via app.js -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: VIRAL MARKETING ENGINE (CAROUSEL & VIDEO) -->
+    <!-- ========================================================================= -->
+    <section id="section-marketing" class="tab-section hidden space-y-6">
+      
+      <!-- Top Strategy Explainer -->
+      <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-4 h-4"></i> Mesin Viral Marketing Kampus (Word-of-Mouth Engine)
+          </span>
+          <h2 class="text-xl font-bold text-white mt-1">4-Slide Carousel & Video Vertikal 9:16 untuk Status WhatsApp / Instagram</h2>
+          <p class="text-xs text-slate-300 mt-1 max-w-2xl">
+            Sistem otomatis merakit foto progres karya mahasiswa menjadi konten siap pamer bagi orang tua. Rasa bangga wali murid menjadi promosi organik terbaik bagi Program Studi Arsitektur!
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyInstagramCaption()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 transition">
+            <i data-lucide="copy" class="w-4 h-4"></i> Salin Caption Instagram
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN SHOWCASE GRID: CAROUSEL (LEFT) + VIDEO 9:16 (RIGHT) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT: 4-SLIDE CAROUSEL VIEWER (7 COLS) -->
+        <div class="lg:col-span-7 bg-[#0f172a] rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i> Interactive 4-Slide Carousel (Rasio 4:5 Portrait)
+              </h3>
+              <p class="text-xs text-slate-400">Format standar feed Instagram (1080 × 1350 px) & WA Story</p>
+            </div>
+            <!-- Slide Nav Buttons -->
+            <div class="flex items-center gap-2">
+              <button onclick="prevSlide()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <span id="carousel-indicator" class="text-xs font-mono font-bold text-amber-400 px-2">Slide 1 / 4</span>
+              <button onclick="nextSlide()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- THE CAROUSEL CANVAS STAGE -->
+          <div class="relative w-full max-w-[420px] mx-auto aspect-[4/5] bg-gradient-to-b from-[#080c12] via-[#0d131d] to-[#080c12] rounded-2xl border-2 border-amber-500/40 p-6 flex flex-col justify-between shadow-2xl overflow-hidden" id="carousel-stage">
+            
+            <!-- Floating Background Architectural Blueprint Mesh -->
+            <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#ffc800 1px, transparent 1px); background-size: 20px 20px;"></div>
+
+            <!-- Slide Header Bar -->
+            <div class="flex items-center justify-between relative z-10">
+              <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 px-3 py-1 rounded-full text-[11px] font-bold text-amber-400">
+                <span>🏛️ ARSITEKTUR KAMPUS</span>
+              </div>
+              <div class="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800" id="slide-stage-counter">
+                01 / 04
+              </div>
+            </div>
+
+            <!-- Middle Dynamic Visual Content -->
+            <div class="my-auto relative z-10 space-y-4 text-center py-4">
+              <!-- Visual Mockup Image / Illustration Frame -->
+              <div class="w-full h-44 rounded-xl bg-slate-900/80 border border-slate-800 p-3 flex flex-col items-center justify-center relative overflow-hidden" id="slide-visual-box">
+                <!-- SVG / Graphic content dynamically inserted -->
+              </div>
+
+              <!-- Badge Tag -->
+              <div class="inline-block">
+                <span class="px-3 py-1 rounded-md text-[11px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20" id="slide-stage-badge">
+                  STUDIO ARSITEKTUR 2026
+                </span>
+              </div>
+
+              <!-- Main Slide Title & Body -->
+              <h4 class="text-lg font-black text-white tracking-tight leading-snug px-2" id="slide-stage-title">
+                Progres Karya Arsitektur: M Yazid Zidane Mulyadi
+              </h4>
+              <p class="text-xs text-slate-300 leading-relaxed px-3" id="slide-stage-desc">
+                Kompilasi Praktikum Aplikasi Komputer & Gambar Kerja CAD • Capaian Predikat: Sangat Memuaskan (A)
+              </p>
+            </div>
+
+            <!-- Slide Footer Bar -->
+            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 relative z-10">
+              <span id="slide-stage-highlight" class="font-mono text-amber-400 font-semibold">Tingkat Kehadiran: 100%</span>
+              <span class="flex items-center gap-1 text-slate-400">GESER UNTUK LIHAT <i data-lucide="arrow-right" class="w-3 h-3 text-amber-400"></i></span>
+            </div>
+
+          </div>
+
+          <!-- Slide Thumbnail Selectors -->
+          <div class="grid grid-cols-4 gap-2.5 pt-2">
+            <button onclick="goToSlide(0)" class="slide-thumb-btn active-thumb p-2.5 rounded-xl bg-slate-900 border border-amber-500 text-left transition" id="thumb-0">
+              <div class="text-[10px] text-amber-400 font-mono font-bold">SLIDE 1</div>
+              <div class="text-[11px] font-semibold text-white truncate">Cover & Prestasi</div>
+            </button>
+            <button onclick="goToSlide(1)" class="slide-thumb-btn p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left transition" id="thumb-1">
+              <div class="text-[10px] text-slate-400 font-mono font-bold">SLIDE 2</div>
+              <div class="text-[11px] font-semibold text-white truncate">Aktivitas Lab</div>
+            </button>
+            <button onclick="goToSlide(2)" class="slide-thumb-btn p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left transition" id="thumb-2">
+              <div class="text-[10px] text-slate-400 font-mono font-bold">SLIDE 3</div>
+              <div class="text-[11px] font-semibold text-white truncate">Karya Gambar</div>
+            </button>
+            <button onclick="goToSlide(3)" class="slide-thumb-btn p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-left transition" id="thumb-3">
+              <div class="text-[10px] text-slate-400 font-mono font-bold">SLIDE 4</div>
+              <div class="text-[11px] font-semibold text-white truncate">Pride & Closing</div>
+            </button>
+          </div>
+
+          <!-- OpenCraft MCP Link Banner -->
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <span class="p-1.5 rounded-lg bg-sky-500/20 text-sky-400"><i data-lucide="cpu" class="w-4 h-4"></i></span>
+              <span>Terhubung dengan Engine: <strong class="text-white">OPEN_CRAFT_MCP / carousel-template</strong></span>
+            </div>
+            <span class="text-[11px] font-mono text-emerald-400">Siap Render Batch 1080x1350</span>
+          </div>
+        </div>
+
+        <!-- RIGHT: VERTICAL VIDEO 9:16 PLAYER (5 COLS) -->
+        <div class="lg:col-span-5 bg-[#0f172a] rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="video" class="w-4 h-4 text-emerald-400"></i> Video Vertikal Reels / Shorts (9:16)
+            </h3>
+            <p class="text-xs text-slate-400">Simulasi video 32 detik dengan narasi voiceover AI & transisi gerak</p>
+          </div>
+
+          <!-- SMARTPHONE MOCKUP FRAME -->
+          <div class="relative w-full max-w-[280px] mx-auto aspect-[9/16] bg-slate-950 rounded-[32px] border-4 border-slate-700 shadow-2xl p-3 flex flex-col justify-between overflow-hidden">
+            
+            <!-- Phone Notch / Speaker -->
+            <div class="w-24 h-4 bg-slate-800 rounded-full mx-auto mb-2 flex-shrink-0"></div>
+
+            <!-- Dynamic Video Screen Viewport -->
+            <div class="relative flex-1 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-950 rounded-2xl p-4 flex flex-col justify-between overflow-hidden border border-slate-800" id="video-mockup-viewport">
+              
+              <!-- Top Watermark -->
+              <div class="flex items-center justify-between text-[10px] text-white/80 z-10 font-bold">
+                <span class="bg-amber-500/80 text-slate-950 px-2 py-0.5 rounded">ARSITEKTUR</span>
+                <span class="bg-black/50 px-2 py-0.5 rounded backdrop-blur">32s RECAP</span>
+              </div>
+
+              <!-- Center Scene Illustration -->
+              <div class="my-auto text-center space-y-2 z-10">
+                <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center text-2xl border border-amber-500/30" id="video-scene-icon">
+                  📐
+                </div>
+                <div class="text-xs font-bold text-white px-2" id="video-scene-label">
+                  Scene 1: Pencapaian Mahasiswa
+                </div>
+                <div class="text-[10px] text-slate-300 font-mono" id="video-scene-time">
+                  00:00 - 00:05
+                </div>
+              </div>
+
+              <!-- Bottom Subtitle / Voiceover Box -->
+              <div class="z-10 bg-black/80 backdrop-blur-md rounded-xl p-2.5 border border-white/10 text-[10px] text-slate-200 text-center">
+                <span class="text-amber-400 font-bold block mb-0.5">🎙️ Narasi Suara AI:</span>
+                <span id="video-voiceover-text" class="italic">
+                  "Satu bulan penuh dedikasi di Lab Komputer Arsitektur! Inilah ananda M Yazid Zidane Mulyadi..."
+                </span>
+              </div>
+
+            </div>
+
+            <!-- Video Player Controls -->
+            <div class="mt-3 flex items-center justify-between px-2 text-xs">
+              <button onclick="toggleVideoPlayback()" id="video-play-btn" class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold transition">
+                <i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Play Preview</span>
+              </button>
+              <div class="text-[11px] font-mono text-slate-400" id="video-timer">00:00 / 00:32</div>
+            </div>
+
+          </div>
+
+          <!-- Video Audio Script Box -->
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+            <span class="text-slate-400 font-medium block">Naskah Lengkap Voiceover:</span>
+            <p class="text-slate-200 italic" id="video-full-script">
+              Loading script...
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: SIMULATOR WHATSAPP DISPATCHER -->
+    <!-- ========================================================================= -->
+    <section id="section-whatsapp" class="tab-section hidden space-y-6">
+      
+      <div class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-emerald-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="send" class="w-4 h-4"></i> Otomasi Pengiriman Laporan ke Wali Murid
+          </span>
+          <h2 class="text-xl font-bold text-white mt-1">Simulator Pesan WhatsApp Resmi Program Studi</h2>
+          <p class="text-xs text-slate-300 mt-1 max-w-2xl">
+            Pesan terformat otomatis memuat ringkasan kehadiran, nilai studio CAD, catatan akademik, dan link privat untuk membuka rapor interaktif ananda di ponsel orang tua.
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="copyWhatsAppMessage()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition">
+            <i data-lucide="copy" class="w-4 h-4"></i> Salin Pesan Lengkap
+          </button>
+        </div>
+      </div>
+
+      <!-- WHATSAPP CHAT SIMULATION CARD -->
+      <div class="max-w-3xl mx-auto bg-[#0b141a] rounded-2xl border border-emerald-900/50 shadow-2xl overflow-hidden">
+        
+        <!-- WA Header Bar -->
+        <div class="bg-[#202c33] px-4 py-3 flex items-center justify-between border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+              🏛️
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white flex items-center gap-1.5">
+                Kaprodi Arsitektur Resmi <i data-lucide="badge-check" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <div class="text-[11px] text-emerald-400">Online • Akun Terverifikasi Kampus</div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-400">
+            Tujuan: <strong class="text-slate-200" id="wa-recipient-name">Wali Murid M Yazid Zidane Mulyadi</strong>
+          </div>
+        </div>
+
+        <!-- Chat Body with Wallpaper -->
+        <div class="p-6 bg-[#0b141a] min-h-[380px] flex flex-col justify-end relative" style="background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 24px 24px;">
+          
+          <!-- Message Bubble -->
+          <div class="bg-[#005c4b] text-slate-100 rounded-2xl rounded-tr-none p-4 max-w-xl ml-auto shadow-md border border-emerald-600/30 space-y-3 text-xs leading-relaxed">
+            <div id="wa-chat-bubble" class="whitespace-pre-line font-sans">
+              <!-- Rendered via app.js -->
+            </div>
+            <div class="text-right text-[10px] text-emerald-200/70 font-mono flex items-center justify-end gap-1">
+              <span>08:15</span>
+              <span>✓✓</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="bg-[#202c33] p-4 flex items-center justify-between border-t border-slate-800 gap-3">
+          <div class="text-xs text-slate-400">
+            Simulasi link tujuan: <code class="text-amber-400 font-mono" id="wa-simulated-link">https://siak-arsitektur.ac.id/rapor/mhs/2510015410010</code>
+          </div>
+          <button onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition">
+            <i data-lucide="external-link" class="w-4 h-4"></i> Buka WhatsApp Web
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="mt-12 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        <strong>SIAK-KAPRODI</strong> • Sistem Otomasi Akademik & Portofolio Program Studi Arsitektur
+      </div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span>Port: <strong>40404</strong></span>
+        <span>•</span>
+        <span>Powered by OpenCraft Architecture Framework</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Script Controller -->
+  <script src="app.js"></script>
+</body>
+</html>

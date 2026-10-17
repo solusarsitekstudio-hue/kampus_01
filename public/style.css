@@ -1,0 +1,62 @@
+/* Custom Stylesheet for SIAK-KAPRODI */
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Custom Table Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Tab Active Styles */
+.active-tab {
+  background-color: #f59e0b !important;
+  color: #020617 !important;
+  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.25);
+}
+
+.active-thumb {
+  border-color: #f59e0b !important;
+  background-color: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Blueprint Pattern */
+.blueprint-bg {
+  background-color: #080c12;
+  background-image: 
+    linear-gradient(rgba(255, 200, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 200, 0, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Print Optimization */
+@media print {
+  header, #nav-tabs, button, footer {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .tab-section {
+    display: block !important;
+  }
+}
