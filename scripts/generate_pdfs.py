@@ -4,6 +4,10 @@ import json
 import math
 from playwright.sync_api import sync_playwright
 
+import re
+import shutil
+from datetime import datetime
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -11,12 +15,30 @@ if hasattr(sys.stderr, "reconfigure"):
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(BASE_DIR, "data", "academic_data.json")
-OUTPUT_DIR = os.path.join(BASE_DIR, "generated_pdfs")
-
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 with open(DATA_FILE, "r", encoding="utf-8") as f:
     DATA = json.load(f)
+
+def sanitize_folder_name(name):
+    clean = re.sub(r'[\\/*?:"<>|]', "", name)
+    clean = clean.replace("&", "DAN").strip().replace(" ", "_").upper()
+    return clean
+
+# Course & Timestamp Hierarchy:
+# output/<NAMA_MATA_KULIAH>/<TIMESTAMP_WAKTU>/
+COURSE_NAME = DATA["course"].get("nama_mk", "APLIKASI_KOMPUTER")
+COURSE_FOLDER = sanitize_folder_name(COURSE_NAME)
+TIMESTAMP_STR = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
+OUTPUT_ROOT = os.path.join(BASE_DIR, "output")
+COURSE_OUTPUT_ROOT = os.path.join(OUTPUT_ROOT, COURSE_FOLDER)
+TARGET_OUTPUT_DIR = os.path.join(COURSE_OUTPUT_ROOT, TIMESTAMP_STR)
+
+os.makedirs(TARGET_OUTPUT_DIR, exist_ok=True)
+
+# Legacy folder for backward compatibility
+LEGACY_DIR = os.path.join(BASE_DIR, "generated_pdfs")
+os.makedirs(LEGACY_DIR, exist_ok=True)
 
 # Helper CSS styles for crisp, beautiful printing
 COMMON_CSS = """
@@ -858,7 +880,8 @@ def render_dosen_curriculum_audit_html():
 
 def build_all_pdfs():
     print("=" * 65)
-    print("[INFO] MEMULAI GENERASI 4 DOKUMEN PDF PROFESIONAL ARSITEKTUR")
+    print("[INFO] MEMULAI GENERASI DOKUMEN PDF PROFESIONAL ARSITEKTUR")
+    print(f"[INFO] Target Folder : output/{COURSE_FOLDER}/{TIMESTAMP_STR}/")
     print("=" * 65)
 
     with sync_playwright() as p:
@@ -873,49 +896,92 @@ def build_all_pdfs():
                 continue
 
             # PDF 1A: Monthly Attendance
-            path_1a = os.path.join(OUTPUT_DIR, f"01_rekap_kehadiran_bulanan_{npm}_{student['nama'].replace(' ', '_')}.pdf")
+            path_1a = os.path.join(TARGET_OUTPUT_DIR, f"01_rekap_kehadiran_bulanan_{npm}_{student['nama'].replace(' ', '_')}.pdf")
             html_1a = render_monthly_attendance_html(student)
             page.set_content(html_1a)
             page.pdf(path=path_1a, format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+            shutil.copy2(path_1a, os.path.join(LEGACY_DIR, os.path.basename(path_1a)))
             print(f"[OK] PDF 1A Dihasilkan: {os.path.basename(path_1a)}")
 
             # PDF 1B: Final Semester Report & Ranking
-            path_1b = os.path.join(OUTPUT_DIR, f"02_rapor_akhir_semester_{npm}_{student['nama'].replace(' ', '_')}.pdf")
+            path_1b = os.path.join(TARGET_OUTPUT_DIR, f"02_rapor_akhir_semester_{npm}_{student['nama'].replace(' ', '_')}.pdf")
             html_1b = render_final_report_html(student)
             page.set_content(html_1b)
             page.pdf(path=path_1b, format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+            shutil.copy2(path_1b, os.path.join(LEGACY_DIR, os.path.basename(path_1b)))
             print(f"[OK] PDF 1B Dihasilkan: {os.path.basename(path_1b)}")
 
             # PDF 1C / DeckCraft: 4-Slide Architectural Presentation Deck (Replacing Carousel)
             try:
                 sys.path.append(r"E:\WORKSHOP\OPEN_CRAFT_MCP\scripts")
                 from deckcraft_builder import render_deckcraft_slides_html
-                path_deck = os.path.join(OUTPUT_DIR, f"05_deckcraft_portofolio_arsitektur_{npm}_{student['nama'].replace(' ', '_')}.pdf")
+                path_deck = os.path.join(TARGET_OUTPUT_DIR, f"05_deckcraft_portofolio_arsitektur_{npm}_{student['nama'].replace(' ', '_')}.pdf")
                 html_deck = render_deckcraft_slides_html(student, DATA["course"])
                 page.set_content(html_deck)
                 page.pdf(path=path_deck, format="A4", landscape=True, print_background=True, margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
+                shutil.copy2(path_deck, os.path.join(LEGACY_DIR, os.path.basename(path_deck)))
                 print(f"[OK] PDF DeckCraft (4-Slide Presentation) Dihasilkan: {os.path.basename(path_deck)}")
             except Exception as e:
                 print(f"[WARN] Gagal membuat DeckCraft PDF: {e}")
 
         # 2. Generate PDF 2: Master Gradebook (Kaprodi)
-        path_2 = os.path.join(OUTPUT_DIR, "03_laporan_penilaian_kaprodi_master_gradebook.pdf")
+        path_2 = os.path.join(TARGET_OUTPUT_DIR, "03_laporan_penilaian_kaprodi_master_gradebook.pdf")
         html_2 = render_kaprodi_gradebook_html()
         page.set_content(html_2)
         page.pdf(path=path_2, format="A4", landscape=True, print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
+        shutil.copy2(path_2, os.path.join(LEGACY_DIR, os.path.basename(path_2)))
         print(f"[OK] PDF 2 (Kaprodi Gradebook Landscape) Dihasilkan: {os.path.basename(path_2)}")
 
         # 3. Generate PDF 3: Lecturer QA & Curriculum Audit (Kaprodi -> Dosen)
-        path_3 = os.path.join(OUTPUT_DIR, "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf")
+        path_3 = os.path.join(TARGET_OUTPUT_DIR, "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf")
         html_3 = render_dosen_curriculum_audit_html()
         page.set_content(html_3)
         page.pdf(path=path_3, format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+        shutil.copy2(path_3, os.path.join(LEGACY_DIR, os.path.basename(path_3)))
         print(f"[OK] PDF 3 (Audit Dosen & Modul RPS) Dihasilkan: {os.path.basename(path_3)}")
 
         browser.close()
 
+    # Create Manifest and Latest Pointer
+    generated_files = [f for f in os.listdir(TARGET_OUTPUT_DIR) if f.endswith(".pdf")]
+    manifest = {
+        "course_name": DATA["course"]["nama_mk"],
+        "course_code": DATA["course"]["kode_mk"],
+        "program_studi": "ARSITEKTUR",
+        "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "timestamp_id": TIMESTAMP_STR,
+        "target_directory": TARGET_OUTPUT_DIR,
+        "total_files": len(generated_files),
+        "files": [
+            {
+                "filename": fn,
+                "size_kb": round(os.path.getsize(os.path.join(TARGET_OUTPUT_DIR, fn)) / 1024, 1)
+            }
+            for fn in sorted(generated_files)
+        ]
+    }
+    with open(os.path.join(TARGET_OUTPUT_DIR, "manifest.json"), "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=False)
+
+    latest_pointer = {
+        "latest_course": COURSE_FOLDER,
+        "latest_timestamp": TIMESTAMP_STR,
+        "latest_directory": TARGET_OUTPUT_DIR,
+        "updated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    with open(os.path.join(OUTPUT_ROOT, "latest_run.json"), "w", encoding="utf-8") as f:
+        json.dump(latest_pointer, f, indent=2, ensure_ascii=False)
+    with open(os.path.join(COURSE_OUTPUT_ROOT, "latest_run.json"), "w", encoding="utf-8") as f:
+        json.dump(latest_pointer, f, indent=2, ensure_ascii=False)
+
     print("=" * 65)
-    print(f"[SUCCESS] SELURUH PDF BERHASIL DIGENERATE DI: {OUTPUT_DIR}")
+    print(f"[SUCCESS] SELURUH PDF BERHASIL DIGENERATE DI STRUKTUR HIERARKI:")
+    print(f"          📁 output/{COURSE_FOLDER}/")
+    print(f"          └── 📅 {TIMESTAMP_STR}/")
+    for f_info in manifest["files"]:
+        print(f"              ├── 📄 {f_info['filename']} ({f_info['size_kb']} KB)")
+    print(f"              └── 📋 manifest.json")
+    print(f"[INFO] File juga disinkronkan ke 'generated_pdfs/' untuk live web preview.")
     print("=" * 65)
 
 if __name__ == "__main__":

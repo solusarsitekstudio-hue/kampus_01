@@ -53,11 +53,83 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(b'{"error": "Mahasiswa tidak ditemukan"}')
             return
 
-        # Serving Generated PDF Documents
+        # API Output Runs & Hierarchy Metadata
+        if self.path == "/api/runs":
+            output_root = os.path.join(BASE_DIR, "output")
+            runs = []
+            if os.path.exists(output_root):
+                for course_f in sorted(os.listdir(output_root)):
+                    course_p = os.path.join(output_root, course_f)
+                    if os.path.isdir(course_p):
+                        for ts in sorted(os.listdir(course_p), reverse=True):
+                            ts_p = os.path.join(course_p, ts)
+                            manifest_p = os.path.join(ts_p, "manifest.json")
+                            if os.path.isfile(manifest_p):
+                                try:
+                                    with open(manifest_p, "r", encoding="utf-8") as mf:
+                                        runs.append(json.load(mf))
+                                except Exception:
+                                    pass
+            latest_p = os.path.join(output_root, "latest_run.json")
+            latest = {}
+            if os.path.exists(latest_p):
+                with open(latest_p, "r", encoding="utf-8") as lf:
+                    latest = json.load(lf)
+
+            res = {"latest": latest, "runs": runs}
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(res, ensure_ascii=False).encode("utf-8"))
+            return
+
+        # Serving files directly from output/ hierarchy (e.g. /output/<course>/<timestamp>/<file>)
+        if self.path.startswith("/output/"):
+            rel_path = self.path[len("/output/"):].split("?")[0]
+            safe_rel_path = os.path.normpath(rel_path).lstrip("\\/")
+            if safe_rel_path.startswith(".."):
+                self.send_response(403)
+                self.end_headers()
+                return
+            filepath = os.path.join(BASE_DIR, "output", safe_rel_path)
+            if os.path.exists(filepath) and os.path.isfile(filepath):
+                self.send_response(200)
+                if filepath.endswith(".pdf"):
+                    self.send_header("Content-Type", "application/pdf")
+                    self.send_header("Content-Disposition", f'inline; filename="{os.path.basename(filepath)}"')
+                elif filepath.endswith(".json"):
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                else:
+                    self.send_header("Content-Type", "application/octet-stream")
+                self.end_headers()
+                with open(filepath, "rb") as f:
+                    self.wfile.write(f.read())
+            else:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(b"Output file not found")
+            return
+
+        # Serving Generated PDF Documents (with fallback to latest output run)
         if self.path.startswith("/generated_pdfs/"):
             filename = self.path.split("/generated_pdfs/")[1].split("?")[0]
             filepath = os.path.join(BASE_DIR, "generated_pdfs", filename)
-            if os.path.exists(filepath):
+            
+            # Fallback check into latest_run directory if legacy file does not exist
+            if not os.path.exists(filepath):
+                latest_p = os.path.join(BASE_DIR, "output", "latest_run.json")
+                if os.path.exists(latest_p):
+                    try:
+                        with open(latest_p, "r", encoding="utf-8") as lf:
+                            latest_data = json.load(lf)
+                            candidate = os.path.join(latest_data.get("latest_directory", ""), filename)
+                            if os.path.exists(candidate):
+                                filepath = candidate
+                    except Exception:
+                        pass
+
+            if os.path.exists(filepath) and os.path.isfile(filepath):
                 self.send_response(200)
                 self.send_header("Content-Type", "application/pdf")
                 self.send_header("Content-Disposition", f'inline; filename="{filename}"')

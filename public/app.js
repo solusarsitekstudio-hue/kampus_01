@@ -32,6 +32,20 @@ async function loadAcademicData() {
     if (masterData.students && masterData.students.length > 0) {
       selectStudent(masterData.students[0].npm);
     }
+
+    // Fetch Output Run Hierarchy Info
+    fetch("/api/runs")
+      .then(r => r.json())
+      .then(runsData => {
+        if (runsData && runsData.latest && runsData.latest.latest_timestamp) {
+          const folderEl = document.getElementById("output-folder-display");
+          const timeEl = document.getElementById("output-timestamp-text");
+          if (folderEl) folderEl.innerText = `output/${runsData.latest.latest_course}/${runsData.latest.latest_timestamp}/`;
+          if (timeEl) timeEl.innerText = `Sesi Terakhir: ${runsData.latest.latest_timestamp}`;
+        }
+      })
+      .catch(e => console.log("Runs info fetch error:", e));
+
   } catch (err) {
     console.error("Failed to load academic data:", err);
   }

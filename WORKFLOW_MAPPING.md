@@ -77,13 +77,31 @@ flowchart TD
   * Format template pesan WA yang santun, formal, dan mencantumkan ringkasan nilai serta link rapor interaktif unik per mahasiswa.
   * Tombol 1-klik `Salin Pesan WA` dan `Buka WhatsApp Web`.
 
-#### 5. Modul Generator Dokumen PDF Resmi (Playwright Engine)
+#### 5. Modul Generator Dokumen PDF Resmi (Playwright & DeckCraft Engine)
 * **Tujuan**: Memproduksi dokumen resmi siap cetak, arsip dekanat, dan berkas pengesahan yudisium.
 * **4 Paket Dokumen**:
   1. `PDF 1A`: **Rekap Kehadiran Mahasiswa Bulanan** (Untuk Wali Murid — Presensi, Alasan, Stempel Resmi).
   2. `PDF 1B`: **Rapor Portofolio Akhir Semester & Ranking Afirmatif** (Untuk Wali Murid — Ranking Kelas, Radar Chart 5 Dimensi, AI Diagnosis yang mengangkat kebanggaan orang tua).
-  3. `PDF 2`: **Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (Untuk Kaprodi — Format Landscape A4, Nilai Sesi P1-P6, Grade, Kelulusan).
-  4. `PDF 3`: **Laporan Evaluasi Dosen & Keselarasan Modul RPS** (Dari Kaprodi ke Dosen — Presensi Tim Dosen 100%, Audit Kesesuaian Kurikulum 96.0%, CPMK & CPL).
+  3. `PDF 1C / DeckCraft`: **Portofolio Slide Deck Presentasi 16:9 Widescreen** (4 Slide Widescreen per mahasiswa untuk showcase portofolio arsitektur).
+  4. `PDF 2`: **Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (Untuk Kaprodi — Format Landscape A4, Nilai Sesi P1-P6, Grade, Kelulusan).
+  5. `PDF 3`: **Laporan Evaluasi Dosen & Keselarasan Modul RPS** (Dari Kaprodi ke Dosen — Presensi Tim Dosen 100%, Audit Kesesuaian Kurikulum 96.0%, CPMK & CPL).
+
+#### 6. Modul Manajemen File & Folder Hierarkis
+* **Tujuan**: Mengorganisasi output secara berjenjang dan terisolasi agar file tersimpan rapi, tidak saling menimpa, dan memiliki riwayat timestamp yang jelas.
+* **Arsitektur Direktori**:
+  ```text
+  output/
+  ├── latest_run.json
+  └── <NAMA_MATA_KULIAH>/
+      ├── latest_run.json
+      └── <TIMESTAMP_WAKTU_DIBIKIN>/
+          ├── 01_rekap_kehadiran_bulanan_*.pdf
+          ├── 02_rapor_akhir_semester_*.pdf
+          ├── 03_laporan_penilaian_kaprodi_master_gradebook.pdf
+          ├── 04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf
+          ├── 05_deckcraft_portofolio_arsitektur_*.pdf
+          └── manifest.json (Metadata berkas & ukuran file)
+  ```
 
 ---
 
@@ -92,4 +110,5 @@ Sistem ini terhubung secara arsitektural dengan framework otomasi konten kreatif
 1. **DesignCraft Skill**: Mengotomasi perakitan tata letak grafis dokumen arsitektur dan format rapor.
 2. **Carousel-Template Skill**: Merender kartu carousel 4-slide menjadi file PNG/JPG resolusi tinggi (1080x1350) secara batch.
 3. **FilmCraft / Shorts-Template Skill**: Merender video rekapan vertikal 9:16 menggunakan programmatic timeline dan background music prodi.
-4. **DeckCraft Skill**: Mengekspor portofolio dan rekap kelas menjadi slide presentasi eksekutif untuk rapat senat / pimpinan fakultas.
+4. **DeckCraft Skill**: Merender portofolio dan bahan tayang presentasi 16:9 widescreen (`scripts/deckcraft_builder.py`).
+

@@ -97,12 +97,58 @@ Sistem dilengkapi engine perender dokumen PDF berkualitas penerbitan (Playwright
   * **Audit Kesesuaian Materi vs Modul RPS**: Evaluasi materi per sesi terhadap capaian CPMK/CPL dengan skor keselarasan rata-rata **96.0% (Terakreditasi Sangat Baik / Unggul)**.
   * Rapor performa kelas yang diampu beserta catatan evaluasi peningkatan mutu dari Kaprodi.
 
+### 4. Portofolio Presentasi 16:9 Widescreen (DeckCraft Engine):
+* **PDF 1C: Slide Deck Portofolio Arsitektur Mahasiswa** (`05_deckcraft_portofolio_arsitektur_*.pdf`):
+  * 4-Slide presentasi arsitektur format landscape 16:9 widescreen dirancang untuk dilampirkan via WhatsApp dan dipresentasikan di depan keluarga/rekan.
+  * Berisi cover portofolio, dokumentasi studio CAD di Lab LIKDA, karya lembar kerja A3, dan sertifikat kelulusan kompetensi studio.
+
+---
+
+## 🗂️ Manajemen File & Folder Hierarkis (File & Folder Management)
+Sistem menerapkan struktur penyimpanan dokumen yang rapi, terisolasi, dan berjenjang menurut nama mata kuliah dan waktu pembuatan:
+
+```text
+e:\WORKSPACE\KAMPUS_01\
+│
+├── output/                                      <-- Direktori Utama Arsip Output
+│   ├── latest_run.json                          <-- Pointer Global Sesi Generate Terakhir
+│   │
+│   └── APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/     <-- Subfolder per Nama Mata Kuliah
+│       ├── latest_run.json                      <-- Pointer Sesi Terakhir Mata Kuliah
+│       │
+│       ├── 2026-10-18_01-30-08/                 <-- Subfolder Waktu Pembuatan (Timestamp)
+│       │   ├── 01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf
+│       │   ├── 01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf
+│       │   ├── 01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf
+│       │   ├── 02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf
+│       │   ├── 02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf
+│       │   ├── 02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf
+│       │   ├── 03_laporan_penilaian_kaprodi_master_gradebook.pdf
+│       │   ├── 04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf
+│       │   ├── 05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf
+│       │   ├── 05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf
+│       │   ├── 05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf
+│       │   └── manifest.json                    <-- Metadata Run (Nama MK, Kode, Jam, Ukuran File)
+│       │
+│       └── [Timestamp_Sesi_Berikutnya]/         <-- Setiap kali batch dijalankan, folder baru dibuat
+│
+├── generated_pdfs/                              <-- Mirror Sinkronisasi Otomatis (Live Web Preview)
+└── scripts/
+    └── generate_pdfs.py                         <-- Engine Pembuat Folder & Perender PDF
+```
+
+### Keunggulan Struktur Ini:
+1. **Tidak Ada File Tertimpa (Zero Overwrite)**: Setiap eksekusi pembuatan rapor atau dokumen arsip tersimpan dalam folder timestamp unik sehingga riwayat perkuliahan tersimpan utuh.
+2. **Katalog Manifest JSON Otomatis**: Setiap folder mencatat file apa saja yang digenerate, kode mata kuliah, waktu eksekusi, dan ukuran berkas (KB).
+3. **Penyajian Cepat via Web**: Dashboard menyediakan REST API `/api/runs` dan melayani rute berkas statis `/output/<mata_kuliah>/<timestamp>/<nama_file>`.
+
 ---
 
 ## 🔗 Keterhubungan dengan Framework OpenCraft MCP
 Aplikasi ini dirancang modular agar terhubung langsung dengan engine otomasi di:
 `E:\WORKSHOP\OPEN_CRAFT_MCP`
-* `carousel-template`: Merender kartu slide Instagram resolusi tinggi (1080x1350 px).
+* `deckcraft`: Merender bahan tayang portofolio presentasi 16:9 widescreen (`scripts/deckcraft_builder.py`).
+* `designcraft`: Desain tata letak visual dokumen PDF dan kartu rapor.
 * `filmcraft / shorts-template`: Merender video vertikal 9:16 dengan background musik dan voiceover audio.
-* `designcraft`: Tata letak grafis dokumen portofolio arsitektur.
-* `deckcraft`: Bahan tayang presentasi evaluasi kurikulum untuk Kaprodi.
+* `carousel-template`: Merender kartu slide media sosial resolusi tinggi.
+
