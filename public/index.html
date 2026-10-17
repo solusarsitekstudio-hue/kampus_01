@@ -686,9 +686,39 @@
         <div class="lg:col-span-5 bg-[#0f172a] rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
           <div>
             <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <i data-lucide="video" class="w-4 h-4 text-emerald-400"></i> Video Vertikal Reels / Shorts (9:16)
+              <i data-lucide="video" class="w-4 h-4 text-emerald-400"></i> Video Portofolio Vertikal (9:16 Full HD)
             </h3>
-            <p class="text-xs text-slate-400">Simulasi video 32 detik dengan narasi voiceover AI & transisi gerak</p>
+            <p class="text-xs text-slate-400">Video 30 detik MP4 vertikal dengan narasi AI Bu Gadis & foto karya riil</p>
+          </div>
+
+          <!-- ASSET FOLDER DETECTION & CONTROL -->
+          <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <i data-lucide="folder-git-2" class="w-3.5 h-3.5"></i> <span>Aset Foto Karya Mahasiswa</span>
+              </span>
+              <span id="detected-photo-count" class="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+                0 Foto Terdeteksi
+              </span>
+            </div>
+            
+            <div class="text-[10.5px] text-slate-400 font-mono truncate" id="detected-photo-folder">
+              input/progress_mahasiswa/...
+            </div>
+
+            <!-- Image Filename Chips Container -->
+            <div id="detected-photo-chips" class="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+              <!-- Dynamically populated -->
+            </div>
+
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-800">
+              <button onclick="openStudentProgressFolder()" class="flex-1 py-1.5 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold rounded-lg border border-slate-700 flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="folder-open" class="w-3.5 h-3.5 text-amber-400"></i> Buka Folder di File Explorer
+              </button>
+              <button onclick="generateCurrentStudentVideo()" id="btn-generate-video" class="py-1.5 px-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-[11px] font-black rounded-lg shadow-md flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="video" class="w-3.5 h-3.5"></i> Render Video MP4
+              </button>
+            </div>
           </div>
 
           <!-- SMARTPHONE MOCKUP FRAME -->
@@ -697,51 +727,26 @@
             <!-- Phone Notch / Speaker -->
             <div class="w-24 h-4 bg-slate-800 rounded-full mx-auto mb-2 flex-shrink-0"></div>
 
-            <!-- Dynamic Video Screen Viewport -->
-            <div class="relative flex-1 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-950 rounded-2xl p-4 flex flex-col justify-between overflow-hidden border border-slate-800" id="video-mockup-viewport">
-              
-              <!-- Top Watermark -->
-              <div class="flex items-center justify-between text-[10px] text-white/80 z-10 font-bold">
-                <span class="bg-amber-500/80 text-slate-950 px-2 py-0.5 rounded">ARSITEKTUR</span>
-                <span class="bg-black/50 px-2 py-0.5 rounded backdrop-blur">32s RECAP</span>
-              </div>
-
-              <!-- Center Scene Illustration -->
-              <div class="my-auto text-center space-y-2 z-10">
-                <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center text-2xl border border-amber-500/30" id="video-scene-icon">
-                  📐
-                </div>
-                <div class="text-xs font-bold text-white px-2" id="video-scene-label">
-                  Scene 1: Pencapaian Mahasiswa
-                </div>
-                <div class="text-[10px] text-slate-300 font-mono" id="video-scene-time">
-                  00:00 - 00:05
-                </div>
-              </div>
-
-              <!-- Bottom Subtitle / Voiceover Box -->
-              <div class="z-10 bg-black/80 backdrop-blur-md rounded-xl p-2.5 border border-white/10 text-[10px] text-slate-200 text-center">
-                <span class="text-amber-400 font-bold block mb-0.5">🎙️ Narasi Suara AI:</span>
-                <span id="video-voiceover-text" class="italic">
-                  "Satu bulan penuh dedikasi di Lab Komputer Arsitektur! Inilah ananda..."
-                </span>
-              </div>
-
+            <!-- Real Video Screen Viewport -->
+            <div class="relative flex-1 bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center" id="video-screen-container">
+              <video id="student-real-video" class="w-full h-full object-cover" controls playsinline preload="metadata">
+                <source id="student-video-src" src="/videos/video_portofolio_2510015410010.mp4" type="video/mp4">
+                Browser Anda tidak mendukung tag video.
+              </video>
             </div>
 
-            <!-- Video Player Controls -->
-            <div class="mt-3 flex items-center justify-between px-2 text-xs">
-              <button onclick="toggleVideoPlayback()" id="video-play-btn" class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl font-bold transition">
-                <i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Play Preview</span>
+            <!-- Video Download Button below phone -->
+            <div class="mt-2.5 flex items-center justify-between px-1">
+              <button onclick="downloadStudentVideoMP4()" id="btn-download-video-mp4" class="w-full py-1.5 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 transition">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh Video MP4 (1080x1920)
               </button>
-              <div class="text-[11px] font-mono text-slate-400" id="video-timer">00:00 / 00:32</div>
             </div>
 
           </div>
 
           <!-- Video Audio Script Box -->
           <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
-            <span class="text-slate-400 font-medium block">Naskah Lengkap Voiceover:</span>
+            <span class="text-slate-400 font-medium block">Naskah Lengkap Voiceover Bu Gadis (AI TTS):</span>
             <p class="text-slate-200 italic" id="video-full-script">
               Loading script...
             </p>

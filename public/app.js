@@ -612,76 +612,116 @@ function goToSlide(index) {
   renderCarouselSlide(currentSlideIndex);
 }
 
-// 9:16 Video Player Simulation
-function renderVideoStory(student) {
+// Real 9:16 Video Player & Asset Folder Tracker
+async function renderVideoStory(student) {
   const vid = student.marketing.video;
-  document.getElementById("video-full-script").innerText = `"${vid.voiceover_script}"`;
-  document.getElementById("video-voiceover-text").innerText = `"${vid.voiceover_script.slice(0, 95)}..."`;
-  resetVideo();
+  const scriptEl = document.getElementById("video-full-script");
+  if (scriptEl) scriptEl.innerText = `"${vid.voiceover_script}"`;
+
+  // Detect student progress photos
+  await detectStudentProgressPhotos(student.npm);
+
+  // Set video source
+  const videoEl = document.getElementById("student-real-video");
+  const videoSrc = document.getElementById("student-video-src");
+  if (videoEl && videoSrc) {
+    const videoUrl = `/videos/video_portofolio_${student.npm}.mp4?t=${Date.now()}`;
+    videoSrc.src = videoUrl;
+    videoEl.load();
+  }
 }
 
-function toggleVideoPlayback() {
-  const btn = document.getElementById("video-play-btn");
-  if (videoPlaying) {
-    // Pause
-    clearInterval(videoTimerInterval);
-    videoPlaying = false;
-    btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Play Preview</span>`;
-  } else {
-    // Play
-    videoPlaying = true;
-    btn.innerHTML = `<i data-lucide="pause" class="w-3.5 h-3.5"></i> <span>Pause</span>`;
-    videoTimerInterval = setInterval(updateVideoTick, 1000);
+async function detectStudentProgressPhotos(npm) {
+  try {
+    const res = await fetch(`/api/student/images?npm=${npm}`);
+    const data = await res.json();
+    
+    const countEl = document.getElementById("detected-photo-count");
+    const folderEl = document.getElementById("detected-photo-folder");
+    const chipsEl = document.getElementById("detected-photo-chips");
+    
+    if (countEl) countEl.innerText = `${data.count} Foto Terdeteksi`;
+    if (folderEl) folderEl.innerText = data.folder || `input/progress_mahasiswa/.../${npm}`;
+    
+    if (chipsEl) {
+      chipsEl.innerHTML = "";
+      if (data.filenames && data.filenames.length > 0) {
+        data.filenames.forEach(fn => {
+          const chip = document.createElement("span");
+          chip.className = "px-2 py-0.5 rounded bg-slate-800 text-[10px] text-amber-300 font-mono border border-slate-700/80 truncate max-w-[140px]";
+          chip.innerText = fn;
+          chipsEl.appendChild(chip);
+        });
+      } else {
+        chipsEl.innerHTML = `<span class="text-[10px] text-slate-500 italic">Folder masih kosong (menggunakan sample default studio).</span>`;
+      }
+    }
+  } catch (err) {
+    console.error("Error detecting photos:", err);
   }
-  lucide.createIcons();
 }
 
-function resetVideo() {
-  clearInterval(videoTimerInterval);
-  videoPlaying = false;
-  videoCurrentSecond = 0;
-  document.getElementById("video-timer").innerText = "00:00 / 00:32";
-  const btn = document.getElementById("video-play-btn");
-  if (btn) btn.innerHTML = `<i data-lucide="play" class="w-3.5 h-3.5"></i> <span>Play Preview</span>`;
+async function openStudentProgressFolder() {
+  if (!currentStudent) return;
+  try {
+    const res = await fetch(`/api/open_folder?npm=${currentStudent.npm}`);
+    const data = await res.json();
+    if (data.success) {
+      console.log("[FOLDER OPENED]", data.folder);
+    }
+  } catch (err) {
+    console.error("Error opening folder:", err);
+  }
 }
 
-function updateVideoTick() {
-  videoCurrentSecond++;
-  if (videoCurrentSecond > 32) {
-    resetVideo();
-    return;
+async function generateCurrentStudentVideo() {
+  if (!currentStudent) return;
+  const btn = document.getElementById("btn-generate-video");
+  const origHtml = btn ? btn.innerHTML : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader" class="w-3.5 h-3.5 animate-spin"></i> Rendering MP4...`;
+    lucide.createIcons();
   }
 
-  const secStr = videoCurrentSecond < 10 ? `0${videoCurrentSecond}` : `${videoCurrentSecond}`;
-  document.getElementById("video-timer").innerText = `00:${secStr} / 00:32`;
-
-  const sceneIcon = document.getElementById("video-scene-icon");
-  const sceneLabel = document.getElementById("video-scene-label");
-  const sceneTime = document.getElementById("video-scene-time");
-  const subText = document.getElementById("video-voiceover-text");
-  const fullScript = currentStudent.marketing.video.voiceover_script;
-
-  if (videoCurrentSecond <= 6) {
-    sceneIcon.innerText = "🏆";
-    sceneLabel.innerText = `Scene 1: Pencapaian Ananda ${currentStudent.nama.split(" ")[0]}`;
-    sceneTime.innerText = "00:00 - 00:06";
-    subText.innerText = `"${fullScript.slice(0, 50)}..."`;
-  } else if (videoCurrentSecond <= 16) {
-    sceneIcon.innerText = "💻";
-    sceneLabel.innerText = "Scene 2: Praktikum AutoCAD di Lab LIKDA";
-    sceneTime.innerText = "00:06 - 00:16";
-    subText.innerText = `"${fullScript.slice(50, 115)}..."`;
-  } else if (videoCurrentSecond <= 25) {
-    sceneIcon.innerText = "📐";
-    sceneLabel.innerText = "Scene 3: Karya Gambar Denah & Detail Potongan";
-    sceneTime.innerText = "00:16 - 00:25";
-    subText.innerText = `"${fullScript.slice(115, 175)}..."`;
-  } else {
-    sceneIcon.innerText = "🏛️";
-    sceneLabel.innerText = "Scene 4: Kebanggaan Program Studi Arsitektur";
-    sceneTime.innerText = "00:25 - 00:32";
-    subText.innerText = `"${fullScript.slice(175)}"` ;
+  try {
+    const res = await fetch(`/api/video/generate?npm=${currentStudent.npm}`);
+    const data = await res.json();
+    if (data.success) {
+      alert(`Video Portofolio 9:16 untuk ${currentStudent.nama} berhasil dirender! (${data.duration}s)`);
+      // Reload video player
+      const videoEl = document.getElementById("student-real-video");
+      const videoSrc = document.getElementById("student-video-src");
+      if (videoEl && videoSrc) {
+        videoSrc.src = data.video_url;
+        videoEl.load();
+        videoEl.play();
+      }
+      // Re-detect photos
+      await detectStudentProgressPhotos(currentStudent.npm);
+    } else {
+      alert("Gagal merender video: " + (data.error || "Unknown error"));
+    }
+  } catch (err) {
+    alert("Error rendering video: " + err.message);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = origHtml;
+      lucide.createIcons();
+    }
   }
+}
+
+function downloadStudentVideoMP4() {
+  if (!currentStudent) return;
+  const videoUrl = `/videos/video_portofolio_${currentStudent.npm}.mp4`;
+  const a = document.createElement("a");
+  a.href = videoUrl;
+  a.download = `05_video_portofolio_${currentStudent.npm}_${currentStudent.nama.replace(/\s+/g, "_")}.mp4`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
 
 // Copy Instagram Caption

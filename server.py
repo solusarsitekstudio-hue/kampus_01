@@ -36,7 +36,7 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                 self.wfile.write(b'{"error": "Data file not found"}')
             return
 
-        if self.path.startswith("/api/student/"):
+        if self.path.startswith("/api/student/") and not self.path.startswith("/api/student/images"):
             npm = self.path.split("/api/student/")[1].split("?")[0].strip()
             if os.path.exists(DATA_FILE):
                 with open(DATA_FILE, "r", encoding="utf-8") as f:
@@ -162,6 +162,96 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_response(500)
                 self.end_headers()
                 self.wfile.write(f'{{"error": "PDF Generation error: {str(e)}"}}'.encode("utf-8"))
+                return
+
+        # API Detect Student Progress Images
+        if self.path.startswith("/api/student/images"):
+            from urllib.parse import urlparse, parse_qs
+            query = parse_qs(urlparse(self.path).query)
+            npm = query.get("npm", [None])[0]
+            try:
+                sys.path.append(os.path.join(BASE_DIR, "scripts"))
+                from video_composer import find_student_images
+                with open(DATA_FILE, "r", encoding="utf-8") as f:
+                    cdata = json.load(f)
+                course_name = cdata.get("course", {}).get("nama_mk", "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS")
+                imgs, folder = find_student_images(npm, course_name)
+                
+                # Make relative paths / filenames for web display
+                img_filenames = [os.path.basename(p) for p in imgs]
+                
+                res = {
+                    "npm": npm,
+                    "count": len(imgs),
+                    "filenames": img_filenames,
+                    "folder": folder if folder else os.path.join(BASE_DIR, "input", "progress_mahasiswa", course_name, str(npm)),
+                    "folder_exists": os.path.exists(folder) if folder else False
+                }
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(res, ensure_ascii=False).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(f'{{"error": "{str(e)}"}}'.encode("utf-8"))
+                return
+
+        # API Open Student Progress Folder in Windows Explorer
+        if self.path.startswith("/api/open_folder"):
+            import subprocess
+            from urllib.parse import urlparse, parse_qs
+            query = parse_qs(urlparse(self.path).query)
+            npm = query.get("npm", [None])[0]
+            try:
+                sys.path.append(os.path.join(BASE_DIR, "scripts"))
+                from video_composer import find_student_images, sanitize_folder_name
+                with open(DATA_FILE, "r", encoding="utf-8") as f:
+                    cdata = json.load(f)
+                course_name = cdata.get("course", {}).get("nama_mk", "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS")
+                imgs, folder = find_student_images(npm, course_name)
+                if not folder:
+                    clean_course = sanitize_folder_name(course_name)
+                    folder = os.path.join(BASE_DIR, "input", "progress_mahasiswa", clean_course, str(npm))
+                    os.makedirs(folder, exist_ok=True)
+                
+                subprocess.Popen(["explorer", folder])
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps({"success": True, "folder": folder}).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(f'{{"error": "{str(e)}"}}'.encode("utf-8"))
+                return
+
+        # API Generate Video Short MP4 On-Demand
+        if self.path.startswith("/api/video/generate"):
+            import time
+            from urllib.parse import urlparse, parse_qs
+            query = parse_qs(urlparse(self.path).query)
+            npm = query.get("npm", [None])[0]
+            try:
+                sys.path.append(os.path.join(BASE_DIR, "scripts"))
+                from video_composer import generate_video_short_for_student
+                res = generate_video_short_for_student(npm)
+                video_url = f"/videos/video_portofolio_{res['npm']}.mp4?t={int(time.time())}"
+                res["video_url"] = video_url
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.end_headers()
+                self.wfile.write(json.dumps(res, ensure_ascii=False).encode("utf-8"))
+                return
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(f'{{"error": "Video generation error: {str(e)}"}}'.encode("utf-8"))
                 return
 
         # API Output Runs & Hierarchy Metadata
