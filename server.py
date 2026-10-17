@@ -53,6 +53,88 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                     self.wfile.write(b'{"error": "Mahasiswa tidak ditemukan"}')
             return
 
+        # List Available Courses
+        if self.path == "/api/courses":
+            courses_dir = os.path.join(BASE_DIR, "data", "courses")
+            courses_list = []
+            if os.path.exists(courses_dir):
+                for fname in sorted(os.listdir(courses_dir)):
+                    if fname.endswith(".json"):
+                        fpath = os.path.join(courses_dir, fname)
+                        try:
+                            with open(fpath, "r", encoding="utf-8") as cf:
+                                cdata = json.load(cf)
+                                courses_list.append({
+                                    "id": fname[:-5],
+                                    "nama_mk": cdata.get("course", {}).get("nama_mk", fname[:-5]),
+                                    "kode_mk": cdata.get("course", {}).get("kode_mk", ""),
+                                    "sks": cdata.get("course", {}).get("sks", 2),
+                                    "total_mahasiswa": len(cdata.get("students", []))
+                                })
+                        except Exception:
+                            pass
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.end_headers()
+            self.wfile.write(json.dumps(courses_list, ensure_ascii=False).encode("utf-8"))
+            return
+
+        # Switch Active Course dynamically
+        if self.path.startswith("/api/switch_course"):
+            from urllib.parse import urlparse, parse_qs
+            query = parse_qs(urlparse(self.path).query)
+            target_course = query.get("course", [None])[0]
+            if target_course:
+                course_file = os.path.join(BASE_DIR, "data", "courses", f"{target_course}.json")
+                if os.path.exists(course_file):
+                    with open(course_file, "r", encoding="utf-8") as f:
+                        c_data = json.load(f)
+                    with open(DATA_FILE, "w", encoding="utf-8") as f:
+                        json.dump(c_data, f, indent=2, ensure_ascii=False)
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(json.dumps({"success": True, "active_course": c_data["course"]}, ensure_ascii=False).encode("utf-8"))
+                    return
+            self.send_response(400)
+            self.end_headers()
+            self.wfile.write(b'{"error": "Invalid course ID"}')
+            return
+
+        # Interactive DeckCraft HTML Viewer Endpoint
+        if self.path.startswith("/api/deckcraft_html"):
+            from urllib.parse import urlparse, parse_qs
+            query = parse_qs(urlparse(self.path).query)
+            npm = query.get("npm", [None])[0]
+            if os.path.exists(DATA_FILE):
+                with open(DATA_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                matched = next((s for s in data.get("students", []) if s["npm"] == npm), None)
+                if not matched and data.get("students"):
+                    matched = data["students"][0]
+                if matched:
+                    sys.path.append(r"E:\WORKSHOP\OPEN_CRAFT_MCP\scripts")
+                    try:
+                        from deckcraft_builder import render_deckcraft_slides_html
+                        html_content = render_deckcraft_slides_html(matched, data["course"])
+                        self.send_response(200)
+                        self.send_header("Content-Type", "text/html; charset=utf-8")
+                        self.send_header("Access-Control-Allow-Origin", "*")
+                        self.end_headers()
+                        self.wfile.write(html_content.encode("utf-8"))
+                        return
+                    except Exception as e:
+                        self.send_response(500)
+                        self.end_headers()
+                        self.wfile.write(f"Error rendering DeckCraft: {e}".encode("utf-8"))
+                        return
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write(b"Student not found")
+            return
+
         # API Output Runs & Hierarchy Metadata
         if self.path == "/api/runs":
             output_root = os.path.join(BASE_DIR, "output")

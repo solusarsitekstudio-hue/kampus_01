@@ -455,50 +455,62 @@ function renderCarouselSlide(index) {
     }
   }
 
-  // Visual Box Architectural Vector Rendering
+  // Visual Box Architectural Vector Rendering (Eye-Catching Vector Blueprints)
   const visualBox = document.getElementById("slide-visual-box");
   if (index === 0) {
-    // Cover & Achievement Badge
+    // Slide 1: 3D Axonometric Wireframe House in glowing SVG
     visualBox.innerHTML = `
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center text-3xl border border-amber-500/40 shadow-lg">
-          🏆
-        </div>
-        <div class="text-xs font-bold text-white tracking-wide uppercase">Prestasi Studio Arsitektur</div>
-        <div class="text-[11px] font-mono text-amber-400">Predikat: ${currentStudent.akademik.grade} (${currentStudent.akademik.nilai_rata_rata})</div>
+      <div class="w-full h-full flex flex-col items-center justify-center p-1 bg-slate-950/80 rounded-lg">
+        <svg viewBox="0 0 160 100" class="w-full h-24">
+          <polygon points="80,75 135,50 80,25 25,50" fill="rgba(0,240,255,0.12)" stroke="#00f0ff" stroke-width="1.5"/>
+          <polygon points="50,40 105,15 105,45 50,70" fill="rgba(56,189,248,0.22)" stroke="#38bdf8" stroke-width="1.2"/>
+          <polygon points="40,35 90,10 145,38 95,62" fill="rgba(255,183,3,0.18)" stroke="#ffb703" stroke-width="1.8"/>
+          <line x1="50" y1="70" x2="50" y2="78" stroke="#00f0ff" stroke-width="2"/>
+          <line x1="105" y1="65" x2="105" y2="73" stroke="#00f0ff" stroke-width="2"/>
+        </svg>
+        <div class="text-[9.5px] font-mono text-cyan-300 font-bold tracking-wider">3D AXONOMETRIC WIREFRAME</div>
       </div>
     `;
   } else if (index === 1) {
-    // Studio Lab Activity Vector
+    // Slide 2: Interactive CAD Layer Palette & Lineweight Specs
     visualBox.innerHTML = `
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center text-3xl border border-emerald-500/40 shadow-lg">
-          💻
-        </div>
-        <div class="text-xs font-bold text-white tracking-wide uppercase">Studio Asistensi Lab LIKDA</div>
-        <div class="text-[11px] text-slate-300">AutoCAD Modeling & Sinkronisasi Gambar Kerja</div>
+      <div class="w-full h-full flex flex-col justify-center p-2.5 bg-slate-950/80 rounded-lg font-mono text-[9px] space-y-1">
+        <div class="flex justify-between text-cyan-400 font-bold border-b border-slate-800 pb-1"><span>LAYER CAD</span><span>TEBAL</span></div>
+        <div class="flex justify-between text-slate-300"><span>• Dinding 15cm</span><span class="text-cyan-300">0.50 mm</span></div>
+        <div class="flex justify-between text-slate-300"><span>• Kusen Pintu</span><span class="text-sky-300">0.25 mm</span></div>
+        <div class="flex justify-between text-slate-300"><span>• Garis Dimensi</span><span class="text-amber-300">0.13 mm</span></div>
+        <div class="flex justify-between text-slate-400"><span>• Arsiran Hatch</span><span>0.05 mm</span></div>
       </div>
     `;
   } else if (index === 2) {
-    // Architectural Drawings Blueprint Vector
+    // Slide 3: Architectural Floor Plan Blueprint (Scale 1:100)
     visualBox.innerHTML = `
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 text-cyan-400 mx-auto flex items-center justify-center text-3xl border border-cyan-500/40 shadow-lg">
-          📐
-        </div>
-        <div class="text-xs font-bold text-white tracking-wide uppercase">Denah, Potongan & Detail Pondasi</div>
-        <div class="text-[11px] text-cyan-300 font-mono">Standar Cetak Sheet A3 Arsitektur</div>
+      <div class="w-full h-full flex flex-col items-center justify-center p-1 bg-slate-950/80 rounded-lg">
+        <svg viewBox="0 0 150 90" class="w-full h-20">
+          <rect x="25" y="15" width="100" height="60" fill="none" stroke="#00f0ff" stroke-width="1.5"/>
+          <line x1="75" y1="15" x2="75" y2="75" stroke="#00f0ff" stroke-width="1.2"/>
+          <line x1="25" y1="45" x2="75" y2="45" stroke="#00f0ff" stroke-width="1.2"/>
+          <circle cx="25" cy="15" r="3" fill="#ffb703"/>
+          <circle cx="75" cy="15" r="3" fill="#ffb703"/>
+          <circle cx="125" cy="15" r="3" fill="#ffb703"/>
+          <text x="35" y="32" fill="#fff" font-size="6" font-family="Plus Jakarta Sans">K. TIDUR</text>
+          <text x="85" y="45" fill="#fff" font-size="6" font-family="Plus Jakarta Sans">R. TAMU</text>
+          <line x1="25" y1="82" x2="125" y2="82" stroke="#ffb703" stroke-width="0.8"/>
+          <text x="65" y="87" fill="#ffb703" font-size="6" font-family="JetBrains Mono">7.50 m</text>
+        </svg>
+        <div class="text-[9.5px] font-mono text-cyan-300 font-bold">DENAH DWG SCALE 1:100</div>
       </div>
     `;
   } else {
-    // Official Pride Badge
+    // Slide 4: Official Certificate Seal
     visualBox.innerHTML = `
-      <div class="text-center space-y-2">
-        <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center text-3xl border border-amber-500/40 shadow-lg">
-          🏛️
+      <div class="w-full h-full flex flex-col items-center justify-center p-1 text-center bg-slate-950/80 rounded-lg">
+        <div class="w-12 h-12 rounded-full border-2 border-dashed border-amber-400 flex flex-col items-center justify-center bg-amber-500/10 shadow-lg shadow-amber-500/20 mb-1">
+          <span class="text-base">🏛️</span>
+          <span class="text-[6.5px] font-black text-amber-400 font-mono">IAI UNGGUL</span>
         </div>
-        <div class="text-xs font-bold text-amber-400 tracking-wide uppercase">PROGRAM STUDI ARSITEKTUR</div>
-        <div class="text-[11px] text-slate-300">Mencetak Generasi Arsitek Muda Indonesia</div>
+        <div class="text-[9.5px] font-bold text-white uppercase">SERTIFIKASI STUDIO</div>
+        <div class="text-[8.5px] font-mono text-amber-400">Akreditasi BAN-PT</div>
       </div>
     `;
   }
@@ -702,3 +714,31 @@ function downloadAll3StudentPDFs() {
   setTimeout(() => downloadCurrentStudentFinalPDF(), 400);
   setTimeout(() => downloadCurrentStudentDeckcraftPDF(), 800);
 }
+
+// Live Interactive 16:9 Presentation Viewer
+function openLiveDeckcraft() {
+  if (!currentStudent) return;
+  window.open(`/api/deckcraft_html?npm=${currentStudent.npm}`, "_blank");
+}
+
+// Dynamic Course Switcher
+async function switchActiveCourse(courseId) {
+  try {
+    const res = await fetch(`/api/switch_course?course=${encodeURIComponent(courseId)}`);
+    const resData = await res.json();
+    if (resData.success) {
+      console.log("[COURSE SWITCHED] Active:", resData.active_course.nama_mk);
+      // Reload entire academic dataset & views
+      await loadAcademicData();
+      const titleEl = document.getElementById("current-course-title");
+      if (titleEl) titleEl.innerText = resData.active_course.nama_mk;
+      
+      // Update select value if not matching
+      const sel = document.getElementById("course-selector");
+      if (sel) sel.value = courseId;
+    }
+  } catch (err) {
+    console.error("Failed to switch course:", err);
+  }
+}
+

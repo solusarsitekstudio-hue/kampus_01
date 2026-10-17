@@ -97,50 +97,60 @@ Sistem dilengkapi engine perender dokumen PDF berkualitas penerbitan (Playwright
   * **Audit Kesesuaian Materi vs Modul RPS**: Evaluasi materi per sesi terhadap capaian CPMK/CPL dengan skor keselarasan rata-rata **96.0% (Terakreditasi Sangat Baik / Unggul)**.
   * Rapor performa kelas yang diampu beserta catatan evaluasi peningkatan mutu dari Kaprodi.
 
-### 4. Portofolio Presentasi 16:9 Widescreen (DeckCraft Engine):
+### 4. Portofolio Presentasi 16:9 Widescreen (DeckCraft Visual Engine):
 * **PDF 1C: Slide Deck Portofolio Arsitektur Mahasiswa** (`05_deckcraft_portofolio_arsitektur_*.pdf`):
-  * 4-Slide presentasi arsitektur format landscape 16:9 widescreen dirancang untuk dilampirkan via WhatsApp dan dipresentasikan di depan keluarga/rekan.
-  * Berisi cover portofolio, dokumentasi studio CAD di Lab LIKDA, karya lembar kerja A3, dan sertifikat kelulusan kompetensi studio.
+  * 4-Slide presentasi arsitektur format landscape 16:9 widescreen berkualitas sayembara/penerbitan.
+  * **Visual Kaya & Eye-Catching**: Dilengkapi **3D Axonometric Wireframe Villa dalam SVG**, **Denah Arsitektur Skala 1:100 Lengkap dengan As & Dimensi**, **Detail Pondasi Batu Kali Skala 1:20**, serta **Sertifikat Pengesahan Resmi Berstempel Emas Kaprodi**.
+  * **Interaktif**: Dapat dibuka langsung di browser secara interaktif melalui tombol *Fullscreen Interaktif* atau diunduh sebagai PDF resolusi tinggi.
 
 ---
 
-## 🗂️ Manajemen File & Folder Hierarkis (File & Folder Management)
-Sistem menerapkan struktur penyimpanan dokumen yang rapi, terisolasi, dan berjenjang menurut nama mata kuliah dan waktu pembuatan:
+## 🏛️ Penyesuaian Dinamis Multi-Mata Kuliah (Any Course Adaptability)
+Sistem tidak terkunci hanya pada satu mata kuliah, melainkan dapat memproses dan menyajikan mata kuliah apa pun di jurusan Arsitektur:
+* **Dropdown Pilih Mata Kuliah di Dashboard**: Kaprodi dapat berganti mata kuliah secara real-time langsung dari navigasi atas.
+* **Katalog Mata Kuliah Tersedia**:
+  1. `APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS` (AutoCAD, Layer IAI, dan Estimasi Volume QS).
+  2. `STUDIO_PERANCANGAN_ARSITEKTUR_2` (Desain Rumah Tinggal, Analisis Tapak & Maket Studi).
+  3. `STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1` (Pondasi Dangkal, Kolom Beton & Kuda-kuda Kayu).
+* **CLI Parameter**: Jalankan `python scripts\process_input.py --course "<NAMA_MK>"` untuk memproses mata kuliah apa pun.
+
+---
+
+## 📥 Manajemen Folder INPUT & OUTPUT Terpadu
+Sistem menerapkan tata kelola direktori dua arah yang simetris dan rapi:
 
 ```text
 e:\WORKSPACE\KAMPUS_01\
 │
-├── output/                                      <-- Direktori Utama Arsip Output
-│   ├── latest_run.json                          <-- Pointer Global Sesi Generate Terakhir
+├── input/                                       <-- DIREKTORI INPUT
+│   ├── raw/                                     <-- Penangkapan Mentah (Raw Captures)
+│   │   └── <NAMA_MATA_KULIAH>/
+│   │       └── <TIMESTAMP_PENANGKAPAN>/         <-- Berkas mentah dari scraper / Kaprodi
+│   │           ├── daftar_mahasiswa_raw.xlsx
+│   │           └── rekap_presensi_modul_raw.pdf
 │   │
-│   └── APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/     <-- Subfolder per Nama Mata Kuliah
-│       ├── latest_run.json                      <-- Pointer Sesi Terakhir Mata Kuliah
-│       │
-│       ├── 2026-10-18_01-30-08/                 <-- Subfolder Waktu Pembuatan (Timestamp)
-│       │   ├── 01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf
-│       │   ├── 01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf
-│       │   ├── 01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf
-│       │   ├── 02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf
-│       │   ├── 02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf
-│       │   ├── 02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf
-│       │   ├── 03_laporan_penilaian_kaprodi_master_gradebook.pdf
-│       │   ├── 04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf
-│       │   ├── 05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf
-│       │   ├── 05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf
-│       │   ├── 05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf
-│       │   └── manifest.json                    <-- Metadata Run (Nama MK, Kode, Jam, Ukuran File)
-│       │
-│       └── [Timestamp_Sesi_Berikutnya]/         <-- Setiap kali batch dijalankan, folder baru dibuat
+│   └── processed/                               <-- Hasil Olahan Matang (Normalized)
+│       └── <NAMA_MATA_KULIAH>/
+│           └── <TIMESTAMP_PENANGKAPAN>/
+│               ├── academic_data.json           <-- Dataset master terstruktur
+│               └── input_manifest.json          <-- Log validasi & metadata input
 │
-├── generated_pdfs/                              <-- Mirror Sinkronisasi Otomatis (Live Web Preview)
-└── scripts/
-    └── generate_pdfs.py                         <-- Engine Pembuat Folder & Perender PDF
+├── output/                                      <-- DIREKTORI OUTPUT
+│   ├── latest_run.json                          <-- Pointer global sesi generate terakhir
+│   └── <NAMA_MATA_KULIAH>/
+│       ├── latest_run.json
+│       └── <TIMESTAMP_WAKTU_DIBIKIN>/           <-- Seluruh PDF resmi siap kirim
+│           ├── 01_rekap_kehadiran_bulanan_*.pdf
+│           ├── 02_rapor_akhir_semester_*.pdf
+│           ├── 03_laporan_penilaian_kaprodi_master_gradebook.pdf
+│           ├── 04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf
+│           ├── 05_deckcraft_portofolio_arsitektur_*.pdf (16:9 Widescreen)
+│           └── manifest.json                    <-- Katalog file & ukuran KB
+│
+├── process_input.bat                            <-- 1-Klik Ingest, Olah Input & Generate PDF
+├── run_server.bat                               <-- Menjalankan Server (Port 40404)
+└── stop_server.bat                              <-- Mematikan Server Bersih
 ```
-
-### Keunggulan Struktur Ini:
-1. **Tidak Ada File Tertimpa (Zero Overwrite)**: Setiap eksekusi pembuatan rapor atau dokumen arsip tersimpan dalam folder timestamp unik sehingga riwayat perkuliahan tersimpan utuh.
-2. **Katalog Manifest JSON Otomatis**: Setiap folder mencatat file apa saja yang digenerate, kode mata kuliah, waktu eksekusi, dan ukuran berkas (KB).
-3. **Penyajian Cepat via Web**: Dashboard menyediakan REST API `/api/runs` dan melayani rute berkas statis `/output/<mata_kuliah>/<timestamp>/<nama_file>`.
 
 ---
 

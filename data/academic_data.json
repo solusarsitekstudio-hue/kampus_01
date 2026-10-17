@@ -27,7 +27,7 @@
       "tanggal": "2026-06-03",
       "tanggal_display": "03 Juni 2026",
       "topik": "Pengenalan AutoCAD & Gambar Denah Dasar",
-      "deskripsi": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands (Line, Circle, Rectangle), Import Gambar sebagai referensi denah.",
+      "deskripsi": "Interface, Commands, Referensi Denah 1:100.",
       "bobot": 15
     },
     {
@@ -35,7 +35,7 @@
       "tanggal": "2026-06-10",
       "tanggal_display": "10 Juni 2026",
       "topik": "Medium Drawing: Kolom, Dinding & Dimensi",
-      "deskripsi": "Menggambar dan Mengedit: menggambar kolom struktur, dinding bata, notasi arsitektural dan penarikan garis dimensi presisi.",
+      "deskripsi": "Kolom struktur, dinding bata, dan garis dimensi presisi.",
       "bobot": 15
     },
     {
@@ -43,7 +43,7 @@
       "tanggal": "2026-06-24",
       "tanggal_display": "24 Juni 2026",
       "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
-      "deskripsi": "Pendalaman materi layer manajemen, pemberian arsiran material (hatch), dan pembuatan block kusen pintu dan jendela.",
+      "deskripsi": "Layer standar IAI, hatch material, dynamic blocks.",
       "bobot": 15
     },
     {
@@ -51,15 +51,15 @@
       "tanggal": "2026-07-01",
       "tanggal_display": "01 Juli 2026",
       "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi",
-      "deskripsi": "Menggambar Potongan Bangunan (A-A & B-B), sinkronisasi denah dengan garis potongan, dan membuat detail pondasi batu kali.",
+      "deskripsi": "Potongan vertikal A-A & detail pondasi batu kali 1:20.",
       "bobot": 20
     },
     {
       "pertemuan": 5,
       "tanggal": "2026-07-08",
-      "tanggal_display": "08 Juli 2026",
+      "tanggal_display": "08 Juni 2026",
       "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF",
-      "deskripsi": "Layout etiket gambar standar arsitektur, pengenalan sheet viewport, plot ke PDF standar cetak A3, dan estimasi dasar daftar volume.",
+      "deskripsi": "Etiket standar, viewport sheet, cetak PDF A3.",
       "bobot": 15
     },
     {
@@ -67,7 +67,7 @@
       "tanggal": "2026-07-15",
       "tanggal_display": "15 Juli 2026",
       "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
-      "deskripsi": "Menghitung Volume dari item pekerjaan arsitektur dari gambar CAD, input tabel volume, dan evaluasi hasil kompilasi portofolio.",
+      "deskripsi": "Perhitungan volume material QS dan evaluasi portofolio.",
       "bobot": 20
     }
   ],
@@ -171,50 +171,52 @@
     "evaluasi_kurikulum_rps": [
       {
         "sesi": 1,
-        "topik_rps": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands, Import Gambar denah",
-        "realisasi_kelas": "Materi tersampaikan penuh, 35 mahasiswa berhasil import denah referensi & setup workspace.",
+        "topik_rps": "Pengenalan AutoCAD & Gambar Denah Dasar",
+        "realisasi_kelas": "Materi 'Pengenalan AutoCAD & Gambar Denah Dasar' tersampaikan penuh sesuai RPS dan modul praktikum.",
         "skor_keselarasan": 98,
         "cpmk": "CPMK-1: Mampu mengoperasikan antarmuka CAD standar industri"
       },
       {
         "sesi": 2,
-        "topik_rps": "Medium Drawing: Menggambar dan Mengedit kolom, dinding, notasi dan dimensi",
-        "realisasi_kelas": "Praktek penarikan garis kolom beton, dinding bata 15cm, dan penarikan dimensi presisi tuntas.",
+        "topik_rps": "Medium Drawing: Kolom, Dinding & Dimensi",
+        "realisasi_kelas": "Materi 'Medium Drawing: Kolom, Dinding & Dimensi' tersampaikan penuh sesuai RPS dan modul praktikum.",
         "skor_keselarasan": 96,
         "cpmk": "CPMK-2: Menguasai teknik penggambaran elemen arsitektur 2D presisi"
       },
       {
         "sesi": 3,
-        "topik_rps": "Medium Drawing: Layer, Memberi Arsiran (Hatch), Blok Kusen Jendela & Pintu",
-        "realisasi_kelas": "Pengaturan layer lineweight standar IAI dan pembuatan dynamic block pintu/jendela terverifikasi.",
+        "topik_rps": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
+        "realisasi_kelas": "Materi 'Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela' tersampaikan penuh sesuai RPS dan modul praktikum.",
         "skor_keselarasan": 95,
         "cpmk": "CPMK-2: Menguasai teknik penggambaran elemen arsitektur 2D presisi"
       },
       {
         "sesi": 4,
-        "topik_rps": "Medium Drawing: Menggambar Potongan A-A & B-B, sinkronisasi denah, Detail Pondasi",
-        "realisasi_kelas": "Mahasiswa memproyeksikan garis denah ke potongan vertikal dan detail pondasi batu kali 1:20.",
+        "topik_rps": "Medium Drawing: Gambar Potongan & Detail Pondasi",
+        "realisasi_kelas": "Materi 'Medium Drawing: Gambar Potongan & Detail Pondasi' tersampaikan penuh sesuai RPS dan modul praktikum.",
         "skor_keselarasan": 94,
         "cpmk": "CPMK-3: Mampu menyusun gambar potongan dan detail konstruksi bangunan"
       },
       {
         "sesi": 5,
-        "topik_rps": "Publishing Drawing: Layout, Pengenalan Sheet, Plot ke PDF dan dasar list volume",
-        "realisasi_kelas": "Setting viewport layout skala 1:100 pada etiket resmi dan export ke lembar PDF cetak A3.",
+        "topik_rps": "Publishing Drawing: Layout, Sheet & Plotting PDF",
+        "realisasi_kelas": "Materi 'Publishing Drawing: Layout, Sheet & Plotting PDF' tersampaikan penuh sesuai RPS dan modul praktikum.",
         "skor_keselarasan": 97,
         "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
       },
       {
         "sesi": 6,
-        "topik_rps": "Scheduling Drawing: Menghitung Volume pekerjaan dari gambar dan plotting final",
-        "realisasi_kelas": "Ekstraksi luasan dinding, volume pondasi, dan kompilasi tabel Quantity Surveying selesai 100%.",
+        "topik_rps": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
+        "realisasi_kelas": "Materi 'Scheduling Drawing: Perhitungan Volume & Evaluasi Final' tersampaikan penuh sesuai RPS dan modul praktikum.",
         "skor_keselarasan": 96,
         "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
       }
     ],
     "skor_keselarasan_rata_rata": 96.0,
     "keterangan_akreditasi": "Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik",
-    "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
+    "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar.",
+    "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+    "kode_mk": "5412522233"
   },
   "students": [
     {
