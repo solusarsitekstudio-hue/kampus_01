@@ -5,6 +5,11 @@ import sys
 import json
 import webbrowser
 
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
+
 PORT = 40404
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 PUBLIC_DIR = os.path.join(BASE_DIR, "public")
@@ -60,10 +65,10 @@ def run_server():
     
     with socketserver.TCPServer(("", PORT), KampusIntelligenceHandler) as httpd:
         print("=" * 65)
-        print(f"🎓 SIAK-KAPRODI ARSITEKTUR INTELLIGENCE SERVER ACTIVE")
-        print(f"📡 Local Server URL: http://localhost:{PORT}")
-        print(f"📁 Serving Root: {PUBLIC_DIR}")
-        print(f"⚡ Press Ctrl+C or run stop_server.bat to terminate")
+        print("[SIAK-KAPRODI] ARSITEKTUR INTELLIGENCE SERVER ACTIVE")
+        print(f"[STATUS] Local Server URL: http://localhost:{PORT}")
+        print(f"[ROOT] Serving Root: {PUBLIC_DIR}")
+        print(f"[INFO] Press Ctrl+C or run stop_server.bat to terminate")
         print("=" * 65)
         try:
             httpd.serve_forever()
