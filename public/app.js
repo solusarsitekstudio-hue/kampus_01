@@ -593,24 +593,49 @@ function copyInstagramCaption() {
 }
 
 // =============================================================================
-// TAB 4: WHATSAPP SIMULATOR RENDERING
+// TAB 4: WHATSAPP SIMULATOR RENDERING (DENGAN LAMPIRAN PDF)
 // =============================================================================
 function renderWhatsAppSimulation(student) {
   document.getElementById("wa-recipient-name").innerText = `Wali Murid ${student.nama}`;
-  document.getElementById("wa-chat-bubble").innerText = student.marketing.wa_text;
-  document.getElementById("wa-simulated-link").innerText = `https://siak-arsitektur.ac.id/rapor/mhs/${student.npm}`;
+  
+  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik dan Portofolio Pembelajaran ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* untuk periode semester berjalan:`;
+  document.getElementById("wa-opening-text").innerText = openingText;
+
+  const sanitizedName = student.nama.replace(/\s+/g, "_");
+  document.getElementById("wa-card-file-1").innerText = `01_rekap_kehadiran_${student.npm}.pdf`;
+  document.getElementById("wa-card-file-2").innerText = `02_rapor_akhir_ranking_${student.npm}.pdf`;
+  document.getElementById("wa-card-file-3").innerText = `05_deckcraft_portofolio_${student.npm}.pdf`;
 }
 
 function copyWhatsAppMessage() {
   if (!currentStudent) return;
-  navigator.clipboard.writeText(currentStudent.marketing.wa_text).then(() => {
-    alert("Pesan WhatsApp resmi berhasil disalin ke Clipboard!");
+  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
+  const fullMsg = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\n` +
+    `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
+    `Salam hangat dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n` +
+    `Melalui pesan ini, kami menyampaikan Surat Resmi Perkembangan Akademik dan Portofolio Pembelajaran ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* periode semester berjalan.\n\n` +
+    `Bersama pesan ini, kami lampirkan 3 Dokumen Resmi Terverifikasi:\n` +
+    `1. 📎 Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n` +
+    `2. 📎 Rapor Hasil Evaluasi Akhir & Ranking Kelas (Capaian Kompetensi & Analisis Bakat)\n` +
+    `3. 📎 Portofolio Karya & Dokumentasi Studio Arsitektur (Slide Deck Presentasi 16:9)\n\n` +
+    `Bapak/Ibu dapat mengunduh dan meninjau berkas PDF terlampir. Terima kasih atas doa, bimbingan, dan dukungan yang senantiasa Bapak/Ibu berikan kepada ananda tercinta di rumah.\n\n` +
+    `Hormat kami,\n` +
+    `*Ketua Program Studi Arsitektur*\n` +
+    `*Fielda Roza, S.T., M.T.*\n` +
+    `Asisten Dosen: *Adrian Ridhoa, S.T.*`;
+
+  navigator.clipboard.writeText(fullMsg).then(() => {
+    alert("Pesan pembuka resmi & daftar lampiran WhatsApp berhasil disalin!");
   });
 }
 
 function openWhatsAppDirect() {
   if (!currentStudent) return;
-  const encoded = encodeURIComponent(currentStudent.marketing.wa_text);
+  const fullMsg = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\n` +
+    `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
+    `Berikut kami sampaikan berkas Laporan Hasil Belajar & Portofolio Arsitektur ananda dalam 3 lampiran dokumen PDF resmi terverifikasi. Terima kasih atas bimbingan dan dukungan Bapak/Ibu di rumah.\n\n` +
+    `Hormat kami,\nProgram Studi Arsitektur`;
+  const encoded = encodeURIComponent(fullMsg);
   window.open(`https://api.whatsapp.com/send?text=${encoded}`, "_blank");
 }
 
@@ -648,4 +673,18 @@ function downloadCurrentStudentFinalPDF() {
   const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
   const filename = `02_rapor_akhir_semester_${currentStudent.npm}_${sanitizedName}.pdf`;
   window.open(`/generated_pdfs/${filename}`, "_blank");
+}
+
+function downloadCurrentStudentDeckcraftPDF() {
+  if (!currentStudent) return;
+  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
+  const filename = `05_deckcraft_portofolio_arsitektur_${currentStudent.npm}_${sanitizedName}.pdf`;
+  window.open(`/generated_pdfs/${filename}`, "_blank");
+}
+
+function downloadAll3StudentPDFs() {
+  if (!currentStudent) return;
+  downloadCurrentStudentMonthlyPDF();
+  setTimeout(() => downloadCurrentStudentFinalPDF(), 400);
+  setTimeout(() => downloadCurrentStudentDeckcraftPDF(), 800);
 }

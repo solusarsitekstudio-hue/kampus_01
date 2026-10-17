@@ -469,7 +469,7 @@
 
 
     <!-- ========================================================================= -->
-    <!-- TAB 3: VIRAL MARKETING ENGINE (CAROUSEL & VIDEO) -->
+    <!-- TAB 3: PORTOFOLIO DECKCRAFT & VIDEO 9:16 -->
     <!-- ========================================================================= -->
     <section id="section-marketing" class="tab-section hidden space-y-6">
       
@@ -477,31 +477,31 @@
       <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="zap" class="w-4 h-4"></i> Mesin Viral Marketing Kampus (Word-of-Mouth Engine)
+            <i data-lucide="presentation" class="w-4 h-4"></i> DeckCraft Presentation Engine (Pengganti Carousel)
           </span>
-          <h2 class="text-xl font-bold text-white mt-1">4-Slide Carousel & Video Vertikal 9:16 untuk Status WhatsApp / Instagram</h2>
+          <h2 class="text-xl font-bold text-white mt-1">Slide Deck Portofolio Arsitektur 16:9 Widescreen (Format PDF Siap Lampir)</h2>
           <p class="text-xs text-slate-300 mt-1 max-w-2xl">
-            Sistem otomatis merakit foto progres karya mahasiswa menjadi konten siap pamer bagi orang tua. Rasa bangga wali murid menjadi promosi organik terbaik bagi Program Studi Arsitektur!
+            Konsep carousel kini diupgrade menjadi <strong>Dokumen PDF Slide Deck Presentasi 4 Halaman</strong> beresolusi tinggi. Dilengkapi mockup video vertikal 9:16 untuk media sosial!
           </p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="copyInstagramCaption()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2 transition">
-            <i data-lucide="copy" class="w-4 h-4"></i> Salin Caption Instagram
+          <button onclick="downloadCurrentStudentDeckcraftPDF()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
+            <i data-lucide="file-down" class="w-4 h-4"></i> Unduh DeckCraft PDF (16:9)
           </button>
         </div>
       </div>
 
-      <!-- MAIN SHOWCASE GRID: CAROUSEL (LEFT) + VIDEO 9:16 (RIGHT) -->
+      <!-- MAIN SHOWCASE GRID: DECKCRAFT SLIDES (LEFT) + VIDEO 9:16 (RIGHT) -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- LEFT: 4-SLIDE CAROUSEL VIEWER (7 COLS) -->
+        <!-- LEFT: 4-SLIDE DECKCRAFT PRESENTER (7 COLS) -->
         <div class="lg:col-span-7 bg-[#0f172a] rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
           <div class="flex items-center justify-between">
             <div>
               <h3 class="text-base font-bold text-white flex items-center gap-2">
-                <i data-lucide="layers" class="w-4 h-4 text-amber-400"></i> Interactive 4-Slide Carousel (Rasio 4:5 Portrait)
+                <i data-lucide="monitor" class="w-4 h-4 text-amber-400"></i> DeckCraft Slide Presenter (16:9 Widescreen)
               </h3>
-              <p class="text-xs text-slate-400">Format standar feed Instagram (1080 × 1350 px) & WA Story</p>
+              <p class="text-xs text-slate-400">Format slide presentasi portofolio standar studio arsitektur</p>
             </div>
             <!-- Slide Nav Buttons -->
             <div class="flex items-center gap-2">
@@ -515,8 +515,8 @@
             </div>
           </div>
 
-          <!-- THE CAROUSEL CANVAS STAGE -->
-          <div class="relative w-full max-w-[420px] mx-auto aspect-[4/5] bg-gradient-to-b from-[#080c12] via-[#0d131d] to-[#080c12] rounded-2xl border-2 border-amber-500/40 p-6 flex flex-col justify-between shadow-2xl overflow-hidden" id="carousel-stage">
+          <!-- THE DECKCRAFT WIDESCREEN 16:9 CANVAS STAGE -->
+          <div class="relative w-full aspect-[16/9] bg-gradient-to-b from-[#080c12] via-[#0d131d] to-[#080c12] rounded-2xl border-2 border-amber-500/40 p-6 flex flex-col justify-between shadow-2xl overflow-hidden" id="carousel-stage">
             
             <!-- Floating Background Architectural Blueprint Mesh -->
             <div class="absolute inset-0 opacity-15 pointer-events-none" style="background-image: radial-gradient(#ffc800 1px, transparent 1px); background-size: 20px 20px;"></div>
@@ -524,7 +524,7 @@
             <!-- Slide Header Bar -->
             <div class="flex items-center justify-between relative z-10">
               <div class="flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 px-3 py-1 rounded-full text-[11px] font-bold text-amber-400">
-                <span>🏛️ ARSITEKTUR KAMPUS</span>
+                <span>🏛️ DECKCRAFT ARCHITECTURE</span>
               </div>
               <div class="text-[11px] font-mono text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-full border border-slate-800" id="slide-stage-counter">
                 01 / 04
@@ -532,32 +532,34 @@
             </div>
 
             <!-- Middle Dynamic Visual Content -->
-            <div class="my-auto relative z-10 space-y-4 text-center py-4">
-              <!-- Visual Mockup Image / Illustration Frame -->
-              <div class="w-full h-44 rounded-xl bg-slate-900/80 border border-slate-800 p-3 flex flex-col items-center justify-center relative overflow-hidden" id="slide-visual-box">
-                <!-- SVG / Graphic content dynamically inserted -->
+            <div class="my-auto relative z-10 flex items-center justify-between gap-6 py-2">
+              <div class="flex-1 space-y-2 text-left">
+                <!-- Badge Tag -->
+                <div class="inline-block">
+                  <span class="px-2.5 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20" id="slide-stage-badge">
+                    PORTOFOLIO AKADEMIK STUDIO 2026
+                  </span>
+                </div>
+
+                <!-- Main Slide Title & Body -->
+                <h4 class="text-lg font-black text-white tracking-tight leading-snug" id="slide-stage-title">
+                  Kompilasi Gambar Kerja CAD & Aplikasi Komputer Arsitektur
+                </h4>
+                <p class="text-xs text-slate-300 leading-relaxed max-w-md" id="slide-stage-desc">
+                  Dokumentasi capaian kompetensi perancangan denah presisi, potongan struktural, dan perhitungan volume QS.
+                </p>
               </div>
 
-              <!-- Badge Tag -->
-              <div class="inline-block">
-                <span class="px-3 py-1 rounded-md text-[11px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20" id="slide-stage-badge">
-                  STUDIO ARSITEKTUR 2026
-                </span>
+              <!-- Visual Box Vector Rendering -->
+              <div class="w-48 h-36 rounded-xl bg-slate-900/90 border border-slate-700/80 p-3 flex flex-col items-center justify-center relative overflow-hidden flex-shrink-0" id="slide-visual-box">
+                <!-- Dynamically rendered vector -->
               </div>
-
-              <!-- Main Slide Title & Body -->
-              <h4 class="text-lg font-black text-white tracking-tight leading-snug px-2" id="slide-stage-title">
-                Progres Karya Arsitektur: M Yazid Zidane Mulyadi
-              </h4>
-              <p class="text-xs text-slate-300 leading-relaxed px-3" id="slide-stage-desc">
-                Kompilasi Praktikum Aplikasi Komputer & Gambar Kerja CAD • Capaian Predikat: Sangat Memuaskan (A)
-              </p>
             </div>
 
             <!-- Slide Footer Bar -->
-            <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 relative z-10">
+            <div class="pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-[10px] text-slate-400 relative z-10">
               <span id="slide-stage-highlight" class="font-mono text-amber-400 font-semibold">Tingkat Kehadiran: 100%</span>
-              <span class="flex items-center gap-1 text-slate-400">GESER UNTUK LIHAT <i data-lucide="arrow-right" class="w-3 h-3 text-amber-400"></i></span>
+              <span class="flex items-center gap-1 text-slate-400">DECKCRAFT ENGINE • E:\WORKSHOP\OPEN_CRAFT_MCP</span>
             </div>
 
           </div>
@@ -586,9 +588,11 @@
           <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs text-slate-300">
             <div class="flex items-center gap-2">
               <span class="p-1.5 rounded-lg bg-sky-500/20 text-sky-400"><i data-lucide="cpu" class="w-4 h-4"></i></span>
-              <span>Terhubung dengan Engine: <strong class="text-white">OPEN_CRAFT_MCP / carousel-template</strong></span>
+              <span>Terhubung dengan MCP: <strong class="text-white">OPEN_CRAFT_MCP / deckcraft_builder.py</strong></span>
             </div>
-            <span class="text-[11px] font-mono text-emerald-400">Siap Render Batch 1080x1350</span>
+            <button onclick="downloadCurrentStudentDeckcraftPDF()" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition">
+              <span>Unduh File PDF</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
         </div>
 
@@ -633,7 +637,7 @@
               <div class="z-10 bg-black/80 backdrop-blur-md rounded-xl p-2.5 border border-white/10 text-[10px] text-slate-200 text-center">
                 <span class="text-amber-400 font-bold block mb-0.5">🎙️ Narasi Suara AI:</span>
                 <span id="video-voiceover-text" class="italic">
-                  "Satu bulan penuh dedikasi di Lab Komputer Arsitektur! Inilah ananda M Yazid Zidane Mulyadi..."
+                  "Satu bulan penuh dedikasi di Lab Komputer Arsitektur! Inilah ananda..."
                 </span>
               </div>
 
@@ -665,23 +669,23 @@
 
 
     <!-- ========================================================================= -->
-    <!-- TAB 4: SIMULATOR WHATSAPP DISPATCHER -->
+    <!-- TAB 4: SIMULATOR WHATSAPP DISPATCHER (DENGAN LAMPIRAN PDF RESMI) -->
     <!-- ========================================================================= -->
     <section id="section-whatsapp" class="tab-section hidden space-y-6">
       
       <div class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-emerald-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="send" class="w-4 h-4"></i> Otomasi Pengiriman Laporan ke Wali Murid
+            <i data-lucide="paperclip" class="w-4 h-4"></i> Pengiriman Dokumen WhatsApp Wali Murid
           </span>
-          <h2 class="text-xl font-bold text-white mt-1">Simulator Pesan WhatsApp Resmi Program Studi</h2>
+          <h2 class="text-xl font-bold text-white mt-1">Simulator Pesan WhatsApp Resmi & Lampiran File PDF</h2>
           <p class="text-xs text-slate-300 mt-1 max-w-2xl">
-            Pesan terformat otomatis memuat ringkasan kehadiran, nilai studio CAD, catatan akademik, dan link privat untuk membuka rapor interaktif ananda di ponsel orang tua.
+            Bukan teks panjang biasa! Pesan diawali dengan <strong>Pesan Pembuka Sopan</strong> kemudian diikuti <strong>Lampiran 3 File PDF Terverifikasi</strong> (Kehadiran Bulanan, Rapor Akhir & Ranking, serta Slide Portofolio DeckCraft).
           </p>
         </div>
         <div class="flex items-center gap-3">
           <button onclick="copyWhatsAppMessage()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition">
-            <i data-lucide="copy" class="w-4 h-4"></i> Salin Pesan Lengkap
+            <i data-lucide="copy" class="w-4 h-4"></i> Salin Teks Pembuka
           </button>
         </div>
       </div>
@@ -708,13 +712,83 @@
         </div>
 
         <!-- Chat Body with Wallpaper -->
-        <div class="p-6 bg-[#0b141a] min-h-[380px] flex flex-col justify-end relative" style="background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 24px 24px;">
+        <div class="p-6 bg-[#0b141a] min-h-[460px] flex flex-col justify-end relative" style="background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 24px 24px;">
           
-          <!-- Message Bubble -->
+          <!-- Message Bubble (Opening Text + PDF Attachment Cards) -->
           <div class="bg-[#005c4b] text-slate-100 rounded-2xl rounded-tr-none p-4 max-w-xl ml-auto shadow-md border border-emerald-600/30 space-y-3 text-xs leading-relaxed">
-            <div id="wa-chat-bubble" class="whitespace-pre-line font-sans">
-              <!-- Rendered via app.js -->
+            
+            <!-- Opening Greeting Text -->
+            <div id="wa-opening-text" class="whitespace-pre-line font-sans">
+              Assalamu’alaikum Warahmatullahi Wabarakatuh.
+              Kepada Yth. Bapak/Ibu Wali Murid dari *M Yazid Zidane Mulyadi*,
+
+              Salam hangat dari Program Studi Arsitektur, Fakultas Teknik & Desain.
+              Berikut kami sampaikan Surat Resmi dan Berkas Laporan Akademik ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* periode semester berjalan:
             </div>
+
+            <!-- PDF ATTACHMENT CARDS INSIDE WHATSAPP BUBBLE -->
+            <div class="space-y-2 pt-1 border-t border-emerald-600/40">
+              
+              <!-- PDF Card 1: Kehadiran Bulanan -->
+              <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-emerald-500/30 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentMonthlyPDF()">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    PDF
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-1">01_rekap_kehadiran_bulanan.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">215 KB • Rekap Presensi & Alasan</div>
+                  </div>
+                </div>
+                <button class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- PDF Card 2: Rapor Final & Ranking -->
+              <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-emerald-500/30 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentFinalPDF()">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    PDF
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-2">02_rapor_akhir_semester_ranking.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">227 KB • Rapor Final & Radar Kompetensi</div>
+                  </div>
+                </div>
+                <button class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- PDF Card 3: DeckCraft Presentation Deck -->
+              <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-amber-500/40 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentDeckcraftPDF()">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xs flex-shrink-0">
+                    DECK
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-amber-300 truncate text-[11px]" id="wa-card-file-3">05_deckcraft_portofolio_arsitektur.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">245 KB • 4 Slide Presentasi 16:9 Widescreen</div>
+                  </div>
+                </div>
+                <button class="p-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold flex-shrink-0">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Closing Note -->
+            <div id="wa-closing-text" class="text-[11px] text-emerald-100/90 pt-1 border-t border-emerald-600/30">
+              Bapak/Ibu dapat mengunduh dan menyimpan berkas PDF di atas. Terima kasih atas doa, bimbingan, dan kepercayaan Bapak/Ibu mendampingi ananda tercinta di rumah.<br><br>
+              Hormat kami,<br>
+              <strong>Ketua Program Studi Arsitektur</strong><br>
+              <strong>Fielda Roza, S.T., M.T.</strong><br>
+              <span class="text-emerald-300">Asisten Dosen: Adrian Ridhoa, S.T.</span>
+            </div>
+
+            <!-- WA Tick & Time -->
             <div class="text-right text-[10px] text-emerald-200/70 font-mono flex items-center justify-end gap-1">
               <span>08:15</span>
               <span>✓✓</span>
@@ -726,11 +800,16 @@
         <!-- Bottom Action Bar -->
         <div class="bg-[#202c33] p-4 flex items-center justify-between border-t border-slate-800 gap-3">
           <div class="text-xs text-slate-400">
-            Simulasi link tujuan: <code class="text-amber-400 font-mono" id="wa-simulated-link">https://siak-arsitektur.ac.id/rapor/mhs/2510015410010</code>
+            Terkirim ke wali murid dengan <strong>3 Lampiran PDF Resmi</strong>
           </div>
-          <button onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition">
-            <i data-lucide="external-link" class="w-4 h-4"></i> Buka WhatsApp Web
-          </button>
+          <div class="flex items-center gap-2">
+            <button onclick="downloadAll3StudentPDFs()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-bold text-xs rounded-xl flex items-center gap-1.5 transition">
+              <i data-lucide="download-cloud" class="w-4 h-4"></i> Unduh 3 PDF Sekaligus
+            </button>
+            <button onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition">
+              <i data-lucide="external-link" class="w-4 h-4"></i> Buka WhatsApp Web
+            </button>
+          </div>
         </div>
 
       </div>

@@ -886,6 +886,18 @@ def build_all_pdfs():
             page.pdf(path=path_1b, format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
             print(f"[OK] PDF 1B Dihasilkan: {os.path.basename(path_1b)}")
 
+            # PDF 1C / DeckCraft: 4-Slide Architectural Presentation Deck (Replacing Carousel)
+            try:
+                sys.path.append(r"E:\WORKSHOP\OPEN_CRAFT_MCP\scripts")
+                from deckcraft_builder import render_deckcraft_slides_html
+                path_deck = os.path.join(OUTPUT_DIR, f"05_deckcraft_portofolio_arsitektur_{npm}_{student['nama'].replace(' ', '_')}.pdf")
+                html_deck = render_deckcraft_slides_html(student, DATA["course"])
+                page.set_content(html_deck)
+                page.pdf(path=path_deck, format="A4", landscape=True, print_background=True, margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
+                print(f"[OK] PDF DeckCraft (4-Slide Presentation) Dihasilkan: {os.path.basename(path_deck)}")
+            except Exception as e:
+                print(f"[WARN] Gagal membuat DeckCraft PDF: {e}")
+
         # 2. Generate PDF 2: Master Gradebook (Kaprodi)
         path_2 = os.path.join(OUTPUT_DIR, "03_laporan_penilaian_kaprodi_master_gradebook.pdf")
         html_2 = render_kaprodi_gradebook_html()
