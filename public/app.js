@@ -757,35 +757,29 @@ function exportDataJSON() {
 }
 
 // =============================================================================
-// PDF DOWNLOAD CONTROLLER FUNCTIONS
+// PDF DOWNLOAD CONTROLLER FUNCTIONS (LIVE ON-DEMAND DYNAMIC SYNC)
 // =============================================================================
 function downloadKaprodiGradebook() {
-  window.open("/generated_pdfs/03_laporan_penilaian_kaprodi_master_gradebook.pdf", "_blank");
+  window.open("/api/pdf/download?type=gradebook", "_blank");
 }
 
 function downloadDosenAuditPDF() {
-  window.open("/generated_pdfs/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf", "_blank");
+  window.open("/api/pdf/download?type=audit", "_blank");
 }
 
 function downloadCurrentStudentMonthlyPDF() {
   if (!currentStudent) return;
-  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
-  const filename = `01_rekap_kehadiran_bulanan_${currentStudent.npm}_${sanitizedName}.pdf`;
-  window.open(`/generated_pdfs/${filename}`, "_blank");
+  window.open(`/api/pdf/download?type=monthly&npm=${currentStudent.npm}`, "_blank");
 }
 
 function downloadCurrentStudentFinalPDF() {
   if (!currentStudent) return;
-  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
-  const filename = `02_rapor_akhir_semester_${currentStudent.npm}_${sanitizedName}.pdf`;
-  window.open(`/generated_pdfs/${filename}`, "_blank");
+  window.open(`/api/pdf/download?type=rapor&npm=${currentStudent.npm}`, "_blank");
 }
 
 function downloadCurrentStudentDeckcraftPDF() {
   if (!currentStudent) return;
-  const sanitizedName = currentStudent.nama.replace(/\s+/g, "_");
-  const filename = `05_deckcraft_portofolio_arsitektur_${currentStudent.npm}_${sanitizedName}.pdf`;
-  window.open(`/generated_pdfs/${filename}`, "_blank");
+  window.open(`/api/pdf/download?type=deckcraft&npm=${currentStudent.npm}`, "_blank");
 }
 
 function downloadAll3StudentPDFs() {

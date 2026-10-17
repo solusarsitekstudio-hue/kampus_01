@@ -211,8 +211,8 @@ tr:nth-child(even) {
 """
 
 def generate_radar_svg(comp):
-    # Generates a pure standalone SVG radar chart with 5 vertices
-    labels = ["Penguasaan CAD", "Detail Gambar", "Kedisiplinan", "Logika Ruang", "Waktu"]
+    # Generates a pure standalone SVG radar web chart with 5 vertices (mathematically safe canvas)
+    labels = ["Penguasaan CAD", "Detail & Presisi", "Kedisiplinan", "Logika Struktur", "Manajemen Waktu"]
     values = [
         comp.get("penguasaan_cad", 80),
         comp.get("ketelitian_detail", 80),
@@ -220,31 +220,34 @@ def generate_radar_svg(comp):
         comp.get("logika_ruang_struktur", 80),
         comp.get("manajemen_waktu", 80)
     ]
-    
-    cx, cy, r = 130, 110, 80
+    cx, cy, r = 165, 115, 66
     num_vars = len(labels)
     angle_step = 2 * math.pi / num_vars
     
-    # Outer web levels
+    # Concentric spider web polygons (20%, 40%, 60%, 80%, 100%)
     web_polygons = ""
-    for level in [0.25, 0.5, 0.75, 1.0]:
+    for level in [0.2, 0.4, 0.6, 0.8, 1.0]:
         pts = []
         for i in range(num_vars):
             angle = -math.pi / 2 + i * angle_step
             x = cx + r * level * math.cos(angle)
             y = cy + r * level * math.sin(angle)
             pts.append(f"{x:.1f},{y:.1f}")
-        web_polygons += f'<polygon points="{" ".join(pts)}" fill="none" stroke="#cbd5e1" stroke-width="0.75" />\n'
+        dash = 'stroke-dasharray="2,2"' if level < 1.0 else ''
+        stroke_c = "#e2e8f0" if level < 1.0 else "#cbd5e1"
+        web_polygons += f'<polygon points="{" ".join(pts)}" fill="none" stroke="{stroke_c}" stroke-width="1" {dash} />\n'
+        py = cy - r * level
+        web_polygons += f'<text x="{cx + 3}" y="{py - 2:.1f}" font-size="6.5" font-family="monospace" fill="#94a3b8">{int(level * 100)}%</text>\n'
     
-    # Axis lines
+    # Axis spokes
     axis_lines = ""
     for i in range(num_vars):
         angle = -math.pi / 2 + i * angle_step
         x = cx + r * math.cos(angle)
         y = cy + r * math.sin(angle)
-        axis_lines += f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#cbd5e1" stroke-width="0.75" />\n'
+        axis_lines += f'<line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#e2e8f0" stroke-width="1" />\n'
     
-    # Data polygon
+    # Data polygon with glow
     data_pts = []
     markers = ""
     for i, val in enumerate(values):
@@ -253,31 +256,198 @@ def generate_radar_svg(comp):
         x = cx + r * norm * math.cos(angle)
         y = cy + r * norm * math.sin(angle)
         data_pts.append(f"{x:.1f},{y:.1f}")
-        markers += f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />\n'
+        markers += f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5" />\n'
         
-    data_polygon = f'<polygon points="{" ".join(data_pts)}" fill="rgba(245, 158, 11, 0.35)" stroke="#f59e0b" stroke-width="2" />\n'
+    data_polygon = f'<polygon points="{" ".join(data_pts)}" fill="rgba(245, 158, 11, 0.28)" stroke="#f59e0b" stroke-width="2.5" />\n'
     
-    # Labels
-    label_svg = ""
-    label_offsets = [
-        (0, -12), (18, 0), (12, 12), (-12, 12), (-18, 0)
+    # Safe labels placement (strictly within canvas margins 0..330 and 0..230)
+    lbl_meta = [
+        (165, 24, 165, 36, "middle"),    # Top: Penguasaan CAD
+        (246, 92, 246, 104, "start"),    # Top-Right: Detail & Presisi
+        (220, 188, 220, 200, "start"),   # Bottom-Right: Kedisiplinan
+        (110, 188, 110, 200, "end"),     # Bottom-Left: Logika Struktur
+        (84, 92, 84, 104, "end")         # Top-Left: Manajemen Waktu
     ]
-    for i, label in enumerate(labels):
-        angle = -math.pi / 2 + i * angle_step
-        lx = cx + (r + 14) * math.cos(angle) + label_offsets[i][0]
-        ly = cy + (r + 14) * math.sin(angle) + label_offsets[i][1]
-        align = "middle"
-        if i in [1]: align = "start"
-        if i in [3, 4]: align = "end"
-        label_svg += f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="{align}" font-size="8.5" font-weight="700" fill="#334155">{label} ({values[i]})</text>\n'
-
+    labels_svg = ""
+    for i, (name, val) in enumerate(zip(labels, values)):
+        lx, ly1, lx2, ly2, anchor = lbl_meta[i]
+        labels_svg += f'<text x="{lx}" y="{ly1}" text-anchor="{anchor}" font-size="8.5" font-weight="800" fill="#0f172a">{name}</text>\n'
+        labels_svg += f'<text x="{lx2}" y="{ly2}" text-anchor="{anchor}" font-size="9" font-family="monospace" font-weight="900" fill="#d97706">[{val}]</text>\n'
+    
     return f"""
-    <svg width="260" height="230" viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg">
+    <svg width="100%" height="215" viewBox="0 0 330 220" xmlns="http://www.w3.org/2000/svg">
       {web_polygons}
       {axis_lines}
       {data_polygon}
       {markers}
-      {label_svg}
+      {labels_svg}
+    </svg>
+    """
+
+def generate_monthly_attendance_charts_svg(student):
+    # Generates Donut Progress Ring + 6 Session Bars for PDF 1A
+    kehadiran = student["kehadiran"]
+    detail = kehadiran.get("detail", [])
+    pct = float(kehadiran.get("persentase", 100.0))
+
+    circ = 226.2
+    stroke_offset = circ - (circ * (pct / 100.0))
+    ring_color = "#10b981" if pct >= 85 else ("#0284c7" if pct >= 75 else "#e11d48")
+
+    bar_svg = ""
+    start_x = 180
+    bar_width = 46
+    gap = 26
+    max_h = 65
+    base_y = 95
+
+    for i, sess in enumerate(detail[:6]):
+        x = start_x + i * (bar_width + gap)
+        st = sess.get("status", "Hadir")
+        if st == "Hadir":
+            h = max_h
+            b_color = "#10b981"
+            pill_text = "Hadir"
+            pill_bg = "#dcfce7"
+            pill_fg = "#166534"
+        elif st == "Sakit":
+            h = max_h * 0.75
+            b_color = "#f59e0b"
+            pill_text = "Sakit"
+            pill_bg = "#fef3c7"
+            pill_fg = "#92400e"
+        elif st == "Izin":
+            h = max_h * 0.75
+            b_color = "#0284c7"
+            pill_text = "Izin"
+            pill_bg = "#e0f2fe"
+            pill_fg = "#075985"
+        else:
+            h = 8
+            b_color = "#f43f5e"
+            pill_text = "Alpha"
+            pill_bg = "#ffe4e6"
+            pill_fg = "#9f1239"
+
+        y = base_y - h
+        bar_svg += f'<rect x="{x}" y="{y}" width="{bar_width}" height="{h}" rx="4" fill="{b_color}" />\n'
+        bar_svg += f'<rect x="{x - 2}" y="{y - 13}" width="{bar_width + 4}" height="11" rx="3" fill="{pill_bg}" stroke="{b_color}" stroke-width="0.75" />\n'
+        bar_svg += f'<text x="{x + bar_width/2}" y="{y - 4.5}" text-anchor="middle" font-size="7.5" font-weight="700" fill="{pill_fg}">{pill_text}</text>\n'
+        bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 11}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#0f172a">Sesi {sess.get("pertemuan", i+1)}</text>\n'
+        date_short = sess.get("tanggal", "").split()[:2]
+        date_str = " ".join(date_short) if date_short else f"P{i+1}"
+        bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 20}" text-anchor="middle" font-size="7" font-family="monospace" fill="#64748b">{date_str}</text>\n'
+
+    bench_y = base_y - (max_h * 0.833)
+    bench_line = f"""
+    <line x1="165" y1="{bench_y}" x2="615" y2="{bench_y}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3" />
+    <text x="490" y="{bench_y - 3.5}" font-size="7" font-weight="700" font-family="monospace" fill="#64748b">Benchmark Kelas: 83.3%</text>
+    """
+
+    svg = f"""
+    <svg width="100%" height="125" viewBox="0 0 640 125" xmlns="http://www.w3.org/2000/svg">
+      <!-- Donut Progress Ring -->
+      <g transform="translate(68, 54)">
+        <circle cx="0" cy="0" r="34" fill="none" stroke="#e2e8f0" stroke-width="6" />
+        <circle cx="0" cy="0" r="34" fill="none" stroke="{ring_color}" stroke-width="6"
+                stroke-dasharray="{circ}" stroke-dashoffset="{stroke_offset}"
+                stroke-linecap="round" transform="rotate(-90)" />
+        <text x="0" y="4" text-anchor="middle" font-size="13" font-weight="900" font-family="'JetBrains Mono', monospace" fill="#0f172a">{pct}%</text>
+        <text x="0" y="15" text-anchor="middle" font-size="6.5" font-weight="700" fill="#64748b">KEHADIRAN</text>
+      </g>
+      <text x="68" y="106" text-anchor="middle" font-size="7.5" font-weight="800" fill="{ring_color}">STATUS: {"OPTIMAL" if pct >= 85 else ("DISIPLIN" if pct >= 75 else "EVALUASI")}</text>
+
+      <!-- Vertical Divider -->
+      <line x1="145" y1="12" x2="145" y2="110" stroke="#e2e8f0" stroke-width="1" />
+
+      <!-- 6 Session Bar Chart -->
+      {bench_line}
+      {bar_svg}
+    </svg>
+    """
+    return svg
+
+def generate_session_bars_svg(detail):
+    # Generates 6 mini progress bars for the 6 practical sessions
+    rows = ""
+    y = 4
+    for sess in detail[:6]:
+        score = sess.get("skor", sess.get("skor_sesi", 85))
+        p = sess.get("pertemuan", 1)
+        w = int(score * 1.25)
+        bar_col = "#10b981" if score >= 95 else ("#0284c7" if score >= 90 else "#f59e0b")
+        rows += f"""
+        <g transform="translate(0, {y})">
+          <text x="0" y="8.5" font-size="7.5" font-weight="800" font-family="'JetBrains Mono', monospace" fill="#0f172a">P{p}</text>
+          <rect x="20" y="2" width="125" height="8" rx="2.5" fill="#f1f5f9" />
+          <rect x="20" y="2" width="{w}" height="8" rx="2.5" fill="{bar_col}" />
+          <text x="{20 + w + 4}" y="9" font-size="7.5" font-weight="800" font-family="'JetBrains Mono', monospace" fill="{bar_col}">{score}</text>
+        </g>
+        """
+        y += 13.5
+
+    return f"""
+    <svg width="170" height="86" viewBox="0 0 170 86" xmlns="http://www.w3.org/2000/svg">
+      {rows}
+    </svg>
+    """
+
+def generate_kaprodi_class_charts_svg(summary):
+    # Generates Session Attendance Trend + Grade Distribution for PDF 2
+    trends = summary.get("tren_kehadiran_sesi", [])
+    bar_svg = ""
+    max_mhs = summary.get("total_mahasiswa", 35)
+    chart_h = 70
+    base_y = 90
+    start_x = 35
+    w = 26
+    gap = 20
+
+    for i, t in enumerate(trends[:6]):
+        x = start_x + i * (w + gap)
+        hadir = t.get("hadir", 30)
+        absen = t.get("sakit", 0) + t.get("izin", 0) + t.get("alpha", 0)
+        h_hadir = (hadir / max_mhs) * chart_h
+        h_absen = (absen / max_mhs) * chart_h
+
+        y_hadir = base_y - h_hadir
+        bar_svg += f'<rect x="{x}" y="{y_hadir}" width="{w}" height="{h_hadir}" fill="#10b981" rx="2" />\n'
+        if h_absen > 0:
+            y_absen = y_hadir - h_absen
+            bar_svg += f'<rect x="{x}" y="{y_absen}" width="{w}" height="{h_absen}" fill="#f43f5e" rx="2" />\n'
+        bar_svg += f'<text x="{x + w/2}" y="{base_y + 11}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#334155">S{t.get("pertemuan", i+1)}</text>\n'
+        bar_svg += f'<text x="{x + w/2}" y="{y_hadir + 9}" text-anchor="middle" font-size="7" font-weight="800" fill="#ffffff">{hadir}</text>\n'
+
+    dist = summary.get("distribusi_grade", {"A": 18, "B+": 10, "B": 5, "C": 1, "D": 1})
+    grade_bars = ""
+    g_x = 420
+    g_w = 32
+    g_gap = 22
+    g_colors = {"A": "#10b981", "B+": "#0284c7", "B": "#3b82f6", "C": "#f59e0b", "D": "#ef4444"}
+
+    for i, (g_name, g_cnt) in enumerate(dist.items()):
+        gx = g_x + i * (g_w + g_gap)
+        gh = (g_cnt / max_mhs) * chart_h
+        gy = base_y - gh
+        col = g_colors.get(g_name, "#64748b")
+        grade_bars += f'<rect x="{gx}" y="{gy}" width="{g_w}" height="{gh}" fill="{col}" rx="3" />\n'
+        grade_bars += f'<text x="{gx + g_w/2}" y="{gy - 3}" text-anchor="middle" font-size="8" font-weight="800" fill="{col}">{g_cnt}</text>\n'
+        grade_bars += f'<text x="{gx + g_w/2}" y="{base_y + 11}" text-anchor="middle" font-size="8" font-weight="800" fill="#334155">{g_name}</text>\n'
+
+    return f"""
+    <svg width="100%" height="110" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="2" width="345" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+      <text x="20" y="16" font-size="8.5" font-weight="800" fill="#0f172a">📊 TREN KEHADIRAN KELAS (SESI 1 - 6)</text>
+      <circle cx="250" cy="13" r="3.5" fill="#10b981" />
+      <text x="256" y="15" font-size="7" fill="#334155">Hadir</text>
+      <circle cx="285" cy="13" r="3.5" fill="#f43f5e" />
+      <text x="291" y="15" font-size="7" fill="#334155">Absen</text>
+      {bar_svg}
+
+      <rect x="380" y="2" width="370" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+      <text x="390" y="16" font-size="8.5" font-weight="800" fill="#0f172a">📈 DISTRIBUSI GRADE NILAI KELAS</text>
+      <text x="680" y="16" font-size="7.5" font-family="monospace" fill="#64748b">Total: {max_mhs} Mhs</text>
+      {grade_bars}
     </svg>
     """
 
@@ -350,7 +520,7 @@ def render_monthly_attendance_html(student):
         <div class="info-item"><span class="info-label">Asisten Dosen</span><span class="info-value">: {DATA['course']['asisten_dosen']}</span></div>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px;">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;">
         <div class="card-box" style="background: #ecfdf5; border-color: #a7f3d0; text-align: center;">
           <div style="font-size: 10px; color: #047857; font-weight: 600;">Total Kehadiran</div>
           <div style="font-size: 20px; font-weight: 900; color: #065f46;">{kehadiran['persentase']}%</div>
@@ -371,6 +541,14 @@ def render_monthly_attendance_html(student):
           <div style="font-size: 20px; font-weight: 900; color: #9f1239;">{kehadiran['alpha']}x</div>
           <div style="font-size: 9.5px; color: #be123c;">Maksimal 3x Alpha</div>
         </div>
+      </div>
+
+      <!-- Visual Attendance Trend & Class Benchmark Chart -->
+      <div class="card-box" style="background: #ffffff; padding: 8px 12px; margin-bottom: 12px; border: 1px solid #e2e8f0;">
+        <div style="font-size: 10.5px; font-weight: 700; color: #0f172a; margin-bottom: 4px;">
+          Visualisasi Tren Presensi & Komparasi Benchmark Kelas:
+        </div>
+        {generate_monthly_attendance_charts_svg(student)}
       </div>
 
       <div style="margin-bottom: 6px; font-size: 11px; font-weight: 700; color: #0f172a;">
@@ -544,36 +722,40 @@ def render_final_report_html(student):
       </div>
 
       <!-- Two Column Layout: Radar Chart & Session Breakdown -->
-      <div style="display: grid; grid-template-columns: 260px 1fr; gap: 12px; margin-bottom: 10px; align-items: start;">
+      <div style="display: grid; grid-template-columns: 310px 1fr; gap: 12px; margin-bottom: 8px; align-items: start;">
         
-        <!-- Column 1: Radar Chart Box -->
-        <div class="card-box" style="text-align: center; background: #ffffff; padding: 8px;">
+        <!-- Column 1: Radar Chart Box (Safe Margin No Clipping) -->
+        <div class="card-box" style="text-align: center; background: #ffffff; padding: 6px 8px; border: 1px solid #e2e8f0;">
           <div style="font-size: 10px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
             Radar Profil 5 Pilar Kompetensi Arsitektur
           </div>
           {radar_svg}
-          <div style="font-size: 8.5px; color: #64748b; font-style: italic;">
-            CAD ({akademik['kompetensi']['penguasaan_cad']}) • Detail ({akademik['kompetensi']['ketelitian_detail']}) • Asistensi ({akademik['kompetensi']['kedisiplinan_asistensi']}) • Logika ({akademik['kompetensi']['logika_ruang_struktur']})
+          <div style="font-size: 8px; color: #64748b; font-style: italic; margin-top: 1px;">
+            CAD ({akademik['kompetensi']['penguasaan_cad']}) • Detail ({akademik['kompetensi']['ketelitian_detail']}) • Asistensi ({akademik['kompetensi']['kedisiplinan_asistensi']}) • Logika ({akademik['kompetensi']['logika_ruang_struktur']}) • Waktu ({akademik['kompetensi']['manajemen_waktu']})
           </div>
         </div>
 
-        <!-- Column 2: Session Scores Table -->
+        <!-- Column 2: Session Scores Table & Mini Progress Bars -->
         <div>
-          <div style="font-size: 10.5px; font-weight: 700; color: #0f172a; margin-bottom: 3px;">
+          <div style="font-size: 10px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
             Rincian Nilai 6 Sesi Praktikum AutoCAD & QS:
           </div>
-          <table style="margin: 2px 0;">
+          <table style="margin: 2px 0 5px 0;">
             <thead>
               <tr>
-                <th style="width: 40px; text-align: center; font-size: 9px; padding: 5px;">Sesi</th>
-                <th style="font-size: 9px; padding: 5px;">Topik Modul Praktikum</th>
-                <th style="width: 50px; text-align: center; font-size: 9px; padding: 5px;">Nilai</th>
+                <th style="width: 35px; text-align: center; font-size: 8.5px; padding: 3px 4px;">Sesi</th>
+                <th style="font-size: 8.5px; padding: 3px 4px;">Topik Modul Praktikum</th>
+                <th style="width: 45px; text-align: center; font-size: 8.5px; padding: 3px 4px;">Nilai</th>
               </tr>
             </thead>
             <tbody>
               {session_rows}
             </tbody>
           </table>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 6px;">
+            <div style="font-size: 8px; font-weight: 700; color: #475569; margin-bottom: 2px;">GRAFIK PROGRESS CAPAIAN PER SESI (P1 - P6):</div>
+            {generate_session_bars_svg(student["kehadiran"]["detail"])}
+          </div>
         </div>
       </div>
 
@@ -771,6 +953,11 @@ def render_kaprodi_gradebook_html():
           <div style="font-size: 8.5px; color: #be123c; text-transform: uppercase;">Mahasiswa At-Risk</div>
           <div style="font-size: 14px; font-weight: 800; color: #e11d48;">{summary['total_at_risk']} Orang</div>
         </div>
+      </div>
+
+      <!-- Class Visual Analytics: Attendance Trend & Grade Distribution -->
+      <div style="margin-bottom: 8px;">
+        {generate_kaprodi_class_charts_svg(summary)}
       </div>
 
       <!-- Master Table -->
@@ -1084,6 +1271,63 @@ def build_all_pdfs():
     print(f"              └── 📋 manifest.json")
     print(f"[INFO] File juga disinkronkan ke 'generated_pdfs/' untuk live web preview.")
     print("=" * 65)
+
+def generate_pdf_bytes_on_demand(pdf_type, npm=None):
+    """
+    Dynamically generates on-demand PDF bytes directly from live data in academic_data.json.
+    Ensures 100% synchronization with newest edits, active course, and any of the 35 students.
+    """
+    global DATA
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        DATA = json.load(f)
+
+    student = None
+    if npm:
+        student = next((s for s in DATA.get("students", []) if s["npm"] == str(npm)), None)
+    if not student and DATA.get("students"):
+        student = DATA["students"][0]
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+
+        pdf_bytes = b""
+        filename = "dokumen.pdf"
+
+        if pdf_type in ("monthly", "presensi"):
+            filename = f"01_rekap_kehadiran_bulanan_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
+            html = render_monthly_attendance_html(student)
+            page.set_content(html)
+            pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+        
+        elif pdf_type in ("rapor", "final"):
+            filename = f"02_rapor_akhir_semester_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
+            html = render_final_report_html(student)
+            page.set_content(html)
+            pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
+
+        elif pdf_type in ("deckcraft", "portofolio"):
+            filename = f"05_deckcraft_portofolio_arsitektur_{student['npm']}_{student['nama'].replace(' ', '_')}.pdf"
+            sys.path.append(r"E:\WORKSHOP\OPEN_CRAFT_MCP\scripts")
+            from deckcraft_builder import render_deckcraft_slides_html
+            html = render_deckcraft_slides_html(student, DATA["course"])
+            page.set_content(html)
+            pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
+
+        elif pdf_type in ("gradebook", "kaprodi"):
+            filename = "03_laporan_penilaian_kaprodi_master_gradebook.pdf"
+            html = render_kaprodi_gradebook_html()
+            page.set_content(html)
+            pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"})
+
+        elif pdf_type in ("audit", "dosen"):
+            filename = "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf"
+            html = render_dosen_curriculum_audit_html()
+            page.set_content(html)
+            pdf_bytes = page.pdf(format="A4", print_background=True, margin={"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"})
+
+        browser.close()
+        return pdf_bytes, filename
 
 if __name__ == "__main__":
     build_all_pdfs()

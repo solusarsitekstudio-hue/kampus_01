@@ -135,6 +135,35 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             self.wfile.write(b"Student not found")
             return
 
+        # Dynamic On-Demand Synchronized PDF Download Endpoint
+        if self.path.startswith("/api/pdf/download"):
+            from urllib.parse import urlparse, parse_qs
+            query = parse_qs(urlparse(self.path).query)
+            pdf_type = query.get("type", ["rapor"])[0]
+            npm = query.get("npm", [None])[0]
+            try:
+                sys.path.append(os.path.join(BASE_DIR, "scripts"))
+                from generate_pdfs import generate_pdf_bytes_on_demand
+                pdf_bytes, filename = generate_pdf_bytes_on_demand(pdf_type, npm)
+                if pdf_bytes:
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/pdf")
+                    self.send_header("Content-Disposition", f'inline; filename="{filename}"')
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    self.end_headers()
+                    self.wfile.write(pdf_bytes)
+                    return
+                else:
+                    self.send_response(500)
+                    self.end_headers()
+                    self.wfile.write(b'{"error": "Failed to generate PDF"}')
+                    return
+            except Exception as e:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write(f'{{"error": "PDF Generation error: {str(e)}"}}'.encode("utf-8"))
+                return
+
         # API Output Runs & Hierarchy Metadata
         if self.path == "/api/runs":
             output_root = os.path.join(BASE_DIR, "output")
