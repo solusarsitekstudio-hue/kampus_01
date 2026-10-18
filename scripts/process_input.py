@@ -43,12 +43,17 @@ def atomic_write_json(path, payload):
     """Tulis JSON lewat file .tmp lalu os.replace() (atomic di Windows & POSIX).
     FIX TAHAP A: dulu open(path,"w") langsung men-truncate file. Kalau listrik
     mati di tengah json.dump, academic_data.json jadi 0 byte dan SEMUA endpoint
-    server mati total. Sekarang file lama utuh sampai file baru siap 100%."""
+    server mati total. Sekarang file lama utuh sampai file baru siap 100%.
+
+    newline="\\n" WAJIB: tanpa itu, json.dump di Windows menulis CRLF, sehingga
+    academic_data.json berubah byte-nya (LF -> CRLF) setiap kali server menulis -
+    walau isinya sama persis. Akibatnya "data tidak tersentuh" jadi sulit
+    dibuktikan. Repo menetapkan LF untuk *.json di .gitattributes."""
     directory = os.path.dirname(path)
     os.makedirs(directory, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(dir=directory, suffix=".tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
             f.flush()
             os.fsync(f.fileno())

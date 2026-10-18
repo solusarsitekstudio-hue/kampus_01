@@ -82,12 +82,16 @@ def _sanitize_error(exc: Exception) -> str:
 
 def atomic_write_json(path: str, payload) -> None:
     """Tulis JSON secara atomic: tulis ke .tmp dulu, lalu os.replace().
-    Mencegah file 0-byte kalau server mati di tengah proses."""
+    Mencegah file 0-byte kalau server mati di tengah proses.
+
+    newline="\\n" WAJIB: tanpa itu json.dump di Windows menulis CRLF, sehingga
+    academic_data.json berubah byte-nya setiap kali server menulis walau isinya
+    sama persis - dan bukti "data tidak tersentuh" jadi kabur."""
     directory = os.path.dirname(path)
     os.makedirs(directory, exist_ok=True)
     fd, tmp_path = tempfile.mkstemp(dir=directory, suffix=".tmp")
     try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
             f.flush()
             os.fsync(f.fileno())

@@ -840,7 +840,9 @@ def main():
     print("Mengompilasi dataset akademik dengan analisis mendalam & 10 matriks karier...")
     dataset = generate_student_profiles(students, sessions)
 
-    with open(OUTPUT_JSON, "w", encoding="utf-8") as f:
+    # newline="\n" WAJIB: json.dump di Windows default-nya menulis CRLF, sehingga
+    # academic_data.json berubah byte-nya setiap regenerate walau isinya sama.
+    with open(OUTPUT_JSON, "w", encoding="utf-8", newline="\n") as f:
         json.dump(dataset, f, indent=2, ensure_ascii=False)
 
     print(f"Dataset berhasil disimpan ke: {OUTPUT_JSON}")
