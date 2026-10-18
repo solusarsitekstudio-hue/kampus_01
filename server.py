@@ -37,6 +37,7 @@ import re
 import shutil
 import socket
 import threading
+import subprocess
 import tempfile
 import time
 from urllib.parse import urlparse, parse_qs
@@ -232,6 +233,8 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._api_courses()
         if path == "/api/runs":
             return self._api_runs()
+        if path == "/api/identitas":
+            return self._api_identitas()
         if path.startswith("/api/switch_course"):
             return self._api_switch_course(query)
         if path.startswith("/api/student/images"):
@@ -259,6 +262,204 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
     def do_HEAD(self):
         # Pakai routing yang sama - biar monitor/proxy tidak salah menandai 200/404
         return self.do_GET()
+
+    # ------------------------------------------------------------------- POST
+    def do_POST(self):
+        """SATU-SATUNYA pintu tulis lewat HTTP.
+
+        Sengaja dibatasi: hanya 3 endpoint, semuanya menulis ke config/identitas.json
+        atau meregenerasi data/dokumen lewat skrip yang sudah ada - tidak ada jalur
+        yang bisa menulis file sembarangan dari input pengguna.
+        """
+        path = urlparse(self.path).path
+        if path == "/api/identitas":
+            return self._api_identitas_simpan()
+        if path == "/api/identitas/terapkan":
+            return self._api_identitas_terapkan()
+        if path == "/api/identitas/regenerasi-pdf":
+            return self._api_identitas_regenerasi_pdf()
+        return self._send_error_json(404, f"Endpoint POST tidak dikenal: {path}")
+
+    # --------------------------------------------------------- API identitas
+    @staticmethod
+    def _modul_identitas():
+        """Import scripts/identitas.py saat dipakai, bukan di module scope.
+
+        Kalau config/identitas.json hilang atau rusak, server TETAP hidup dan
+        errornya dilaporkan sebagai JSON - bukan gagal start.
+        """
+        import identitas
+        return identitas
+
+    def _baca_body_json(self, maks=512 * 1024):
+        try:
+            panjang = int(self.headers.get("Content-Length") or 0)
+        except (TypeError, ValueError):
+            panjang = 0
+        if panjang <= 0:
+            raise ValueError("Body permintaan kosong.")
+        if panjang > maks:
+            raise ValueError(f"Body terlalu besar ({panjang} byte, maks {maks} byte).")
+        mentah = self.rfile.read(panjang)
+        try:
+            return json.loads(mentah.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as e:
+            raise ValueError(f"Body bukan JSON valid: {e}") from e
+
+    def _identitas_selisih(self, mod):
+        """Field identitas yang sudah diubah di config tapi BELUM masuk data master.
+
+        Inilah yang membuat "sudah disimpan" TIDAK sama dengan "sudah diterapkan".
+        Label dashboard berubah seketika, sementara pesan wali murid (35 salinan)
+        dan dokumen resmi masih memakai nama lama sampai data diregenerasi.
+        """
+        try:
+            data = read_json_safe(DATA_FILE)
+        except (OSError, json.JSONDecodeError):
+            return []
+        return mod.selisih_dengan(data.get("course", {}))
+
+    def _identitas_payload(self, mod):
+        cfg = mod.muat(force=True)
+        return {
+            "config": cfg,
+            "header": mod.teks_header(),
+            "kop": mod.kop_instansi(),
+            "mk_aktif": mod.mk_aktif(),
+            "tanggal_tanda_tangan": mod.tanggal_tanda_tangan(),
+            "jalur": os.path.relpath(mod.CONFIG_PATH, BASE_DIR).replace("\\", "/"),
+            "perlu_diterapkan": self._identitas_selisih(mod),
+        }
+
+    def _api_identitas(self):
+        mod = self._modul_identitas()
+        try:
+            return self._send_json(200, self._identitas_payload(mod))
+        except mod.IdentitasError as e:
+            return self._send_error_json(500, str(e))
+
+    def _api_identitas_simpan(self):
+        """TINGKAT 1 - simpan config saja. Tidak menyentuh data/dokumen."""
+        mod = self._modul_identitas()
+        try:
+            body = self._baca_body_json()
+        except ValueError as e:
+            return self._send_error_json(400, str(e))
+        if not isinstance(body, dict) or not isinstance(body.get("mata_kuliah"), dict):
+            return self._send_error_json(
+                400,
+                "Body harus objek JSON identitas lengkap: kunci 'institusi', "
+                "'dashboard', dan 'mata_kuliah' wajib ada.",
+            )
+
+        with DATA_LOCK:
+            try:
+                mod.simpan(body)
+                muatan = self._identitas_payload(mod)
+            except mod.IdentitasError as e:
+                return self._send_error_json(422, str(e))
+            except OSError as e:
+                return self._send_error_json(
+                    500, f"Gagal menulis config: {_sanitize_error(e)}")
+
+        muatan["ok"] = True
+        muatan["pesan"] = (
+            "Identitas tersimpan. Label dashboard langsung berubah - tetapi dokumen "
+            "resmi (pesan wali murid + PDF) MASIH memakai nama lama sampai "
+            "'Terapkan ke Dokumen' dijalankan."
+        )
+        return self._send_json(200, muatan)
+
+    def _api_identitas_terapkan(self):
+        """TINGKAT 2 - regen data master dari config, agar nama ikut ke dokumen.
+
+        Dijalankan sebagai PROSES TERPISAH (bukan import) supaya server tidak
+        memegang state lama dan log aslinya bisa dilaporkan apa adanya.
+        """
+        mod = self._modul_identitas()
+        try:
+            mod.muat(force=True)
+        except mod.IdentitasError as e:
+            return self._send_error_json(422, str(e))
+
+        if not os.path.exists(DATA_FILE):
+            return self._send_error_json(
+                409, "Data master belum ada. Jalankan parse_data lebih dulu.")
+        skrip = os.path.join(_SCRIPTS_DIR, "parse_data.py")
+        if not os.path.exists(skrip):
+            return self._send_error_json(500, "scripts/parse_data.py tidak ditemukan.")
+
+        try:
+            with DATA_LOCK:
+                hasil = subprocess.run(
+                    [sys.executable, skrip], cwd=BASE_DIR, capture_output=True,
+                    text=True, encoding="utf-8", errors="replace", timeout=300,
+                )
+        except subprocess.TimeoutExpired:
+            return self._send_error_json(504, "Regenerasi data melebihi 5 menit.")
+        except OSError as e:
+            return self._send_error_json(
+                500, f"Gagal menjalankan parse_data: {_sanitize_error(e)}")
+
+        if hasil.returncode != 0:
+            return self._send_json(500, {
+                "error": "Gagal meregenerasi data master; data lama tidak diganti.",
+                "returncode": hasil.returncode,
+                "log": ((hasil.stdout or "") + (hasil.stderr or ""))[-1800:],
+            })
+
+        muatan = self._identitas_payload(mod)
+        muatan["ok"] = True
+        muatan["log"] = (hasil.stdout or "").strip().splitlines()[-6:]
+        muatan["pesan"] = (
+            "Data master sudah diregenerasi dari config. Nama baru kini terpakai di "
+            "seluruh isi data (termasuk pesan wali murid) dan di semua PDF yang "
+            "diunduh dari dashboard."
+        )
+        return self._send_json(200, muatan)
+
+    def _api_identitas_regenerasi_pdf(self):
+        """Cetak ulang paket PDF arsip (11 berkas). Berat: membuka Chromium.
+
+        FAIL-CLOSED: kalau masih ada identitas yang belum diterapkan ke data,
+        permintaan DITOLAK. Kalau tidak, PDF akan menyilang: kop memakai nama baru
+        tapi isi tabelnya masih dari data lama.
+        """
+        mod = self._modul_identitas()
+        selisih = self._identitas_selisih(mod)
+        if selisih:
+            return self._send_json(409, {
+                "error": "Masih ada identitas yang belum diterapkan ke data. "
+                         "Klik 'Terapkan ke Dokumen' dulu supaya PDF tidak "
+                         "menyilang antara nama baru dan isi data lama.",
+                "perlu_diterapkan": selisih,
+            })
+
+        skrip = os.path.join(_SCRIPTS_DIR, "generate_pdfs.py")
+        if not os.path.exists(skrip):
+            return self._send_error_json(500, "scripts/generate_pdfs.py tidak ditemukan.")
+        try:
+            hasil = subprocess.run(
+                [sys.executable, skrip], cwd=BASE_DIR, capture_output=True,
+                text=True, encoding="utf-8", errors="replace", timeout=900,
+            )
+        except subprocess.TimeoutExpired:
+            return self._send_error_json(504, "Regenerasi PDF melebihi 15 menit.")
+        except OSError as e:
+            return self._send_error_json(
+                500, f"Gagal menjalankan generate_pdfs: {_sanitize_error(e)}")
+
+        if hasil.returncode != 0:
+            return self._send_json(500, {
+                "error": "Gagal meregenerasi paket PDF; dokumen lama tidak diganti.",
+                "returncode": hasil.returncode,
+                "log": ((hasil.stdout or "") + (hasil.stderr or ""))[-1800:],
+            })
+        return self._send_json(200, {
+            "ok": True,
+            "log": (hasil.stdout or "").strip().splitlines()[-8:],
+            "pesan": "Paket PDF arsip sudah dicetak ulang dengan identitas terbaru.",
+        })
 
     # ------------------------------------------------------------------- APIs
     def _api_data(self):

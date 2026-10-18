@@ -9,5 +9,8 @@ __pycache__/
 scratch/
 data/_backup/
 
+# Artefak debug Playwright MCP (snapshot/console), bukan bagian aplikasi
+.playwright-mcp/
+
 # Preview PNG hasil inspeksi visual
 public/preview_pdf_*.png

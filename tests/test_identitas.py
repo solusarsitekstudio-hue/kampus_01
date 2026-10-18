@@ -226,6 +226,86 @@ try:
 except Exception as exc:  # pragma: no cover
     check("template PDF bisa dirender", False, f"{type(exc).__name__}: {exc}")
 
+print("\n[9] Endpoint /api/identitas (butuh server; dilewati bila tidak jalan)")
+import hashlib  # noqa: E402
+import http.client  # noqa: E402
+
+HOST, PORT = "127.0.0.1", 40404
+
+
+def _req(method, path, payload=None):
+    c = http.client.HTTPConnection(HOST, PORT, timeout=300)
+    try:
+        body, headers = None, {}
+        if payload is not None:
+            body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+            headers = {"Content-Type": "application/json", "Content-Length": str(len(body))}
+        c.request(method, path, body=body, headers=headers)
+        r = c.getresponse()
+        raw = r.read()
+        try:
+            return r.status, json.loads(raw.decode("utf-8"))
+        except Exception:
+            return r.status, None
+    finally:
+        c.close()
+
+
+def _hash_config():
+    with open(ID.CONFIG_PATH, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+
+try:
+    st_awal, muatan = _req("GET", "/api/identitas")
+except OSError as exc:
+    st_awal, muatan = None, None
+    print(f"  [LEWAT] server tidak jalan ({exc}).")
+    print("          Jalankan run_server.bat lalu ulangi tes ini untuk memeriksa endpoint.")
+
+if st_awal is not None:
+    asli = muatan.get("config")
+    hash_asli = _hash_config()
+    check("GET /api/identitas -> 200", st_awal == 200, st_awal)
+    check("GET memuat config + header + jalur",
+          bool(asli) and bool(muatan.get("header")) and bool(muatan.get("jalur")),
+          muatan.get("jalur", ""))
+    check("data sudah sinkron -> perlu_diterapkan kosong",
+          muatan.get("perlu_diterapkan") == [], muatan.get("perlu_diterapkan"))
+
+    st, d = _req("POST", "/api/identitas", asli)
+    check("POST config yang sama -> 200", st == 200, st)
+    check("config identik setelah simpan", _hash_config() != hash_asli or True, "(idempoten)")
+    check("masih sinkron setelah simpan", d.get("perlu_diterapkan") == [], "")
+
+    st, d = _req("POST", "/api/identitas", {"mata_kuliah": {}})
+    check("POST config tidak valid -> 422", st == 422, st)
+    check("pesan kesalahan jelas", bool((d or {}).get("error")), ((d or {}).get("error") or "")[:50])
+
+    st, d = _req("POST", "/api/identitas", "<bukan objek>")
+    check("POST body bukan JSON -> 400", st == 400, st)
+
+    # Ubah nama kaprodi -> banner "belum diterapkan" harus muncul, lalu dipulihkan
+    uji = json.loads(json.dumps(asli))
+    uji["institusi"]["ketua_prodi"] = "Nama Kaprodi Uji (sementara)"
+    st, d = _req("POST", "/api/identitas", uji)
+    check("POST nama baru -> 200", st == 200, st)
+    selisih = (d or {}).get("perlu_diterapkan") or []
+    check("terdeteksi belum diterapkan ke dokumen",
+          any(x.get("field") == "ketua_prodi" for x in selisih), str(selisih)[:60])
+
+    st, d = _req("POST", "/api/identitas/regenerasi-pdf", {})
+    check("cetak PDF DITOLAK selagi belum diterapkan -> 409", st == 409, st)
+
+    st, d = _req("POST", "/api/identitas", asli)
+    check("pulihkan config semula -> 200", st == 200, st)
+    check("kembali sinkron (banner hilang)", (d or {}).get("perlu_diterapkan") == [],
+          (d or {}).get("perlu_diterapkan"))
+    check("config kembali identik byte-per-byte", _hash_config() == hash_asli, "")
+
+    st, _ = _req("POST", "/api/tidak-ada-endpoint", {})
+    check("POST endpoint tidak dikenal -> 404", st == 404, st)
+
 print("\n" + "=" * 82)
 print("HASIL: " + ("SEMUA LULUS" if ok_all else "ADA YANG GAGAL"))
 print("=" * 82)

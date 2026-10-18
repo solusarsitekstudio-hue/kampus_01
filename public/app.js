@@ -227,6 +227,9 @@ function switchTab(tabName) {
   if (tabName === "wali" && radarCompetencyChart) {
     setTimeout(() => { try { radarCompetencyChart.render(); } catch (e) { /* noop */ } }, 120);
   }
+  // Tab Pengaturan: muat identitas terbaru dari server tiap kali dibuka, supaya
+  // yang tampil selalu keadaan sebenarnya (termasuk kalau config diubah manual).
+  if (tabName === "pengaturan") muatIdentitas();
   if (window.lucide) lucide.createIcons();
 }
 
@@ -990,4 +993,229 @@ async function switchActiveCourse(courseId) {
   } finally {
     if (selector) selector.disabled = false;
   }
+}
+
+// =============================================================================
+// TAB 5: PENGATURAN IDENTITAS  (config/identitas.json)
+// =============================================================================
+// Sengaja dibagi 3 tingkat supaya tidak ada satu klik yang diam-diam mengubah
+// dokumen resmi:
+//   1. Simpan Identitas   -> hanya label dashboard. Instan. Tidak menyentuh data.
+//   2. Terapkan ke Dokumen-> regen data master, nama ikut ke pesan wali murid + PDF.
+//   3. Cetak Ulang PDF    -> cetak ulang paket arsip. Berat. Hanya boleh setelah (2).
+// Selama (2) belum dijalankan, banner peringatan wajib terlihat - "sudah
+// disimpan" TIDAK sama dengan "sudah diterapkan".
+let identitasData = null;      // payload terakhir dari GET /api/identitas
+let mkSedangDiatur = null;     // kunci mata kuliah yang sedang tampil di form
+
+function _bisa(el) { return el !== null && el !== undefined; }
+
+async function muatIdentitas() {
+  const status = document.getElementById("pengaturan-status");
+  if (status) status.textContent = "Memuat…";
+  try {
+    const res = await fetch("/api/identitas", { cache: "no-store" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    identitasData = data;
+    terapkanIdentitasKeForm(data);
+    renderBannerPenerapan(data);
+    if (status) status.textContent = "";
+  } catch (err) {
+    if (status) status.textContent = "";
+    toast(`Gagal memuat identitas: ${err.message}`, "error", 8000);
+  }
+}
+
+function terapkanIdentitasKeForm(data) {
+  const cfg = (data && data.config) || {};
+  const inst = cfg.institusi || {};
+  const dash = cfg.dashboard || {};
+  const dok = cfg.dokumen || {};
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ""; };
+
+  setVal("cfg-universitas", inst.universitas);
+  setVal("cfg-fakultas", inst.fakultas);
+  setVal("cfg-prodi", inst.prodi);
+  setVal("cfg-kota", inst.kota);
+  setVal("cfg-kaprodi", inst.ketua_prodi);
+  setVal("cfg-nip-kaprodi", inst.nip_ketua_prodi);
+  setVal("cfg-judul", dash.judul);
+  setVal("cfg-subjudul", dash.subjudul);
+  setVal("cfg-deskripsi", dash.deskripsi);
+  setVal("cfg-tanggal", dok.tanggal_tanda_tangan);
+
+  const jalur = document.getElementById("pengaturan-jalur");
+  if (jalur && data && data.jalur) jalur.textContent = data.jalur;
+
+  const pilih = document.getElementById("cfg-mk-pilih");
+  if (!pilih) return;
+  pilih.innerHTML = "";
+  Object.entries(cfg.mata_kuliah || {}).forEach(([kunci, mk]) => {
+    const opt = document.createElement("option");
+    opt.value = kunci;
+    opt.textContent = mk.nama_mk + (kunci === cfg.mata_kuliah_aktif ? " • aktif" : "");
+    pilih.appendChild(opt);
+  });
+  const daftar = cfg.mata_kuliah || {};
+  const target = (mkSedangDiatur && daftar[mkSedangDiatur]) ? mkSedangDiatur : cfg.mata_kuliah_aktif;
+  if (target) pilih.value = target;
+  pilihMkUntukDiatur(target);
+}
+
+function pilihMkUntukDiatur(kunci) {
+  if (!kunci || !identitasData || !identitasData.config) return;
+  const cfg = identitasData.config;
+  const mk = (cfg.mata_kuliah || {})[kunci];
+  if (!mk) return;
+  mkSedangDiatur = kunci;
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v ?? ""; };
+
+  setVal("cfg-mk-nama", mk.nama_mk);
+  setVal("cfg-mk-kode", mk.kode_mk);
+  setVal("cfg-mk-sks", mk.sks);
+  setVal("cfg-mk-kelas", mk.kelas);
+  setVal("cfg-mk-semester", mk.semester);
+  setVal("cfg-mk-jadwal", mk.jadwal);
+  setVal("cfg-mk-dosen", (mk.dosen_pengasuh || []).join("\n"));
+  setVal("cfg-mk-asisten", mk.asisten_dosen);
+  setVal("cfg-mk-asisten-nip", mk.asisten_nip);
+  const aktif = document.getElementById("cfg-mk-aktif");
+  if (aktif) aktif.checked = (kunci === cfg.mata_kuliah_aktif);
+}
+
+function kumpulkanFormKeConfig() {
+  const cfg = JSON.parse(JSON.stringify(identitasData.config));
+  const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+
+  cfg.institusi = cfg.institusi || {};
+  cfg.institusi.universitas = val("cfg-universitas");
+  cfg.institusi.fakultas = val("cfg-fakultas");
+  cfg.institusi.prodi = val("cfg-prodi");
+  cfg.institusi.kota = val("cfg-kota");
+  cfg.institusi.ketua_prodi = val("cfg-kaprodi");
+  cfg.institusi.nip_ketua_prodi = val("cfg-nip-kaprodi");
+
+  cfg.dashboard = cfg.dashboard || {};
+  cfg.dashboard.judul = val("cfg-judul");
+  cfg.dashboard.subjudul = val("cfg-subjudul");
+  cfg.dashboard.deskripsi = val("cfg-deskripsi");
+
+  cfg.dokumen = cfg.dokumen || {};
+  cfg.dokumen.tanggal_tanda_tangan = val("cfg-tanggal");
+
+  const kunci = mkSedangDiatur || cfg.mata_kuliah_aktif;
+  cfg.mata_kuliah = cfg.mata_kuliah || {};
+  const sks = parseInt(val("cfg-mk-sks"), 10);
+  cfg.mata_kuliah[kunci] = {
+    kode_mk: val("cfg-mk-kode"),
+    nama_mk: val("cfg-mk-nama"),
+    sks: Number.isFinite(sks) && sks > 0 ? sks : 1,
+    kelas: val("cfg-mk-kelas"),
+    semester: val("cfg-mk-semester"),
+    jadwal: val("cfg-mk-jadwal"),
+    dosen_pengasuh: val("cfg-mk-dosen").split("\n").map(s => s.trim()).filter(Boolean),
+    asisten_dosen: val("cfg-mk-asisten"),
+    asisten_nip: val("cfg-mk-asisten-nip")
+  };
+
+  const aktif = document.getElementById("cfg-mk-aktif");
+  if (aktif && aktif.checked) cfg.mata_kuliah_aktif = kunci;
+
+  return cfg;
+}
+
+function tampilkanLogIdentitas(teks) {
+  const el = document.getElementById("pengaturan-log");
+  if (!el) return;
+  if (!teks) {
+    el.classList.add("hidden");
+    el.textContent = "";
+    return;
+  }
+  el.classList.remove("hidden");
+  el.textContent = teks;
+}
+
+function renderBannerPenerapan(data) {
+  const el = document.getElementById("pengaturan-banner");
+  if (!el) return;
+  const selisih = (data && data.perlu_diterapkan) || [];
+  if (!selisih.length) {
+    el.classList.add("hidden");
+    return;
+  }
+  el.classList.remove("hidden");
+  el.className = "rounded-2xl p-5 border shadow-xl border-amber-500/40 bg-amber-500/10 text-amber-200";
+  setText("pengaturan-banner-judul", "Nama sudah disimpan, dokumen belum diperbarui");
+  const rinci = selisih
+    .map(s => `${s.field} → dokumen masih “${s.dokumen ?? "-"}”`)
+    .join(" · ");
+  setText("pengaturan-banner-isi",
+    `${selisih.length} identitas belum masuk dokumen resmi (${rinci}). ` +
+    "Pesan wali murid dan PDF masih memakai nama lama sampai “Terapkan ke Dokumen” dijalankan.");
+}
+
+async function kirimIdentitas(jalur, body, label) {
+  const status = document.getElementById("pengaturan-status");
+  if (status) status.textContent = label || "Memproses…";
+  try {
+    const opsi = { method: "POST" };
+    if (_bisa(body)) {
+      opsi.headers = { "Content-Type": "application/json" };
+      opsi.body = JSON.stringify(body);
+    }
+    const res = await fetch(jalur, opsi);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      tampilkanLogIdentitas(data.log || data.error || `HTTP ${res.status}`);
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
+    if (data.config) {
+      identitasData = data;
+      terapkanIdentitasKeForm(data);
+    }
+    renderBannerPenerapan(data);
+    tampilkanLogIdentitas(Array.isArray(data.log) ? data.log.join("\n") : (data.log || ""));
+    toast(data.pesan || "Selesai.", "success", 7000);
+    return data;
+  } catch (err) {
+    toast(`Gagal: ${err.message}`, "error", 9000);
+    return null;
+  } finally {
+    if (status) status.textContent = "";
+  }
+}
+
+async function simpanIdentitas() {
+  if (!identitasData || !identitasData.config) {
+    toast("Identitas belum termuat. Klik 'Muat Ulang' dulu.", "warn");
+    return null;
+  }
+  const cfg = kumpulkanFormKeConfig();
+  return kirimIdentitas("/api/identitas", cfg, "Menyimpan identitas…");
+}
+
+async function terapkanKeDokumen() {
+  const lanjut = confirm(
+    "Terapkan identitas ke DATA & DOKUMEN?\n\n" +
+    "Data master akan diregenerasi dari config. Angka nilai TIDAK berubah " +
+    "(dijaga tes regresi), tetapi isi pesan wali murid dan seluruh dokumen akan " +
+    "memakai nama yang baru.\n\n" +
+    "Data lama tetap dibackup otomatis."
+  );
+  if (!lanjut) return;
+  const hasil = await kirimIdentitas("/api/identitas/terapkan", undefined, "Menerapkan ke dokumen…");
+  if (hasil) await loadAcademicData();
+}
+
+async function regenerasiPaketPdf() {
+  const lanjut = confirm(
+    "Cetak ulang paket PDF arsip?\n\n" +
+    "Proses ini membuka Chromium dan mencetak ulang seluruh dokumen resmi " +
+    "(bisa 1-2 menit). Hanya boleh dijalankan setelah 'Terapkan ke Dokumen'.\n\n" +
+    "Lanjutkan?"
+  );
+  if (!lanjut) return;
+  await kirimIdentitas("/api/identitas/regenerasi-pdf", undefined, "Mencetak ulang paket PDF…");
 }
