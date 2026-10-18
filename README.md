@@ -145,6 +145,77 @@ data master dibangun ulang, jadi katalog tidak akan tertinggal lagi.
 
 ---
 
+### 9. Identitas: Satu Sumber Nama (`config/identitas.json`)
+
+Dulu nama mata kuliah, dosen pengasuh, asisten dosen, dan ketua prodi disalin manual
+di **5 tempat** (`parse_data.py`, `process_input.py`, `generate_pdfs.py`,
+`video_composer.py`, `index.html`) — dan nilainya ikut **tertanam** ke dalam data
+turunan: 35 pesan wali murid, seluruh PDF, dan video.
+
+> **Risikonya nyata:** dokumen resmi bertanda tangan bisa memuat nama dosen atau ketua
+> prodi yang salah hanya karena satu dari lima salinan itu kelewat diganti.
+
+Sekarang hanya ada satu tempat: `config/identitas.json`.
+
+| Bagian | Isi |
+| --- | --- |
+| `institusi` | universitas *(opsional)*, fakultas, prodi, ketua prodi, NIP ketua prodi *(opsional)*, kota |
+| `dokumen` | tanggal tanda tangan dokumen |
+| `dashboard` | judul, sub judul, deskripsi (boleh memakai placeholder `{prodi}`) |
+| `mata_kuliah` | identitas tiap MK: kode, nama, SKS, kelas, semester, jadwal, dosen pengasuh, asisten + NIP |
+
+Dua hal yang **sengaja tetap di Python**, bukan di config: **daftar sesi/topik/bobot per
+mata kuliah** (itu isi materi, bukan identitas) dan aturan nilai (`kelas_rules.py`).
+
+> **Nama universitas dibiarkan kosong** karena memang belum pernah ada di project ini —
+> tidak dikarang. Kalau diisi, barisnya otomatis muncul di kop surat; kalau kosong,
+> kop tetap seperti sekarang.
+
+#### Mengaturnya dari dashboard: tab **5. Pengaturan**
+
+Tidak perlu mengedit file. Perubahannya sengaja dibagi **tiga tingkat** supaya tidak ada
+satu klik yang diam-diam mengubah dokumen resmi:
+
+| Tingkat | Tombol | Yang berubah | Berat |
+| --- | --- | --- | --- |
+| 1 | **Simpan Identitas** | Hanya label dashboard. Instan, tidak menyentuh data. | — |
+| 2 | **Terapkan ke Dokumen** | Data master diregenerasi → nama ikut ke pesan wali murid + PDF | ~1 detik |
+| 3 | **Cetak Ulang Paket PDF** | Paket PDF arsip dicetak ulang (membuka Chromium) | 1–2 menit |
+
+> **"Sudah disimpan" tidak sama dengan "sudah diterapkan".** Selama Tingkat 2 belum
+> dijalankan, dashboard sudah memakai nama baru sementara pesan wali murid dan PDF
+> **masih nama lama**. Karena itu banner peringatan wajib muncul di tab 5, dan
+> sistem menyebutkan field mana saja yang belum ikut.
+
+Tingkat 3 **ditolak (409)** kalau masih ada identitas yang belum diterapkan ke data.
+Kalau tidak ditolak, kop PDF akan memakai nama baru sementara isi tabelnya masih data
+lama — dokumen yang tampak resmi tetapi tidak konsisten.
+
+Endpoint (hanya `127.0.0.1`; JSON wajib, maks 512 KB):
+
+```cmd
+GET  /api/identitas                    -> config + label + daftar yang belum diterapkan
+POST /api/identitas                    -> Tingkat 1
+POST /api/identitas/terapkan           -> Tingkat 2
+POST /api/identitas/regenerasi-pdf     -> Tingkat 3
+```
+
+`scripts/identitas.py` fail-closed: config hilang/rusak/tidak lengkap ⇒ proses
+**berhenti** dengan pesan yang menyebut field mana yang salah — bukan menebak. Setiap
+penyimpanan membackup dulu ke `data/_backup/identitas.<stempel>.json`, lalu menulis
+atomic.
+
+Dua hal yang dulu **beku** ikut pindah ke config dengan nilai yang sama persis, jadi
+sekarang bisa diubah tanpa mengubah tampilan hari ini: **kota + tanggal tanda tangan**
+(`Padang, 18 Oktober 2026` dulu ditulis literal di dalam template PDF) dan **NIP ketua
+prodi / NIP asisten**.
+
+Mengubah identitas **tidak mengubah angka**: nilai, kehadiran, At-Risk, predikat, dan
+distribusi grade tetap sama. Yang berubah hanya teks/nama. Jumlah mahasiswa pada label
+tombol "PDF Gradebook" juga tidak lagi diketik `35` — dihitung dari data.
+
+---
+
 ## 📊 Angka Ril Demo Saat Ini (build `2026-10-18_04-13`)
 
 | Metrik | Nilai |
@@ -259,6 +330,7 @@ Butuh Node.js (hanya untuk build Tailwind). Runtime tetap 100% offline.
 REM tanpa server:
 python tests\test_rules_unchanged.py
 python tests\test_readme_accuracy.py
+python tests\test_identitas.py
 
 REM dengan server aktif (run_server.bat dulu):
 python tests\test_server_http.py
@@ -269,6 +341,7 @@ python tests\test_catalog_guard.py
 | --- | --- |
 | `test_rules_unchanged.py` | Regenerasi data **tetap identik** dengan master — tidak ada angka yang bergeser |
 | `test_readme_accuracy.py` | **Setiap angka di README ini cocok dengan data** — tidak ada lagi angka yang diketik manual dan salah |
+| `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
 | `test_catalog_guard.py` | Ganti mata kuliah tidak bisa memundurkan data master |
 
@@ -409,6 +482,8 @@ kenyataannya.
 | **C-3** | Persona mahasiswa terikat **NPM**, bukan nomor baris Excel | Tidak (dibuktikan identik) |
 | **C-4** | Aturan nilai/At-Risk/predikat dipindahkan ke satu modul `scripts/kelas_rules.py` — tidak ada lagi salinan yang bisa berbeda | Tidak (dibuktikan identik) |
 | **C-5** | Penjaga katalog: katalog MK yang lebih lama tidak bisa lagi memundurkan data master | Tidak |
+| **D-1** | Identitas (mata kuliah, dosen, asisten, ketua prodi, institusi) jadi **satu sumber** di `config/identitas.json` + tab **5. Pengaturan**. NIP, kota, dan tanggal tanda tangan yang dulu literal di dalam template PDF kini ikut config. Kotak tanda tangan "Dosen Pengasuh II" juga tidak lagi gagal (`IndexError`) kalau mata kuliah hanya punya satu dosen. Angka `35` pada label ikut dihitung dari data. | Tidak (dibuktikan identik) |
+| **D-2** | Penulisan JSON memakai LF eksplisit — `data/academic_data.json` tidak lagi berubah byte-nya (LF→CRLF) setiap kali ditulis server/parse_data, sehingga "data master tidak tersentuh" bisa benar-benar dibuktikan | Tidak |
 
 ### Sisa utang (belum dikerjakan)
 
@@ -430,6 +505,14 @@ kenyataannya.
 5. **`generate_pdfs.py` masih mengimpor `playwright` di baris paling atas.**
    Aman selama dependensi terpasang, tetapi membuat modul tidak bisa dipakai
    untuk sekadar membaca data.
+6. **Stempel build di README ini tidak ikut diperbarui otomatis.** Setelah menekan
+   "Terapkan ke Dokumen" (data master dibangun ulang), judul bagian *Angka Ril Demo
+   Saat Ini* masih menyebut build lama. Angkanya tetap benar (dijaga tes), hanya
+   stempelnya yang perlu diperbarui manual.
+7. **Baris kementerian dan alamat pada kop surat masih literal** di
+   `generate_pdfs.py` (`KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI` dan
+   baris Gedung/Lab/Telp). Itu bukan identitas prodi, jadi sengaja belum dipindahkan
+   ke config; ubah di situ bila perlu.
 
 > Status data demo: `versi 2.5-GOLDEN-DEMO`, build `2026-10-18_04-13`.
 > Angka pada README ini adalah angka data demo, bukan hasil penilaian resmi.
