@@ -5,36 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SIAK-KAPRODI | Intelijen Akademik Arsitektur</title>
   
-  <!-- Fonts & Tailwind CSS CDN -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- ApexCharts CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  
-  <!-- Lucide Icons CDN -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- FIX TAHAP C-1: SELURUH ASET DIKUNCI LOKAL -> dashboard jalan OFFLINE.
+       Dulu 4 sumber internet (Tailwind, ApexCharts, Lucide, Google Fonts).
+       WiFi ngadat = layar putih total. Sekarang tidak ada request keluar.
+         - vendor/fonts.css        : Plus Jakarta Sans + JetBrains Mono (10 woff2)
+         - vendor/tailwind.css     : Tailwind statis 30 KB (dibangun, bukan JIT)
+         - vendor/apexcharts.min.js
+         - vendor/lucide.min.js
+       Aset dibuat oleh scripts/fetch_vendor.py + scripts/build_tailwind.bat.
+       Rincian versi & hash: vendor/VENDOR.md -->
+  <link rel="stylesheet" href="vendor/fonts.css">
+  <link rel="stylesheet" href="vendor/tailwind.css">
+  <script src="vendor/apexcharts.min.js"></script>
+  <script src="vendor/lucide.min.js"></script>
 
-  <!-- Custom Stylesheet -->
+  <!-- Custom Stylesheet (dimuat SETELAH Tailwind supaya bisa menimpanya) -->
   <link rel="stylesheet" href="style.css">
 
-  <!-- FIX TAHAP A: Deteksi CDN gagal load.
-       Dulu 100%{andalkan CDN: WiFi ngadat = layar putih kosong tanpa
-       penjelasan. Sekarang user diberi tahu + ada tombol muat ulang. -->
+  <!-- FIX TAHAP C-1: cek aset LOKAL, bukan cek internet.
+       Tailwind sekarang berupa file CSS statis, jadi tidak ada variabel global
+       `tailwind` yang bisa diperiksa. Yang benar-benar perlu dipastikan adalah
+       apakah CSS-nya BETUL-BETUL terpasang - jadi kita uji satu class Tailwind
+       pada elemen probe, bukan sekadar percaya bahwa <link> sudah ditulis. -->
   <script>
     window.addEventListener("load", function () {
       var missing = [];
-      if (typeof tailwind === "undefined") missing.push("Tailwind CSS");
-      if (typeof ApexCharts === "undefined") missing.push("ApexCharts");
-      if (typeof lucide === "undefined") missing.push("Lucide Icons");
+      if (typeof ApexCharts === "undefined") missing.push("ApexCharts (vendor/apexcharts.min.js)");
+      if (typeof lucide === "undefined") missing.push("Lucide Icons (vendor/lucide.min.js)");
+
+      // Uji nyata: `hidden` harus jadi display:none. Kalau tidak, tailwind.css
+      // tidak termuat atau belum dibangun.
+      var probe = document.createElement("div");
+      probe.className = "hidden";
+      probe.style.position = "absolute";
+      document.body.appendChild(probe);
+      var twOk = window.getComputedStyle(probe).display === "none";
+      document.body.removeChild(probe);
+      if (!twOk) missing.push("Tailwind CSS (vendor/tailwind.css)");
+
       var box = document.getElementById("cdn-warning");
       if (missing.length > 0) {
         box.classList.remove("hidden");
         document.getElementById("cdn-warning-text").innerText =
-          "Komponen gagal dimuat: " + missing.join(", ") +
-          ". Dashboard tidak dapat ditampilkan dengan benar. Sambungkan ke internet, lalu muat ulang halaman.";
+          "Berkas aset lokal tidak termuat: " + missing.join(", ") +
+          ". Jalankan scripts/fetch_vendor.py dan scripts/build_tailwind.bat, lalu muat ulang halaman.";
       } else {
         box.classList.add("hidden");
       }

@@ -66,9 +66,86 @@ Portal wali murid **dan** PDF Gradebook Kaprodi **tidak memuat peringkat**.
 Tabel disortir berdasarkan NPM; kolom pertama adalah nomor urut absen resmi.
 Tidak ada dokumen yang menampilkan peringkat mahasiswa.
 
+### 6. Aset Lokal — Dashboard Berjalan OFFLINE
+
+Seluruh tampilan dikunci di dalam repo (`public/vendor/`). Tidak ada satu pun
+permintaan ke internet saat dashboard dibuka.
+
+| Aset | Bentuk | Ukuran |
+|---|---|---|
+| Tailwind CSS | **CSS statis** (dibangun, bukan JIT di browser) | 30 KB |
+| ApexCharts | `vendor/apexcharts.min.js` | 527 KB |
+| Lucide Icons | `vendor/lucide.min.js` | 348 KB |
+| Plus Jakarta Sans + JetBrains Mono | `vendor/fonts/` (10 woff2) | 123 KB |
+
+> Sebelumnya 4 sumber CDN dipakai. WiFi ruang rapat ngadat = **layar putih total**.
+> Sekarang justru itu satu-satunya mode yang tidak bisa gagal.
+>
+> Catatan: font **Plus Jakarta Sans** dan **JetBrains Mono** sudah lama dimuat
+> tetapi tidak pernah dipakai, karena `font-sans`/`font-mono` tidak didaftarkan
+> ke tema Tailwind. Sekarang keduanya benar-benar dirender.
+
+Perbarui aset bila perlu:
+
+```cmd
+python scripts\fetch_vendor.py --force
+scripts\build_tailwind.bat
+```
+
+Wajib menjalankan `build_tailwind.bat` **setiap kali** ada class Tailwind baru
+di `index.html` atau `app.js`, karena Tailwind kini di-compile, bukan dibaca
+dari CDN.
+
+### 7. Transfer Berkas: HTTP/1.1 + Byte-Range
+
+Server memakai **HTTP/1.1** dan menghormati header `Range`.
+
+* Video portofolio bisa **di-seek** (geser timeline) — sebelumnya tidak bisa,
+  karena HTTP/1.0 tidak mendukung byte-range.
+* Video 857 KB dikirim per potongan 64 KB, tidak lagi dibaca penuh ke RAM
+  untuk setiap permintaan.
+* Server menolak dijalankan dua kali di port yang sama (`run_server.bat` yang
+  diklik dua kali hanya menampilkan pesan, bukan membuat dua server yang saling
+  menimpa data).
+
+### 8. Katalog Mata Kuliah Dijaga Versinya
+
+Tombol "ganti mata kuliah" menyalin file katalog (`data/courses/<MK>.json`)
+menjadi data master. Dulu salinan itu **tidak diperiksa sama sekali**.
+
+> **Kejadian nyata:** katalog MK aktif tertinggal di versi `2.0` sementara
+> master sudah `2.5`. Sekali ganti mata kuliah lalu kembali, data master ikut
+> mundur ke `2.0` — At-Risk berubah `10 → 1` dan nilai `80.6 → 82.5` — tanpa
+> satu pun pesan error. Dashboard, PDF, dan KPI semuanya kembali ke angka lama.
+
+Sekarang `server.py` memeriksa versi katalog sebelum menimpa master:
+
+| Situasi | Tindakan |
+| --- | --- |
+| MK yang dipilih **sedang aktif** | Data master tidak disentuh. Katalognya diselaraskan dari master. Kode berstatus 200 + pesan penjelas. |
+| MK lain, katalog **lebih lama** | Permintaan **ditolak (409)** dengan instruksi perbaikan. Data master tetap utuh. |
+| MK lain, katalog seversi | Berjalan normal (backup dulu, lalu tulis atomic). |
+
+Perbaikan katalog tanpa mengubah angka:
+
+```cmd
+python scripts\process_input.py --sync-katalog
+```
+
+`parse_data.py` juga memanggil penyelarasan ini otomatis di akhir setiap kali
+data master dibangun ulang, jadi katalog tidak akan tertinggal lagi.
+
+> Catatan penting: untuk MK yang **sedang aktif**, isi katalog yang benar adalah
+> **master itu sendiri**, bukan hasil template. Master berasal dari Excel + PDF
+> asli, sedangkan template lebih pendek dan mengandung tanggal yang salah.
+> Percobaan membangun ulang dari template terbukti menimpa tanggal sesi 5
+> menjadi `08 Juni 2026` (seharusnya `08 Juli 2026`), serta mengganti deskripsi
+> dan topik RPS dengan versi template. Karena itu penyelarasan dilakukan dengan
+> **menyalin master**, bukan menghitung ulang.
+
 ---
 
-## 📊 Angka Ril Demo Saat Ini (build `2026-10-18_04-12`)
+## 📊 Angka Ril Demo Saat Ini (build `2026-10-18_04-13`)
 
 | Metrik | Nilai |
 |---|---|
@@ -147,6 +224,9 @@ run_server.bat
 ```
 * Server lokal akan aktif di port **`40404`**.
 * Browser akan otomatis membuka alamat: **`http://localhost:40404`**.
+* **Tidak butuh internet.** Seluruh aset ada di `public/vendor/`.
+* Kalau server sudah berjalan, klik kedua akan berhenti dengan pesan
+  peringatan (bukan membuat server kedua yang diam-diam menimpa data).
 
 ### 2. Menghentikan Server
 Jika ingin mematikan server secara bersih tanpa meninggalkan proses menggantung:
@@ -163,6 +243,32 @@ setup.bat
 ```cmd
 process_input.bat
 ```
+
+### 5. Memperbarui Aset Tampilan (Tailwind / ikon / font)
+Hanya bila `index.html` atau `app.js` menambah class Tailwind baru, atau
+bila ingin memperbarui versi library:
+```cmd
+scripts\build_tailwind.bat
+python scripts\fetch_vendor.py --force
+```
+Butuh Node.js (hanya untuk build Tailwind). Runtime tetap 100% offline.
+
+### 6. Menjalankan Tes Regresi
+
+```cmd
+REM tanpa server:
+python tests\test_rules_unchanged.py
+
+REM dengan server aktif (run_server.bat dulu):
+python tests\test_server_http.py
+python tests\test_catalog_guard.py
+```
+
+| Tes | Membuktikan |
+| --- | --- |
+| `test_rules_unchanged.py` | Regenerasi data **tetap identik** dengan master — tidak ada angka yang bergeser |
+| `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
+| `test_catalog_guard.py` | Ganti mata kuliah tidak bisa memundurkan data master |
 
 ---
 
@@ -282,3 +388,46 @@ Untuk memaksimalkan kebanggaan wali murid dan daya jangkau promosi jurusan (Word
    * Background music akustik/sinematik lembut bebas hak cipta.
 4. **Engine Rendering**:
    * Otomasi assembly timeline via **FFmpeg Engine** atau **OpenCraft FilmCraft MCP** (`E:\WORKSHOP\OPEN_CRAFT_MCP`).
+
+---
+
+## 🧾 Catatan Teknis: Yang Sudah Dibetulkan & Sisa Utang
+
+Ditulis apa adanya supaya angka di sistem ini tidak pernah "lebih pandai" dari
+kenyataannya.
+
+### Sudah dibetulkan
+
+| Tahap | Isi | Mengubah angka? |
+| --- | --- | --- |
+| **A** | Server threading + bind `127.0.0.1`, path traversal ditutup, error JSON valid, penulisan atomic + lock, fallback `students[0]` dihapus | Tidak |
+| **B** | Alpha (0) ikut dihitung, bobot sesi 15/15/15/20/15/20 dipakai, satu aturan At-Risk (`Alpha ≥ 2x ATAU Kehadiran < 75%`), peringkat dihapus, predikat/grade dihitung ulang, kursus ganti tidak lagi kehilangan topik & tanggal | **Ya** (sudah diregenerasi) |
+| **C-1** | Seluruh aset dikunci lokal (`public/vendor/`) — dashboard jalan offline; Tailwind dibangun statis; font `Plus Jakarta Sans` & `JetBrains Mono` akhirnya benar-benar terpakai | Tidak |
+| **C-2** | HTTP/1.1 + byte-range: video bisa di-*seek*, dikirim per 64 KB; server menolak dijalankan dua kali | Tidak |
+| **C-3** | Persona mahasiswa terikat **NPM**, bukan nomor baris Excel | Tidak (dibuktikan identik) |
+| **C-4** | Aturan nilai/At-Risk/predikat dipindahkan ke satu modul `scripts/kelas_rules.py` — tidak ada lagi salinan yang bisa berbeda | Tidak (dibuktikan identik) |
+| **C-5** | Penjaga katalog: katalog MK yang lebih lama tidak bisa lagi memundurkan data master | Tidak |
+
+### Sisa utang (belum dikerjakan)
+
+1. **`random.seed(42)` masih global.** Persona sudah aman (C-3), tetapi
+   **angka** masih diambil dari satu urutan acak bersama. Artinya: menambah
+   satu baris di `DAFTAR MAHASISWA.xlsx` masih menggeser nilai seluruh kelas.
+   Perbaikannya `random.Random(42 + npm)` — **sengaja ditahan** karena itu akan
+   mengubah semua angka sekali lagi; menunggu keputusan.
+2. **Nilai per sesi masih sintetis** (`random.randint`), bukan hasil koreksi
+   nyata dosen. Kalau nanti nilai asli dimasukkan lewat Excel, aturan di
+   `kelas_rules.py` sudah siap dipakai apa adanya.
+3. **Alpha = 0 mutlak.** Belum ada jalur "tugas pengganti" bagi mahasiswa yang
+   alpha. Ini keputusan akademik, bukan keputusan teknis — perlu kebijakan dosen
+   sebelum dibuatkan fiturnya.
+4. **Katalog MK non-aktif** (`STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1`,
+   `STUDIO_PERANCANGAN_ARSITEKTUR_2`) memang dibangun dari template, karena
+   tidak punya PDF rekap asli. Topik & deskripsinya versi template, bukan hasil
+   ekstraksi sumber asli.
+5. **`generate_pdfs.py` masih mengimpor `playwright` di baris paling atas.**
+   Aman selama dependensi terpasang, tetapi membuat modul tidak bisa dipakai
+   untuk sekadar membaca data.
+
+> Status data demo: `versi 2.5-GOLDEN-DEMO`, build `2026-10-18_04-13`.
+> Angka pada README ini adalah angka data demo, bukan hasil penilaian resmi.

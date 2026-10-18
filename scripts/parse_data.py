@@ -3,6 +3,7 @@ import pypdf
 import json
 import os
 import random
+import sys
 from datetime import datetime
 
 # Seed for reproducibility so data stays consistent across runs
@@ -15,52 +16,23 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "data")
 OUTPUT_JSON = os.path.join(OUTPUT_DIR, "academic_data.json")
 
 # =============================================================================
-# ATURAN KELAS - SATU-SATUNYA SUMBER KEBENARAN (FIX TAHAP B)
+# ATURAN KELAS -> SATU MODUL BERSAMA (FIX TAHAP C-4)
 # =============================================================================
-# Dulu ada 4 aturan at-risk yang berbeda dalam 1 sistem:
-#   (a) parse_data.py : alpha>=2 atau nilai<70        -> KPI = 1 orang
-#   (b) app.js badge  : alpha>=2 saja                  -> beda lagi
-#   (c) PDF 1A        : "maksimal 3x alpha"
-#   (d) README        : alpha>=2 atau kehadiran<75%    -> 10 orang
-# Sekarang semuanya pakai fungsi di bawah ini.
-AT_RISK_ALPHA_MIN = 2
-AT_RISK_KEHADIRAN_MIN = 75.0
-
-
-def at_risk_reasons(alpha: int, persentase: float) -> list:
-    """Kembalikan list alasan kenapa mahasiswa masuk kategori at-risk."""
-    reasons = []
-    if alpha >= AT_RISK_ALPHA_MIN:
-        reasons.append(f"Alpha {alpha}x")
-    if persentase < AT_RISK_KEHADIRAN_MIN:
-        reasons.append(f"Kehadiran {persentase}%")
-    return reasons
-
-
-def is_at_risk(alpha: int, persentase: float) -> bool:
-    """At-Risk = Alpha >= 2 ATAU kehadiran < 75% (sesuai janji di README)."""
-    return bool(at_risk_reasons(alpha, persentase))
-
-
-def hitung_nilai_terbobot(session_scores, bobot_sesi):
-    """Rata-rata TERBEBOT per sesi.
-
-    FIX TAHAP B, dua masalah lama:
-      1. Nilai 0 (Alpha) DIBUANG dari rata-rata (`if sc > 0`). Akibatnya
-         mahasiswa yang Alpha tidak kehilangan nilai sama sekali.
-         Rozi: 68,0,65,0,73,68 -> sistem bilang 68.5 (C), padahal aslinya
-         jauh lebih rendah. Sekarang 0 ikut dihitung.
-      2. Bobot sesi (15/15/15/20/15/20 = 100) ditulis tapi TIDAK PERNAH
-         dipakai. Sesi tersibuk dihargai sama saja dengan sesi paling santai.
-    """
-    if not session_scores:
-        return 0.0
-    if not bobot_sesi or len(bobot_sesi) != len(session_scores):
-        return round(sum(session_scores) / len(session_scores), 1)
-    total_bobot = sum(bobot_sesi)
-    if total_bobot <= 0:
-        return round(sum(session_scores) / len(session_scores), 1)
-    return round(sum(s * b for s, b in zip(session_scores, bobot_sesi)) / total_bobot, 1)
+# Aturan nilai, at-risk, dan badge karier TIDAK lagi didefinisikan di file ini.
+# Ketiga file (parse_data.py, process_input.py, generate_pdfs.py) mengimpor
+# dari scripts/kelas_rules.py supaya tidak ada lagi salinan yang bisa berbeda.
+# Inilah akar yang dulu melahirkan 4 aturan at-risk berbeda dalam 1 aplikasi.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from kelas_rules import (  # noqa: E402
+    AT_RISK_ALPHA_MIN,
+    AT_RISK_KEHADIRAN_MIN,
+    at_risk_reasons,
+    is_at_risk,
+    hitung_nilai_terbobot,
+    kategori_kecocokan_dari_skor,
+    grade_dari_skor,
+    TEKS_GRADE,
+)
 
 
 def parse_students(excel_path):
@@ -132,22 +104,8 @@ def parse_syllabus(pdf_path):
     ]
     return sessions
 
-def kategori_kecocokan_dari_skor(persen: float) -> str:
-    """FIX TAHAP B: kategori kecocokan WAJIB diturunkan dari angkanya.
-
-    Dulu setiap baris matriks karier punya kategori yang diketik manual
-    ("Sangat Tinggi", "Tinggi", "Sesuai") tanpa hubungan dengan
-    kecocokan_persen. Akibatnya BIM Modeler 72.4% tetap ditulis
-    "Sangat Tinggi" dan tampil hijau di PDF & dashboard.
-    Sekarang satu angka -> satu label, di semua tempat.
-    """
-    if persen >= 95:
-        return "Sangat Tinggi"
-    if persen >= 85:
-        return "Tinggi"
-    if persen >= 70:
-        return "Sedang"
-    return "Rendah"
+# CATATAN: `kategori_kecocokan_dari_skor()` sekarang diimpor dari kelas_rules.py
+# (FIX TAHAP C-4) supaya hanya ada satu definisi di seluruh sistem.
 
 
 def generate_10_career_matrix(nama, avg_score, competency, archetype):
@@ -265,6 +223,51 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
 
     return careers
 
+# =============================================================================
+# PERSONA / ARCHETYPE - TERIKAT KE NPM, BUKAN KE NOMOR BARIS EXCEL
+# =============================================================================
+# FIX TAHAP C-3.
+#
+# Sebelumnya persona ditentukan dari posisi baris:
+#     if idx == 0  -> "star"
+#     elif idx == 10 -> "at_risk"
+#     elif idx == 1  -> "high"
+#     elif idx % 7 == 0 -> ...
+#
+# Masalahnya: begitu satu mahasiswa ditambah/dihapus/diurutkan ulang di
+# DAFTAR MAHASISWA.xlsx, SEMUA posisi bergeser satu langkah. Akibatnya
+# mahasiswa yang sama bisa berubah persona: yang tadinya "star" jadi
+# "normal", mahasiswa bermasalah bisa jadi tidak terdeteksi, dan seluruh
+# narasi rapor (yang banyak menyesuaikan archetype) ikut berubah tanpa
+# ada yang menyadarinya.
+#
+# Sekarang persona terikat ke NPM. Kalau mahasiswa pindah baris, dia tetap
+# membawa personanya.
+ARCHETYPE_BY_NPM = {
+    "2510015410010": "star",      # M YAZID ZIDANE MULYADI
+    "2510015410011": "at_risk",   # ROZI ANDRIAN SURVA
+    "2510015410001": "high",      # ALSA DMI YESYA PUTRI
+}
+
+
+def tentukan_archetype(idx: int, npm: str) -> str:
+    """Persona mahasiswa: NPM dulu, baru pola posisi sebagai cadangan.
+
+    Catatan penting: fungsi ini hanya memperbaiki IKATAN persona. Angka
+    (skor per sesi) masih diambil dari satu urutan `random` bersama, jadi
+    menambah satu baris Excel tetap menggeser angka seluruh kelas. Untuk
+    benar-benar mandiri per mahasiswa, RNG harus di-seed per NPM
+    (lihat catatan "utang" di README).
+    """
+    if str(npm) in ARCHETYPE_BY_NPM:
+        return ARCHETYPE_BY_NPM[str(npm)]
+    if idx % 7 == 0:
+        return "moderate_absent"
+    if idx % 4 == 0:
+        return "good"
+    return "normal"
+
+
 def generate_student_profiles(students, sessions):
     course_info = {
         "kode_mk": "5412522233",
@@ -302,19 +305,8 @@ def generate_student_profiles(students, sessions):
         npm = s["npm"]
         nama = s["nama"]
         
-        # Archetype determination
-        if idx == 0:  # M YAZID ZIDANE MULYADI (Star Student)
-            archetype = "star"
-        elif idx == 10: # ROZI ANDRIAN SURVA (At-Risk Intervention)
-            archetype = "at_risk"
-        elif idx == 1: # ALSA DMI YESYA PUTRI (Consistent Creative)
-            archetype = "high"
-        elif idx % 7 == 0:
-            archetype = "moderate_absent"
-        elif idx % 4 == 0:
-            archetype = "good"
-        else:
-            archetype = "normal"
+        # Archetype determination - terikat NPM, bukan nomor baris (FIX C-3)
+        archetype = tentukan_archetype(idx, npm)
 
         attendance_list = []
         total_hadir = 0
@@ -416,42 +408,12 @@ def generate_student_profiles(students, sessions):
         student_is_at_risk = bool(at_risk_reasons_list)
 
         # Grade Assignment & Competency Status (No Ranking, focusing on growth)
-        if avg_score >= 85 and attendance_pct >= 80:
-            grade = "A"
-            predikat = "Sangat Memuaskan / Kompeten Unggul"
-            status_kompetensi = "Kompeten Unggul (Memenuhi Standar Studio IAI)"
-            kesiapan_profesi = "Sangat Siap & Siap Magang di Konsultan Arsitektur"
-            indeks_kesiapan = round(avg_score * 0.98, 1)
-        elif avg_score >= 80 and attendance_pct >= 75:
-            grade = "A-"
-            predikat = "Memuaskan / Kompeten Sangat Baik"
-            status_kompetensi = "Kompeten Sangat Baik (Rekomendasi Lanjut Studio Perancangan)"
-            kesiapan_profesi = "Siap & Menguasai Standar Gambar Kerja DED"
-            indeks_kesiapan = round(avg_score * 0.96, 1)
-        elif avg_score >= 75 and attendance_pct >= 75:
-            grade = "B+"
-            predikat = "Baik / Kompeten"
-            status_kompetensi = "Kompeten Baik (Perlu Akselerasi Detail Struktur)"
-            kesiapan_profesi = "Cukup Siap & Memerlukan Penguatan Volume QS"
-            indeks_kesiapan = round(avg_score * 0.92, 1)
-        elif avg_score >= 70:
-            grade = "B"
-            predikat = "Cukup Baik"
-            status_kompetensi = "Kompeten Cukup (Asistensi Mandiri Lanjutan)"
-            kesiapan_profesi = "Perlu Pengayaan Praktik Pemodelan Digital"
-            indeks_kesiapan = round(avg_score * 0.88, 1)
-        elif avg_score >= 60:
-            grade = "C"
-            predikat = "Kurang (Perlu Remidi & Asistensi)"
-            status_kompetensi = "Perlu Bimbingan Intensif Studio"
-            kesiapan_profesi = "Memerlukan Pengulangan Modul Dasar CAD"
-            indeks_kesiapan = round(avg_score * 0.80, 1)
-        else:
-            grade = "D / Evaluasi"
-            predikat = "Kritis (Rentan Evaluasi)"
-            status_kompetensi = "Intervensi Pembinaan Khusus Jurusan"
-            kesiapan_profesi = "Fokus Peningkatan Disiplin Waktu Belajar"
-            indeks_kesiapan = round(avg_score * 0.70, 1)
+        # FIX TAHAP C-4: ambang batas grade diambil dari kelas_rules.py, bukan
+        # ditulis ulang sebagai rantai if/elif. Teks predikat pun diambil dari
+        # satu tabel, sehingga tidak mungkin ada grade tanpa teksnya.
+        grade, pengali_kesiapan = grade_dari_skor(avg_score, attendance_pct)
+        predikat, status_kompetensi, kesiapan_profesi = TEKS_GRADE[grade]
+        indeks_kesiapan = round(avg_score * pengali_kesiapan, 1)
 
         # Competency Radar Scores (Scale 1-100)
         if archetype == "star":
@@ -874,6 +836,16 @@ def main():
     print(f" - Rata-rata Kehadiran: {dataset['class_summary']['rata_kehadiran']}%")
     print(f" - Rata-rata Nilai Studio: {dataset['class_summary']['rata_nilai_studio']}")
     print(f" - Mahasiswa At-Risk: {dataset['class_summary']['total_at_risk']}")
+
+    # FIX TAHAP C-5: file ini hanya menulis data MASTER. Tanpa langkah berikut,
+    # katalog di data/courses/ bisa tertinggal satu versi di belakang master -
+    # dan sekali "ganti mata kuliah" master ikut mundur tanpa pesan error.
+    try:
+        from process_input import sinkronkan_katalog_aktif
+        sinkronkan_katalog_aktif()
+    except Exception as e:  # noqa: BLE001
+        print(f"[PERINGATAN] Katalog mata kuliah tidak disinkronkan: {e}")
+        print("            Jalankan: python scripts\\process_input.py --sync-katalog")
 
 if __name__ == "__main__":
     main()

@@ -1391,10 +1391,11 @@ def build_all_pdfs():
     print(f"[INFO] File juga disinkronkan ke 'generated_pdfs/' untuk live web preview.")
     print("=" * 65)
 
-# Aturan kelas - cerminan dari parse_data.py (sumber kebenaran tunggal).
-# PDF WAJIB konsisten dengan dashboard, bukan punya aturan sendiri.
-AT_RISK_ALPHA_MIN = 2
-AT_RISK_KEHADIRAN_MIN = 75.0
+# FIX TAHAP C-4: aturan kelas diimpor dari SATU modul bersama (kelas_rules.py).
+# Sebelumnya konstanta ini disalin-tempel di 3 file. PDF WAJIB memakai aturan
+# yang sama dengan dashboard, bukan punya salinannya sendiri.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from kelas_rules import AT_RISK_ALPHA_MIN, AT_RISK_KEHADIRAN_MIN  # noqa: E402
 
 PDF_TYPE_PER_STUDENT = ("monthly", "presensi", "rapor", "final", "deckcraft", "portofolio")
 PDF_TYPE_CLASS_LEVEL = ("gradebook", "kaprodi", "audit", "dosen")

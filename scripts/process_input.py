@@ -6,9 +6,16 @@ import shutil
 import tempfile
 from datetime import datetime
 
-# Satu sumber aturan yang sama dengan parse_data.py
-AT_RISK_ALPHA_MIN = 2
-AT_RISK_KEHADIRAN_MIN = 75.0
+# FIX TAHAP C-4: aturan kelas diimpor dari SATU modul bersama, bukan disalin
+# ulang di sini. Sebelumnya konstanta yang sama muncul di 3 file - persis
+# pola yang dulu melahirkan 4 aturan at-risk berbeda dalam 1 aplikasi.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from kelas_rules import (  # noqa: E402
+    AT_RISK_ALPHA_MIN,
+    AT_RISK_KEHADIRAN_MIN,
+    grade_dari_skor,
+    TEKS_GRADE,
+)
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -250,6 +257,23 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
                 st["akademik"]["nilai_rata_rata"] = round(
                     sum(s * b for s, b in zip(skor, bobot)) / total_bobot, 1)
                 st["akademik"]["bobot_diperiksa"] = bobot
+                # FIX TAHAP C-4: predikat, status, dan indeks kesiapan WAJIB
+                # dihitung ulang setiap kali nilainya berubah. Sebelumnya nilai
+                # diperbarui tetapi grade dibiarkan dari mata kuliah lama,
+                # sehingga bisa muncul nilai baru berdampingan dengan predikat
+                # lama - dokumen resmi yang bertentangan dengan dirinya sendiri.
+                # (grade_dari_skor dari kelas_rules.py; teks predikat dicari
+                # lewat TEKS_GRADE yang sama dengan parse_data.py.)
+                g_baru, pengali = grade_dari_skor(
+                    st["akademik"]["nilai_rata_rata"],
+                    st["kehadiran"]["persentase"])
+                teks = TEKS_GRADE[g_baru]
+                st["akademik"]["grade"] = g_baru
+                st["akademik"]["predikat"] = teks[0]
+                st["akademik"]["status_kompetensi"] = teks[1]
+                st["akademik"]["kesiapan_profesi"] = teks[2]
+                st["akademik"]["indeks_kesiapan"] = round(
+                    st["akademik"]["nilai_rata_rata"] * pengali, 1)
 
         tren = []
         for s_baru in new_sessions:
@@ -383,11 +407,79 @@ def process_raw_input(course_name, timestamp_str=None):
     print("=" * 65)
     return dataset, course_folder, timestamp_str
 
+# =============================================================================
+# FIX TAHAP C-5 - SINKRONISASI KATALOG MATA KULIAH
+# =============================================================================
+def sinkronkan_katalog_aktif(verbose=True):
+    """Segarkan katalog MK yang sedang aktif supaya identik dengan master.
+
+    Kenapa perlu: `parse_data.py` hanya menulis data MASTER. File katalog di
+    `data/courses/` bisa tertinggal satu versi di belakangnya tanpa ada yang
+    menyadari. Kalau katalog MK aktif tertinggal, sekali "ganti mata kuliah"
+    akan mengembalikan seluruh sistem ke aturan lama.
+
+    Ini bukan teori: katalog MK aktif tertinggal di 2.0 sementara master sudah
+    2.5, lalu satu kali ganti MK membuat At-Risk melompat 10 -> 1 dan nilai
+    80.6 -> 82.5 tanpa pesan error apa pun.
+
+    Untuk MK yang SEDANG AKTIF, isi yang benar adalah MASTER ITU SENDIRI, bukan
+    hasil template - karena master berasal dari Excel + PDF asli (deskripsi,
+    topik RPS, dan tanggalnya lengkap). Fungsi ini menyalin master ke katalog.
+    TIDAK ada angka yang dihitung ulang.
+
+    Mengembalikan daftar pasangan (nama_file, keterangan).
+    """
+    master_path = os.path.join(DATA_DIR, "academic_data.json")
+    if not os.path.exists(master_path):
+        raise FileNotFoundError(f"Data master tidak ditemukan: {master_path}")
+    with open(master_path, "r", encoding="utf-8") as f:
+        master = json.load(f)
+
+    kode_master = str(master.get("course", {}).get("kode_mk") or "")
+    versi_master = master.get("metadata", {}).get("versi")
+    hasil = []
+    if kode_master and os.path.isdir(COURSES_DIR):
+        for nama in sorted(os.listdir(COURSES_DIR)):
+            if not nama.endswith(".json"):
+                continue
+            path = os.path.join(COURSES_DIR, nama)
+            try:
+                with open(path, "r", encoding="utf-8") as f:
+                    isi = json.load(f)
+            except (OSError, json.JSONDecodeError) as e:
+                hasil.append((nama, f"DILEWATI (tidak terbaca: {e})"))
+                continue
+            if str(isi.get("course", {}).get("kode_mk") or "") != kode_master:
+                continue  # bukan MK aktif -> memang memakai template, biarkan
+            versi_lama = isi.get("metadata", {}).get("versi")
+            if versi_lama == versi_master:
+                hasil.append((nama, f"sudah seversi ({versi_master})"))
+                continue
+            atomic_write_json(path, master)
+            hasil.append((nama, f"{versi_lama} -> {versi_master}"))
+
+    if verbose:
+        print("=" * 65)
+        print("[SINKRON KATALOG] Menyamakan katalog MK aktif dengan master")
+        print(f"Master : {master.get('course', {}).get('nama_mk')} "
+              f"({kode_master}) versi {versi_master}")
+        if not hasil:
+            print("  (tidak ada file katalog yang cocok dengan MK aktif)")
+        for nama, ket in hasil:
+            print(f"  - {nama:50} {ket}")
+        print("=" * 65)
+    return hasil
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Process raw input into standardized academic data")
     parser.add_argument("--course", default="APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS", help="Course folder or name")
     parser.add_argument("--timestamp", default=None, help="Timestamp string")
+    parser.add_argument("--sync-katalog", action="store_true",
+                        help="Selaraskan katalog MK aktif dengan data master, lalu keluar")
     args = parser.parse_args()
 
-    process_raw_input(args.course, args.timestamp)
+    if args.sync_katalog:
+        sinkronkan_katalog_aktif()
+    else:
+        process_raw_input(args.course, args.timestamp)

@@ -977,6 +977,10 @@ async function switchActiveCourse(courseId) {
     if (!resData.success) throw new Error(resData.error || "Gagal berganti mata kuliah.");
 
     toast(`Mata kuliah aktif: ${resData.active_course.nama_mk}`, "success");
+    // FIX TAHAP C-5: beri tahu kalau kode katalog tidak ikut berubah.
+    // - "sudah aktif"  -> memang tidak ada yang perlu berubah
+    // - "diselaraskan" -> katalog MK ini tertinggal versi, sudah diperbaiki
+    if (resData.catatan) toast(resData.catatan, "info", 9000);
     // Muat ulang seluruh dataset; loadAcademicData() akan menyinkronkan header
     // dan dropdown ke course yang baru (bukan lagi ke pilihan pertama).
     await loadAcademicData();

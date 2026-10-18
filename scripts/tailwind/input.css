@@ -1,0 +1,5 @@
+/* input.css - Sumber Tailwind (dikompilasi jadi public/vendor/tailwind.css)
+ * TAHAP C-1. Jangan menulis CSS custom di sini; taruh di public/style.css. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
