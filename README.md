@@ -152,9 +152,9 @@ data master dibangun ulang, jadi katalog tidak akan tertinggal lagi.
 | Total Mahasiswa | 35 |
 | Rata-rata Kehadiran | 83.3% |
 | Rata-rata Nilai Studio | **80.6** (predikat dominan A-, 19 mahasiswa) |
-| Mahasiswa At-Risk | **10** (1 berdasarkan alpha, 10 berdasarkan kehadiran) |
+| Mahasiswa At-Risk | **10** (semuanya kehadiran < 75%; 1 di antaranya juga Alpha ≥ 2x) |
 | Distribusi Grade | A=3, A-=19, B+=0, B=10, C=2, D=1 |
-| Tingkat Kelulusan | 71.4% (25 lulus / 10 perlu pendampingan) |
+| Tingkat Kelulusan | 65.7% (23 dari 35 memenuhi: tidak At-Risk **dan** nilai ≥ 70) |
 
 ### 3 Kasus Studi (angka terbaru)
 
@@ -258,6 +258,7 @@ Butuh Node.js (hanya untuk build Tailwind). Runtime tetap 100% offline.
 ```cmd
 REM tanpa server:
 python tests\test_rules_unchanged.py
+python tests\test_readme_accuracy.py
 
 REM dengan server aktif (run_server.bat dulu):
 python tests\test_server_http.py
@@ -267,6 +268,7 @@ python tests\test_catalog_guard.py
 | Tes | Membuktikan |
 | --- | --- |
 | `test_rules_unchanged.py` | Regenerasi data **tetap identik** dengan master — tidak ada angka yang bergeser |
+| `test_readme_accuracy.py` | **Setiap angka di README ini cocok dengan data** — tidak ada lagi angka yang diketik manual dan salah |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
 | `test_catalog_guard.py` | Ganti mata kuliah tidak bisa memundurkan data master |
 
@@ -276,12 +278,12 @@ python tests\test_catalog_guard.py
 Untuk kemudahan demonstrasi di depan Kaprodi, gunakan tombol demo cepat di pojok kanan atas:
 1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**:
    * Profil mahasiswa unggul (Kompeten Unggul), Kehadiran 100%, Grade A (94.2).
-   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.5%) dan Architectural Designer (93.3%).
+   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.5%), DED Specialist (93.5%), dan Architectural Designer (93.3%).
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**:
    * Profil mahasiswa yang membutuhkan pendampingan (2x Alpha + 1x Sakit, Kehadiran 50%), **Grade D / Evaluasi (44.5)**.
-   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya (Site Architect 87.0%) dengan panduan pendampingan orang tua yang hangat dan suportif di rumah.
+   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya — Site Architect (73.6%), kategori **Sedang**. Angka ini dulu diketik manual sebagai 87% dan sekarang dihitung dari data — bukti bahwa angka yang bagus belum tentu angka yang benar.
 3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**:
-   * Profil mahasiswa kreatif konsisten, Kehadiran 83.3% (izin delegasi lomba arsitektur), Grade A (91.8).
+   * Profil mahasiswa kreatif konsisten, Kehadiran 83.3% (izin delegasi lomba arsitektur), Grade A (91.7).
 
 ---
 
