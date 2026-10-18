@@ -159,16 +159,16 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
           <div>
             <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
-              <i data-lucide="compass" class="w-4 h-4"></i> Rekap Monitoring Perkuliahan Bulanan
+              <i data-lucide="compass" class="w-4 h-4"></i> <span id="hero-judul">Rekap Monitoring Perkuliahan</span>
             </div>
-            <h2 class="text-2xl font-extrabold text-white tracking-tight">Executive Academic Suite — Prodi Arsitektur</h2>
-            <p class="text-sm text-slate-300 mt-1 max-w-2xl">
-              Pemantauan terpusat presensi 35 mahasiswa, verifikasi alasan ketidakhadiran, distribusi capaian studio CAD, dan sistem deteksi dini mahasiswa berisiko (At-Risk Intervention).
+            <h2 class="text-2xl font-extrabold text-white tracking-tight" id="hero-subjudul">Executive Academic Suite — Prodi Arsitektur</h2>
+            <p class="text-sm text-slate-300 mt-1 max-w-2xl" id="hero-deskripsi">
+              Pemantauan terpusat dosen, mahasiswa, capaian pembelajaran, dan analisis.
             </p>
           </div>
           <div class="flex items-center flex-wrap gap-2.5">
             <button onclick="downloadKaprodiGradebook()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/40 flex items-center gap-2 transition shadow-lg">
-              <i data-lucide="sheet" class="w-4 h-4 text-emerald-400"></i> PDF Gradebook 35 Mhs (Landscape)
+              <i data-lucide="sheet" class="w-4 h-4 text-emerald-400"></i> PDF Gradebook <span id="hero-jml-mhs">–</span> Mhs (Landscape)
             </button>
             <button onclick="downloadDosenAuditPDF()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-bold rounded-xl border border-purple-500/40 flex items-center gap-2 transition shadow-lg">
               <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i> PDF Audit Dosen & Modul RPS
@@ -1091,7 +1091,7 @@
             <button type="button" onclick="regenerasiPaketPdf()" class="px-4 py-2 rounded-lg text-sm font-bold bg-rose-600 hover:bg-rose-500 text-white transition shadow-lg">
               Cetak Ulang Paket PDF
             </button>
-            <button type="button" onclick="muatIdentitas(true)" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+            <button type="button" onclick="muatIdentitas()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
               Muat Ulang
             </button>
             <span id="pengaturan-status" class="text-xs text-slate-400"></span>

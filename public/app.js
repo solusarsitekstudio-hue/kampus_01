@@ -106,6 +106,9 @@ function setAppState(state, message) {
 document.addEventListener("DOMContentLoaded", async () => {
   setAppState("loading");
   await loadAcademicData();
+  // Teks header (judul / sub judul / deskripsi) diambil dari config/identitas.json
+  // supaya mengganti nama prodi tidak perlu lagi mengedit index.html.
+  await muatIdentitas({ diam: true });
   if (window.lucide) lucide.createIcons();
 });
 
@@ -131,6 +134,9 @@ async function loadAcademicData() {
     renderKaprodiDashboard();
     populateStudentDropdown();
     populateSessionFilter();
+
+    // Jumlah mahasiswa pada label tombol dihitung dari data, bukan diketik "35".
+    setText("hero-jml-mhs", masterData.students.length);
 
     const preferred = currentStudent
       ? masterData.students.find(s => s.npm === currentStudent.npm)
@@ -1010,7 +1016,8 @@ let mkSedangDiatur = null;     // kunci mata kuliah yang sedang tampil di form
 
 function _bisa(el) { return el !== null && el !== undefined; }
 
-async function muatIdentitas() {
+async function muatIdentitas(opts = {}) {
+  const diam = opts && opts.diam === true;
   const status = document.getElementById("pengaturan-status");
   if (status) status.textContent = "Memuat…";
   try {
@@ -1019,12 +1026,24 @@ async function muatIdentitas() {
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     identitasData = data;
     terapkanIdentitasKeForm(data);
+    terapkanHeaderIdentitas(data);
     renderBannerPenerapan(data);
     if (status) status.textContent = "";
   } catch (err) {
     if (status) status.textContent = "";
-    toast(`Gagal memuat identitas: ${err.message}`, "error", 8000);
+    if (!diam) toast(`Gagal memuat identitas: ${err.message}`, "error", 8000);
   }
+}
+
+/**
+ * Judul / sub judul / deskripsi dashboard dari config (placeholder {prodi} dll
+ * sudah diisi oleh server). Kalau kosong, teks di HTML dibiarkan apa adanya.
+ */
+function terapkanHeaderIdentitas(data) {
+  const h = (data && data.header) || {};
+  if (h.judul) setText("hero-judul", h.judul);
+  if (h.subjudul) setText("hero-subjudul", h.subjudul);
+  if (h.deskripsi) setText("hero-deskripsi", h.deskripsi);
 }
 
 function terapkanIdentitasKeForm(data) {
