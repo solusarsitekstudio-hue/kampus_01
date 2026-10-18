@@ -32,6 +32,11 @@ PROGRESS_ROOT = os.path.join(BASE_DIR, "input", "progress_mahasiswa")
 OUTPUT_VIDEOS_DIR = os.path.join(BASE_DIR, "public", "videos")
 TEMP_DIR = os.path.join(BASE_DIR, "scratch", "video_temp")
 
+# FIX: nama prodi / fakultas / ketua prodi tidak lagi ditulis literal di template
+# video. Sumbernya satu: config/identitas.json.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import identitas  # noqa: E402
+
 os.makedirs(OUTPUT_VIDEOS_DIR, exist_ok=True)
 os.makedirs(TEMP_DIR, exist_ok=True)
 
@@ -255,6 +260,13 @@ def render_vertical_slides_html(student, course_info, images):
     grade = akademik.get("grade", "A")
     predikat = akademik.get("predikat", "Kompeten Unggul")
     mk_nama = course_info.get("nama_mk", "Aplikasi Komputer Arsitektur & QS")
+
+    # Identitas institusi dari SATU sumber (config/identitas.json).
+    _inst = identitas.institusi()
+    _prodi_v = str(_inst.get("prodi") or "-").upper()
+    _fakultas_v = str(_inst.get("fakultas") or "-").upper()
+    _prodi_label = str(_inst.get("prodi") or "")
+    _kaprodi_v = str(course_info.get("ketua_prodi") or _inst.get("ketua_prodi") or "").upper()
     
     ai = student.get("ai_diagnosis", {})
     matriks = ai.get("matriks_karier_10", [])
@@ -342,8 +354,8 @@ def render_vertical_slides_html(student, course_info, images):
       <div class="content">
         <div class="header">
           <div>
-            <div style="font-size: 32px; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">🏛️ PROGRAM STUDI ARSITEKTUR</div>
-            <div style="font-size: 22px; color: #94a3b8; margin-top: 6px;">FAKULTAS TEKNIK & DESAIN • LAB KOMPUTER LIKDA</div>
+            <div style="font-size: 32px; font-weight: 900; color: #ffffff; letter-spacing: 0.5px;">🏛️ PROGRAM STUDI {_prodi_v}</div>
+            <div style="font-size: 22px; color: #94a3b8; margin-top: 6px;">FAKULTAS {_fakultas_v} • LAB KOMPUTER LIKDA</div>
           </div>
           <div class="brand-badge">PORTOFOLIO DIGITAL</div>
         </div>
@@ -562,7 +574,7 @@ def render_vertical_slides_html(student, course_info, images):
       <div class="bg-blur"></div>
       <div class="content">
         <div style="border-bottom: 2px solid rgba(255,255,255,0.15); padding-bottom: 30px;">
-          <div style="font-size: 34px; font-weight: 900; color: #ffffff;">PROGRAM STUDI ARSITEKTUR</div>
+          <div style="font-size: 34px; font-weight: 900; color: #ffffff;">PROGRAM STUDI {_prodi_v}</div>
           <div style="font-size: 24px; color: #94a3b8; margin-top: 8px;">KEMENTERIAN PENDIDIKAN TINGGI, SAINS & TEKNOLOGI</div>
         </div>
         
@@ -584,8 +596,8 @@ def render_vertical_slides_html(student, course_info, images):
         
         <div style="background: rgba(15, 23, 42, 0.95); border: 3px solid rgba(255,255,255,0.25); border-radius: 36px; padding: 40px;">
           <div style="font-size: 24px; font-weight: 700; color: #94a3b8;">Disahkan secara Resmi oleh:</div>
-          <div style="font-size: 34px; font-weight: 900; color: #ffffff; margin-top: 6px;">FIELDA ROZA, S.T., M.T.</div>
-          <div style="font-size: 22px; color: #38bdf8; font-family: 'JetBrains Mono'; margin-top: 4px;">Ketua Program Studi Arsitektur</div>
+          <div style="font-size: 34px; font-weight: 900; color: #ffffff; margin-top: 6px;">{_kaprodi_v}</div>
+          <div style="font-size: 22px; color: #38bdf8; font-family: 'JetBrains Mono'; margin-top: 4px;">Ketua Program Studi {_prodi_label}</div>
         </div>
       </div>
     </body>

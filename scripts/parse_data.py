@@ -34,6 +34,11 @@ from kelas_rules import (  # noqa: E402
     TEKS_GRADE,
 )
 
+# FIX: identitas (mata kuliah, dosen, asisten, ketua prodi, institusi) sekarang
+# dibaca dari SATU sumber -- config/identitas.json lewat scripts/identitas.py.
+# Dulu nama-nama ini disalin manual di file ini DAN di process_input.py.
+import identitas as IDENT  # noqa: E402
+
 
 def parse_students(excel_path):
     wb = openpyxl.load_workbook(excel_path)
@@ -269,22 +274,33 @@ def tentukan_archetype(idx: int, npm: str) -> str:
 
 
 def generate_student_profiles(students, sessions):
+    # FIX: identitas mata kuliah TIDAK lagi disalin di sini. Dibaca dari satu
+    # sumber (config/identitas.json). Kunci yang ditulis SENGAJA dikunci ke 11
+    # kunci yang sama seperti sebelumnya, supaya academic_data.json tidak berubah.
+    _ident = IDENT.lengkapi()
     course_info = {
-        "kode_mk": "5412522233",
-        "nama_mk": "Aplikasi Komputer Arsitektur & QS",
-        "prodi": "Arsitektur",
-        "fakultas": "Teknik & Desain",
-        "semester": "Genap 2025/2026",
-        "sks": 2,
-        "kelas": "TEKZA (Lab LIKDA)",
-        "jadwal": "Rabu, 10:10 - 15:50 WIB",
-        "ketua_prodi": "Fielda Roza, S.T., M.T.",
-        "dosen_pengasuh": [
-            "Aprilia Yunita, S.T., M.T.",
-            "Duddy Fajriansyah, S.T., M.T."
-        ],
-        "asisten_dosen": "Adrian Ridhoa, S.T."
+        k: _ident[k]
+        for k in (
+            "kode_mk",
+            "nama_mk",
+            "prodi",
+            "fakultas",
+            "semester",
+            "sks",
+            "kelas",
+            "jadwal",
+            "ketua_prodi",
+            "dosen_pengasuh",
+            "asisten_dosen",
+        )
     }
+    _institusi = IDENT.institusi()
+    _prodi = str(_institusi.get("prodi", ""))
+    _fakultas = str(_institusi.get("fakultas", ""))
+    _kaprodi = str(_institusi.get("ketua_prodi", ""))
+    _nama_mk = str(course_info["nama_mk"])
+    _asisten = str(course_info["asisten_dosen"])
+    _total_sesi = len(sessions)
 
     reasons_sakit = [
         "Sakit demam & flu (surat dokter terlampir)",
@@ -589,10 +605,10 @@ def generate_student_profiles(students, sessions):
         wa_message = (
             f"Assalamuâ€™alaikum Warahmatullahi Wabarakatuh.\n\n"
             f"Kepada Yth. Bapak/Ibu Wali Murid dari *{nama.upper()}*,\n\n"
-            f"Salam hangat dan salam takzim dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\n"
-            f"Melalui pesan resmi ini, kami menyampaikan Laporan Perkembangan Akademik, Portofolio Gambar Kerja, dan Analisis Pemetaan Potensi Karier ananda pada mata kuliah *Aplikasi Komputer Arsitektur & QS*:\n\n"
+            f"Salam hangat dan salam takzim dari Program Studi {_prodi}, Fakultas {_fakultas}.\n\n"
+            f"Melalui pesan resmi ini, kami menyampaikan Laporan Perkembangan Akademik, Portofolio Gambar Kerja, dan Analisis Pemetaan Potensi Karier ananda pada mata kuliah *{_nama_mk}*:\n\n"
             f"ðŸ“Š *Ringkasan Capaian Kompetensi:*\n"
-            f"â€¢ Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/6 Sesi Terlaksana)\n"
+            f"â€¢ Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/{_total_sesi} Sesi Terlaksana)\n"
             f"â€¢ Nilai Akhir Studio: *{avg_score}* (Predikat: *{grade}* - {predikat})\n"
             f"â€¢ Status Kompetensi: *{status_kompetensi}*\n"
             f"â€¢ Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
@@ -604,9 +620,9 @@ def generate_student_profiles(students, sessions):
             f"3. ðŸ“Ž Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\n"
             f"Bapak/Ibu dapat meninjau berkas dokumen terlampir. Terima kasih tak terhingga atas doa, bimbingan, dan cinta kasih Bapak/Ibu yang senantiasa mendampingi ananda di rumah.\n\n"
             f"Hormat kami,\n"
-            f"*Ketua Program Studi Arsitektur*\n"
-            f"*Fielda Roza, S.T., M.T.*\n"
-            f"Asisten Dosen: *Adrian Ridhoa, S.T.*"
+            f"*Ketua Program Studi {_prodi}*\n"
+            f"*{_kaprodi}*\n"
+            f"Asisten Dosen: *{_asisten}*"
         )
 
         student_records.append({
@@ -699,26 +715,23 @@ def generate_student_profiles(students, sessions):
     total_sesi = len(sessions)
     # FIX TAHAP B: "6 / 6 Pertemuan (100%)" dulu ditulis manual. Sekarang dihitung.
     kehadiran_dosen = f"{total_sesi} / {total_sesi} Pertemuan (100%)"
-    tim_pengajar = [
-            {
-                "nama": "Aprilia Yunita, S.T., M.T.",
-                "peran": "Dosen Pengasuh Utama",
-                "kehadiran": kehadiran_dosen,
-                "status": "Sangat Baik & Tepat Waktu"
-            },
-            {
-                "nama": "Duddy Fajriansyah, S.T., M.T.",
-                "peran": "Dosen Pengasuh Pendamping",
-                "kehadiran": kehadiran_dosen,
-                "status": "Sangat Baik & Tepat Waktu"
-            },
-            {
-                "nama": "Adrian Ridhoa, S.T.",
-                "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
-                "kehadiran": kehadiran_dosen,
-                "status": "Aktif Membimbing Asistensi Teknis"
-            }
-        ]
+    tim_pengajar = []
+    # FIX: tim pengajar TIDAK lagi disalin manual di sini. Diambil dari
+    # course_info (yang bersumber dari config/identitas.json): dosen pengasuh
+    # ke-1 = pengasuh utama, berikutnya = pendamping, lalu asisten dosen.
+    for _i, _nama_dosen in enumerate(course_info["dosen_pengasuh"]):
+        tim_pengajar.append({
+            "nama": _nama_dosen,
+            "peran": "Dosen Pengasuh Utama" if _i == 0 else "Dosen Pengasuh Pendamping",
+            "kehadiran": kehadiran_dosen,
+            "status": "Sangat Baik & Tepat Waktu"
+        })
+    tim_pengajar.append({
+        "nama": course_info["asisten_dosen"],
+        "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
+        "kehadiran": kehadiran_dosen,
+        "status": "Aktif Membimbing Asistensi Teknis"
+    })
 
     # FIX TAHAP B: "35 mahasiswa" diketik manual -> pakai jumlah riil.
     # (Dosen audit untuk kanal ini disinkronkan juga oleh process_input.py saat ganti MK)

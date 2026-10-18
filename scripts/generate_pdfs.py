@@ -19,6 +19,88 @@ DATA_FILE = os.path.join(BASE_DIR, "data", "academic_data.json")
 with open(DATA_FILE, "r", encoding="utf-8") as f:
     DATA = json.load(f)
 
+# FIX: identitas institusi (prodi, fakultas, ketua prodi, NIP, kota, tanggal,
+# universitas) dibaca dari SATU sumber: config/identitas.json. Dulu NIP dan
+# tanggal ditulis literal di dalam template HTML PDF.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import identitas as IDENT  # noqa: E402
+
+
+def identitas_dokumen():
+    """Identitas untuk kop surat & blok tanda tangan.
+
+    Yang SUDAH ada di DATA['course'] (prodi, fakultas, ketua_prodi) diambil dari
+    DATA supaya dokumen selalu cocok dengan dataset yang benar-benar dicetak.
+    Sisanya (NIP, kota, tanggal, universitas) tidak ada di DATA -> dari config.
+    """
+    course = DATA.get("course", {}) or {}
+    kunci = None
+    for k, mk in IDENT.daftar_mk().items():
+        if mk.get("kode_mk") == course.get("kode_mk"):
+            kunci = k
+            break
+    mk = IDENT.lengkapi(kunci) if kunci else IDENT.lengkapi()
+    inst = IDENT.institusi()
+    return {
+        "prodi": course.get("prodi") or inst.get("prodi", ""),
+        "fakultas": course.get("fakultas") or inst.get("fakultas", ""),
+        "ketua_prodi": course.get("ketua_prodi") or inst.get("ketua_prodi", ""),
+        "nip_ketua_prodi": mk.get("nip_ketua_prodi", ""),
+        "asisten_nip": mk.get("asisten_nip", ""),
+        "universitas": inst.get("universitas", ""),
+        "kota": inst.get("kota", ""),
+        "tanggal": IDENT.tanggal_tanda_tangan(),
+        "nama_mk": course.get("nama_mk", ""),
+        "kode_mk": course.get("kode_mk", ""),
+        "kelas": course.get("kelas", ""),
+    }
+
+
+def _dosen_ke(idx):
+    """Nama dosen pengasuh ke-idx; '' kalau tidak ada (dulu IndexError)."""
+    dosen = (DATA.get("course", {}) or {}).get("dosen_pengasuh") or []
+    return dosen[idx] if 0 <= idx < len(dosen) else ""
+
+
+def _kotak_dosen_kedua():
+    """Kotak tanda tangan Dosen Pengasuh II - hanya kalau memang ada dosen ke-2."""
+    nama = _dosen_ke(1)
+    if not nama:
+        return ""
+    return (
+        '<div class="sign-box">'
+        + "<p>Dosen Pengasuh II,</p>"
+        + '<div class="space" style="height: 35px;"></div>'
+        + "<strong>{0}</strong>".format(nama)
+        + "</div>"
+    )
+
+
+def _kop_baris():
+    """Baris PRODI - FAKULTAS (huruf besar) + UNIVERSITAS bila diisi."""
+    d = identitas_dokumen()
+    baris = "PROGRAM STUDI {0} — FAKULTAS {1}".format(
+        str(d["prodi"]).upper(), str(d["fakultas"]).upper()
+    )
+    universitas = str(d["universitas"]).strip().upper()
+    if universitas:
+        baris = "UNIVERSITAS {0}<br>{1}".format(universitas, baris)
+    return baris
+
+
+def _kop_tanggal():
+    d = identitas_dokumen()
+    return "{0}, {1}".format(d["kota"], d["tanggal"])
+
+
+def _label_kaprodi():
+    return "Ketua Program Studi {0}".format(identitas_dokumen()["prodi"])
+
+
+def _stamp_prodi():
+    return "PRODI {0}".format(str(identitas_dokumen()["prodi"]).upper())
+
+
 def sanitize_folder_name(name):
     clean = re.sub(r'[\\/*?:"<>|]', "", name)
     clean = clean.replace("&", "DAN").strip().replace(" ", "_").upper()
@@ -574,7 +656,7 @@ def render_monthly_attendance_html(student):
         <div class="kop-logo">🏛️</div>
         <div class="kop-text">
           <h2>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h2>
-          <h3>PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN</h3>
+          <h3>{_kop_baris()}</h3>
           <p>Gedung Perkuliahan Terpadu • Lab Komputer LIKDA • Kampus Utama • Telp: (0751) 7058821</p>
         </div>
         <div style="font-size: 10px; font-weight: 800; border: 1.5px solid #0f172a; padding: 4px 8px; border-radius: 6px;">
@@ -591,7 +673,7 @@ def render_monthly_attendance_html(student):
 
       <div class="info-grid">
         <div class="info-item"><span class="info-label">Nama Mahasiswa</span><span class="info-value">: {student['nama']}</span></div>
-        <div class="info-item"><span class="info-label">Program Studi</span><span class="info-value">: Arsitektur (S1)</span></div>
+        <div class="info-item"><span class="info-label">Program Studi</span><span class="info-value">: {identitas_dokumen()['prodi']} (S1)</span></div>
         <div class="info-item"><span class="info-label">Nomor Pokok (NPM)</span><span class="info-value" style="font-family: 'JetBrains Mono', monospace;">: {student['npm']}</span></div>
         <div class="info-item"><span class="info-label">Mata Kuliah</span><span class="info-value">: {DATA['course']['nama_mk']}</span></div>
         <div class="info-item"><span class="info-label">Kelas / Ruang</span><span class="info-value">: {DATA['course']['kelas']}</span></div>
@@ -648,7 +730,7 @@ def render_monthly_attendance_html(student):
       </table>
 
       <div class="card-box" style="background: #f8fafc; margin-top: 10px; font-size: 10px; color: #475569;">
-        <strong>Peraturan Akademik Prodi Arsitektur:</strong> Sesuai Surat Keputusan Dekan, batas toleransi ketidakhadiran kuliah studio maksimal adalah 25% (maksimal 3 kali pertemuan tanpa keterangan/Alpha). Mohon Bapak/Ibu Wali Murid terus mengawal kedisiplinan dan jam tidur ananda di rumah agar tidak terkendala mengikuti Evaluasi Akhir Semester.
+        <strong>Peraturan Akademik Prodi {identitas_dokumen()['prodi']}:</strong> Sesuai Surat Keputusan Dekan, batas toleransi ketidakhadiran kuliah studio maksimal adalah 25% (maksimal 3 kali pertemuan tanpa keterangan/Alpha). Mohon Bapak/Ibu Wali Murid terus mengawal kedisiplinan dan jam tidur ananda di rumah agar tidak terkendala mengikuti Evaluasi Akhir Semester.
       </div>
 
       <div class="sign-area">
@@ -657,19 +739,19 @@ def render_monthly_attendance_html(student):
           <p><strong>Asisten Dosen / Instruktur Lab</strong></p>
           <div class="space"></div>
           <strong>{DATA['course']['asisten_dosen']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIDN/NIP. 2026.0412.01</p>
+          <p style="font-size: 9.5px; color: #64748b;">NIDN/NIP. {identitas_dokumen()['asisten_nip']}</p>
         </div>
         
         <div class="sign-box">
-          <p>Padang, 18 Oktober 2026</p>
-          <p><strong>Ketua Program Studi Arsitektur</strong></p>
+          <p>{_kop_tanggal()}</p>
+          <p><strong>{_label_kaprodi()}</strong></p>
           <div class="space" style="position: relative;">
             <div style="position: absolute; right: 20px; top: -10px; opacity: 0.85; border: 2px dashed #0f172a; padding: 2px 6px; border-radius: 4px; font-size: 8px; font-weight: 800; color: #0f172a; transform: rotate(-8deg);">
-              VERIFIED OFFICIAL<br>PRODI ARSITEKTUR
+              VERIFIED OFFICIAL<br>{_stamp_prodi()}
             </div>
           </div>
           <strong>{DATA['course']['ketua_prodi']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIP. 19820415 200812 2 003</p>
+          <p style="font-size: 9.5px; color: #64748b;">NIP. {identitas_dokumen()['nip_ketua_prodi']}</p>
         </div>
       </div>
     </body>
@@ -756,7 +838,7 @@ def render_final_report_html(student):
         <div class="kop-logo">🏛️</div>
         <div class="kop-text">
           <h2>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h2>
-          <h3>PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN</h3>
+          <h3>{_kop_baris()}</h3>
           <p>Gedung Perkuliahan Terpadu • Lab Komputer LIKDA • Kampus Utama • Telp: (0751) 7058821</p>
         </div>
         <div style="font-size: 10px; font-weight: 800; border: 1.5px solid #0f172a; padding: 4px 8px; border-radius: 6px;">
@@ -805,7 +887,7 @@ def render_final_report_html(student):
         <!-- Column 1: Radar Chart Box (Safe Margin No Clipping) -->
         <div class="card-box" style="text-align: center; background: #ffffff; padding: 6px 8px; border: 1px solid #e2e8f0;">
           <div style="font-size: 10px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
-            Radar Profil 5 Pilar Kompetensi Arsitektur
+            Radar Profil 5 Pilar Kompetensi {identitas_dokumen()['prodi']}
           </div>
           {radar_svg}
           <div style="font-size: 8px; color: #64748b; font-style: italic; margin-top: 1px;">
@@ -883,7 +965,7 @@ def render_final_report_html(student):
       <div class="kop-surat" style="margin-bottom: 4px; padding-bottom: 4px;">
         <div class="kop-logo" style="width: 36px; height: 36px; font-size: 18px;">🏛️</div>
         <div class="kop-text">
-          <h2 style="font-size: 10px;">PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN</h2>
+          <h2 style="font-size: 10px;">{_kop_baris()}</h2>
           <h3 style="font-size: 12px; margin: 1px 0;">MATRIKS 10 REKOMENDASI PROFESI RIIL & PEMETAAN KARIER MASA DEPAN</h3>
           <p style="font-size: 8.5px;">Mahasiswa: <strong>{student['nama']}</strong> ({student['npm']}) • Standar Kualifikasi Kompetensi IAI & PUPR</p>
         </div>
@@ -924,18 +1006,18 @@ def render_final_report_html(student):
           <p style="font-size: 9px;">Asisten Dosen / Instruktur Studio,</p>
           <div class="space" style="height: 24px;"></div>
           <strong style="font-size: 9.5px;">{DATA['course']['asisten_dosen']}</strong>
-          <p style="font-size: 8px; color: #64748b;">NIP. 2026.0412.01</p>
+          <p style="font-size: 8px; color: #64748b;">NIP. {identitas_dokumen()['asisten_nip']}</p>
         </div>
 
         <div class="sign-box">
-          <p style="font-size: 9px;">Padang, 18 Oktober 2026<br>Mengetahui, <strong>Ketua Program Studi</strong></p>
+          <p style="font-size: 9px;">{_kop_tanggal()}<br>Mengetahui, <strong>Ketua Program Studi</strong></p>
           <div class="space" style="height: 24px; position: relative;">
             <div style="position: absolute; right: 10px; top: -6px; opacity: 0.85; border: 2px dashed #0f172a; padding: 1px 5px; border-radius: 4px; font-size: 7px; font-weight: 800; color: #0f172a; transform: rotate(-8deg);">
-              VERIFIED OFFICIAL<br>PRODI ARSITEKTUR
+              VERIFIED OFFICIAL<br>{_stamp_prodi()}
             </div>
           </div>
           <strong style="font-size: 9.5px;">{DATA['course']['ketua_prodi']}</strong>
-          <p style="font-size: 8px; color: #64748b;">NIP. 19820415 200812 2 003</p>
+          <p style="font-size: 8px; color: #64748b;">NIP. {identitas_dokumen()['nip_ketua_prodi']}</p>
         </div>
       </div>
 
@@ -1038,7 +1120,7 @@ def render_kaprodi_gradebook_html():
         <div class="kop-text">
           <h2 style="font-size: 11px;">KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h2>
           <h3 style="font-size: 13px;">LAPORAN PENILAIAN DOSEN & REKAP HASIL EVALUASI PEMBELAJARAN (MASTER GRADEBOOK)</h3>
-          <p style="font-size: 9px;">Program Studi Arsitektur • Mata Kuliah: {DATA['course']['nama_mk']} ({DATA['course']['kode_mk']}) • Kelas: {DATA['course']['kelas']}</p>
+          <p style="font-size: 9px;">Program Studi {identitas_dokumen()['prodi']} • Mata Kuliah: {DATA['course']['nama_mk']} ({DATA['course']['kode_mk']}) • Kelas: {DATA['course']['kelas']}</p>
         </div>
         <div style="font-size: 9px; font-weight: 800; border: 1.5px solid #0f172a; padding: 3px 6px; border-radius: 6px;">
           ARSIP KAPRODI
@@ -1098,13 +1180,9 @@ def render_kaprodi_gradebook_html():
         <div class="sign-box">
           <p>Dosen Pengasuh I,</p>
           <div class="space" style="height: 35px;"></div>
-          <strong>{DATA['course']['dosen_pengasuh'][0]}</strong>
+          <strong>{_dosen_ke(0)}</strong>
         </div>
-        <div class="sign-box">
-          <p>Dosen Pengasuh II,</p>
-          <div class="space" style="height: 35px;"></div>
-          <strong>{DATA['course']['dosen_pengasuh'][1]}</strong>
-        </div>
+        {_kotak_dosen_kedua()}
         <div class="sign-box">
           <p>Asisten Dosen / Instruktur Lab,</p>
           <div class="space" style="height: 35px;"></div>
@@ -1112,7 +1190,7 @@ def render_kaprodi_gradebook_html():
         </div>
         <div class="sign-box">
           <p>Mengetahui & Menyetujui,</p>
-          <p><strong>Ketua Program Studi Arsitektur</strong></p>
+          <p><strong>{_label_kaprodi()}</strong></p>
           <div class="space" style="height: 35px;"></div>
           <strong>{DATA['course']['ketua_prodi']}</strong>
         </div>
@@ -1178,7 +1256,7 @@ def render_dosen_curriculum_audit_html():
         <div class="kop-logo">🏛️</div>
         <div class="kop-text">
           <h2>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h2>
-          <h3>PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN</h3>
+          <h3>{_kop_baris()}</h3>
           <p>Gedung Perkuliahan Terpadu • Lab Komputer LIKDA • Kampus Utama • Telp: (0751) 7058821</p>
         </div>
         <div style="font-size: 10px; font-weight: 800; border: 1.5px solid #0f172a; padding: 4px 8px; border-radius: 6px;">
@@ -1267,17 +1345,17 @@ def render_dosen_curriculum_audit_html():
         <div class="sign-box">
           <p>Diterima oleh Perwakilan Dosen,</p>
           <div class="space"></div>
-          <strong>{DATA['course']['dosen_pengasuh'][0]}</strong>
+          <strong>{_dosen_ke(0)}</strong>
           <p style="font-size: 9.5px; color: #64748b;">Dosen Pengasuh Utama</p>
         </div>
 
         <div class="sign-box">
-          <p>Padang, 18 Oktober 2026</p>
+          <p>{_kop_tanggal()}</p>
           <p>Disahkan oleh,</p>
-          <p><strong>Ketua Program Studi Arsitektur</strong></p>
+          <p><strong>{_label_kaprodi()}</strong></p>
           <div class="space"></div>
           <strong>{DATA['course']['ketua_prodi']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIP. 19820415 200812 2 003</p>
+          <p style="font-size: 9.5px; color: #64748b;">NIP. {identitas_dokumen()['nip_ketua_prodi']}</p>
         </div>
       </div>
     </body>

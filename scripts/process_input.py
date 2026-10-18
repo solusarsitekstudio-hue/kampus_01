@@ -17,6 +17,10 @@ from kelas_rules import (  # noqa: E402
     TEKS_GRADE,
 )
 
+# FIX: identitas mata kuliah (kode, nama, SKS, kelas, semester, jadwal, dosen,
+# asisten, ketua prodi) sekarang dibaca dari config/identitas.json.
+import identitas as IDENT  # noqa: E402
+
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 if hasattr(sys.stderr, "reconfigure"):
@@ -110,20 +114,14 @@ def course_folder_key(nama_mk):
     base = re.split(r"[(\[]", str(nama_mk))[0]
     return sanitize_folder_name(base)
 
-# Course Catalog Templates for Architecture Department
-DEFAULT_COURSES = {
+# =============================================================================
+# SESI / TOPIK / BOBOT PER MATA KULIAH (isi materi, BUKAN identitas)
+# =============================================================================
+# Nama MK, kode MK, SKS, kelas, semester, jadwal, dosen pengasuh, asisten, dan
+# ketua prodi TIDAK ada di sini - semuanya di config/identitas.json.
+# Yang tersisa di bawah murni daftar sesi (isi materi) milik tiap mata kuliah.
+SESI_BAWAAN = {
     "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": {
-        "kode_mk": "5412522233",
-        "nama_mk": "Aplikasi Komputer Arsitektur & QS",
-        "prodi": "Arsitektur",
-        "fakultas": "Teknik & Desain",
-        "semester": "Genap 2025/2026",
-        "sks": 2,
-        "kelas": "TEKZA (Lab LIKDA)",
-        "jadwal": "Rabu, 10:10 - 15:50 WIB",
-        "ketua_prodi": "Fielda Roza, S.T., M.T.",
-        "dosen_pengasuh": ["Aprilia Yunita, S.T., M.T.", "Duddy Fajriansyah, S.T., M.T."],
-        "asisten_dosen": "Adrian Ridhoa, S.T.",
         "sessions": [
             {"pertemuan": 1, "tanggal": "2026-06-03", "tanggal_display": "03 Juni 2026", "topik": "Pengenalan AutoCAD & Gambar Denah Dasar", "deskripsi": "Interface, Commands, Referensi Denah 1:100.", "bobot": 15},
             {"pertemuan": 2, "tanggal": "2026-06-10", "tanggal_display": "10 Juni 2026", "topik": "Medium Drawing: Kolom, Dinding & Dimensi", "deskripsi": "Kolom struktur, dinding bata, dan garis dimensi presisi.", "bobot": 15},
@@ -134,17 +132,6 @@ DEFAULT_COURSES = {
         ]
     },
     "STUDIO_PERANCANGAN_ARSITEKTUR_2": {
-        "kode_mk": "5412522404",
-        "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
-        "prodi": "Arsitektur",
-        "fakultas": "Teknik & Desain",
-        "semester": "Genap 2025/2026",
-        "sks": 4,
-        "kelas": "Studio Desain 2 (Gedung Arsitektur Lt. 3)",
-        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
-        "ketua_prodi": "Fielda Roza, S.T., M.T.",
-        "dosen_pengasuh": ["Ir. Nasril Sikumbang, M.T.", "Fielda Roza, S.T., M.T."],
-        "asisten_dosen": "Adrian Ridhoa, S.T.",
         "sessions": [
             {"pertemuan": 1, "tanggal": "2026-06-01", "tanggal_display": "01 Juni 2026", "topik": "Analisis Tapak, Iklim & Orientasi Matahari", "deskripsi": "Studi konteks tapak, angin, kontur tanah, dan vegetasi.", "bobot": 15},
             {"pertemuan": 2, "tanggal": "2026-06-08", "tanggal_display": "08 Juni 2026", "topik": "Konsep Desain & Hubungan Ruang (Bubble Diagram)", "deskripsi": "Zonasi privat-publik, matriks kedekatan ruang, dan sketsa gubahan massa.", "bobot": 15},
@@ -155,17 +142,6 @@ DEFAULT_COURSES = {
         ]
     },
     "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": {
-        "kode_mk": "5412522302",
-        "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
-        "prodi": "Arsitektur",
-        "fakultas": "Teknik & Desain",
-        "semester": "Genap 2025/2026",
-        "sks": 3,
-        "kelas": "Ruang Kuliah B.204",
-        "jadwal": "Selasa, 13:00 - 16:30 WIB",
-        "ketua_prodi": "Fielda Roza, S.T., M.T.",
-        "dosen_pengasuh": ["Duddy Fajriansyah, S.T., M.T."],
-        "asisten_dosen": "Adrian Ridhoa, S.T.",
         "sessions": [
             {"pertemuan": 1, "tanggal": "2026-06-02", "tanggal_display": "02 Juni 2026", "topik": "Sistem Pembebanan Bangunan & Logika Statika", "deskripsi": "Beban mati, beban hidup, beban gempa, dan distribusi beban ke tanah.", "bobot": 15},
             {"pertemuan": 2, "tanggal": "2026-06-09", "tanggal_display": "09 Juni 2026", "topik": "Substruktur: Pondasi Dangkal & Daya Dukung Tanah", "deskripsi": "Pondasi batu kali, pondasi telapak setempat (footplate), dan sloof pengikat.", "bobot": 15},
@@ -176,6 +152,36 @@ DEFAULT_COURSES = {
         ]
     }
 }
+
+
+def _katalog_dari_identitas():
+    """Gabung identitas (config/identitas.json) + sesi (SESI_BAWAAN) -> katalog.
+
+    Urutan kunci sengaja dipertahankan persis seperti literal lama supaya
+    keluaran JSON tidak berubah hanya karena refactor ini.
+    """
+    institusi = IDENT.institusi()
+    katalog = {}
+    for kunci, mk in IDENT.daftar_mk().items():
+        katalog[kunci] = {
+            "kode_mk": mk["kode_mk"],
+            "nama_mk": mk["nama_mk"],
+            "prodi": institusi.get("prodi", ""),
+            "fakultas": institusi.get("fakultas", ""),
+            "semester": mk["semester"],
+            "sks": mk["sks"],
+            "kelas": mk["kelas"],
+            "jadwal": mk["jadwal"],
+            "ketua_prodi": institusi.get("ketua_prodi", ""),
+            "dosen_pengasuh": list(mk["dosen_pengasuh"]),
+            "asisten_dosen": mk["asisten_dosen"],
+            "sessions": [dict(s) for s in (SESI_BAWAAN.get(kunci) or {}).get("sessions", [])],
+        }
+    return katalog
+
+
+DEFAULT_COURSES = _katalog_dari_identitas()
+
 
 def load_or_create_course_dataset(course_folder_name, force_reload=True):
     course_path = os.path.join(COURSES_DIR, f"{course_folder_name}.json")

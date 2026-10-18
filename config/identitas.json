@@ -1,0 +1,71 @@
+{
+  "versi": 1,
+  "catatan": "SATU-SATUNYA tempat mengatur nama: mata kuliah, dosen pengasuh, asisten, ketua prodi, dan institusi. Dibaca oleh scripts/identitas.py lalu dipakai parse_data.py, process_input.py, generate_pdfs.py, video_composer.py, dan dilayani ke dashboard lewat GET /api/identitas. Daftar sesi/topik/bobot per mata kuliah TIDAK di sini - itu tetap di scripts. Ubah nilai di sini, jangan di kode. Setelah mengubah, jalankan: python tests\\test_identitas.py",
+
+  "institusi": {
+    "universitas": "",
+    "fakultas": "Teknik & Desain",
+    "prodi": "Arsitektur",
+    "ketua_prodi": "Fielda Roza, S.T., M.T.",
+    "nip_ketua_prodi": "19820415 200812 2 003",
+    "kota": "Padang"
+  },
+
+  "dokumen": {
+    "tanggal_tanda_tangan": "18 Oktober 2026"
+  },
+
+  "dashboard": {
+    "judul": "Rekap Monitoring Perkuliahan",
+    "subjudul": "Executive Academic Suite — Prodi {prodi}",
+    "deskripsi": "Pemantauan terpusat dosen, mahasiswa, capaian pembelajaran, dan analisis."
+  },
+
+  "mata_kuliah_aktif": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+
+  "mata_kuliah": {
+    "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": {
+      "kode_mk": "5412522233",
+      "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+      "sks": 2,
+      "kelas": "TEKZA (Lab LIKDA)",
+      "semester": "Genap 2025/2026",
+      "jadwal": "Rabu, 10:10 - 15:50 WIB",
+      "dosen_pengasuh": [
+        "Aprilia Yunita, S.T., M.T.",
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "asisten_dosen": "Adrian Ridhoa, S.T.",
+      "asisten_nip": "2026.0412.01"
+    },
+
+    "STUDIO_PERANCANGAN_ARSITEKTUR_2": {
+      "kode_mk": "5412522404",
+      "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+      "sks": 4,
+      "kelas": "Studio Desain 2 (Gedung Arsitektur Lt. 3)",
+      "semester": "Genap 2025/2026",
+      "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+      "dosen_pengasuh": [
+        "Ir. Nasril Sikumbang, M.T.",
+        "Fielda Roza, S.T., M.T."
+      ],
+      "asisten_dosen": "Adrian Ridhoa, S.T.",
+      "asisten_nip": "2026.0412.01"
+    },
+
+    "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": {
+      "kode_mk": "5412522302",
+      "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+      "sks": 3,
+      "kelas": "Ruang Kuliah B.204",
+      "semester": "Genap 2025/2026",
+      "jadwal": "Selasa, 13:00 - 16:30 WIB",
+      "dosen_pengasuh": [
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "asisten_dosen": "Adrian Ridhoa, S.T.",
+      "asisten_nip": "2026.0412.01"
+    }
+  }
+}
