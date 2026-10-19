@@ -30,6 +30,15 @@ Bobot bawaan: 14 × 4 + UTS 20 + UAS 24 = 100   (P1..P7, P9..P15 = 4; P8 = UTS; 
 * Bobot **bisa berbeda per mata kuliah** dan diatur di
   `data/kurikulum/<PRODI>/<TA>/<SEMESTER>/<MK>/sesi.json`. Yang wajib: jumlah
   bobotnya **tepat 100**. Dashboard menolak simpan kalau tidak (HTTP 422).
+* **Bobot ujian 44% itu disengaja, dan angka sumbernya bisa diubah.** UTS 20 +
+  UAS 24 = 44% dari nilai akhir, padahal hanya 2 dari 16 pertemuan. Alasannya:
+  UTS/UAS di prodi ini menilai **keluaran kerja besar** (gambar kerja/DED), bukan
+  kuis singkat — jadi bobotnya memang lebih berat daripada satu pertemuan biasa.
+  Angkanya di `config/aturan.json` → `standar_kampus.bobot_template`; keputusan
+  dan cara mengubahnya tercatat di `standar_kampus.catatan_bobot_ujian`.
+  Konsistensinya (`per_pertemuan × 14 + UTS + UAS = 100`) diperiksa **otomatis
+  saat config dibaca** (`scripts/aturan.py`), jadi template yang salah ditolak
+  sebelum sempat menulis `sesi.json` dan merusak nilai seluruh kelas.
 * **Alpha bernilai 0 dan DIHITUNG** sebagai bagian dari rata-rata.
   Mahasiswa yang tidak hadir **tidak** mendapat nilai gratis.
 * **Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0.** Kalau baris slot
@@ -58,6 +67,13 @@ Sebelumnya kode memakai `valid_scores = [sc for sc in session_scores if sc > 0]`
 | **D / Evaluasi** | rata-rata < 60 | Kritis (Rentan Evaluasi) |
 | **Belum Lengkap** | masih ada pertemuan yang presensinya belum diinput | Grade **ditahan** — bukan nilai, bukan D |
 
+> **`min_kehadiran` hanya mengunci PREDIKAT, bukan kelulusan.** Kolom syarat
+> "dan kehadiran ≥ 75%" berarti mahasiswa dengan kehadiran di bawah itu **tidak
+> bisa** mendapat A/A-/B+ sehingga turun ke B/C/D **sesuai nilai akhirnya** — bukan
+> otomatis gugur. Kelulusan tetap ditentukan nilai akhir. Keputusannya dicatat di
+> `config/aturan.json` → `at_risk.catatan_gate_kelulusan` supaya tidak ada yang
+> menambahkan sanksi akademik yang belum ditetapkan prodi.
+
 ### 3. Deteksi Dini At-Risk (ATURAN SATU-SATUNYA)
 
 ```
@@ -70,6 +86,12 @@ At-Risk  ⇔  (Alpha ≥ 2x)  ATAU  (Kehadiran < 75%)
 > `is_at_risk()` di `scripts/parse_data.py` adalah satu-satunya sumber, dan
 > hasilnya disimpan per mahasiswa sebagai `at_risk` + `alasan_at_risk`.
 > Dashboard, badge tabel, PDF Gradebook, dan PDF Audit membacanya dari sana.
+
+> **Yang sengaja TIDAK dilakukan sistem:** kehadiran < 75% **tidak** menahan grade
+> dan **tidak** menandai "tidak lulus". Ambang 75% di sini adalah **peringatan dini
+> untuk Kaprodi** (dan syarat predikat di bagian 2), bukan sanksi akademik — prodi
+> belum menetapkan gate resminya. Kalau nanti ditetapkan, aturannya ditambahkan di
+> `config/aturan.json`, bukan ditulis di kode.
 
 ### 4. Badge Kecocokan Karier (dihitung, bukan diketik)
 
@@ -266,6 +288,27 @@ prodi / NIP asisten**.
 Mengubah identitas **tidak mengubah angka**: nilai, kehadiran, At-Risk, predikat, dan
 distribusi grade tetap sama. Yang berubah hanya teks/nama. Jumlah mahasiswa pada label
 tombol "PDF Gradebook" juga tidak lagi diketik `35` — dihitung dari data.
+
+---
+
+### 10. Angka & Klaim yang BELUM Diverifikasi (ditandai, bukan disembunyikan)
+
+Sistem ini memilih **mengaku belum tahu** daripada mengarang angka yang enak
+dilihat. Semua yang belum terverifikasi punya penanda di data/config-nya sendiri:
+
+| Hal | Status | Penanda di sistem | Yang ditunggu |
+| --- | --- | --- | --- |
+| `jam_per_sks` (teori 50, studio/teori_studio 120 menit per SKS) | **asumsi kerja**, belum dicek ke dokumen resmi | `config/aturan.json` → `catatan_jam_per_sks`; peringatan jadwal di `scripts/kurikulum_tree.py` menyebut "patokan sistem, BELUM diverifikasi" | peraturan resmi atau RPS prodi |
+| Skor keselarasan 16 pertemuan | **proksi persen kehadiran**, bukan penilaian materi | `metadata.metodologi_keselarasan` + label di PDF 3 | rubrik penilaian materi dari dosen |
+| CPMK per pertemuan | **placeholder** | `metadata.catatan_cpmk` + label `(placeholder)` di PDF 3 | RPS resmi |
+| Nilai & presensi per pertemuan | **sintetis** (dibangkitkan deterministik, bukan input dosen) | `nilai.json` bertanda `"sintetis": true` + `metadata.catatan_nilai` | data portal kampus |
+| Topik pertemuan | sebagian masih **placeholder** `(belum diisi - menunggu RPS)` | `sesi.json` tiap MK (penanda `topik_terverifikasi`) | RPS resmi |
+| Nama universitas di kop surat | **sengaja kosong** | `config/identitas.json` | konfirmasi prodi |
+
+> **Yang sudah dibuang:** klaim "Terakreditasi Sangat Baik / Memenuhi Standar CPMK
+> & CPL LAM Teknik" pada PDF 3. Itu **klaim akreditasi yang tidak pernah
+> diverifikasi** siapa pun, dan sudah diganti kalimat jujur tentang keterlaksanaan
+> pertemuan. Sistem ini tidak berhak menyatakan status akreditasi.
 
 ---
 

@@ -102,6 +102,16 @@ rusak = json.loads(json.dumps(cfg))
 rusak["kehadiran"]["min_slot_ratio_hadir"] = 3
 check("min_slot_ratio di luar 0..1 -> ditolak", AT.validasi(rusak) != [],
       str(AT.validasi(rusak))[:70])
+# Template bobot adalah nilai awal 16 pertemuan: kalau totalnya bukan 100, seluruh
+# nilai kelas akan salah. Dulu ini baru ketahuan setelah sesi.json ditulis.
+rusak = json.loads(json.dumps(cfg))
+rusak["standar_kampus"]["bobot_template"]["uts"] = 30
+check("template bobot total != 100 -> ditolak", AT.validasi(rusak) != [],
+      str(AT.validasi(rusak))[:70])
+rusak = json.loads(json.dumps(cfg))
+rusak["standar_kampus"]["pertemuan_total"] = 18
+check("pertemuan_total 18 tapi template tetap 16 -> ditolak", AT.validasi(rusak) != [],
+      str(AT.validasi(rusak))[:70])
 
 print("\n6. Ubah angka di config -> hasil ikut berubah (bukti aturan benar-benar hidup)")
 ubah = json.loads(json.dumps(cfg))

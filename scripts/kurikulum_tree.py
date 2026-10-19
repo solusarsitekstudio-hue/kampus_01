@@ -396,13 +396,18 @@ def jumlah_slot(dokumen_sesi):
 # =============================================================================
 # 6b. VALIDASI JADWAL vs SKS (PERINGATAN, bukan penolakan)
 # =============================================================================
-# Standar: 1 SKS teori = 50 menit tatap muka, 1 SKS studio/praktikum = 120
-# menit per minggu. Tetapi data nyata TIDAK selalu ikut rumus ini:
-#     Studio 4 SKS, Senin & Kamis 08:00-12:00 -> 8 jam/minggu = 4 x 120 menit  OK
-#     Struktur 3 SKS, Selasa 13:00-16:30     -> 210 menit = 70 menit/SKS     beda
-#     Aplikasi Komputer 2 SKS, Rabu 10:10-15:50 -> 340 menit = 170 menit/SKS beda
+# Patokan menit per SKS dibaca dari config/aturan.json (`jam_per_sks`).
+# PENTING - patokan itu BELUM DIVERIFIKASI ke dokumen resmi (SN-Dikti/peraturan
+# prodi); nilainya asumsi kerja sistem ini, bukan kutipan pasal. Lihat
+# `catatan_jam_per_sks` di config.
+#
+# Data nyata MEMANG tidak selalu ikut rumus apa pun yang dipakai:
+#     Studio 4 SKS, Senin & Kamis 08:00-12:00 -> 8 jam/minggu = 4 x 120 menit  pas
+#     Struktur 3 SKS, Selasa 13:00-16:30     -> 210 menit = 70 menit/SKS      tidak pas
+#     Aplikasi Komputer 2 SKS, Rabu 10:10-15:50 -> 340 menit = 170 menit/SKS  tidak pas
 # Karena itu hasilnya PERINGATAN yang ditampilkan, bukan error yang menolak
-# data yang sudah dipakai bertahun-tahun.
+# data yang sudah dipakai bertahun-tahun. Peringatan ini menandai PERBEDAAN,
+# bukan kesalahan jadwal - yang salah bisa jadi patokan di config, bukan datanya.
 def hitung_menit_jadwal(jadwal):
     """Perkiraan total menit tatap muka per minggu dari string jadwal."""
     teks = str(jadwal or "")
@@ -433,8 +438,11 @@ def peringatan_jadwal(jadwal, sks, jenis_mk, aturan_modul=None):
     harusnya = float(per_sks) * float(sks)
     if abs(menit - harusnya) > max(30.0, 0.15 * harusnya):
         return [
-            "jadwal {0} menit/minggu, sedangkan {1} SKS x {2} menit = {3:.0f} menit "
-            "({4:.0f} menit/SKS)".format(menit, sks, per_sks, harusnya, menit / max(1, sks))
+            "jadwal {0} menit/minggu, sedangkan patokan sistem {1} SKS x {2} menit "
+            "= {3:.0f} menit ({4:.0f} menit/SKS). Patokan ini BELUM diverifikasi "
+            "ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json.".format(
+                menit, sks, per_sks, harusnya, menit / max(1, sks)
+            )
         ]
     return []
 

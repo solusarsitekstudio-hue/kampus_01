@@ -6,14 +6,16 @@
     "basis_persen": "slot",
     "min_slot_ratio_hadir": 0.5,
     "slot_belum_diisi": "belum_diinput",
-    "catatan_slot_belum_diisi": "Pertemuan yang baris slot absennya belum lengkap (mis. baru 1 dari 2 slot, atau kosong sama sekali) TIDAK dianggap Alpha dan nilainya tidak dihitung 0. Pilihan: 'belum_diinput' (jujur - pertemuan ditandai Belum Diinput, keluar dari hitung nilai, bobot dinormalisasi ulang, dan grade ditahan 'Belum Lengkap' sampai data lengkap) atau 'alpha' (perilaku lama: slot kosong dihitung Alpha/nilai 0)."
+    "catatan_slot_belum_diisi": "Pertemuan yang baris slot absennya belum lengkap (mis. baru 1 dari 2 slot, atau kosong sama sekali) TIDAK dianggap Alpha dan nilainya tidak dihitung 0. Pilihan: 'belum_diinput' (jujur - pertemuan ditandai Belum Diinput, keluar dari hitung nilai, bobot dinormalisasi ulang, dan grade ditahan 'Belum Lengkap' sampai data lengkap) atau 'alpha' (perilaku lama: slot kosong dihitung Alpha/nilai 0).",
+    "catatan_dua_arti_hadir": "Kata 'hadir' punya DUA ukuran dan keduanya sah, jadi jangan disatukan: (1) 'Hadir' pada status PERTEMUAN = SEMUA slot absen pertemuan itu hadir (strict, ini yang dipakai PDF/rapor); (2) pertemuan 'memenuhi ambang' = slot hadirnya >= min_slot_ratio_hadir (longgar). Dashboard WAJIB menampilkan keduanya secara terpisah (pertemuan_penuh vs pertemuan_ambang_terpenuhi) supaya tidak ada satu angka 'hadir' yang bisa dibaca dua cara. Persen kehadiran sendiri selalu berbasis SLOT (slot_hadir / slot_total)."
   },
   "at_risk": {
     "aktif": true,
     "aturan": [
       { "tipe": "alpha_min", "nilai": 2 },
       { "tipe": "kehadiran_min", "nilai": 75.0 }
-    ]
+    ],
+    "catatan_gate_kelulusan": "KEPUTUSAN (2026-10-19): ambang kehadiran 75% HANYA memicu At-Risk dan mengunci predikat A/A-/B+ (lihat bagian 'grade'). Kehadiran < 75% TIDAK otomatis menggagalkan kelulusan dan tidak menahan grade. Sistem tidak boleh mengarang sanksi akademik yang belum ditetapkan prodi; kalau prodi menetapkan gate resmi, tambahkan aturan baru di sini - bukan di kode."
   },
   "grade": [
     { "min_nilai": 85, "min_kehadiran": 80, "grade": "A", "pengali_kesiapan": 0.98 },
@@ -28,10 +30,13 @@
     "studio": 120,
     "teori_studio": 120
   },
+  "catatan_jam_per_sks": "BELUM DIVERIFIKASI ke dokumen resmi. Angka 50 menit/SKS untuk teori mengikuti kebiasaan umum, sedangkan 120 menit/SKS untuk studio/teori_studio adalah PATOKAN SISTEM INI, bukan kutipan pasal. Tiga MK di tree memang TIDAK pas dengan angka ini (Struktur 70 menit/SKS, Aplikasi Komputer 170 menit/SKS) dan itu disengaja: sistem hanya MEMPERINGATKAN (scripts/kurikulum_tree.py: peringatan_jadwal), tidak menolak data yang sudah dipakai. Jangan mengubah angka di atas sebelum peraturan/SN-Dikti resmi atau RPS prodi diverifikasi manusia.",
   "standar_kampus": {
     "pertemuan_total": 16,
     "pertemuan_ujian": { "uts": 8, "uas": 16 },
     "bobot_template": { "per_pertemuan": 4, "uts": 20, "uas": 24 },
-    "catatan": "14 pertemuan x 4 + UTS 20 + UAS 24 = 100. Dipakai hanya sebagai NILAI AWAL saat sesi.json dibuat; setelah itu bobot per MK hidup di sesi.json dan boleh berbeda-beda."
+    "catatan": "14 pertemuan x 4 + UTS 20 + UAS 24 = 100. Dipakai hanya sebagai NILAI AWAL saat sesi.json dibuat; setelah itu bobot per MK hidup di sesi.json dan boleh berbeda-beda.",
+    "catatan_bobot_ujian": "KEPUTUSAN (2026-10-19): bobot ujian 20 + 24 = 44% dari nilai akhir UNTUK SEMUA MK dipertahankan apa adanya, walaupun hanya 2 dari 16 pertemuan. Alasannya: UTS/UAS di prodi ini menilai keluaran kerja besar (gambar kerja/DED), bukan kuis singkat, dan angka 44% sudah konsisten di tree serta sudah dikunci tes. Kalau prodi ingin menurunkannya, ubah di sini LALU jalankan migrasi_kurikulum.py --force + parse_data.py, dan ingat: README serta tests/test_rules_unchanged.py harus di-baseline ulang karena nilai semua mahasiswa akan bergeser.",
+    "catatan_bobot_bukan_100": "Konsistensi 16 pertemuan x bobot_template diperiksa otomatis oleh scripts/aturan.py (validasi): per_pertemuan x (pertemuan_total - jumlah ujian) + uts + uas WAJIB = 100."
   }
 }

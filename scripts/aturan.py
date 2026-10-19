@@ -182,6 +182,27 @@ def validasi(cfg):
                     masalah.append(
                         "standar_kampus.bobot_template.{0} harus angka.".format(k)
                     )
+            # Template bobot adalah NILAI AWAL 16 pertemuan, jadi totalnya WAJIB 100.
+            # Tanpa pemeriksaan ini, template yang salah baru ketahuan setelah
+            # migrasi menulis sesi.json (dan nilai seluruh kelas ikut salah).
+            angka_lengkap = all(
+                isinstance(bobot.get(k), (int, float))
+                for k in ("per_pertemuan", "uts", "uas")
+            )
+            if angka_lengkap and isinstance(pt, int) and pt > 0 and isinstance(ujian, dict) and ujian:
+                total = (
+                    float(bobot["per_pertemuan"]) * (pt - len(ujian))
+                    + float(bobot["uts"]) + float(bobot["uas"])
+                )
+                if abs(total - 100) > 0.001:
+                    masalah.append(
+                        "standar_kampus.bobot_template harus berjumlah 100 "
+                        "(sekarang {0:g} = {1:g} x ({2} - {3} ujian) + {4:g} + {5:g}) "
+                        "- nilai seluruh mahasiswa akan salah kalau dibiarkan.".format(
+                            total, float(bobot["per_pertemuan"]), pt, len(ujian),
+                            float(bobot["uts"]), float(bobot["uas"]),
+                        )
+                    )
 
     return masalah
 
