@@ -699,7 +699,7 @@ def render_monthly_attendance_html(student):
         <div class="card-box" style="background: #fff1f2; border-color: #fecdd3; text-align: center;">
           <div style="font-size: 10px; color: #be123c; font-weight: 600;">Tanpa Keterangan</div>
           <div style="font-size: 20px; font-weight: 900; color: #9f1239;">{kehadiran['alpha']}x</div>
-          <div style="font-size: 9.5px; color: #be123c;">{AT_RISK_KEHADIRAN_MIN:.0f}% (sudah intervenasi)</div>
+          <div style="font-size: 9.5px; color: #be123c;">{at_risk_kehadiran_min() or 0:.0f}% (sudah intervenasi)</div>
         </div>
       </div>
 
@@ -1329,7 +1329,7 @@ def render_dosen_curriculum_audit_html():
           • Rata-rata Nilai Studio Kelas: <strong>{DATA['class_summary']['rata_nilai_studio']} (Grade {grade_modus})</strong><br>
           • Tingkat Partisipasi Mahasiswa: <strong>{DATA['class_summary']['rata_kehadiran']}%</strong><br>
           • Tingkat Kelulusan Evaluasi Modul: <strong>{persen_lulus:.1f}% ({n_lulus} Mahasiswa Lulus{', ' + str(n_bantuan) + ' Mahasiswa Perlu Pendampingan' if n_bantuan else ''})</strong>
-          • Aturan deteksi at-risk: <strong>Alpha ≥ {AT_RISK_ALPHA_MIN}x atau kehadiran &lt; {AT_RISK_KEHADIRAN_MIN:.0f}%</strong> ({n_at_risk} mahasiswa teridentifikasi)
+          • Aturan deteksi at-risk: <strong>Alpha ≥ {at_risk_alpha_min() or 0:g}x atau kehadiran &lt; {at_risk_kehadiran_min() or 0:.0f}%</strong> ({n_at_risk} mahasiswa teridentifikasi)
         </p>
 
         <div style="margin-top: 8px; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
@@ -1473,7 +1473,7 @@ def build_all_pdfs():
 # Sebelumnya konstanta ini disalin-tempel di 3 file. PDF WAJIB memakai aturan
 # yang sama dengan dashboard, bukan punya salinannya sendiri.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from kelas_rules import AT_RISK_ALPHA_MIN, AT_RISK_KEHADIRAN_MIN  # noqa: E402
+from kelas_rules import at_risk_alpha_min, at_risk_kehadiran_min  # noqa: E402
 
 PDF_TYPE_PER_STUDENT = ("monthly", "presensi", "rapor", "final", "deckcraft", "portofolio")
 PDF_TYPE_CLASS_LEVEL = ("gradebook", "kaprodi", "audit", "dosen")

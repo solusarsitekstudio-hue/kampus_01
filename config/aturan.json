@@ -1,0 +1,34 @@
+{
+  "versi": 1,
+  "catatan": "SATU-SATUNYA tempat mengatur ambang & rumus akademik: deteksi at-risk, ambang grade, cara menghitung kehadiran, jam per SKS, dan template bobot 16 pertemuan. Dibaca oleh scripts/aturan.py lalu dipakai scripts/kelas_rules.py. ANGKA DI SINI SENGAJA SAMA DENGAN YANG LAMA, jadi mengubah file ini dari kode ke config TIDAK mengubah hasil apa pun sampai angkanya benar-benar diubah. Kalau Kepala Prodi sudah menetapkan angka resmi, ubah di sini - jangan di kode.",
+  "kehadiran": {
+    "satuan_tampilan": "pertemuan",
+    "basis_persen": "slot",
+    "min_slot_ratio_hadir": 0.5
+  },
+  "at_risk": {
+    "aktif": true,
+    "aturan": [
+      { "tipe": "alpha_min", "nilai": 2 },
+      { "tipe": "kehadiran_min", "nilai": 75.0 }
+    ]
+  },
+  "grade": [
+    { "min_nilai": 85, "min_kehadiran": 80, "grade": "A", "pengali_kesiapan": 0.98 },
+    { "min_nilai": 80, "min_kehadiran": 75, "grade": "A-", "pengali_kesiapan": 0.96 },
+    { "min_nilai": 75, "min_kehadiran": 75, "grade": "B+", "pengali_kesiapan": 0.92 },
+    { "min_nilai": 70, "min_kehadiran": null, "grade": "B", "pengali_kesiapan": 0.88 },
+    { "min_nilai": 60, "min_kehadiran": null, "grade": "C", "pengali_kesiapan": 0.80 },
+    { "min_nilai": 0, "min_kehadiran": null, "grade": "D / Evaluasi", "pengali_kesiapan": 0.7 }
+  ],
+  "jam_per_sks": {
+    "teori": 50,
+    "studio": 120
+  },
+  "standar_kampus": {
+    "pertemuan_total": 16,
+    "pertemuan_ujian": { "uts": 8, "uas": 16 },
+    "bobot_template": { "per_pertemuan": 4, "uts": 20, "uas": 24 },
+    "catatan": "14 pertemuan x 4 + UTS 20 + UAS 24 = 100. Dipakai hanya sebagai NILAI AWAL saat sesi.json dibuat; setelah itu bobot per MK hidup di sesi.json dan boleh berbeda-beda."
+  }
+}

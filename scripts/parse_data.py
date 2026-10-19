@@ -24,15 +24,17 @@ OUTPUT_JSON = os.path.join(OUTPUT_DIR, "academic_data.json")
 # Inilah akar yang dulu melahirkan 4 aturan at-risk berbeda dalam 1 aplikasi.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from kelas_rules import (  # noqa: E402
-    AT_RISK_ALPHA_MIN,
-    AT_RISK_KEHADIRAN_MIN,
+    at_risk_alpha_min,
+    at_risk_kehadiran_min,
     at_risk_reasons,
     is_at_risk,
     hitung_nilai_terbobot,
     kategori_kecocokan_dari_skor,
     grade_dari_skor,
-    TEKS_GRADE,
+    teks_grade,
 )
+# FIX TAHAP E: ambang at-risk & teksnya kini dari satu sumber config/aturan.json.
+import aturan as ATURAN  # noqa: E402
 
 # FIX: identitas (mata kuliah, dosen, asisten, ketua prodi, institusi) sekarang
 # dibaca dari SATU sumber -- config/identitas.json lewat scripts/identitas.py.
@@ -428,7 +430,7 @@ def generate_student_profiles(students, sessions):
         # ditulis ulang sebagai rantai if/elif. Teks predikat pun diambil dari
         # satu tabel, sehingga tidak mungkin ada grade tanpa teksnya.
         grade, pengali_kesiapan = grade_dari_skor(avg_score, attendance_pct)
-        predikat, status_kompetensi, kesiapan_profesi = TEKS_GRADE[grade]
+        predikat, status_kompetensi, kesiapan_profesi = teks_grade(grade)
         indeks_kesiapan = round(avg_score * pengali_kesiapan, 1)
 
         # Competency Radar Scores (Scale 1-100)
@@ -678,9 +680,11 @@ def generate_student_profiles(students, sessions):
     # Dulu di sini pakai "alpha>=2 atau nilai<70" sehingga KPI menulis 1 orang
     # padahal 9 mahasiswa lain juga berisiko.
     at_risk_list = [s for s in student_records if s["at_risk"]]
-    at_risk_alpha = [s for s in student_records if s["kehadiran"]["alpha"] >= AT_RISK_ALPHA_MIN]
+    at_risk_alpha = [s for s in student_records
+                     if s["kehadiran"]["alpha"] >= (at_risk_alpha_min() or 0)]
     at_risk_kehadiran = [
-        s for s in student_records if s["kehadiran"]["persentase"] < AT_RISK_KEHADIRAN_MIN
+        s for s in student_records
+        if s["kehadiran"]["persentase"] < (at_risk_kehadiran_min() or 0)
     ]
     
     # Grade distribution
@@ -801,9 +805,7 @@ def generate_student_profiles(students, sessions):
             "build_id": datetime.now().strftime("%Y%m%d_%H%M%S"),
             "target_port": 40404,
             "metodologi_nilai": "Rata-rata TERBEBOT per sesi. Alpha bernilai 0 dan ikut dihitung.",
-            "aturan_at_risk": (
-                f"Alpha >= {AT_RISK_ALPHA_MIN}x ATAU Kehadiran < {AT_RISK_KEHADIRAN_MIN}%"
-            )
+            "aturan_at_risk": ATURAN.teks_at_risk(),
         },
         "course": course_info,
         "sessions": sessions,

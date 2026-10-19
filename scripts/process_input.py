@@ -11,10 +11,10 @@ from datetime import datetime
 # pola yang dulu melahirkan 4 aturan at-risk berbeda dalam 1 aplikasi.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from kelas_rules import (  # noqa: E402
-    AT_RISK_ALPHA_MIN,
-    AT_RISK_KEHADIRAN_MIN,
+    at_risk_alpha_min,
+    at_risk_kehadiran_min,
     grade_dari_skor,
-    TEKS_GRADE,
+    teks_grade,
 )
 
 # FIX: identitas mata kuliah (kode, nama, SKS, kelas, semester, jadwal, dosen,
@@ -278,7 +278,7 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
                 g_baru, pengali = grade_dari_skor(
                     st["akademik"]["nilai_rata_rata"],
                     st["kehadiran"]["persentase"])
-                teks = TEKS_GRADE[g_baru]
+                teks = teks_grade(g_baru)
                 st["akademik"]["grade"] = g_baru
                 st["akademik"]["predikat"] = teks[0]
                 st["akademik"]["status_kompetensi"] = teks[1]
@@ -313,9 +313,9 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
         at_risk = [st for st in students_baru if st.get("at_risk")]
         cs["total_at_risk"] = len(at_risk)
         cs["at_risk_alpha"] = sum(1 for st in students_baru
-                                  if st["kehadiran"]["alpha"] >= AT_RISK_ALPHA_MIN)
+                                  if st["kehadiran"]["alpha"] >= (at_risk_alpha_min() or 0))
         cs["at_risk_kehadiran"] = sum(1 for st in students_baru
-                                      if st["kehadiran"]["persentase"] < AT_RISK_KEHADIRAN_MIN)
+                                      if st["kehadiran"]["persentase"] < (at_risk_kehadiran_min() or 0))
         cs["at_risk_npm"] = [st["npm"] for st in at_risk]
         dist = {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0}
         for st in students_baru:
