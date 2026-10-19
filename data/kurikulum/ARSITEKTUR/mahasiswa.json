@@ -1,0 +1,183 @@
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "fakultas": "Teknik & Desain",
+  "catatan": "IDENTITAS CANONICAL. Nama mahasiswa hanya boleh ada di sini; berkas nilai per MK menyimpan NPM saja, supaya koreksi satu nama tidak perlu diburu ke puluhan berkas. `angkatan` dihitung dari 2 digit awal NPM.",
+  "mahasiswa": [
+    {
+      "npm": "2510015410010",
+      "nama": "M YAZID ZIDANE MULYADI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410001",
+      "nama": "ALSA DMI YESYA PUTRI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410002",
+      "nama": "AULIA PUTRI MAYTISHA",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410003",
+      "nama": "HAFIZUL FAJRI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410004",
+      "nama": "MUHAMMAD SATIYA AL FIKRI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410005",
+      "nama": "LIVIA OKTARI FIRNY",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410006",
+      "nama": "ZHILLAN SANDY FADRIAN",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410007",
+      "nama": "ULYA NAFISAH PUTRI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410008",
+      "nama": "VIOLET MORASAKI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410009",
+      "nama": "AYU ARISTIN",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410011",
+      "nama": "ROZI ANDRIAN SURVA",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410013",
+      "nama": "ZAHRA PUTRI RAMADHANI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410014",
+      "nama": "NADIA PERMATA HUSINA",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410015",
+      "nama": "MUHAMMAD FADLAN ZIKRA",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410016",
+      "nama": "MUHAMMAD HIDAYAT",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410017",
+      "nama": "ADAM MAULANA",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410018",
+      "nama": "ILHAM FADIL AZHIM",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410019",
+      "nama": "DIFLA HAZIRATHUL SYABIRAH",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410020",
+      "nama": "DAFFA RAMDHAN FADILLAH",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410021",
+      "nama": "FELISA ANDREINA",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410022",
+      "nama": "ANANTA DANA FATSYAH",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410023",
+      "nama": "ASYFA ASRAN",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410024",
+      "nama": "ARTIKA SARIDEWI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410025",
+      "nama": "MUHAMMAD GELFIANO HASAN",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410026",
+      "nama": "SYARIF AL GHIFARI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410027",
+      "nama": "ADELITA NUGRAINI",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410028",
+      "nama": "LATIVA NORUL HASANAH",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410029",
+      "nama": "MUHAMMAD AZIZURROHIM",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410030",
+      "nama": "MUHAMMAD AFIF",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410031",
+      "nama": "EURO YUNAN",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410032",
+      "nama": "ANNISA ARYANTO",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410033",
+      "nama": "ALVIANDI ARIF",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410034",
+      "nama": "ROOFI HIDAYAT",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410036",
+      "nama": "ATIFAH AL AFUWUU",
+      "angkatan": 2025
+    },
+    {
+      "npm": "2510015410038",
+      "nama": "RAFIQ INTAN HARIY",
+      "angkatan": 2025
+    }
+  ]
+}

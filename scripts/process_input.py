@@ -82,42 +82,16 @@ def backup_file(path):
         return None
 
 
-def sanitize_folder_name(name):
-    """Normalisasi nama mata kuliah menjadi nama folder yang ROUND-TRIP.
-
-    FIX TAHAP B: versi lama hanya menghapus `\\/*?:"<>|`, jadi kurung, koma,
-    dan tanda kutip TETAP ADA:
-        "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)"
-        -> STUDIO_PERANCANGAN_ARSITEKTUR_2_(DESAIN_RUMAH_TINGGAL)
-    Tapi kuncinya di disk adalah STUDIO_PERANCANGAN_ARSITEKTUR_2.
-    Akibatnya-course 2 & 3 tidak ketemu saat dicari, dan pencarian foto
-    mahasiswa jatuh ke fallback (dulu: folder D:\\Desktop milik developer).
-
-    Sekarang: kurung/koma/kutip -> "_",underscore dirapatkan,
-    nama terlarang Windows (CON, PRN, AUX, NUL, COM1..9) di-prefix.
-    """
-    if name is None:
-        return ""
-    clean = re.sub(r'[\\/:*?"<>|().,\'’“”]+', "_", str(name))
-    clean = clean.replace("&", "DAN")
-    clean = re.sub(r"\s+", "_", clean.strip())
-    clean = re.sub(r"_+", "_", clean).strip("_").upper()
-    if not clean:
-        return ""
-    if re.match(r"^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\.|$)", clean):
-        clean = "MK_" + clean
-    return clean[:120]
-
-
-def course_folder_key(nama_mk):
-    """Kunci katalog yang stabil: ambil bagian sebelum kurung buka.
-
-    "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)" -> STUDIO_PERANCANGAN_ARSITEKTUR_2
-    Dipakai supaya DEFAULT_COURSES (kunci polos) dan nama folder di disk
-    selalu cocok.
-    """
-    base = re.split(r"[(\[]", str(nama_mk))[0]
-    return sanitize_folder_name(base)
+# FIX TAHAP E: sanitizer nama folder & kunci mata kuliah kini MURNI milik
+# scripts/kurikulum_tree.py. Dulu fungsi ini disalin di 3 file dengan aturan
+# BERBEDA - versi di generate_pdfs.py & video_composer.py hanya membuang
+# \/*?:"<>| sehingga MK ber-kurung menghasilkan folder lain daripada yang
+# dicari. Itu persis bug yang dulu membuat foto mahasiswa jatuh ke folder
+# developer. Sekarang tidak ada salinan lagi.
+from kurikulum_tree import (  # noqa: E402
+    course_folder_key,
+    sanitize_folder_name,
+)
 
 # =============================================================================
 # SESI / TOPIK / BOBOT PER MATA KULIAH (isi materi, BUKAN identitas)

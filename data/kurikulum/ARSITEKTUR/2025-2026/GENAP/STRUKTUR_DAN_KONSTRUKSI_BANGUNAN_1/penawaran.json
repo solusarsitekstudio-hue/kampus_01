@@ -1,0 +1,23 @@
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "fakultas": "Teknik & Desain",
+  "tahun_ajar": "2025/2026",
+  "semester": "GENAP",
+  "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+  "kode_mk": "5412522302",
+  "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+  "sks": 3,
+  "jenis_mk": "teori",
+  "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
+  "semester_kurikulum": 2,
+  "kelas": "Ruang Kuliah B.204",
+  "jadwal": "Selasa, 13:00 - 16:30 WIB",
+  "dosen_pengasuh": [
+    "Duddy Fajriansyah, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "peringatan_jadwal": [
+    "jadwal 210 menit/minggu, sedangkan 3 SKS x 50 menit = 150 menit (70 menit/SKS)"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "fakultas": "Teknik & Desain",
+  "tahun_ajar": "2025/2026",
+  "semester": "GENAP",
+  "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+  "kode_mk": "5412522404",
+  "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+  "sks": 4,
+  "jenis_mk": "studio",
+  "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
+  "semester_kurikulum": 2,
+  "kelas": "Studio Desain 2 (Gedung Arsitektur Lt. 3)",
+  "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+  "dosen_pengasuh": [
+    "Ir. Nasril Sikumbang, M.T.",
+    "Fielda Roza, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "peringatan_jadwal": []
+}

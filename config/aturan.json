@@ -23,7 +23,8 @@
   ],
   "jam_per_sks": {
     "teori": 50,
-    "studio": 120
+    "studio": 120,
+    "teori_studio": 120
   },
   "standar_kampus": {
     "pertemuan_total": 16,

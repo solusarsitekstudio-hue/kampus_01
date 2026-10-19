@@ -1,0 +1,64 @@
+{
+  "versi": 1,
+  "catatan": "INDEX TURUNAN - jangan diedit dengan tangan. Sumber kebenaran adalah folder data/kurikulum/. Bangun ulang: python scripts\\index_kurikulum.py",
+  "dibangun_pada": "2026-10-19T08:15:24+07:00",
+  "aktif": {
+    "prodi": "ARSITEKTUR",
+    "tahun_ajar": "2025/2026",
+    "semester": "GENAP",
+    "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
+  },
+  "prodi": {
+    "ARSITEKTUR": {
+      "nama": "Arsitektur",
+      "jumlah_mahasiswa": 35,
+      "tahun_ajar": {
+        "2025/2026": {
+          "GENAP": {
+            "mata_kuliah": [
+              {
+                "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+                "kode_mk": "5412522233",
+                "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+                "sks": 2,
+                "jenis_mk": "teori_studio",
+                "semester_kurikulum": 2,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+                "kode_mk": "5412522302",
+                "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+                "sks": 3,
+                "jenis_mk": "teori",
+                "semester_kurikulum": 2,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+                "kode_mk": "5412522404",
+                "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+                "sks": 4,
+                "jenis_mk": "studio",
+                "semester_kurikulum": 2,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

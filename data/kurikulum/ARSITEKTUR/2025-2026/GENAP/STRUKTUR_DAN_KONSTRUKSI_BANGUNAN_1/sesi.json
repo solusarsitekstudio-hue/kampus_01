@@ -1,0 +1,329 @@
+{
+  "versi": 1,
+  "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+  "catatan": "16 pertemuan standar kampus. UTS di pertemuan 8, UAS di pertemuan 16. bobot harus berjumlah 100. Slot absen per pertemuan boleh diubah (1, 2, atau lebih) sesuai jadwal MK.",
+  "topik_terisi": 6,
+  "topik_placeholder": 10,
+  "sesi": [
+    {
+      "pertemuan": 1,
+      "tipe": "teori",
+      "tanggal": "2026-06-02",
+      "tanggal_display": "02 Juni 2026",
+      "topik": "Sistem Pembebanan Bangunan & Logika Statika",
+      "deskripsi": "Beban mati, beban hidup, beban gempa, dan distribusi beban ke tanah.",
+      "bobot": 4,
+      "tanggal_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 2,
+      "tipe": "teori",
+      "tanggal": "2026-06-09",
+      "tanggal_display": "09 Juni 2026",
+      "topik": "Substruktur: Pondasi Dangkal & Daya Dukung Tanah",
+      "deskripsi": "Pondasi batu kali, pondasi telapak setempat (footplate), dan sloof pengikat.",
+      "bobot": 4,
+      "tanggal_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 3,
+      "tipe": "teori",
+      "tanggal": "2026-06-23",
+      "tanggal_display": "23 Juni 2026",
+      "topik": "Superstruktur: Kolom & Balok Beton Bertulang",
+      "deskripsi": "Dimensi praktis, selimut beton, detail penulangan sengkang, dan sambungan.",
+      "bobot": 4,
+      "tanggal_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 4,
+      "tipe": "teori",
+      "tanggal": "2026-06-30",
+      "tanggal_display": "30 Juni 2026",
+      "topik": "Konstruksi Rangka Atap Kuda-Kuda Kayu",
+      "deskripsi": "Geometri kuda-kuda, sambungan takikan gigi, plat beugel, reng & usuk.",
+      "bobot": 4,
+      "tanggal_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 5,
+      "tipe": "teori",
+      "tanggal": "2026-07-07",
+      "tanggal_display": "07 Juli 2026",
+      "topik": "Detail Sambungan Kusen, Pintu & Ventilasi",
+      "deskripsi": "Angkur kusen, sponeng, ram kaca, dan ambang pintu.",
+      "bobot": 4,
+      "tanggal_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 6,
+      "tipe": "teori",
+      "tanggal": "2026-07-14",
+      "tanggal_display": "14 Juli 2026",
+      "topik": "Kompilasi Gambar Detail Rencana Struktur Final",
+      "deskripsi": "Penyusunan gambar kerja rencana pondasi, sloof, kolom, dan rencana atap.",
+      "bobot": 4,
+      "tanggal_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 7,
+      "tipe": "teori",
+      "tanggal": "2026-07-21",
+      "tanggal_display": "21 Juli 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 8,
+      "tipe": "uts",
+      "tanggal": "2026-07-28",
+      "tanggal_display": "28 Juli 2026",
+      "topik": "Ujian Tengah Semester",
+      "deskripsi": "Evaluasi tengah semester.",
+      "bobot": 20,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 9,
+      "tipe": "teori",
+      "tanggal": "2026-08-04",
+      "tanggal_display": "04 Agustus 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 10,
+      "tipe": "teori",
+      "tanggal": "2026-08-11",
+      "tanggal_display": "11 Agustus 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 11,
+      "tipe": "teori",
+      "tanggal": "2026-08-18",
+      "tanggal_display": "18 Agustus 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 12,
+      "tipe": "teori",
+      "tanggal": "2026-08-25",
+      "tanggal_display": "25 Agustus 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 13,
+      "tipe": "teori",
+      "tanggal": "2026-09-01",
+      "tanggal_display": "01 September 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 14,
+      "tipe": "teori",
+      "tanggal": "2026-09-08",
+      "tanggal_display": "08 September 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 15,
+      "tipe": "teori",
+      "tanggal": "2026-09-15",
+      "tanggal_display": "15 September 2026",
+      "topik": "(belum diisi - menunggu RPS)",
+      "deskripsi": "",
+      "bobot": 4,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 16,
+      "tipe": "uas",
+      "tanggal": "2026-09-22",
+      "tanggal_display": "22 September 2026",
+      "topik": "Ujian Akhir Semester",
+      "deskripsi": "Evaluasi akhir semester.",
+      "bobot": 24,
+      "tanggal_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    }
+  ]
+}

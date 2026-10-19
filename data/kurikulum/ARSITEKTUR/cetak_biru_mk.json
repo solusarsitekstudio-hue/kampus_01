@@ -1,0 +1,37 @@
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "catatan": "CETAK BIRU KURIKULUM. `jenis_mk` (teori/studio/teori_studio) dan `semester_kurikulum` di sini masih TEBakan awal - mohon dikonfirmasi kaprodi. `semester_kurikulum` dipakai untuk mendeteksi mahasiswa mengulang secara otomatis.",
+  "mata_kuliah": [
+    {
+      "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+      "kode_mk": "5412522233",
+      "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+      "sks": 2,
+      "jenis_mk": "teori_studio",
+      "semester_kurikulum": 2,
+      "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
+      "sumber_semester_kurikulum": "dari angkatan kelas saat ini (semua angkatan 2025 di semester 2)"
+    },
+    {
+      "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+      "kode_mk": "5412522404",
+      "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+      "sks": 4,
+      "jenis_mk": "studio",
+      "semester_kurikulum": 2,
+      "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
+      "sumber_semester_kurikulum": "dari angkatan kelas saat ini (semua angkatan 2025 di semester 2)"
+    },
+    {
+      "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+      "kode_mk": "5412522302",
+      "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+      "sks": 3,
+      "jenis_mk": "teori",
+      "semester_kurikulum": 2,
+      "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
+      "sumber_semester_kurikulum": "dari angkatan kelas saat ini (semua angkatan 2025 di semester 2)"
+    }
+  ]
+}

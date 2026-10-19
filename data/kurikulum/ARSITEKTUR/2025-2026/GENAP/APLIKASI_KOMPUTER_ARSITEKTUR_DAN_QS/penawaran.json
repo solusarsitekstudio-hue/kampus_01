@@ -1,0 +1,24 @@
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "fakultas": "Teknik & Desain",
+  "tahun_ajar": "2025/2026",
+  "semester": "GENAP",
+  "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+  "kode_mk": "5412522233",
+  "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+  "sks": 2,
+  "jenis_mk": "teori_studio",
+  "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
+  "semester_kurikulum": 2,
+  "kelas": "TEKZA (Lab LIKDA)",
+  "jadwal": "Rabu, 10:10 - 15:50 WIB",
+  "dosen_pengasuh": [
+    "Aprilia Yunita, S.T., M.T.",
+    "Duddy Fajriansyah, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "peringatan_jadwal": [
+    "jadwal 340 menit/minggu, sedangkan 2 SKS x 120 menit = 240 menit (170 menit/SKS)"
+  ]
+}
