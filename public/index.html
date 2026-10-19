@@ -82,14 +82,19 @@
 
       <!-- Course Selector & Governance Badges -->
       <div class="flex items-center flex-wrap gap-2 text-xs text-slate-300">
-        <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex items-center gap-2">
+        <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex items-center gap-2 flex-wrap">
           <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
-          <span class="text-slate-400 font-medium">Pilih Mata Kuliah:</span>
-          <select id="course-selector" onchange="switchActiveCourse(this.value)" class="bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2.5 py-1 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer">
-            <option value="APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS">Aplikasi Komputer Arsitektur & QS</option>
-            <option value="STUDIO_PERANCANGAN_ARSITEKTUR_2">Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)</option>
-            <option value="STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1">Struktur & Konstruksi Bangunan 1 (Kayu & Beton)</option>
-          </select>
+          <span class="text-slate-400 font-medium">Konteks:</span>
+          <!-- TAHAP E: mata kuliah tidak lagi berdiri sendiri. Konteksnya berjenjang
+               PRODI > TAHUN AJAR > SEMESTER > MK, dan pilihan diambil dari tree. -->
+          <select id="sel-prodi" onchange="onKonteksBerubah('prodi')" title="Program studi"
+            class="bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+          <select id="sel-tahun" onchange="onKonteksBerubah('tahun')" title="Tahun ajar"
+            class="bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+          <select id="sel-semester" onchange="onKonteksBerubah('semester')" title="Semester"
+            class="bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+          <select id="course-selector" onchange="onKonteksBerubah('mk')" title="Mata kuliah"
+            class="bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[22rem]"></select>
         </div>
         <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-400"></i>
@@ -126,6 +131,12 @@
         <button onclick="switchTab('pengaturan')" id="tab-btn-pengaturan" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
           <i data-lucide="settings" class="w-4 h-4 text-amber-400"></i>
           <span>5. Pengaturan</span>
+        </button>
+        <!-- TAHAP E: tab Kurikulum diberi nomor 6 (setelah Pengaturan) supaya
+             penomoran tab 1-5 yang sudah dipakai di README/dokumen tidak bergeser. -->
+        <button onclick="switchTab('kurikulum')" id="tab-btn-kurikulum" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all">
+          <i data-lucide="layers" class="w-4 h-4 text-violet-400"></i>
+          <span>6. Kurikulum</span>
         </button>
       </nav>
 
@@ -245,7 +256,7 @@
           <div class="flex items-center justify-between mb-3">
             <div>
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Tren Kehadiran & Partisipasi per Sesi (Pertemuan 1 - 6)
+                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Tren Kehadiran & Partisipasi per Pertemuan
               </h3>
               <p class="text-xs text-slate-400 mt-0.5">Pemantauan volume mahasiswa hadir vs berhalangan di Lab LIKDA</p>
             </div>
@@ -304,7 +315,8 @@
             <!-- Status Filter -->
             <select id="filter-status" onchange="filterTable()" class="bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
               <option value="all">Semua Status</option>
-              <option value="Hadir">Hadir</option>
+              <option value="Hadir">Hadir (penuh)</option>
+              <option value="Hadir Sebagian">Hadir Sebagian</option>
               <option value="Sakit">Sakit</option>
               <option value="Izin">Izin</option>
               <option value="Alpha">Alpha</option>
@@ -320,7 +332,7 @@
                 <th class="px-4 py-3">No</th>
                 <th class="px-4 py-3">NPM</th>
                 <th class="px-4 py-3">Nama Mahasiswa</th>
-                <th class="px-4 py-3">Sesi & Tanggal</th>
+                <th class="px-4 py-3">Pertemuan &amp; Tanggal</th>
                 <th class="px-4 py-3">Topik Pembelajaran</th>
                 <th class="px-4 py-3">Status</th>
                 <th class="px-4 py-3">Alasan Ketidakhadiran</th>
@@ -529,7 +541,7 @@
           <!-- Session Breakdown Table -->
           <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
             <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
-              <i data-lucide="list-ordered" class="w-4 h-4 text-sky-400"></i> Rincian Nilai & Evaluasi 6 Sesi Praktikum
+              <i data-lucide="list-ordered" class="w-4 h-4 text-sky-400"></i> Rincian Nilai &amp; Evaluasi per Pertemuan
             </h4>
             <div class="space-y-2" id="student-session-cards">
               <!-- Rendered via app.js -->
@@ -1097,6 +1109,148 @@
             <span id="pengaturan-status" class="text-xs text-slate-400"></span>
           </div>
           <pre id="pengaturan-log" class="hidden bg-slate-950 rounded-xl p-4 border border-slate-800 text-[11px] leading-relaxed text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+        </div>
+      </form>
+    </section>
+
+    <!-- =====================================================================
+         TAB 6: KURIKULUM - sunting isi tree kurikulum langsung dari dashboard.
+         Sumbernya data/kurikulum/<PRODI>/<TAHUN AJAR>/<SEMESTER>/<MK>/.
+         ===================================================================== -->
+    <section id="section-kurikulum" class="tab-section hidden space-y-6">
+
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl">
+        <div class="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <i data-lucide="layers" class="w-4 h-4"></i> Struktur Kurikulum
+        </div>
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">Kurikulum Bertingkat</h2>
+        <p class="text-sm text-slate-300 mt-1 max-w-3xl">
+          Prodi &rarr; Tahun Ajar &rarr; Semester &rarr; Mata Kuliah &rarr;
+          <strong>16 pertemuan</strong>. Tab ini menyunting isi tree kurikulum
+          (<code id="kurikulum-jalur" class="text-cyan-300 text-xs">data/kurikulum/</code>):
+          topik pertemuan, bobot, jumlah slot absen, jenis MK, dan semester kurikulum.
+          Nama MK, dosen, kelas, dan jadwal tetap diatur di tab 5 (Pengaturan).
+        </p>
+      </div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Mata Kuliah</p>
+          <p id="kur-mk" class="text-base font-extrabold text-white mt-1 leading-snug">-</p>
+          <p id="kur-kode" class="text-xs text-slate-400 mt-0.5"></p>
+          <p id="kur-aktif" class="text-[11px] mt-2"></p>
+        </div>
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Pertemuan &amp; Slot Absen</p>
+          <p id="kur-pertemuan" class="text-2xl font-extrabold text-white mt-1">-</p>
+          <p id="kur-slot" class="text-xs text-slate-400 mt-0.5"></p>
+        </div>
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Total Bobot</p>
+          <p id="kur-bobot" class="text-2xl font-extrabold text-white mt-1">-</p>
+          <p class="text-xs text-slate-400 mt-0.5">harus tepat 100</p>
+        </div>
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Peserta &amp; Topik</p>
+          <p id="kur-mhs" class="text-2xl font-extrabold text-white mt-1">-</p>
+          <p id="kur-topik" class="text-xs text-slate-400 mt-0.5"></p>
+        </div>
+      </div>
+
+      <div id="kurikulum-peringatan" class="hidden rounded-2xl p-5 border shadow-xl text-xs space-y-1.5"></div>
+
+      <form id="form-kurikulum" class="space-y-6" onsubmit="event.preventDefault(); simpanKurikulum();">
+
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-violet-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">A</span>
+            <h3 class="text-lg font-bold text-white">Identitas Penawaran</h3>
+          </div>
+          <p class="text-xs text-slate-400 -mt-2">
+            Dua kotak di bawah ini yang boleh disunting di sini. Sisanya pratinjau
+            (sumbernya <code class="text-cyan-300">config/identitas.json</code>, tab 5).
+          </p>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-400" for="kur-jenis-mk">Jenis Mata Kuliah</label>
+              <select id="kur-jenis-mk" class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-violet-400">
+                <option value="teori">teori (1 SKS = 50 menit)</option>
+                <option value="studio">studio / praktikum (1 SKS = 120 menit)</option>
+                <option value="teori_studio">teori_studio (campuran)</option>
+              </select>
+              <span id="kur-jenis-sumber" class="block text-[11px] text-amber-400 mt-1"></span>
+              <label class="mt-2 flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer">
+                <input id="kur-jenis-konfirmasi" type="checkbox" class="accent-violet-500 w-3.5 h-3.5">
+                Tandai sudah benar (dikonfirmasi)
+              </label>
+            </div>
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-400" for="kur-semester-kur">
+                Semester Kurikulum (MK ini diajarkan di semester berapa)
+              </label>
+              <input id="kur-semester-kur" type="number" min="1" max="14" placeholder="kosongkan bila belum tahu"
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-violet-400">
+              <span id="kur-semester-sumber" class="block text-[11px] text-amber-400 mt-1"></span>
+              <label class="mt-2 flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer">
+                <input id="kur-semester-konfirmasi" type="checkbox" class="accent-violet-500 w-3.5 h-3.5">
+                Tandai sudah benar (dikonfirmasi)
+              </label>
+            </div>
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-500" for="kur-pratinjau-kode">Kode MK</label>
+              <input id="kur-pratinjau-kode" type="text" readonly class="mt-1 w-full bg-slate-950/60 text-slate-400 text-sm rounded-lg px-3 py-2 border border-slate-800">
+            </div>
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-500" for="kur-pratinjau-jadwal">Kelas / Jadwal</label>
+              <input id="kur-pratinjau-jadwal" type="text" readonly class="mt-1 w-full bg-slate-950/60 text-slate-400 text-sm rounded-lg px-3 py-2 border border-slate-800">
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-violet-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">B</span>
+              <h3 class="text-lg font-bold text-white">16 Pertemuan</h3>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="kur-bobot-live" class="text-xs font-bold font-mono text-slate-300"></span>
+              <button type="button" onclick="isiTopikSisa()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                Isi Topik Kosong
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                  <th class="text-left py-2 pr-2 w-10">P</th>
+                  <th class="text-left py-2 pr-2 w-20">Tipe</th>
+                  <th class="text-left py-2 pr-2">Topik Pertemuan</th>
+                  <th class="text-right py-2 pr-2 w-20">Bobot</th>
+                  <th class="text-right py-2 pr-2 w-20">Slot</th>
+                  <th class="text-left py-2 pr-2 w-32">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-sesi-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between flex-wrap gap-3 bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <div class="text-xs text-slate-400">
+            <p id="kurikulum-status"></p>
+            <p class="mt-0.5">Menyimpan akan menulis tree, lalu membangun ulang data master + katalog
+              (beberapa detik). Jika Σ bobot ≠ 100, penyimpanan ditolak.</p>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <button type="submit" class="px-4 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition shadow-lg">
+              Simpan ke Tree Kurikulum
+            </button>
+            <button type="button" onclick="muatDetailKurikulum()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              Muat Ulang
+            </button>
+          </div>
         </div>
       </form>
     </section>

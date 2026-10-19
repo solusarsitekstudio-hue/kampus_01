@@ -26,6 +26,16 @@ FIX TAHAP C-5 (aman - tidak mengubah satu pun angka/data):
                            10 -> 1) tanpa satu pun pesan error.
   * MK aktif = no-op    -> ganti ke MK yang sedang aktif tidak menimpa master;
                            katalognya malah diselaraskan dari master.
+
+FIX TAHAP E (data berubah - disengaja, lihat catatan commit):
+  * /api/kurikulum      -> peta PRODI > TAHUN AJAR > SEMESTER > MATA KULIAH
+  * /api/kurikulum/detail + /api/kurikulum/simpan
+                        -> tab Kurikulum: sunting topik, bobot, slot absen,
+                           jenis_mk, semester_kurikulum langsung ke tree
+  * /api/switch_course  -> tidak lagi menimpa master dengan file katalog.
+                           Penunjuk MK aktif dipindah di config/identitas.json,
+                           lalu master + semua katalog DIBANGUN ULANG dari tree.
+  * /api/courses        -> membaca tree, bukan folder katalog (artefak build).
 """
 
 import http.server
@@ -235,6 +245,10 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._api_data()
         if path == "/api/courses":
             return self._api_courses()
+        if path == "/api/kurikulum":
+            return self._api_kurikulum()
+        if path.startswith("/api/kurikulum/detail"):
+            return self._api_kurikulum_detail(query)
         if path == "/api/runs":
             return self._api_runs()
         if path == "/api/identitas":
@@ -282,6 +296,8 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._api_identitas_terapkan()
         if path == "/api/identitas/regenerasi-pdf":
             return self._api_identitas_regenerasi_pdf()
+        if path == "/api/kurikulum/simpan":
+            return self._api_kurikulum_simpan()
         return self._send_error_json(404, f"Endpoint POST tidak dikenal: {path}")
 
     # --------------------------------------------------------- API identitas
@@ -477,23 +493,36 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         return self._send_bytes(200, content, "application/json; charset=utf-8")
 
     def _api_courses(self):
-        courses_dir = os.path.join(BASE_DIR, "data", "courses")
+        """Daftar mata kuliah dari TREE kurikulum (dulu: memindai folder katalog).
+
+        Katalog di data/courses/ hanyalah artefak build hasil kompilasi. Daftar
+        yang benar adalah isi tree, jadi itulah yang dibaca di sini.
+        """
+        KT = self._modul_kurikulum()
         courses_list = []
-        if os.path.exists(courses_dir):
-            for fname in sorted(os.listdir(courses_dir)):
-                if fname.endswith(".json"):
-                    try:
-                        with open(os.path.join(courses_dir, fname), "r", encoding="utf-8") as cf:
-                            cdata = json.load(cf)
-                            courses_list.append({
-                                "id": fname[:-5],
-                                "nama_mk": cdata.get("course", {}).get("nama_mk", fname[:-5]),
-                                "kode_mk": cdata.get("course", {}).get("kode_mk", ""),
-                                "sks": cdata.get("course", {}).get("sks", 2),
-                                "total_mahasiswa": len(cdata.get("students", []))
-                            })
-                    except Exception:
-                        pass
+        for prodi in KT.daftar_prodi():
+            try:
+                mhs = KT.baca_json(KT.path_mahasiswa(prodi)).get("mahasiswa") or []
+            except KT.KurikulumError:
+                mhs = []
+            for ta in KT.daftar_tahun(prodi):
+                for sem in KT.daftar_semester(prodi, ta):
+                    for kunci in KT.daftar_mk(prodi, ta, sem):
+                        try:
+                            penawaran = KT.baca_json(
+                                KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json"))
+                        except KT.KurikulumError:
+                            penawaran = {}
+                        courses_list.append({
+                            "id": kunci,
+                            "nama_mk": penawaran.get("nama_mk", kunci),
+                            "kode_mk": penawaran.get("kode_mk", ""),
+                            "sks": penawaran.get("sks", 2),
+                            "prodi": prodi,
+                            "tahun_ajar": ta,
+                            "semester": sem,
+                            "total_mahasiswa": len(mhs),
+                        })
         return self._send_json(200, courses_list)
 
     def _api_student(self, path: str):
@@ -509,7 +538,385 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._send_error_json(404, f"Mahasiswa dengan NPM {npm} tidak ditemukan")
         return self._send_json(200, matched)
 
+    # --------------------------------------------------------- API kurikulum
+    @staticmethod
+    def _modul_kurikulum():
+        """Import scripts/kurikulum_tree.py saat dipakai (pola sama seperti identitas).
+
+        Kalau tree belum dibangun, server TETAP hidup dan errornya dilaporkan
+        sebagai JSON - bukan gagal start.
+        """
+        import kurikulum_tree
+        return kurikulum_tree
+
+    @staticmethod
+    def _modul_aturan():
+        import aturan
+        return aturan
+
+    def _konteks_aktif(self):
+        """(prodi, tahun_ajar, semester, kunci_mk) mata kuliah yang sedang aktif.
+
+        Nilainya memakai BENTUK FOLDER tree (PRODI, 2025-2026, GENAP), bukan teks
+        mentah dari config/identitas.json ("Arsitektur", "2025/2026"). Tanpa
+        penyeragaman ini, perbandingan "apakah MK ini yang aktif" selalu meleset.
+        """
+        KT = self._modul_kurikulum()
+        IDENT = self._modul_identitas()
+        kunci = IDENT.mk_aktif()
+        mk = IDENT.mk(kunci)
+        ta, sem = KT.pecah_semester(mk.get("semester"))
+        prodi = KT.sanitize_folder_name(IDENT.institusi().get("prodi", ""))
+        return prodi, KT.slug_tahun_ajar(ta), sem, kunci
+
+    def _ringkas_mk(self, prodi, kunci, penawaran, sesi_dok):
+        """Ringkasan satu MK untuk peta kurikulum. Nilai TIDAK dibaca (berat)."""
+        KT = self._modul_kurikulum()
+        AT = self._modul_aturan()
+        sesi = (sesi_dok or {}).get("sesi") or []
+        return {
+            "kunci_mk": kunci,
+            "nama_mk": penawaran.get("nama_mk", kunci),
+            "kode_mk": penawaran.get("kode_mk", ""),
+            "sks": penawaran.get("sks"),
+            "kelas": penawaran.get("kelas", ""),
+            "jadwal": penawaran.get("jadwal", ""),
+            "jenis_mk": penawaran.get("jenis_mk", ""),
+            "jenis_mk_sumber": penawaran.get("sumber_jenis_mk", ""),
+            "semester_kurikulum": penawaran.get("semester_kurikulum"),
+            "semester_kurikulum_sumber": penawaran.get("sumber_semester_kurikulum", ""),
+            "dosen_pengasuh": penawaran.get("dosen_pengasuh", []),
+            "asisten_dosen": penawaran.get("asisten_dosen", ""),
+            "pertemuan": len(sesi),
+            "pertemuan_standar": AT.pertemuan_total(),
+            "slot_total": KT.jumlah_slot(sesi_dok),
+            "bobot_total": sum(int(s.get("bobot") or 0) for s in sesi),
+            "topik_terisi": (sesi_dok or {}).get("topik_terisi", 0),
+            "topik_placeholder": (sesi_dok or {}).get("topik_placeholder", 0),
+            "jadwal_menit": KT.hitung_menit_jadwal(penawaran.get("jadwal", "")),
+            "masalah": KT.validasi_sesi(sesi_dok, kunci, aturan_modul=AT),
+            "peringatan": KT.peringatan_jadwal(
+                penawaran.get("jadwal", ""), penawaran.get("sks"),
+                penawaran.get("jenis_mk"), aturan_modul=AT),
+        }
+
+    def _api_kurikulum(self):
+        """Peta kurikulum bertingkat: PRODI > TAHUN AJAR > SEMESTER > MATA KULIAH.
+
+        Sebelum ini dashboard hanya punya satu daftar datar mata kuliah, sehingga
+        tidak ada tempat untuk bertanya "ini semester berapa, tahun ajar mana".
+        """
+        KT = self._modul_kurikulum()
+        AT = self._modul_aturan()
+        try:
+            prodi_aktif, ta_aktif, sem_aktif, kunci_aktif = self._konteks_aktif()
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Gagal membaca konteks mata kuliah aktif: {0}".format(_sanitize_error(e)))
+
+        pohon = {}
+        for prodi in KT.daftar_prodi():
+            tahun_map = {}
+            for ta in KT.daftar_tahun(prodi):
+                sem_map = {}
+                for sem in KT.daftar_semester(prodi, ta):
+                    daftar = []
+                    for kunci in KT.daftar_mk(prodi, ta, sem):
+                        try:
+                            data = KT.muat_mk(prodi, ta, sem, kunci)
+                        except KT.KurikulumError as e:
+                            daftar.append({
+                                "kunci_mk": kunci, "nama_mk": kunci, "kode_mk": "",
+                                "rusak": _sanitize_error(e),
+                                "masalah": [_sanitize_error(e)], "peringatan": [],
+                            })
+                            continue
+                        daftar.append(self._ringkas_mk(
+                            prodi, kunci, data["penawaran"], data["sesi"]))
+                    sem_map[sem] = daftar
+                tahun_map[ta] = sem_map
+            pohon[prodi] = tahun_map
+
+        aktif = {
+            "prodi": prodi_aktif, "tahun_ajar": ta_aktif,
+            "semester": sem_aktif, "kunci_mk": kunci_aktif,
+        }
+        return self._send_json(200, {
+            "aktif": aktif,
+            "prodi": KT.daftar_prodi(),
+            "pohon": pohon,
+            "aturan": AT.ringkasan(),
+            "pertemuan_total": AT.pertemuan_total(),
+            "pertemuan_ujian": AT.pertemuan_ujian(),
+        })
+
+    def _api_kurikulum_detail(self, query):
+        """Isi satu MK untuk tab Kurikulum: penawaran + seluruh pertemuan."""
+        KT = self._modul_kurikulum()
+        AT = self._modul_aturan()
+        prodi = (query.get("prodi", [None])[0] or "").strip()
+        ta = (query.get("tahun_ajar", [None])[0] or "").strip()
+        sem = (query.get("semester", [None])[0] or "").strip().upper()
+        kunci = (query.get("kunci_mk", [None])[0] or "").strip()
+        if not (prodi and ta and sem and kunci):
+            return self._send_error_json(
+                400, "Parameter prodi, tahun_ajar, semester, dan kunci_mk wajib diisi.")
+        # Fail-closed: hanya boleh membaca yang benar-benar ada di tree.
+        if (prodi not in KT.daftar_prodi() or ta not in KT.daftar_tahun(prodi)
+                or sem not in KT.daftar_semester(prodi, ta)
+                or kunci not in KT.daftar_mk(prodi, ta, sem)):
+            return self._send_error_json(
+                404, "Mata kuliah '{0}' tidak ada di tree kurikulum.".format(kunci))
+        try:
+            data = KT.muat_mk(prodi, ta, sem, kunci)
+        except KT.KurikulumError as e:
+            return self._send_error_json(422, _sanitize_error(e))
+
+        try:
+            mhs = KT.baca_json(KT.path_mahasiswa(prodi)).get("mahasiswa") or []
+        except KT.KurikulumError:
+            mhs = []
+
+        penawaran = data["penawaran"]
+        sesi_dok = data["sesi"]
+        try:
+            aktif = (prodi, ta, sem, kunci) == self._konteks_aktif()
+        except Exception:  # noqa: BLE001
+            aktif = False
+        return self._send_json(200, {
+            "prodi": prodi, "tahun_ajar": ta, "semester": sem, "kunci_mk": kunci,
+            "apakah_aktif": aktif,
+            "penawaran": penawaran,
+            "sesi": sesi_dok,
+            "ringkas": self._ringkas_mk(prodi, kunci, penawaran, sesi_dok),
+            "jumlah_mahasiswa": len(mhs),
+            "aturan": AT.ringkasan(),
+            "pertemuan_total": AT.pertemuan_total(),
+            "pertemuan_ujian": AT.pertemuan_ujian(),
+        })
+
+    def _api_kurikulum_simpan(self):
+        """Simpan suntingan tab Kurikulum ke TREE, lalu bangun ulang turunannya.
+
+        Yang boleh diubah hanya yang memang milik manusia: topik, deskripsi,
+        bobot, jumlah slot absen, jenis_mk, dan semester_kurikulum. Identitas
+        (nama MK, kode, SKS, dosen, kelas, jadwal) TIDAK bisa disunting dari
+        sini - sumbernya tetap satu, yaitu config/identitas.json.
+        """
+        KT = self._modul_kurikulum()
+        AT = self._modul_aturan()
+        try:
+            body = self._baca_body_json()
+        except ValueError as e:
+            return self._send_error_json(400, str(e))
+        if not isinstance(body, dict):
+            return self._send_error_json(400, "Body harus objek JSON.")
+
+        prodi = str(body.get("prodi") or "").strip()
+        ta = str(body.get("tahun_ajar") or "").strip()
+        sem = str(body.get("semester") or "").strip().upper()
+        kunci = str(body.get("kunci_mk") or "").strip()
+        if (prodi not in KT.daftar_prodi() or ta not in KT.daftar_tahun(prodi)
+                or sem not in KT.daftar_semester(prodi, ta)
+                or kunci not in KT.daftar_mk(prodi, ta, sem)):
+            return self._send_error_json(
+                404, "Mata kuliah '{0}' tidak ada di tree kurikulum.".format(kunci))
+
+        try:
+            data = KT.muat_mk(prodi, ta, sem, kunci)
+        except KT.KurikulumError as e:
+            return self._send_error_json(422, _sanitize_error(e))
+
+        penawaran = data["penawaran"]
+        sesi_dok = data["sesi"]
+        sesi_lama = {}
+        for s in (sesi_dok.get("sesi") or []):
+            try:
+                sesi_lama[int(s.get("pertemuan"))] = s
+            except (TypeError, ValueError):
+                continue
+
+        # --- penawaran: hanya 2 field yang boleh diubah dari dashboard ---
+        #
+        # Status "dikonfirmasi-dashboard" HANYA diberikan kalau nilainya benar-benar
+        # berubah, atau kalau user mencentang kotak konfirmasi. Kalau tidak, sekadar
+        # menyimpan topik akan membuat tebakan awal berubah status jadi "sudah
+        # dikonfirmasi kaprodi" - padahal tidak ada yang mengonfirmasi.
+        masuk = body.get("penawaran") or {}
+        penawaran_baru = dict(penawaran)
+        if "jenis_mk" in masuk:
+            jenis = str(masuk.get("jenis_mk") or "").strip().lower()
+            if jenis not in ("teori", "studio", "teori_studio"):
+                return self._send_error_json(
+                    422, "jenis_mk harus salah satu dari: teori, studio, teori_studio.")
+            if jenis != penawaran.get("jenis_mk") or masuk.get("konfirmasi_jenis_mk"):
+                penawaran_baru["jenis_mk"] = jenis
+                penawaran_baru["sumber_jenis_mk"] = "dikonfirmasi-dashboard"
+                penawaran_baru.pop("tebakan_jenis_mk", None)
+        if "semester_kurikulum" in masuk:
+            mentah = masuk.get("semester_kurikulum")
+            if mentah in (None, ""):
+                if penawaran.get("semester_kurikulum") is not None:
+                    penawaran_baru["semester_kurikulum"] = None
+                    penawaran_baru["sumber_semester_kurikulum"] = "belum-dikonfirmasi"
+            else:
+                try:
+                    n = int(mentah)
+                except (TypeError, ValueError):
+                    return self._send_error_json(422, "semester_kurikulum harus berupa angka.")
+                if not 1 <= n <= 14:
+                    return self._send_error_json(422, "semester_kurikulum harus 1 sampai 14.")
+                if n != penawaran.get("semester_kurikulum") \
+                        or masuk.get("konfirmasi_semester_kurikulum"):
+                    penawaran_baru["semester_kurikulum"] = n
+                    penawaran_baru["sumber_semester_kurikulum"] = "dikonfirmasi-dashboard"
+
+        # --- sesi: topik / deskripsi / bobot / jumlah slot absen ---
+        perubahan = body.get("sesi")
+        slot_berubah = []
+        if isinstance(perubahan, list):
+            for item in perubahan:
+                if not isinstance(item, dict):
+                    return self._send_error_json(422, "Setiap baris sesi harus objek.")
+                try:
+                    p = int(item.get("pertemuan"))
+                except (TypeError, ValueError):
+                    return self._send_error_json(
+                        422, "Setiap baris sesi wajib punya nomor 'pertemuan'.")
+                if p not in sesi_lama:
+                    return self._send_error_json(
+                        422, "Pertemuan {0} tidak ada di sesi.json MK ini.".format(p))
+                baris = sesi_lama[p]
+                if "topik" in item:
+                    baris["topik"] = str(item.get("topik") or "").strip()[:200]
+                if "deskripsi" in item:
+                    baris["deskripsi"] = str(item.get("deskripsi") or "").strip()[:400]
+                if "bobot" in item:
+                    try:
+                        b = int(item.get("bobot"))
+                    except (TypeError, ValueError):
+                        return self._send_error_json(
+                            422, "Bobot pertemuan {0} harus angka.".format(p))
+                    if not 0 <= b <= 100:
+                        return self._send_error_json(
+                            422, "Bobot pertemuan {0} harus 0 sampai 100.".format(p))
+                    baris["bobot"] = b
+                if "jumlah_slot" in item:
+                    try:
+                        n = int(item.get("jumlah_slot"))
+                    except (TypeError, ValueError):
+                        return self._send_error_json(
+                            422, "Jumlah slot pertemuan {0} harus angka.".format(p))
+                    if not 1 <= n <= 10:
+                        return self._send_error_json(
+                            422, "Jumlah slot pertemuan {0} harus 1 sampai 10.".format(p))
+                    sebelum = len(baris.get("slot_absen") or [])
+                    if n != sebelum:
+                        slot_berubah.append("P{0}: {1} -> {2} slot".format(p, sebelum, n))
+                    baris["slot_absen"] = [
+                        {"slot": j + 1, "label": "Absen {0}".format(j + 1)} for j in range(n)
+                    ]
+
+        # Status "terverifikasi" DIHITUNG dari isi topik, bukan disetel manusia -
+        # supaya tidak ada baris placeholder yang naik status sendiri.
+        for baris in sesi_lama.values():
+            topik = str(baris.get("topik") or "").strip()
+            baris["tanggal_terverifikasi"] = bool(topik) and not topik.startswith("(") and \
+                topik not in ("Ujian Tengah Semester", "Ujian Akhir Semester")
+        sesi_dok["topik_terisi"] = sum(1 for b in sesi_lama.values() if b["tanggal_terverifikasi"])
+        sesi_dok["topik_placeholder"] = len(sesi_lama) - sesi_dok["topik_terisi"]
+
+        masalah = KT.validasi_sesi(sesi_dok, kunci, aturan_modul=AT)
+        if masalah:
+            return self._send_json(422, {
+                "error": "Perubahan DITOLAK; tidak ada berkas yang ditulis.",
+                "masalah": masalah,
+            })
+
+        # --- tulis ke tree, lalu bangun ulang turunannya ---
+        path_sesi = KT.path_berkas(prodi, ta, sem, kunci, "sesi.json")
+        path_penawaran = KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json")
+        try:
+            KT.tulis_json(path_sesi, sesi_dok)
+            if penawaran_baru != penawaran:
+                KT.tulis_json(path_penawaran, penawaran_baru)
+            KT.bangun_index(aktif=kunci)
+        except (OSError, KT.KurikulumError) as e:
+            return self._send_error_json(
+                500, "Gagal menulis tree kurikulum: {0}".format(_sanitize_error(e)))
+
+        peringatan = []
+        if slot_berubah:
+            peringatan.append(
+                "Jumlah slot absen berubah ({0}). Baris nilai yang sudah ada TIDAK "
+                "ikut berubah, jadi kehadiran pertemuan itu akan dihitung dari slot "
+                "yang datanya ada. Isi ulang dari portal supaya penuh.".format(
+                    "; ".join(slot_berubah)))
+        if masalah_jadwal := KT.peringatan_jadwal(
+                penawaran_baru.get("jadwal", ""), penawaran_baru.get("sks"),
+                penawaran_baru.get("jenis_mk"), aturan_modul=AT):
+            peringatan.extend(masalah_jadwal)
+
+        # Tree sudah tersimpan; sekarang turunannya WAJIB dibangun ulang. Kalau
+        # tidak, dashboard/PDF masih memakai angka lama dan suntingan baru hanya
+        # terlihat di berkas - persis kelas bug yang berulang di aplikasi ini.
+        ok, log, err = self._jalankan_parse_data(timeout=300)
+        if not ok:
+            return self._send_json(500, {
+                "error": "Tree sudah tersimpan, tetapi gagal membangun ulang data "
+                         "turunan. Angka dashboard/PDF belum ikut berubah.",
+                "detail": err,
+                "log": log,
+                "peringatan": peringatan,
+                "pesan": "Jalankan ulang: python scripts\\parse_data.py",
+            })
+
+        return self._send_json(200, {
+            "ok": True,
+            "apakah_aktif": (prodi, ta, sem, kunci) == self._konteks_aktif(),
+            "ringkas": self._ringkas_mk(prodi, kunci, penawaran_baru, sesi_dok),
+            "peringatan": peringatan,
+            "log": (log or "").strip().splitlines()[-6:],
+            "pesan": "Suntingan tersimpan di tree kurikulum dan data turunan sudah "
+                     "dibangun ulang.",
+        })
+
+    def _jalankan_parse_data(self, timeout=300):
+        """Bangun ulang master + seluruh katalog dari tree (proses terpisah).
+
+        Sengaja proses terpisah, bukan import: server tidak boleh memegang state
+        lama, dan log aslinya bisa dilaporkan apa adanya.
+        """
+        skrip = os.path.join(_SCRIPTS_DIR, "parse_data.py")
+        if not os.path.exists(skrip):
+            return False, "", "scripts/parse_data.py tidak ditemukan."
+        try:
+            with DATA_LOCK:
+                hasil = subprocess.run(
+                    [sys.executable, skrip], cwd=BASE_DIR, capture_output=True,
+                    text=True, encoding="utf-8", errors="replace", timeout=timeout,
+                )
+        except subprocess.TimeoutExpired:
+            return False, "", "Pembangunan ulang data melebihi {0} detik.".format(timeout)
+        except OSError as e:
+            return False, "", "Gagal menjalankan parse_data: {0}".format(_sanitize_error(e))
+        log = ((hasil.stdout or "") + (hasil.stderr or ""))[-1800:]
+        if hasil.returncode != 0:
+            return False, log, "parse_data gagal (returncode {0}).".format(hasil.returncode)
+        return True, log, ""
+
     def _api_switch_course(self, query):
+        """Ganti mata kuliah aktif: pindahkan penunjuk, lalu BANGUN ULANG dari tree.
+
+        TAHAP E: master tidak lagi ditimpa berkas katalog. Sejak sumbernya satu
+        (tree kurikulum), "ganti MK" = ubah mata_kuliah_aktif di
+        config/identitas.json, lalu jalankan parse_data untuk membangun ulang
+        master + semua katalog. Karena semuanya diturunkan dari satu sumber,
+        angka tidak bisa mundur karena katalog yang tertinggal versi.
+
+        Penjaga versi LAMA tetap dipasang lebih dulu: kalau masih ada artefak
+        katalog ber-aturan lama, permintaan ditolak - bukan dipakai diam-diam.
+        """
         target_course = query.get("course", [None])[0]
         if not target_course:
             return self._send_error_json(400, "Parameter 'course' wajib diisi")
@@ -518,97 +925,88 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         if safe is None or safe != target_course or "/" in safe or "\\" in safe:
             return self._send_error_json(400, "Course ID tidak valid")
 
-        course_file = os.path.join(BASE_DIR, "data", "courses", f"{safe}.json")
-        if not os.path.exists(course_file):
-            return self._send_error_json(404, f"Course '{safe}' tidak ditemukan di katalog")
-
         try:
-            with open(course_file, "r", encoding="utf-8") as f:
-                c_data = json.load(f)
+            KT = self._modul_kurikulum()
+            mod = self._modul_identitas()
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Modul kurikulum tidak bisa dimuat: {0}".format(_sanitize_error(e)))
 
-            # -----------------------------------------------------------------
-            # FIX TAHAP C-5 - PENJAGA KATALOG (pelajaran mahal).
-            #
-            # Endpoint ini MENIMPA data master dengan file katalog. Kalau file
-            # katalog masih memakai aturan lama (versi lebih rendah), master ikut
-            # mundur, dan seluruh dashboard, PDF, serta KPI diam-diam kembali ke
-            # angka lama tanpa satu pun pesan error.
-            #
-            # Ini benar-benar terjadi: katalog mata kuliah aktif tertinggal di
-            # versi 2.0 sementara master sudah 2.5. Sekali "ganti mata kuliah",
-            # master kembali ke 2.0 (At-Risk 10 -> 1, nilai 80.6 -> 82.5).
-            #
-            # Aturan penyelamatan:
-            #   * Katalog MK yang SEDANG AKTIF (kode_mk sama dengan master)
-            #     disalin dari master - lossless, tidak ada isi yang hilang.
-            #     Sekaligus membuat "ganti ke MK yang sudah aktif" jadi no-op.
-            #   * Katalog MK lain yang ketinggalan versi DITOLAK (fail-closed).
-            #     Membangunnya dari template akan menimpa deskripsi, topik RPS,
-            #     dan tanggal yang sudah benar dengan isi template yang lebih
-            #     pendek/salah. Jadi tidak dilakukan diam-diam di dalam request.
-            # -----------------------------------------------------------------
-            master_data = None
+        # (a) PENJAGA KATALOG (pelajaran mahal): artefak ber-aturan lama ditolak.
+        course_file = os.path.join(BASE_DIR, "data", "courses", "{0}.json".format(safe))
+        versi_master = None
+        if os.path.exists(DATA_FILE):
             try:
                 with open(DATA_FILE, "r", encoding="utf-8") as f:
-                    master_data = json.load(f)
+                    versi_master = (json.load(f).get("metadata") or {}).get("versi")
             except (OSError, json.JSONDecodeError):
-                master_data = None
+                versi_master = None
+        if versi_master and os.path.exists(course_file):
+            try:
+                with open(course_file, "r", encoding="utf-8") as f:
+                    isi_katalog = json.load(f)
+                versi_katalog = (isi_katalog.get("metadata") or {}).get("versi")
+            except (OSError, json.JSONDecodeError):
+                versi_katalog = None
+            if versi_katalog and versi_tuple(versi_katalog) < versi_tuple(versi_master):
+                return self._send_error_json(
+                    409,
+                    "Katalog '{0}' masih versi {1}, sedangkan aturan aktif sudah {2}. "
+                    "Pergantian DIBATALKAN supaya data tidak mundur. Jalankan "
+                    "`python scripts\\process_input.py --sync-katalog` untuk membangun "
+                    "ulang katalog, lalu ulangi.".format(safe, versi_katalog, versi_master))
 
-            if master_data is not None:
-                versi_katalog = c_data.get("metadata", {}).get("versi")
-                versi_master = master_data.get("metadata", {}).get("versi")
-                kode_katalog = str(c_data.get("course", {}).get("kode_mk") or "")
-                kode_master = str(master_data.get("course", {}).get("kode_mk") or "")
+        # (b) MK harus benar-benar ada di TREE (sumber kebenaran), bukan di katalog.
+        tersedia = set()
+        for prodi in KT.daftar_prodi():
+            for ta in KT.daftar_tahun(prodi):
+                for sem in KT.daftar_semester(prodi, ta):
+                    tersedia.update(KT.daftar_mk(prodi, ta, sem))
+        if safe not in tersedia:
+            return self._send_error_json(
+                404, "Course '{0}' tidak ditemukan di tree kurikulum".format(safe))
 
-                # (a) MK ini SEDANG AKTIF -> jangan timpa master sama sekali.
-                #     Cukup pastikan katalognya seversi dengan master. Ini juga
-                #     membuat "ganti ke MK yang sudah aktif" bebas efek samping
-                #     (dulu: menulis ulang master + membuat file backup baru
-                #     setiap kali tanpa ada yang berubah).
-                if kode_katalog and kode_katalog == kode_master:
-                    catatan = "Mata kuliah ini sudah aktif; data master tidak diubah."
-                    if versi_tuple(versi_katalog) < versi_tuple(versi_master):
-                        with DATA_LOCK:
-                            atomic_write_json(course_file, master_data)
-                        catatan = (f"Katalog MK aktif masih versi {versi_katalog} dan "
-                                   f"telah diselaraskan ke master {versi_master}.")
-                        print(f"[SWITCH] {safe}: {catatan}")
-                    return self._send_json(200, {
-                        "success": True,
-                        "active_course": master_data.get("course", {}),
-                        "catatan": catatan,
-                    })
+        # (c) Sudah aktif -> no-op (jangan menulis apa pun).
+        try:
+            prodi_aktif, ta_aktif, sem_aktif, kunci_aktif = self._konteks_aktif()
+        except Exception:  # noqa: BLE001
+            prodi_aktif = ta_aktif = sem_aktif = kunci_aktif = None
+        if safe == kunci_aktif:
+            return self._send_json(200, {
+                "success": True,
+                "active_course": mod.lengkapi(safe),
+                "catatan": "Mata kuliah ini sudah aktif; data master tidak diubah.",
+            })
 
-                # (b) MK lain dengan katalog lebih lama -> TOLAK (fail-closed).
-                if versi_tuple(versi_katalog) < versi_tuple(versi_master):
-                    return self._send_error_json(
-                        409,
-                        f"Katalog '{safe}' masih versi {versi_katalog}, sedangkan aturan "
-                        f"aktif sudah {versi_master}. Pergantian DIBATALKAN supaya data "
-                        f"tidak mundur. Jalankan `process_input.bat` (atau "
-                        f"`python scripts\\process_input.py --sync-katalog`) untuk "
-                        f"membangun ulang katalog, lalu ulangi.",
-                    )
+        # (d) Pindahkan penunjuk MK aktif, lalu bangun ulang master + katalog.
+        cfg_lama = mod.muat(force=True)
+        cfg_baru = json.loads(json.dumps(cfg_lama))
+        cfg_baru["mata_kuliah_aktif"] = safe
+        try:
+            mod.simpan(cfg_baru)
+        except mod.IdentitasError as e:
+            return self._send_error_json(
+                422, "Gagal memindahkan mata kuliah aktif: {0}".format(_sanitize_error(e)))
 
-            # Lock + atomic write: tidak ada kemungkinan 2 request corrupt file.
-            # Backup dulu supaya "ganti MK" bisa dikembalikan kalau ada yang salah.
-            with DATA_LOCK:
-                if os.path.exists(DATA_FILE):
-                    bak_dir = os.path.join(BASE_DIR, "data", "_backup")
-                    os.makedirs(bak_dir, exist_ok=True)
-                    stamp = time.strftime("%Y%m%d_%H%M%S")
-                    try:
-                        shutil.copy2(
-                            DATA_FILE,
-                            os.path.join(bak_dir, f"academic_data.json.{stamp}.bak"),
-                        )
-                    except OSError:
-                        pass  # backup gagal bukan alasan menolak switch
-                atomic_write_json(DATA_FILE, c_data)
-        except (OSError, json.JSONDecodeError) as e:
-            return self._send_error_json(500, f"Gagal switch course: {_sanitize_error(e)}")
+        ok, log, err = self._jalankan_parse_data(timeout=300)
+        if not ok:
+            # Kembalikan penunjuk supaya tidak ada keadaan setengah jalan.
+            try:
+                mod.simpan(cfg_lama)
+            except Exception:  # noqa: BLE001
+                pass
+            return self._send_json(500, {
+                "error": "Pergantian DIBATALKAN: gabung tidak bisa membangun ulang data "
+                         "dari tree. Penunjuk mata kuliah aktif sudah dikembalikan.",
+                "detail": err, "log": log,
+            })
 
-        return self._send_json(200, {"success": True, "active_course": c_data.get("course", {})})
+        return self._send_json(200, {
+            "success": True,
+            "active_course": mod.lengkapi(safe),
+            "catatan": "Master dan katalog dibangun ulang dari tree kurikulum.",
+            "log": (log or "").strip().splitlines()[-4:],
+        })
 
     def _api_deckcraft_html(self, query):
         npm = query.get("npm", [None])[0]

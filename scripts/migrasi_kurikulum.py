@@ -314,6 +314,12 @@ def main():
             "jenis_mk": peta_jenis[kunci],
             "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
             "semester_kurikulum": sem_ke_kelas,
+            "sumber_semester_kurikulum": (
+                "tebakan awal: semua angkatan {0} sekarang di semester {1} - "
+                "mohon dikonfirmasi kaprodi".format(
+                    mahasiswa[0]["angkatan"] if mahasiswa else "-", sem_ke_kelas
+                )
+            ),
             "kelas": mk.get("kelas", ""),
             "jadwal": mk.get("jadwal", ""),
             "dosen_pengasuh": list(mk.get("dosen_pengasuh") or []),

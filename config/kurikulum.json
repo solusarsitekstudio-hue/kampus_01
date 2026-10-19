@@ -1,7 +1,7 @@
 {
   "versi": 1,
   "catatan": "INDEX TURUNAN - jangan diedit dengan tangan. Sumber kebenaran adalah folder data/kurikulum/. Bangun ulang: python scripts\\index_kurikulum.py",
-  "dibangun_pada": "2026-10-19T08:37:12+07:00",
+  "dibangun_pada": "2026-10-19T09:06:15+07:00",
   "aktif": {
     "prodi": "ARSITEKTUR",
     "tahun_ajar": "2025/2026",

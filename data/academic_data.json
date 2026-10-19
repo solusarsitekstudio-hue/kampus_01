@@ -2,8 +2,8 @@
   "metadata": {
     "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
     "versi": "2.6-KURIKULUM-BERTINGKAT",
-    "generated_at": "2026-10-19T08:37:54+07:00",
-    "build_id": "20261019_083754",
+    "generated_at": "2026-10-19T09:08:28+07:00",
+    "build_id": "20261019_090828",
     "target_port": 40404,
     "metodologi_nilai": "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. Nilai satu pertemuan = rata-rata nilai seluruh slot absennya.",
     "aturan_at_risk": "Alpha >= 2x ATAU Kehadiran < 75%",
@@ -19,8 +19,7 @@
     "catatan_kehadiran": "Persen kehadiran dihitung dari SLOT absen, bukan jumlah pertemuan. Satu pertemuan dihitung hadir bila minimal 50% slotnya terisi; kehadiran sebagian tetap ditampilkan apa adanya.",
     "catatan_nilai": "NILAI PER PERTEMUAN MASIH SINTETIS (bukan input dosen). Ganti dengan data portal begitu tersedia; berkas sumber ditandai `sintetis: true`.",
     "metodologi_keselarasan": "skor_keselarasan per pertemuan = persen kehadiran pertemuan tersebut (proxy keterlaksanaan), bukan penilaian RPS terpisah.",
-    "catatan_cpmk": "CPMK di laporan audit masih placeholder sampai RPS resmi disediakan.",
-    "course_folder": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
+    "catatan_cpmk": "CPMK di laporan audit masih placeholder sampai RPS resmi disediakan."
   },
   "course": {
     "kode_mk": "5412522233",

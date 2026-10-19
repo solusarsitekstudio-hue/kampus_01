@@ -168,30 +168,16 @@ async function loadAcademicData() {
   }
 }
 
-/** Sinkronkan header + dropdown MK ke mata kuliah yang SEDANG AKTIF di server. */
+/** Sinkronkan header + konteks (PRODI > TAHUN > SEMESTER > MK) ke MK yang AKTIF.
+ *
+ * TAHAP E: daftar mata kuliah tidak lagi ditulis di dalam index.html. Pilihan
+ * diambil dari tree kurikulum lewat /api/kurikulum, jadi menambah MK di tree
+ * cukup - tidak perlu mengedit HTML.
+ */
 function syncActiveCourseToUi(course) {
   if (!course || !course.nama_mk) return;
   setText("current-course-title", course.nama_mk);
-
-  const selector = document.getElementById("course-selector");
-  if (selector) {
-    let matched = false;
-    Array.from(selector.options).forEach(opt => {
-      if (opt.value === course.nama_mk || opt.textContent.trim() === course.nama_mk) {
-        selector.value = opt.value;
-        matched = true;
-      }
-    });
-    if (!matched) {
-      // Mata kuliah aktif tidak ada di daftar dropdown -> tambahkan supaya tidak menyesatkan
-      const opt = document.createElement("option");
-      opt.value = course.nama_mk;
-      opt.textContent = course.nama_mk;
-      opt.selected = true;
-      selector.appendChild(opt);
-    }
-  }
-
+  muatKurikulum().catch(() => { /* header tetap jalan walau tree gagal dibaca */ });
   setText("kpi-kelas-desc", course.kelas || "");
   setText("kpi-jadwal-desc", course.jadwal || "");
 }
@@ -201,12 +187,12 @@ function populateSessionFilter() {
   const sel = document.getElementById("filter-session");
   if (!sel || !masterData) return;
   const current = sel.value;
-  sel.innerHTML = `<option value="all">Semua Sesi (${masterData.sessions.length})</option>`;
+  sel.innerHTML = `<option value="all">Semua Pertemuan (${masterData.sessions.length})</option>`;
   masterData.sessions.forEach(s => {
     const opt = document.createElement("option");
     opt.value = s.pertemuan;
     const topic = (s.topik || "").length > 34 ? s.topik.slice(0, 34) + "..." : (s.topik || "");
-    opt.textContent = `Sesi ${s.pertemuan}: ${topic}`;
+    opt.textContent = `P${s.pertemuan}: ${topic}`;
     sel.appendChild(opt);
   });
   sel.value = current || "all";
@@ -236,6 +222,13 @@ function switchTab(tabName) {
   // Tab Pengaturan: muat identitas terbaru dari server tiap kali dibuka, supaya
   // yang tampil selalu keadaan sebenarnya (termasuk kalau config diubah manual).
   if (tabName === "pengaturan") muatIdentitas();
+  // Tab Kurikulum: ambil ulang pohon + isi MK yang sedang dipilih, supaya yang
+  // tampil adalah isi tree saat ini (bisa saja baru diubah dari luar dashboard).
+  if (tabName === "kurikulum") {
+    muatKurikulum()
+      .then(() => muatDetailKurikulum())
+      .catch(err => toast(`Tree kurikulum tidak bisa dibaca: ${err.message}`, "error", 8000));
+  }
   if (window.lucide) lucide.createIcons();
 }
 
@@ -290,14 +283,18 @@ function renderAttendanceTrendChart(trends) {
 
   const options = {
     series: [
-      { name: "Hadir di Lab", data: trends.map(t => t.hadir), color: "#10b981" },
+      { name: "Hadir Penuh", data: trends.map(t => t.hadir), color: "#10b981" },
+      // TAHAP E: satu pertemuan bisa punya beberapa slot absen, jadi ada murid
+      // yang hanya masuk sebagian. Kalau seri ini tidak digambar, tumpukan bar
+      // tidak akan berjumlah seisi kelas dan grafiknya jadi bohong.
+      { name: "Hadir Sebagian", data: trends.map(t => t.hadir_sebagian || 0), color: "#2dd4bf" },
       { name: "Izin / Sakit / Alpha", data: trends.map(t => (t.sakit || 0) + (t.izin || 0) + (t.alpha || 0)), color: "#f43f5e" }
     ],
     chart: { type: "bar", height: 260, stacked: true, toolbar: { show: false }, background: "transparent" },
     theme: { mode: "dark" },
     plotOptions: { bar: { borderRadius: 6, columnWidth: "40%" } },
     xaxis: {
-      categories: trends.map(t => `Sesi ${t.pertemuan}`),
+      categories: trends.map(t => `P${t.pertemuan}`),
       labels: { style: { colors: "#94a3b8", fontSize: "11px" } },
       axisBorder: { color: "#334155" }
     },
@@ -360,6 +357,11 @@ function renderAttendanceTable() {
       let statusBadge;
       if (sess.status === "Hadir") {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Hadir</span>`;
+      } else if (sess.status === "Hadir Sebagian") {
+        // TAHAP E: satu pertemuan bisa punya beberapa slot absen. Mahasiswa yang
+        // hanya masuk sebagian slot TIDAK dibulatkan jadi Hadir atau Alpha -
+        // ditampilkan apa adanya, lengkap dengan berapa slot yang terisi.
+        statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/20 text-teal-300 border border-teal-500/30">Hadir Sebagian ${esc(sess.slot_hadir)}/${esc(sess.slot_total)}</span>`;
       } else if (sess.status === "Sakit") {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Sakit</span>`;
       } else if (sess.status === "Izin") {
@@ -381,7 +383,7 @@ function renderAttendanceTable() {
         <td class="px-4 py-3 text-slate-400">${esc(s.no)}</td>
         <td class="px-4 py-3 font-mono text-amber-400 font-semibold">${esc(s.npm)}</td>
         <td class="px-4 py-3 text-white font-medium">${esc(s.nama)}</td>
-        <td class="px-4 py-3 text-slate-300 font-mono">Sesi ${esc(sess.pertemuan)} • ${esc(sess.tanggal_display || sess.tanggal)}</td>
+        <td class="px-4 py-3 text-slate-300 font-mono">P${esc(sess.pertemuan)} • ${esc(sess.tanggal_display || sess.tanggal)}</td>
         <td class="px-4 py-3 text-slate-300 max-w-xs truncate" title="${esc(sess.topik)}">${esc(sess.topik)}</td>
         <td class="px-4 py-3">${statusBadge}</td>
         <td class="px-4 py-3 text-slate-400 italic">${esc(sess.alasan)}</td>
@@ -497,8 +499,15 @@ function selectStudent(npm) {
   setText("mhs-stat-kompetensi", statusKompetensi);
   setText("mhs-stat-kesiapan", `Kesiapan: ${indeksKesiapan}%`);
   setText("mhs-stat-kehadiran", `${kh.persentase}%`);
-  const totalSesi = (kh.detail || []).length;
-  setText("mhs-stat-absen-desc", `${kh.hadir} / ${totalSesi} Sesi Hadir`);
+  // TAHAP E: satuan tampilan = PERTEMUAN, persen berbasis SLOT. Dua-duanya
+  // ditulis supaya angka 62,5% tidak terlihat "aneh" dibanding 11/16.
+  const totalPertemuan = kh.total_pertemuan ?? (kh.detail || []).length;
+  const pertemuanHadir = kh.pertemuan_hadir ?? kh.hadir;
+  const sebagian = kh.hadir_sebagian || 0;
+  setText("mhs-stat-absen-desc",
+    `${pertemuanHadir} / ${totalPertemuan} Pertemuan` +
+    (sebagian ? ` (${sebagian} hadir sebagian)` : "") +
+    (kh.slot_total ? ` • ${kh.slot_hadir}/${kh.slot_total} slot` : ""));
   setText("mhs-stat-nilai", ak.nilai_rata_rata);
   setText("mhs-stat-grade", `Grade: ${ak.grade}`);
   setText("mhs-stat-alpha", `${kh.alpha}x`);
@@ -568,6 +577,8 @@ function renderStudentSessionCards(detailList) {
     let statPill;
     if (item.status === "Hadir") {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">Hadir</span>`;
+    } else if (item.status === "Hadir Sebagian") {
+      statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/20 text-teal-300">Hadir Sebagian ${esc(item.slot_hadir)}/${esc(item.slot_total)}</span>`;
     } else if (item.status === "Sakit") {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400">Sakit</span>`;
     } else if (item.status === "Izin") {
@@ -979,23 +990,22 @@ async function switchActiveCourse(courseId) {
   if (!courseId) return;
   const selector = document.getElementById("course-selector");
   try {
-    selector.disabled = true;
+    if (selector) selector.disabled = true;
     const res = await fetch(`/api/switch_course?course=${encodeURIComponent(courseId)}`);
     const resData = await res.json();
     if (!res.ok) throw new Error(resData.error || `HTTP ${res.status}`);
     if (!resData.success) throw new Error(resData.error || "Gagal berganti mata kuliah.");
 
     toast(`Mata kuliah aktif: ${resData.active_course.nama_mk}`, "success");
-    // FIX TAHAP C-5: beri tahu kalau kode katalog tidak ikut berubah.
-    // - "sudah aktif"  -> memang tidak ada yang perlu berubah
-    // - "diselaraskan" -> katalog MK ini tertinggal versi, sudah diperbaiki
     if (resData.catatan) toast(resData.catatan, "info", 9000);
     // Muat ulang seluruh dataset; loadAcademicData() akan menyinkronkan header
-    // dan dropdown ke course yang baru (bukan lagi ke pilihan pertama).
+    // dan konteks ke course yang baru (bukan lagi ke pilihan pertama).
     await loadAcademicData();
-    if (selector) selector.value = courseId;
   } catch (err) {
     toast(`Gagal berganti mata kuliah: ${err.message}`, "error", 8000);
+    // Kembalikan pilihan dropdown ke MK yang masih aktif supaya tampilan tidak
+    // berbohong setelah pergantian gagal.
+    muatKurikulum().catch(() => {});
   } finally {
     if (selector) selector.disabled = false;
   }
@@ -1237,4 +1247,380 @@ async function regenerasiPaketPdf() {
   );
   if (!lanjut) return;
   await kirimIdentitas("/api/identitas/regenerasi-pdf", undefined, "Mencetak ulang paket PDF…");
+}
+
+// =============================================================================
+// TAB 6: KURIKULUM  (tree: PRODI > TAHUN AJAR > SEMESTER > MATA KULIAH)
+// =============================================================================
+// Sumber kebenaran = data/kurikulum/... di SERVER. Tab ini tidak menyimpan
+// salinan di browser: setiap kali dibuka isinya diambil ulang dari server, dan
+// menyimpan berarti POST ke /api/kurikulum/simpan (tree ditulis, lalu master +
+// katalog dibangun ulang). Tidak ada jalur "simpan di layar saja".
+let pohonKurikulum = null;    // payload GET /api/kurikulum
+let detailKurikulum = null;   // payload GET /api/kurikulum/detail
+let konteksKurikulum = null;  // {prodi, tahun_ajar, semester, kunci_mk}
+
+function _opsi(select, nilai, teks, terpilih) {
+  const opt = document.createElement("option");
+  opt.value = nilai;
+  opt.textContent = teks;
+  opt.selected = !!terpilih;
+  select.appendChild(opt);
+}
+
+function _nilai(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : "";
+}
+
+function _tampilTahun(ta) {
+  return String(ta || "").replace("-", "/");
+}
+
+async function muatKurikulum() {
+  const res = await fetch("/api/kurikulum", { cache: "no-store" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  pohonKurikulum = await res.json();
+  tandaiKonteksAktif();
+  return pohonKurikulum;
+}
+
+/** Isi 4 dropdown dari pohon, lalu arahkan ke MK yang SEDANG AKTIF di server. */
+function tandaiKonteksAktif() {
+  if (!pohonKurikulum) return;
+  const aktif = pohonKurikulum.aktif || {};
+  const selProdi = document.getElementById("sel-prodi");
+  const selTahun = document.getElementById("sel-tahun");
+  const selSem = document.getElementById("sel-semester");
+  const selMk = document.getElementById("course-selector");
+  if (!selProdi || !selTahun || !selSem || !selMk) return;
+
+  const prodiAktif = (aktif.prodi && pohonKurikulum.pohon[aktif.prodi])
+    ? aktif.prodi
+    : ((pohonKurikulum.prodi || [])[0] || "");
+  const tahunAktif = aktif.tahun_ajar ? String(aktif.tahun_ajar).replace("/", "-") : "";
+
+  selProdi.innerHTML = "";
+  (pohonKurikulum.prodi || []).forEach(p => _opsi(selProdi, p, p, p === prodiAktif));
+
+  isiTahun();
+  const tahunTersedia = Object.keys(pohonKurikulum.pohon[prodiAktif] || {});
+  if (tahunAktif && tahunTersedia.indexOf(tahunAktif) !== -1) selTahun.value = tahunAktif;
+
+  isiSemester();
+  if (aktif.semester) selSem.value = aktif.semester;
+
+  isiMk();
+  if (aktif.kunci_mk) selMk.value = aktif.kunci_mk;
+}
+
+function isiTahun() {
+  const selProdi = document.getElementById("sel-prodi");
+  const selTahun = document.getElementById("sel-tahun");
+  if (!selProdi || !selTahun || !pohonKurikulum) return;
+  const tahun = Object.keys(pohonKurikulum.pohon[selProdi.value] || {});
+  const lama = selTahun.value;
+  selTahun.innerHTML = "";
+  tahun.forEach(ta => _opsi(selTahun, ta, _tampilTahun(ta), ta === lama));
+  if (tahun.indexOf(lama) === -1 && tahun.length) selTahun.value = tahun[tahun.length - 1];
+}
+
+function isiSemester() {
+  const selProdi = document.getElementById("sel-prodi");
+  const selTahun = document.getElementById("sel-tahun");
+  const selSem = document.getElementById("sel-semester");
+  if (!selProdi || !selTahun || !selSem || !pohonKurikulum) return;
+  const semua = (pohonKurikulum.pohon[selProdi.value] || {})[selTahun.value] || {};
+  const sem = Object.keys(semua);
+  const lama = selSem.value;
+  selSem.innerHTML = "";
+  sem.forEach(s => _opsi(
+    selSem, s,
+    s === "GANJIL" ? "Ganjil" : (s === "GENAP" ? "Genap" : s),
+    s === lama));
+  if (sem.indexOf(lama) === -1 && sem.length) selSem.value = sem[sem.length - 1];
+}
+
+function daftarMkTerpilih() {
+  const prodi = _nilai("sel-prodi"), ta = _nilai("sel-tahun"), sem = _nilai("sel-semester");
+  const semua = ((pohonKurikulum && pohonKurikulum.pohon[prodi]) || {})[ta] || {};
+  return semua[sem] || [];
+}
+
+function isiMk() {
+  const selMk = document.getElementById("course-selector");
+  if (!selMk || !pohonKurikulum) return;
+  const lama = selMk.value;
+  const daftar = daftarMkTerpilih();
+  selMk.innerHTML = "";
+  daftar.forEach(m => {
+    const label = `${m.nama_mk || m.kunci_mk}` +
+      (m.pertemuan !== undefined
+        ? ` — ${m.pertemuan} pertemuan · ${m.slot_total || 0} slot`
+        : "");
+    _opsi(selMk, m.kunci_mk, label, m.kunci_mk === lama);
+  });
+  if (!daftar.some(m => m.kunci_mk === lama) && daftar.length) {
+    selMk.value = daftar[0].kunci_mk;
+  }
+}
+
+/** Perubahan salah satu dropdown: isi ulang yang di hilir, lalu (untuk MK) ganti MK aktif. */
+async function onKonteksBerubah(level) {
+  if (!pohonKurikulum) {
+    try { await muatKurikulum(); } catch (err) {
+      toast(`Tree kurikulum tidak bisa dibaca: ${err.message}`, "error", 8000);
+      return;
+    }
+  }
+  if (level === "prodi") { isiTahun(); isiSemester(); isiMk(); }
+  else if (level === "tahun") { isiSemester(); isiMk(); }
+  else if (level === "semester") { isiMk(); }
+
+  const kunci = _nilai("course-selector");
+  const aktif = (pohonKurikulum.aktif || {}).kunci_mk;
+  if (level === "mk" && kunci && kunci !== aktif) {
+    await switchActiveCourse(kunci);
+    return; // loadAcademicData() sudah menyegarkan pohon + dropdown
+  }
+
+  const seksi = document.getElementById("section-kurikulum");
+  if (detailKurikulum && konteksKurikulum &&
+      (konteksKurikulum.kunci_mk !== kunci ||
+       konteksKurikulum.prodi !== _nilai("sel-prodi") ||
+       konteksKurikulum.tahun_ajar !== _nilai("sel-tahun") ||
+       konteksKurikulum.semester !== _nilai("sel-semester"))) {
+    await muatDetailKurikulum();
+  } else if (seksi && !seksi.classList.contains("hidden")) {
+    await muatDetailKurikulum();
+  }
+}
+
+async function muatDetailKurikulum() {
+  const prodi = _nilai("sel-prodi"), ta = _nilai("sel-tahun");
+  const sem = _nilai("sel-semester"), kunci = _nilai("course-selector");
+  const statusEl = document.getElementById("kurikulum-status");
+  if (!prodi || !ta || !sem || !kunci) return;
+  if (statusEl) statusEl.textContent = "Memuat isi tree kurikulum…";
+  try {
+    const q = new URLSearchParams({
+      prodi, tahun_ajar: ta, semester: sem, kunci_mk: kunci,
+    });
+    const res = await fetch(`/api/kurikulum/detail?${q.toString()}`, { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    detailKurikulum = data;
+    konteksKurikulum = { prodi, tahun_ajar: ta, semester: sem, kunci_mk: kunci };
+    renderDetailKurikulum(data);
+    if (statusEl) statusEl.textContent = "";
+  } catch (err) {
+    if (statusEl) statusEl.textContent = "";
+    toast(`Gagal memuat kurikulum: ${err.message}`, "error", 8000);
+  }
+}
+
+function renderDetailKurikulum(data) {
+  const r = data.ringkas || {};
+  const sesi = (data.sesi && data.sesi.sesi) || [];
+  setText("kur-mk", r.nama_mk || data.kunci_mk);
+  setText("kur-kode", r.kode_mk
+    ? `Kode ${r.kode_mk} • ${r.sks ?? "-"} SKS • ${r.kelas || "-"}`
+    : "");
+
+  const badgeAktif = document.getElementById("kur-aktif");
+  if (badgeAktif) {
+    badgeAktif.innerHTML = data.apakah_aktif
+      ? `<span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">MK sedang aktif</span>`
+      : `<span class="px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600 font-bold">Bukan MK aktif</span>`;
+  }
+
+  setText("kur-pertemuan", `${r.pertemuan ?? sesi.length} / ${r.pertemuan_standar ?? 16}`);
+  setText("kur-slot", `${r.slot_total ?? 0} slot absen` +
+    (r.jadwal_menit ? ` • ${r.jadwal_menit} menit/minggu` : " • jam tidak terbaca"));
+  setText("kur-bobot", `${r.bobot_total ?? 0}`);
+  setText("kur-mhs", `${data.jumlah_mahasiswa ?? 0} mahasiswa`);
+  setText("kur-topik", `${r.topik_terisi ?? 0} topik terisi • ` +
+    `${r.topik_placeholder ?? 0} menunggu RPS`);
+
+  const jenis = document.getElementById("kur-jenis-mk");
+  if (jenis) jenis.value = r.jenis_mk || "teori";
+  const jenisSumber = document.getElementById("kur-jenis-sumber");
+  if (jenisSumber) {
+    const tebakan = String(r.jenis_mk_sumber || "").indexOf("tebakan") !== -1;
+    jenisSumber.textContent = tebakan
+      ? "⚠ masih tebakan awal — mohon dikonfirmasi"
+      : (r.jenis_mk_sumber ? `sumber: ${r.jenis_mk_sumber}` : "");
+  }
+
+  const semKur = document.getElementById("kur-semester-kur");
+  if (semKur) semKur.value = (r.semester_kurikulum === null || r.semester_kurikulum === undefined)
+    ? "" : r.semester_kurikulum;
+  const semSumber = document.getElementById("kur-semester-sumber");
+  if (semSumber) {
+    const tebakan = String(r.semester_kurikulum_sumber || "").indexOf("tebakan") !== -1;
+    semSumber.textContent = tebakan
+      ? "⚠ masih tebakan awal — mohon dikonfirmasi"
+      : (r.semester_kurikulum_sumber ? `sumber: ${r.semester_kurikulum_sumber}` : "");
+  }
+
+  // Kotak konfirmasi selalu mulai tidak dicentang: konfirmasi harus tindakan sadar,
+  // bukan warisan dari penyimpanan sebelumnya.
+  ["kur-jenis-konfirmasi", "kur-semester-konfirmasi"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+
+  const kode = document.getElementById("kur-pratinjau-kode");
+  if (kode) kode.value = r.kode_mk || "";
+  const jadwal = document.getElementById("kur-pratinjau-jadwal");
+  if (jadwal) jadwal.value = `${r.kelas || "-"} • ${r.jadwal || "-"}`;
+
+  tampilkanPeringatanKurikulum((r.masalah || []).concat(r.peringatan || []));
+  renderTabelSesi(sesi);
+}
+
+function renderTabelSesi(sesi) {
+  const tbody = document.getElementById("tabel-sesi-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  sesi.forEach(s => {
+    const tr = document.createElement("tr");
+    tr.className = "border-b border-slate-800/60";
+    const tipe = String(s.tipe || "-");
+    const kelasTipe = (tipe === "uts" || tipe === "uas")
+      ? "text-rose-300"
+      : "text-slate-400";
+    const slot = (s.slot_absen || []).length;
+    tr.innerHTML = `
+      <td class="py-2 pr-2 font-mono font-bold text-amber-400 align-top">${esc(s.pertemuan)}</td>
+      <td class="py-2 pr-2 align-top uppercase text-[10px] font-bold ${kelasTipe}">${esc(tipe)}</td>
+      <td class="py-2 pr-2">
+        <input data-field="topik" data-p="${esc(s.pertemuan)}" type="text"
+          value="${esc(s.topik || "")}"
+          class="w-full bg-slate-950 text-slate-100 text-xs rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-violet-400">
+      </td>
+      <td class="py-2 pr-2 text-right">
+        <input data-field="bobot" data-p="${esc(s.pertemuan)}" type="number" min="0" max="100"
+          value="${esc(s.bobot ?? 0)}"
+          class="w-16 bg-slate-950 text-slate-100 text-xs text-right rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-violet-400">
+      </td>
+      <td class="py-2 pr-2 text-right">
+        <input data-field="jumlah_slot" data-p="${esc(s.pertemuan)}" type="number" min="1" max="10"
+          value="${esc(slot)}"
+          class="w-14 bg-slate-950 text-slate-100 text-xs text-right rounded px-2 py-1 border border-slate-700 focus:outline-none focus:border-violet-400">
+      </td>
+      <td class="py-2 pr-2 text-slate-400 font-mono text-[11px] align-top">${esc(s.tanggal_display || s.tanggal || "-")}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('input[data-field="bobot"]')
+    .forEach(inp => inp.addEventListener("input", updateBobotLive));
+  updateBobotLive();
+}
+
+function updateBobotLive() {
+  let total = 0;
+  document.querySelectorAll('#tabel-sesi-body input[data-field="bobot"]')
+    .forEach(inp => { total += Number(inp.value) || 0; });
+  const el = document.getElementById("kur-bobot-live");
+  if (el) {
+    el.textContent = `Σ bobot: ${total}`;
+    el.className = total === 100
+      ? "text-xs font-bold font-mono text-emerald-400"
+      : "text-xs font-bold font-mono text-rose-400";
+  }
+  return total;
+}
+
+function isiTopikSisa() {
+  let diisi = 0;
+  document.querySelectorAll('#tabel-sesi-body input[data-field="topik"]').forEach(inp => {
+    if (!inp.value.trim()) {
+      inp.value = "(belum diisi - menunggu RPS)";
+      diisi++;
+    }
+  });
+  toast(diisi
+    ? `${diisi} topik kosong ditandai "menunggu RPS".`
+    : "Tidak ada topik yang kosong.", diisi ? "info" : "success");
+}
+
+function tampilkanPeringatanKurikulum(daftar) {
+  const box = document.getElementById("kurikulum-peringatan");
+  if (!box) return;
+  const isi = (daftar || []).filter(Boolean);
+  if (!isi.length) {
+    box.className = "hidden rounded-2xl p-5 border shadow-xl text-xs space-y-1.5";
+    box.innerHTML = "";
+    return;
+  }
+  box.className = "rounded-2xl p-5 border border-amber-700/60 bg-amber-950/40 text-amber-200 shadow-xl text-xs space-y-1.5";
+  box.innerHTML = `<p class="font-bold uppercase tracking-wider text-[10px]">Catatan &amp; peringatan</p>` +
+    isi.map(x => `<p>• ${esc(x)}</p>`).join("");
+}
+
+async function simpanKurikulum() {
+  if (!detailKurikulum || !konteksKurikulum) {
+    toast("Muat dulu isi kurikulum sebelum menyimpan.", "warn");
+    return;
+  }
+  const total = updateBobotLive();
+  if (total !== 100) {
+    toast(`Total bobot ${total}, harus tepat 100. Belum ada yang disimpan.`, "error", 9000);
+    return;
+  }
+
+  const sesi = [];
+  document.querySelectorAll("#tabel-sesi-body tr").forEach(tr => {
+    const topik = tr.querySelector('input[data-field="topik"]');
+    const bobot = tr.querySelector('input[data-field="bobot"]');
+    const slot = tr.querySelector('input[data-field="jumlah_slot"]');
+    if (!topik || !bobot || !slot) return;
+    sesi.push({
+      pertemuan: Number(topik.dataset.p),
+      topik: topik.value,
+      bobot: Number(bobot.value),
+      jumlah_slot: Number(slot.value),
+    });
+  });
+
+  const body = Object.assign({}, konteksKurikulum, {
+    penawaran: {
+      jenis_mk: _nilai("kur-jenis-mk"),
+      semester_kurikulum: _nilai("kur-semester-kur"),
+      // Hanya kotak ini yang boleh menaikkan status "tebakan awal" jadi
+      // "dikonfirmasi". Tanpa centang, menyimpan topik tidak akan mengubah
+      // status jenis_mk / semester_kurikulum.
+      konfirmasi_jenis_mk: !!(document.getElementById("kur-jenis-konfirmasi") || {}).checked,
+      konfirmasi_semester_kurikulum: !!(document.getElementById("kur-semester-konfirmasi") || {}).checked,
+    },
+    sesi,
+  });
+
+  const statusEl = document.getElementById("kurikulum-status");
+  if (statusEl) statusEl.textContent = "Menyimpan ke tree & membangun ulang data…";
+  try {
+    const res = await fetch("/api/kurikulum/simpan", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      const rincian = (data.masalah || []).join(" • ") || data.error || `HTTP ${res.status}`;
+      toast(`Ditolak: ${rincian}`, "error", 11000);
+      tampilkanPeringatanKurikulum((data.masalah || []).concat([data.error || ""]));
+      return;
+    }
+    toast(data.pesan || "Tersimpan.", "success", 6000);
+    tampilkanPeringatanKurikulum(data.peringatan || []);
+    await muatKurikulum();
+    await muatDetailKurikulum();
+    await loadAcademicData();
+  } catch (err) {
+    toast(`Gagal menyimpan kurikulum: ${err.message}`, "error", 9000);
+  } finally {
+    if (statusEl) statusEl.textContent = "";
+    if (window.lucide) lucide.createIcons();
+  }
 }
