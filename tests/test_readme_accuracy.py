@@ -64,7 +64,7 @@ klaim = [
     ("Yazid nilai + grade",        f"Grade {YAZID['akademik']['grade']} ({YAZID['akademik']['nilai_rata_rata']})"),
     ("Yazid indeks kesiapan",      f"Indeks Kesiapan {YAZID['akademik']['indeks_kesiapan']}%"),
     ("Rozi kehadiran + porsi",     f"Kehadiran {ROZI['kehadiran']['persentase']}% "
-                                   f"(**{ROZI['kehadiran']['hadir']} pertemuan penuh + "
+                                   f"(**{ROZI['kehadiran']['pertemuan_penuh']} pertemuan penuh + "
                                    f"{ROZI['kehadiran']['hadir_sebagian']} pertemuan hadir sebagian**, "
                                    f"{ROZI['kehadiran']['slot_hadir']}/{ROZI['kehadiran']['slot_total']} slot)"),
     ("Rozi jumlah alpha",          f"{ROZI['kehadiran']['alpha']}x Alpha"),

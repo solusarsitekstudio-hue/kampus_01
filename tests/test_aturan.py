@@ -70,16 +70,25 @@ check("teks grade ada untuk semua ambang config",
       str([g["grade"] for g in AT.grade_bounds() if g["grade"] not in KR.TEKS_GRADE]))
 
 print("\n3. Kehadiran: tampilan pertemuan, persen berbasis slot (keputusan user)")
-check("2 dari 4 slot -> pertemuan dihitung hadir", KR.pertemuan_dihitung_hadir(2, 4) is True)
-check("1 dari 4 slot -> belum hadir", KR.pertemuan_dihitung_hadir(1, 4) is False)
-check("2 dari 2 slot -> hadir", KR.pertemuan_dihitung_hadir(2, 2) is True)
-check("0 slot -> tidak hadir (tanpa pembagian nol)",
-      KR.pertemuan_dihitung_hadir(0, 0) is False)
+check("2 dari 4 slot -> pertemuan memenuhi ambang", KR.pertemuan_memenuhi_ambang(2, 4) is True)
+check("1 dari 4 slot -> belum memenuhi ambang", KR.pertemuan_memenuhi_ambang(1, 4) is False)
+check("2 dari 2 slot -> memenuhi ambang", KR.pertemuan_memenuhi_ambang(2, 2) is True)
+check("0 slot -> tidak memenuhi (tanpa pembagian nol)",
+      KR.pertemuan_memenuhi_ambang(0, 0) is False)
 check("persen slot jujur: 1/4 = 25%", KR.persentase_kehadiran(1, 4) == 25.0,
       str(KR.persentase_kehadiran(1, 4)))
 check("label jujur: 1/4 -> Hadir Sebagian", KR.status_pertemuan(1, 4) == "Hadir Sebagian",
       KR.status_pertemuan(1, 4))
 check("label jujur: 0/4 -> Alpha", KR.status_pertemuan(0, 4) == "Alpha")
+# DUA ukuran "hadir" memang boleh berbeda, tetapi harus tetap berbeda arti:
+# 2 dari 4 slot = memenuhi ambang (longgar) TAPI bukan "Hadir" penuh (ketat).
+check("2/4 slot: memenuhi ambang tapi BUKAN hadir penuh",
+      KR.pertemuan_memenuhi_ambang(2, 4) is True
+      and KR.status_pertemuan(2, 4) == "Hadir Sebagian",
+      KR.status_pertemuan(2, 4))
+check("4/4 slot: kedua ukuran sepakat",
+      KR.pertemuan_memenuhi_ambang(4, 4) is True
+      and KR.status_pertemuan(4, 4) == "Hadir")
 
 print("\n4. Bobot 16 pertemuan divalidasi (keputusan user: total 100)")
 bobot_ok = [b["per_pertemuan"]] * 14 + [b["uts"], b["uas"]]

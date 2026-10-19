@@ -43,7 +43,7 @@ from kelas_rules import (  # noqa: E402
     grade_dari_skor,
     persentase_kehadiran,
     pertemuan_belum_diinput,
-    pertemuan_dihitung_hadir,
+    pertemuan_memenuhi_ambang,
     validasi_bobot,
     teks_grade,
 )
@@ -151,7 +151,7 @@ def ringkas_kehadiran(baris_slot, sessions):
               "Alpha": 0, "Belum Diinput": 0}
     slot_hadir_total = 0
     slot_total_semua = 0
-    pertemuan_hadir = 0
+    pertemuan_ambang = 0
 
     for s in sessions:
         p = int(s["pertemuan"])
@@ -184,8 +184,8 @@ def ringkas_kehadiran(baris_slot, sessions):
                 bucket = "Hadir Sebagian"
 
         hitung[bucket] += 1
-        if pertemuan_dihitung_hadir(slot_hadir, slot_total):
-            pertemuan_hadir += 1
+        if pertemuan_memenuhi_ambang(slot_hadir, slot_total):
+            pertemuan_ambang += 1
         slot_hadir_total += slot_hadir
         slot_total_semua += slot_total
 
@@ -214,7 +214,7 @@ def ringkas_kehadiran(baris_slot, sessions):
             "skor": skor,
         })
 
-    return detail, hitung, pertemuan_hadir, slot_hadir_total, slot_total_semua
+    return detail, hitung, pertemuan_ambang, slot_hadir_total, slot_total_semua
 
 # CATATAN: `kategori_kecocokan_dari_skor()` sekarang diimpor dari kelas_rules.py
 # (FIX TAHAP C-4) supaya hanya ada satu definisi di seluruh sistem.
@@ -407,7 +407,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         # Kehadiran + nilai dibaca dari catatan per SLOT di tree kurikulum,
         # bukan dikarang di sini. Rincian per pertemuan tetap yang ditampilkan.
         baris_slot = nilai_per_npm.get(npm, [])
-        (attendance_list, hitung_status, pertemuan_hadir,
+        (attendance_list, hitung_status, pertemuan_ambang,
          slot_hadir_total, slot_total_semua) = ringkas_kehadiran(baris_slot, sessions)
 
         total_hadir = hitung_status["Hadir"]
@@ -647,13 +647,16 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "at_risk": student_is_at_risk,
             "alasan_at_risk": at_risk_reasons_list,
             "kehadiran": {
-                "hadir": total_hadir,
+                # DUA ukuran "hadir" - jangan disatukan, keduanya ditampilkan:
+                #   pertemuan_penuh            = SEMUA slot pertemuan itu hadir
+                #   pertemuan_ambang_terpenuhi = >= min_slot_ratio_hadir (longgar)
+                "pertemuan_penuh": total_hadir,
                 "hadir_sebagian": total_sebagian,
                 "sakit": total_sakit,
                 "izin": total_izin,
                 "alpha": total_alpha,
                 "belum_diinput": total_belum_diinput,
-                "pertemuan_hadir": pertemuan_hadir,
+                "pertemuan_ambang_terpenuhi": pertemuan_ambang,
                 "total_pertemuan": len(sessions),
                 "slot_hadir": slot_hadir_total,
                 "slot_total": slot_total_semua,
@@ -746,15 +749,19 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         belum_diinput_count = sum(1 for d in detail_p if d["status"] == "Belum Diinput")
         slot_total = detail_p[0]["slot_total"] if detail_p else 0
         slot_hadir = sum(d["slot_hadir"] for d in detail_p)
-        dihitung_hadir = sum(
-            1 for d in detail_p if pertemuan_dihitung_hadir(d["slot_hadir"], d["slot_total"])
+        memenuhi_ambang = sum(
+            1 for d in detail_p if pertemuan_memenuhi_ambang(d["slot_hadir"], d["slot_total"])
         )
         session_attendance_trend.append({
             "pertemuan": p_num,
             "tanggal": sess["tanggal_display"],
             "topik": sess["topik"],
             "tipe": sess.get("tipe"),
-            "hadir": hadir_count,
+            # Nama field mengikuti kosakata yang sama dengan catatan per mahasiswa
+            # (lihat ringkas_kehadiran): hadir_penuh = SEMUA slot hadir,
+            # memenuhi_ambang = >= min_slot_ratio_hadir. Dua angka ini berbeda dan
+            # sengaja tidak disatukan.
+            "hadir_penuh": hadir_count,
             "hadir_sebagian": sebagian_count,
             "sakit": sakit_count,
             "izin": izin_count,
@@ -762,8 +769,10 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "belum_diinput": belum_diinput_count,
             "slot_total": slot_total * total_mhs,
             "slot_hadir": slot_hadir,
-            "dihitung_hadir": dihitung_hadir,
-            "hadir_pct": round((dihitung_hadir / total_mhs) * 100, 1) if total_mhs else 0.0
+            "memenuhi_ambang": memenuhi_ambang,
+            "memenuhi_ambang_pct": (
+                round((memenuhi_ambang / total_mhs) * 100, 1) if total_mhs else 0.0
+            ),
         })
 
     # Lecturer and Curriculum Audit Data (for Kaprodi -> Dosen QA Report)
@@ -797,13 +806,13 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         p = d["pertemuan"]
         if d["tipe"] in ("uts", "uas"):
             realisasi = "Evaluasi {0} semester diikuti {1} dari {2} mahasiswa.".format(
-                "tengah" if d["tipe"] == "uts" else "akhir", d["dihitung_hadir"], total_mhs
+                "tengah" if d["tipe"] == "uts" else "akhir", d["memenuhi_ambang"], total_mhs
             )
         else:
             realisasi = (
                 "Materi tersampaikan; {0} dari {1} mahasiswa memenuhi ambang kehadiran "
                 "(hadir penuh {2}, hadir sebagian {3}, sisanya sakit/izin/alpha).".format(
-                    d["dihitung_hadir"], total_mhs, d["hadir"], d["hadir_sebagian"]
+                    d["memenuhi_ambang"], total_mhs, d["hadir_penuh"], d["hadir_sebagian"]
                 )
             )
             if d.get("belum_diinput"):
@@ -814,7 +823,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "sesi": p,
             "topik_rps": d["topik"],
             "realisasi_kelas": realisasi,
-            "skor_keselarasan": d["hadir_pct"],
+            "skor_keselarasan": d["memenuhi_ambang_pct"],
             "cpmk": CPMK_PLACEHOLDER[(p - 1) % len(CPMK_PLACEHOLDER)],
         })
 
@@ -859,9 +868,13 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "basis_persen_kehadiran": ATURAN.basis_persen_kehadiran(),
             "min_slot_ratio_hadir": ATURAN.min_slot_ratio_hadir(),
             "catatan_kehadiran": (
-                "Persen kehadiran dihitung dari SLOT absen, bukan jumlah pertemuan. "
-                "Satu pertemuan dihitung hadir bila minimal {0:.0%} slotnya terisi; "
-                "kehadiran sebagian tetap ditampilkan apa adanya.".format(
+                "Persen kehadiran dihitung dari SLOT absen (slot_hadir/slot_total), bukan "
+                "jumlah pertemuan. Ada DUA ukuran 'hadir' yang sengaja dipisah supaya tidak "
+                "ada angka yang bisa dibaca dua cara: (1) `pertemuan_penuh` = pertemuan yang "
+                "SEMUA slotnya hadir (ini yang dipakai rapor/PDF); (2) "
+                "`pertemuan_ambang_terpenuhi` = pertemuan dengan slot hadir minimal {0:.0%} "
+                "(ambang di config/aturan.json). Sisa statusnya (hadir sebagian, sakit, izin, "
+                "alpha, belum diinput) ditampilkan apa adanya.".format(
                     ATURAN.min_slot_ratio_hadir()
                 )
             ),

@@ -88,11 +88,23 @@ def persentase_kehadiran(total_slot_hadir: int, total_slot: int) -> float:
     return round((total_slot_hadir / total_slot) * 100, 1)
 
 
-def pertemuan_dihitung_hadir(slot_hadir: int, slot_total: int) -> bool:
-    """True bila 1 pertemuan dihitung "hadir".
+def pertemuan_memenuhi_ambang(slot_hadir: int, slot_total: int) -> bool:
+    """True bila 1 pertemuan MEMENUHI AMBANG kehadiran (definisi longgar).
 
     Ambangnya `kehadiran.min_slot_ratio_hadir` di config (default 50%):
-    2 dari 4 slot = hadir; 1 dari 4 = belum.
+    2 dari 4 slot = memenuhi ambang; 1 dari 4 = belum.
+
+    PENTING - ada DUA ukuran "hadir" dan keduanya sah, jadi jangan disatukan:
+      * `status_pertemuan()` -> "Hadir" = SEMUA slot pertemuan itu hadir (ketat).
+        Ini yang ditampilkan di rapor/PDF dan dihitung sebagai `pertemuan_penuh`.
+      * fungsi ini -> pertemuan "memenuhi ambang" (longgar, >= 50% slot).
+    Dashboard wajib menampilkan dua-duanya terpisah supaya tidak ada satu angka
+    "hadir" yang bisa dibaca dua cara. Persen kehadiran sendiri selalu berbasis
+    SLOT (`persentase_kehadiran`), bukan salah satu dari dua ukuran di atas.
+
+    Dulu fungsi ini bernama `pertemuan_dihitung_hadir` dan angkanya tampil di
+    dashboard sebagai "X / 16 Pertemuan" - sebelah baris yang menulis "hadir
+    sebagian", sehingga satu baris bisa membantah dirinya sendiri.
     """
     if not slot_total:
         return False

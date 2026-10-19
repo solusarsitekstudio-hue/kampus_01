@@ -518,12 +518,18 @@ def generate_session_bars_svg(detail):
     """
 
 def generate_kaprodi_class_charts_svg(summary):
-    # Generates Session Attendance Trend + Grade Distribution for PDF 2
+    # Grafik Tren Kehadiran + Distribusi Grade untuk PDF 2 (Kaprodi).
+    #
+    # FIX KOSAKATA "HADIR": grafik ini dulu hanya menggambar 2 seri (hadir_penuh
+    # dan sakit/izin/alpha), sehingga bar-nya TIDAK berjumlah seisi kelas - murid
+    # yang hanya masuk sebagian atau yang presensinya belum diinput menghilang
+    # dari grafik. Judulnya juga menulis "PERTEMUAN 1 - 6" karena masih memakai
+    # potongan `[:6]` dari era 6 sesi, padahal data sudah 16 pertemuan.
+    # Sekarang: 16 batang, 4 seri bertumpuk yang jumlahnya = jumlah mahasiswa.
     trends = summary.get("tren_kehadiran_sesi", [])
     bar_svg = ""
     # FIX TAHAP B: jangan hardcode 35 dan jangan biarkan 0 (dividing by zero).
-    # Fallback ke jumlah sesi paling panjang, lalu 1 sebagai jaring pengaman.
-    max_mhs = summary.get("total_mahasiswa") or (trends[0].get("hadir", 1) if trends else 1) or 1
+    max_mhs = summary.get("total_mahasiswa") or 1
     try:
         max_mhs = float(max_mhs)
     except (TypeError, ValueError):
@@ -532,25 +538,64 @@ def generate_kaprodi_class_charts_svg(summary):
         max_mhs = 1.0
     chart_h = 70
     base_y = 90
-    start_x = 35
-    w = 26
-    gap = 20
-    n_tren = min(len(trends), 6)
+    plot_x0, plot_x1 = 22, 350         # area grafik tren di dalam kartu kiri
+    n_tren = len(trends)
+    # Lebar batang dihitung dari jumlah pertemuan yang ADA, jadi 16 atau 8
+    # pertemuan sama-sama rapi tanpa ada batang yang terpotong.
+    if n_tren:
+        slot_w = (plot_x1 - plot_x0) / n_tren
+        w = max(6.0, slot_w * 0.62)
+    else:
+        slot_w, w = 1.0, 6.0
 
-    for i, t in enumerate(trends[:6]):
-        x = start_x + i * (w + gap)
-        hadir = t.get("hadir", 0)
-        absen = t.get("sakit", 0) + t.get("izin", 0) + t.get("alpha", 0)
-        h_hadir = (hadir / max_mhs) * chart_h
+    # Warna = sama artinya dengan grafik di dashboard (app.js).
+    seri = (
+        ("hadir_penuh", "#10b981"),
+        ("hadir_sebagian", "#2dd4bf"),
+        ("belum_diinput", "#64748b"),
+    )
+    for i, t in enumerate(trends):
+        x = plot_x0 + i * slot_w + (slot_w - w) / 2
+        y_kursor = base_y
+        total_orang = 0
+        for kunci, warna in seri:
+            jml = t.get(kunci, 0) or 0
+            total_orang += jml
+            h = (jml / max_mhs) * chart_h
+            if h <= 0:
+                continue
+            y_kursor -= h
+            bar_svg += (
+                f'<rect x="{x:.1f}" y="{y_kursor:.1f}" width="{w:.1f}" '
+                f'height="{h:.1f}" fill="{warna}" />\n'
+            )
+        absen = (t.get("sakit", 0) or 0) + (t.get("izin", 0) or 0) + (t.get("alpha", 0) or 0)
+        total_orang += absen
         h_absen = (absen / max_mhs) * chart_h
-
-        y_hadir = base_y - h_hadir
-        bar_svg += f'<rect x="{x}" y="{y_hadir}" width="{w}" height="{h_hadir}" fill="#10b981" rx="2" />\n'
         if h_absen > 0:
-            y_absen = y_hadir - h_absen
-            bar_svg += f'<rect x="{x}" y="{y_absen}" width="{w}" height="{h_absen}" fill="#f43f5e" rx="2" />\n'
-        bar_svg += f'<text x="{x + w/2}" y="{base_y + 11}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#334155">S{t.get("pertemuan", i+1)}</text>\n'
-        bar_svg += f'<text x="{x + w/2}" y="{y_hadir + 9}" text-anchor="middle" font-size="7" font-weight="800" fill="#ffffff">{hadir}</text>\n'
+            y_kursor -= h_absen
+            bar_svg += (
+                f'<rect x="{x:.1f}" y="{y_kursor:.1f}" width="{w:.1f}" '
+                f'height="{h_absen:.1f}" fill="#f43f5e" />\n'
+            )
+        # Sisa tinggi sampai garis dasar = celah data; ditandai supaya batang
+        # yang tidak penuh tidak dibaca sebagai "kelas kosong".
+        sisa = max_mhs - total_orang
+        if sisa > 0:
+            h_sisa = (sisa / max_mhs) * chart_h
+            y_kursor -= h_sisa
+            bar_svg += (
+                f'<rect x="{x:.1f}" y="{y_kursor:.1f}" width="{w:.1f}" '
+                f'height="{h_sisa:.1f}" fill="#e2e8f0" />\n'
+            )
+        bar_svg += (
+            f'<text x="{x + w/2:.1f}" y="{base_y + 11}" text-anchor="middle" '
+            f'font-size="6" font-weight="700" fill="#334155">P{t.get("pertemuan", i+1)}</text>\n'
+        )
+        bar_svg += (
+            f'<text x="{x + w/2:.1f}" y="{y_kursor - 2:.1f}" text-anchor="middle" '
+            f'font-size="5.5" font-weight="800" fill="#0f172a">{t.get("hadir_penuh", 0)}</text>\n'
+        )
 
     # FIX TAHAP B: fallback lama = {"A":18,"B+":10,"B":5,"C":1,"D":1} tidak punya
     # kunci "A-" DAN jumlahnya tidak mungkin cocok dengan total_mahasiswa.
@@ -578,11 +623,15 @@ def generate_kaprodi_class_charts_svg(summary):
     return f"""
     <svg width="100%" height="110" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg">
       <rect x="10" y="2" width="345" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="20" y="16" font-size="8.5" font-weight="800" fill="#0f172a">TREN KEHADIRAN KELAS (PERTEMUAN 1 - {n_tren})</text>
-      <circle cx="250" cy="13" r="3.5" fill="#10b981" />
-      <text x="256" y="15" font-size="7" fill="#334155">Hadir</text>
-      <circle cx="285" cy="13" r="3.5" fill="#f43f5e" />
-      <text x="291" y="15" font-size="7" fill="#334155">Absen</text>
+      <text x="20" y="16" font-size="8" font-weight="800" fill="#0f172a">TREN KEHADIRAN KELAS (P1 - P{n_tren})</text>
+      <circle cx="196" cy="13" r="3" fill="#10b981" />
+      <text x="201" y="15" font-size="6.5" fill="#334155">Hadir penuh</text>
+      <circle cx="244" cy="13" r="3" fill="#2dd4bf" />
+      <text x="249" y="15" font-size="6.5" fill="#334155">Sebagian</text>
+      <circle cx="284" cy="13" r="3" fill="#64748b" />
+      <text x="289" y="15" font-size="6.5" fill="#334155">Belum diinput</text>
+      <circle cx="330" cy="13" r="3" fill="#f43f5e" />
+      <text x="335" y="15" font-size="6.5" fill="#334155">Absen</text>
       {bar_svg}
 
       <rect x="380" y="2" width="370" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
@@ -659,6 +708,16 @@ def render_monthly_attendance_html(student):
         </tr>
         """
 
+    # Dua ukuran "hadir" ditulis TERPISAH (lihat kelas_rules.pertemuan_memenuhi_ambang):
+    # pertemuan_penuh = semua slot hadir; pertemuan_ambang_terpenuhi = >= ambang config.
+    # Kalau angkanya sama cukup satu; kalau beda JANGAN disembunyikan - dulu kartu ini
+    # menulis satu angka "hadir" yang artinya bisa dua macam.
+    _penuh = kehadiran.get("pertemuan_penuh", kehadiran.get("hadir", 0))
+    _ambang = kehadiran.get("pertemuan_ambang_terpenuhi", _penuh)
+    teks_kehadiran = f"{_penuh} dari {len(detail)} pertemuan penuh"
+    if _ambang != _penuh:
+        teks_kehadiran += f" • {_ambang} memenuhi ambang kehadiran"
+
     html = f"""
     <!DOCTYPE html>
     <html>
@@ -703,7 +762,7 @@ def render_monthly_attendance_html(student):
         <div class="card-box" style="background: #ecfdf5; border-color: #a7f3d0; text-align: center;">
           <div style="font-size: 10px; color: #047857; font-weight: 600;">Total Kehadiran</div>
           <div style="font-size: 20px; font-weight: 900; color: #065f46;">{kehadiran['persentase']}%</div>
-          <div style="font-size: 9.5px; color: #047857;">{kehadiran['hadir']} dari {len(detail)} Pertemuan</div>
+          <div style="font-size: 9.5px; color: #047857;">{teks_kehadiran}</div>
         </div>
         <div class="card-box" style="background: #fefce8; border-color: #fef08a; text-align: center;">
           <div style="font-size: 10px; color: #a16207; font-weight: 600;">Sakit (Izin Medis)</div>

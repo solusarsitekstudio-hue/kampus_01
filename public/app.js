@@ -289,7 +289,7 @@ function renderAttendanceTrendChart(trends) {
 
   const options = {
     series: [
-      { name: "Hadir Penuh", data: trends.map(t => t.hadir), color: "#10b981" },
+      { name: "Hadir Penuh", data: trends.map(t => t.hadir_penuh ?? t.hadir ?? 0), color: "#10b981" },
       // TAHAP E: satu pertemuan bisa punya beberapa slot absen, jadi ada murid
       // yang hanya masuk sebagian. Kalau seri ini tidak digambar, tumpukan bar
       // tidak akan berjumlah seisi kelas dan grafiknya jadi bohong.
@@ -515,16 +515,22 @@ function selectStudent(npm) {
   setText("mhs-stat-kompetensi", statusKompetensi);
   setText("mhs-stat-kesiapan", `Kesiapan: ${indeksKesiapan}%`);
   setText("mhs-stat-kehadiran", `${kh.persentase}%`);
-  // TAHAP E: satuan tampilan = PERTEMUAN, persen berbasis SLOT. Dua-duanya
-  // ditulis supaya angka 62,5% tidak terlihat "aneh" dibanding 11/16.
+  // TAHAP E: satuan tampilan = PERTEMUAN, persen berbasis SLOT. DUA ukuran
+  // "hadir" ditampilkan terpisah supaya tidak ada angka yang bisa dibaca dua
+  // cara: pertemuan PENUH (semua slot hadir) vs pertemuan yang MEMENUHI AMBANG
+  // (>= min_slot_ratio_hadir). Dulu baris ini menulis "11 / 16 Pertemuan"
+  // memakai ukuran longgar, di sebelah tulisan "hadir sebagian" - satu baris
+  // membantah dirinya sendiri.
   const totalPertemuan = kh.total_pertemuan ?? (kh.detail || []).length;
-  const pertemuanHadir = kh.pertemuan_hadir ?? kh.hadir;
+  const penuh = kh.pertemuan_penuh ?? kh.hadir ?? 0;
+  const ambang = kh.pertemuan_ambang_terpenuhi ?? penuh;
   const sebagian = kh.hadir_sebagian || 0;
   const belum = kh.belum_diinput || 0;
   setText("mhs-stat-absen-desc",
-    `${pertemuanHadir} / ${totalPertemuan} Pertemuan` +
-    (sebagian ? ` (${sebagian} hadir sebagian)` : "") +
-    (belum ? ` (${belum} belum diinput)` : "") +
+    `${penuh} / ${totalPertemuan} pertemuan penuh (semua slot)` +
+    (sebagian ? ` • ${sebagian} hadir sebagian` : "") +
+    (ambang !== penuh ? ` • ${ambang} memenuhi ambang ${Math.round((kh.min_slot_ratio_hadir ?? 0.5) * 100)}%` : "") +
+    (belum ? ` • ${belum} belum diinput` : "") +
     (kh.slot_total ? ` • ${kh.slot_hadir}/${kh.slot_total} slot` : ""));
   setText("mhs-stat-nilai", ak.nilai_rata_rata);
   setText("mhs-stat-grade", `Grade: ${ak.grade}`);
