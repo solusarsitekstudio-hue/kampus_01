@@ -452,6 +452,7 @@ python tests\test_rules_unchanged.py
 python tests\test_readme_accuracy.py
 python tests\test_aturan.py
 python tests\test_belum_diinput.py
+python tests\test_migrasi_non_destruktif.py
 python tests\test_kurikulum_tree.py
 python tests\test_identitas.py
 
@@ -467,6 +468,7 @@ python tests\test_kurikulum_api.py
 | `test_readme_accuracy.py` | **Setiap angka di README ini cocok dengan data** — tidak ada lagi angka yang diketik manual dan salah |
 | `test_aturan.py` | Ambang At-Risk & grade benar-benar **hidup**: angka bawaan = angka lama, dan mengubah `config/aturan.json` mengubah hasil |
 | `test_belum_diinput.py` | Pertemuan dengan slot belum lengkap ditandai **"Belum Diinput"** (bukan Alpha/nilai 0), bobot dinormalisasi ulang, grade ditahan **"Belum Lengkap"**, perilaku lama bisa dipulihkan lewat config |
+| `test_migrasi_non_destruktif.py` | **`migrasi_kurikulum.py --force` tidak menghapus hasil edit**: bobot/slot/topik bertahan, `jenis_mk`/`semester_kurikulum` yang dikonfirmasi tidak dikembalikan ke tebakan, `nilai.json` byte-identik. Tree disunting sungguhan lalu dipulihkan byte-per-byte |
 | `test_kurikulum_tree.py` | Tree kurikulum konsisten **anti-drift**: indeks `config/kurikulum.json` == hasil pindai ulang folder |
 | `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
@@ -609,10 +611,20 @@ python scripts\migrasi_kurikulum.py --force
 python scripts\parse_data.py
 ```
 
-`migrasi_kurikulum.py` merapikan isi tree (termasuk menandai topik yang masih
-`(belum diisi - menunggu RPS)`), lalu `parse_data.py` membangun master + semua
-katalog dari tree. Keduanya **idempoten** — boleh dijalankan berkali-kali tanpa
-menggeser angka (dijaga `test_kurikulum_tree.py` dan `test_rules_unchanged.py`).
+`migrasi_kurikulum.py` merapikan **struktur** tree (16 pertemuan, bobot standar,
+slot absen, penanda topik `(belum diisi - menunggu RPS)`), lalu `parse_data.py`
+membangun master + semua katalog dari tree. Keduanya **idempoten** — boleh
+dijalankan berkali-kali tanpa menggeser angka (dijaga `test_kurikulum_tree.py`
+dan `test_rules_unchanged.py`).
+
+**`--force` tidak lagi menghapus pekerjaan kaprodi.** Yang dipertahankan apa
+adanya: topik & deskripsi, bobot per pertemuan, jumlah slot absen, serta
+`jenis_mk`/`semester_kurikulum` yang sudah **dikonfirmasi** (sumbernya bukan
+"tebakan"), di `penawaran.json` maupun `cetak_biru_mk.json`. `nilai.json` yang
+sudah ada **tidak pernah ditimpa** — regenerasi nilai punya jalurnya sendiri.
+Dibuktikan ujung-ke-ujung oleh `tests\test_migrasi_non_destruktif.py`, yang
+menyunting tree sungguhan, menjalankan `--force`, memeriksa suntingannya utuh,
+lalu memulihkan tree byte-per-byte.
 
 ---
 
@@ -662,6 +674,7 @@ kenyataannya.
 | **E-7** | "Hadir Sebagian" ditampilkan apa adanya — badge sendiri, filter sendiri, dan seri tersendiri di grafik tren — tidak lagi dibulatkan jadi Hadir/Alpha | Tidak |
 | **E-8** | Tombol **"Cetak Ulang Paket PDF" (Tingkat 3) diuji ujung-ke-ujung**: 11 PDF arsip tercetak dari data v2.6 dalam 12,8 detik, tanpa error. `jenis_mk` & `semester_kurikulum` ketiga MK juga sudah dikonfirmasi kaprodi lewat tab 6 | Tidak |
 | **F-1** | **"Belum diinput" tidak lagi dihitung Alpha/nilai 0.** Pertemuan dengan baris slot belum lengkap ditandai **"Belum Diinput"**, keluar dari rata-rata terbobot (bobot dinormalisasi ulang), dan grade ditahan **"Belum Lengkap"**. Aturannya hidup di `config/aturan.json` (`kehadiran.slot_belum_diisi`; `"alpha"` = perilaku lama). Badge, filter, tren, dan PDF ikut mengenali status ini | Tidak (data sekarang lengkap, nol angka bergeser) |
+| **F-2** | **`migrasi_kurikulum.py --force` tidak lagi menimpa hasil edit dashboard.** Dulu bobot direset ke template, `jenis_mk`/`semester_kurikulum` dikembalikan ke tebakan mesin, dan `nilai.json` ditimpa. Sekarang struktur dibangun ulang tetapi topik, bobot, jumlah slot, jenis_mk/semester_kurikulum yang **dikonfirmasi**, dan `nilai.json` dipertahankan. Efek sampingnya: `cetak_biru_mk.json` yang tadinya masih menulis "tebakan-awal" kini ikut sinkron ke `dikonfirmasi-dashboard` | Tidak |
 
 ### Sisa utang (belum dikerjakan)
 

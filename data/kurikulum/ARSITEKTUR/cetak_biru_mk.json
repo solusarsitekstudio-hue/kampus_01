@@ -1,7 +1,7 @@
 {
   "versi": 1,
   "prodi": "Arsitektur",
-  "catatan": "CETAK BIRU KURIKULUM. `jenis_mk` (teori/studio/teori_studio) dan `semester_kurikulum` di sini masih TEBakan awal - mohon dikonfirmasi kaprodi. `semester_kurikulum` dipakai untuk mendeteksi mahasiswa mengulang secara otomatis.",
+  "catatan": "CETAK BIRU KURIKULUM. `jenis_mk` (teori/studio/teori_studio) dan `semester_kurikulum` di sini SUDAH DIKONFIRMASI manusia (lihat `sumber_*` tiap baris). `semester_kurikulum` dipakai untuk mendeteksi mahasiswa mengulang secara otomatis.",
   "mata_kuliah": [
     {
       "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
@@ -10,8 +10,8 @@
       "sks": 2,
       "jenis_mk": "teori_studio",
       "semester_kurikulum": 2,
-      "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
-      "sumber_semester_kurikulum": "dari angkatan kelas saat ini (semua angkatan 2025 di semester 2)"
+      "sumber_jenis_mk": "dikonfirmasi-dashboard",
+      "sumber_semester_kurikulum": "dikonfirmasi-dashboard"
     },
     {
       "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
@@ -20,8 +20,8 @@
       "sks": 4,
       "jenis_mk": "studio",
       "semester_kurikulum": 2,
-      "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
-      "sumber_semester_kurikulum": "dari angkatan kelas saat ini (semua angkatan 2025 di semester 2)"
+      "sumber_jenis_mk": "dikonfirmasi-dashboard",
+      "sumber_semester_kurikulum": "dikonfirmasi-dashboard"
     },
     {
       "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
@@ -30,8 +30,8 @@
       "sks": 3,
       "jenis_mk": "teori",
       "semester_kurikulum": 2,
-      "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
-      "sumber_semester_kurikulum": "dari angkatan kelas saat ini (semua angkatan 2025 di semester 2)"
+      "sumber_jenis_mk": "dikonfirmasi-dashboard",
+      "sumber_semester_kurikulum": "dikonfirmasi-dashboard"
     }
   ]
 }

@@ -1,7 +1,7 @@
 ﻿"""MIGRASI SEKALI JALAN: data lama -> tree kurikulum bertingkat.
 
 Jalankan:  python scripts\\migrasi_kurikulum.py            (tolak kalau sudah ada)
-           python scripts\\migrasi_kurikulum.py --force    (timpa)
+           python scripts\\migrasi_kurikulum.py --force    (bangun ulang struktur)
 
 APA YANG DIPINDAHKAN (tidak ada yang dikarang):
   * 35 mahasiswa         <- data/academic_data.json (hasil baca Excel asli)
@@ -19,6 +19,20 @@ Yang MASIH PERLU DIISI MANUSIA (dicatat di berkas, tidak ditebak diam-diam):
   * jenis_mk tiap MK (teori / studio / teori_studio)
   * semester_kurikulum tiap MK (MK ini diajarkan di semester berapa)
   * topik pertemuan 7 dan 9-15 (pertemuan 1-6 memakai topik asli)
+
+SEJAK v2.6 - `--force` TIDAK LAGI MENIMPA HASIL EDIT DASHBOARD:
+  Migrasi ini membangun ULANG STRUKTUR, tetapi setiap isi yang memang milik
+  manusia dipertahankan apa adanya:
+    * topik & deskripsi pertemuan  (sudah lama dipertahankan)
+    * bobot per pertemuan dan jumlah slot absen (suntingan tab Kurikulum)
+    * jenis_mk dan semester_kurikulum yang sudah DIKONFIRMASI manusia
+      (sumbernya bukan "tebakan"), baik di penawaran.json maupun cetak_biru_mk.json
+    * nilai.json yang sudah ada TIDAK PERNAH ditimpa - regenerasi nilai sintetis
+      adalah tugas script tersendiri, bukan efek samping migrasi.
+
+  Sebelumnya `--force` menulis ulang bobot dari template, mengembalikan
+  jenis_mk/semester_kurikulum ke tebakan mesin, dan menimpa nilai.json. Itu
+  menghapus pekerjaan kaprodi hanya karena ingin merapikan struktur.
 """
 
 import argparse
@@ -66,30 +80,36 @@ def tebak_jenis_mk(kunci, mk):
 
 
 def sesi_lama_untuk(kunci, master, kunci_aktif):
-    """Topik yang sudah pernah ada, untuk DIPERTAHANKAN saat membangun tree.
+    """(daftar baris lama, dari_tree) untuk dipertahankan saat membangun tree.
 
     Urutan prioritas: tree kurikulum (paling baru, sudah berisi suntingan) ->
     master/katalog (artefak kompilasi). Tujuannya supaya migrasi boleh dijalankan
     berulang tanpa menimpa topik yang sudah benar.
+
+    `dari_tree=True` hanya bila barisnya berasal dari tree kurikulum - yaitu
+    berkas yang benar-benar disunting tab Kurikulum. Hanya di kasus itu bobot dan
+    slot absen boleh dipertahankan; sumber lain (master/katalog) hanya dipakai
+    untuk topik, supaya struktur mereka yang belum tentu 16 pertemuan tidak
+    dipaksa masuk.
     """
     try:
         prodi, ta, sem = lokasi_mk(kunci)
         if prodi and ta and sem:
             path_tree = KT.path_berkas(prodi, ta, sem, kunci, "sesi.json")
             if os.path.exists(path_tree):
-                return [dict(s) for s in KT.baca_json(path_tree).get("sesi", [])]
+                return [dict(s) for s in KT.baca_json(path_tree).get("sesi", [])], True
     except Exception:  # noqa: BLE001 - tree belum ada = wajar saat migrasi pertama
         pass
 
     if kunci == kunci_aktif:
-        return [dict(s) for s in master.get("sessions", [])]
+        return [dict(s) for s in master.get("sessions", [])], False
     path = os.path.join(COURSES_DIR, "{0}.json".format(kunci))
     if os.path.exists(path):
         try:
-            return [dict(s) for s in KT.baca_json(path).get("sessions", [])]
+            return [dict(s) for s in KT.baca_json(path).get("sessions", [])], False
         except KT.KurikulumError:
-            return []
-    return []
+            return [], False
+    return [], False
 
 
 def lokasi_mk(kunci):
@@ -98,6 +118,65 @@ def lokasi_mk(kunci):
     mk = IDENT.mk(kunci)
     ta, sem = KT.pecah_semester(mk.get("semester"))
     return inst.get("prodi", ""), ta, sem
+
+
+# =============================================================================
+# PRESERVASI HASIL EDIT MANUSIA (dipakai `--force`)
+# =============================================================================
+TEBAKAN_PENANDA = "tebakan"
+
+
+def baca_json_aman(path):
+    """Baca JSON kalau ada; kalau tidak ada / rusak -> None (bukan crash)."""
+    if not path or not os.path.exists(path):
+        return None
+    try:
+        return KT.baca_json(path)
+    except (KT.KurikulumError, OSError, ValueError):
+        return None
+
+
+def sudah_dikonfirmasi(dok, kunci_nilai, kunci_sumber):
+    """True bila sebuah nilai di dokumen lama berasal dari MANUSIA, bukan tebakan mesin.
+
+    Penandanya adalah `sumber_*`: kalau sumbernya mengandung kata "tebakan",
+    nilai itu masih tebakan awal (boleh diperbarui mesin). Selain itu - misalnya
+    "dikonfirmasi-dashboard" - berarti kaprodi sudah menetapkannya dan migrasi
+    TIDAK boleh mengembalikannya ke tebakan.
+    """
+    if not isinstance(dok, dict):
+        return False
+    nilai = dok.get(kunci_nilai)
+    sumber = str(dok.get(kunci_sumber) or "").strip().lower()
+    return nilai not in (None, "") and bool(sumber) and TEBAKAN_PENANDA not in sumber
+
+
+def pilih_nilai(nilai_tebakan, sumber_tebakan, dok_lama, kunci_nilai, kunci_sumber):
+    """Nilai final = yang sudah dikonfirmasi manusia kalau ada, kalau tidak tebakan."""
+    if sudah_dikonfirmasi(dok_lama, kunci_nilai, kunci_sumber):
+        return dok_lama.get(kunci_nilai), dok_lama.get(kunci_sumber)
+    return nilai_tebakan, sumber_tebakan
+
+
+def slot_absen_default(jumlah=SLOT_ABSEN_DEFAULT):
+    return [{"slot": j + 1, "label": "Absen {0}".format(j + 1)} for j in range(jumlah)]
+
+
+def slot_absen_lama(baris_lama):
+    """Slot absen yang sudah ada di berkas, kalau bentuknya masih masuk akal."""
+    slots = (baris_lama or {}).get("slot_absen")
+    if isinstance(slots, list) and slots and all(isinstance(s, dict) for s in slots):
+        return [dict(s) for s in slots]
+    return None
+
+
+def bobot_lama(baris_lama):
+    """Bobot pertemuan yang sudah ada, kalau angkanya masuk akal; selain itu None."""
+    try:
+        b = int((baris_lama or {}).get("bobot"))
+    except (TypeError, ValueError):
+        return None
+    return b if 0 <= b <= 100 else None
 
 
 # Teks topik yang BUKAN topik asli (hasil generate/pending RPS). Dipakai untuk
@@ -113,8 +192,15 @@ PLACEHOLDER_TOPIK = {
 }
 
 
-def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
-    """16 pertemuan standar kampus, topik lama dipertahankan apa adanya."""
+def bangun_sesi(kunci, penawaran, sesi_lama, ujian, pertahankan_suntingan=False):
+    """16 pertemuan standar kampus, suntingan manusia dipertahankan apa adanya.
+
+    Dari `sesi_lama` selalu dipertahankan: topik, deskripsi, tanggal.
+    Kalau `pertahankan_suntingan` (baris berasal dari tree kurikulum), bobot dan
+    jumlah slot absen juga dipertahankan - itulah suntingan tab Kurikulum.
+    Yang selalu dihitung ulang: nomor pertemuan, tipe (dari jenis_mk), tanggal
+    turunan yang belum ada, dan status terverifikasi.
+    """
     total = AT.pertemuan_total()
     bobot_t = AT.standar_kampus()["bobot_template"]
     jenis = penawaran["jenis_mk"]
@@ -181,12 +267,22 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
             offset = i - max(len(lama_per_pertemuan), 6)
             d = dasar + timedelta(days=7 * offset)
 
-        if tipe == "uts":
-            bobot = bobot_t["uts"]
-        elif tipe == "uas":
-            bobot = bobot_t["uas"]
-        else:
-            bobot = bobot_t["per_pertemuan"]
+        # BOBOT: pakai suntingan dashboard kalau barisnya memang dari tree;
+        # kalau tidak, template. Dulu baris ini selalu menimpa bobot dengan
+        # template, sehingga menjalankan ulang migrasi mengembalikan bobot yang
+        # sudah diatur kaprodi.
+        bobot = bobot_lama(lama) if pertahankan_suntingan else None
+        if bobot is None:
+            if tipe == "uts":
+                bobot = bobot_t["uts"]
+            elif tipe == "uas":
+                bobot = bobot_t["uas"]
+            else:
+                bobot = bobot_t["per_pertemuan"]
+
+        # SLOT ABSEN: idem - suntingan dashboard kalau ada, kalau tidak default.
+        slots = (slot_absen_lama(lama) if pertahankan_suntingan else None) \
+            or slot_absen_default()
 
         baris.append({
             "pertemuan": i,
@@ -197,10 +293,7 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
             "deskripsi": deskripsi,
             "bobot": bobot,
             "tanggal_terverifikasi": topik.strip() not in PLACEHOLDER_TOPIK,
-            "slot_absen": [
-                {"slot": j + 1, "label": "Absen {0}".format(j + 1)}
-                for j in range(SLOT_ABSEN_DEFAULT)
-            ],
+            "slot_absen": slots,
         })
 
     return {
@@ -219,7 +312,12 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
 
 def main():
     parser = argparse.ArgumentParser(description="Migrasi data lama ke tree kurikulum")
-    parser.add_argument("--force", action="store_true", help="Timpa berkas yang sudah ada")
+    parser.add_argument(
+        "--force", action="store_true",
+        help=("Bangun ulang STRUKTUR tree. Hasil edit manusia (topik, deskripsi, "
+              "bobot, slot absen, jenis_mk/semester_kurikulum yang sudah "
+              "dikonfirmasi, dan nilai.json) DIPERTAHANKAN - tidak ditimpa."),
+    )
     args = parser.parse_args()
 
     if not os.path.exists(MASTER_PATH):
@@ -266,41 +364,114 @@ def main():
     # 2. Cetak biru MK (semester_kurikulum masih perlu konfirmasi kaprodi)
     ta_aktif, sem_aktif = KT.pecah_semester(IDENT.mk(kunci_aktif).get("semester"))
     sem_ke_kelas = KT.semester_ke(KT.angkatan_dari_npm(mahasiswa[0]["npm"]), ta_aktif, sem_aktif)
+    # Cetak biru lama dibaca dulu: nilai yang sudah dikonfirmasi kaprodi jangan
+    # dikembalikan menjadi tebakan mesin hanya karena migrasi dijalankan ulang.
+    cb_lama_per_kunci = {}
+    dok_cb_lama = baca_json_aman(KT.path_cetak_biru(prodi))
+    for c in ((dok_cb_lama or {}).get("mata_kuliah") or []):
+        if isinstance(c, dict) and c.get("kunci_mk"):
+            cb_lama_per_kunci[str(c["kunci_mk"])] = c
+    sumber_sem_tebakan = (
+        "dari angkatan kelas saat ini (semua angkatan {0} di semester {1})".format(
+            mahasiswa[0]["angkatan"] if mahasiswa else "-", sem_ke_kelas
+        )
+    )
     cetak_biru = []
+    peta_jenis = {}
     for kunci, mk in IDENT.daftar_mk().items():
+        c_lama = cb_lama_per_kunci.get(kunci) or {}
+        # penawaran.json = berkas yang benar-benar ditulis tab Kurikulum, jadi
+        # konfirmasinya MENANG atas cetak biru. Urutan: tebakan -> cetak biru lama
+        # -> penawaran lama.
+        ta_mk, sem_mk_dir = KT.pecah_semester(mk.get("semester"))
+        pw_lama_mk = baca_json_aman(
+            KT.path_berkas(prodi, ta_mk, sem_mk_dir, kunci, "penawaran.json")) or {}
+        jenis_mk, sumber_jenis = pilih_nilai(
+            tebak_jenis_mk(kunci, mk), "tebakan-awal-dari-nama-dan-ruang",
+            c_lama, "jenis_mk", "sumber_jenis_mk",
+        )
+        jenis_mk, sumber_jenis = pilih_nilai(
+            jenis_mk, sumber_jenis, pw_lama_mk, "jenis_mk", "sumber_jenis_mk",
+        )
+        sem_final, sumber_sem = pilih_nilai(
+            sem_ke_kelas, sumber_sem_tebakan,
+            c_lama, "semester_kurikulum", "sumber_semester_kurikulum",
+        )
+        sem_final, sumber_sem = pilih_nilai(
+            sem_final, sumber_sem, pw_lama_mk,
+            "semester_kurikulum", "sumber_semester_kurikulum",
+        )
+        peta_jenis[kunci] = jenis_mk
         cetak_biru.append({
             "kunci_mk": kunci,
             "kode_mk": mk.get("kode_mk", ""),
             "nama_mk": mk.get("nama_mk", ""),
             "sks": mk.get("sks"),
-            "jenis_mk": tebak_jenis_mk(kunci, mk),
-            "semester_kurikulum": sem_ke_kelas,
-            "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
-            "sumber_semester_kurikulum": (
-                "dari angkatan kelas saat ini (semua angkatan {0} di semester {1})".format(
-                    mahasiswa[0]["angkatan"] if mahasiswa else "-", sem_ke_kelas
-                )
-            ),
+            "jenis_mk": jenis_mk,
+            "semester_kurikulum": sem_final,
+            "sumber_jenis_mk": sumber_jenis,
+            "sumber_semester_kurikulum": sumber_sem,
         })
-    KT.tulis_json(KT.path_cetak_biru(prodi), {
-        "versi": 1,
-        "prodi": prodi,
-        "catatan": (
+    # Catatan harus jujur: kalau semua baris sudah dikonfirmasi, jangan bilang
+    # "masih tebakan" - dan sebaliknya.
+    jumlah_tebakan = sum(
+        1 for c in cetak_biru if TEBAKAN_PENANDA in str(c["sumber_jenis_mk"]).lower()
+    )
+    if jumlah_tebakan == 0:
+        catatan_cb = (
+            "CETAK BIRU KURIKULUM. `jenis_mk` (teori/studio/teori_studio) dan "
+            "`semester_kurikulum` di sini SUDAH DIKONFIRMASI manusia (lihat "
+            "`sumber_*` tiap baris). `semester_kurikulum` dipakai untuk mendeteksi "
+            "mahasiswa mengulang secara otomatis."
+        )
+    elif jumlah_tebakan == len(cetak_biru):
+        catatan_cb = (
             "CETAK BIRU KURIKULUM. `jenis_mk` (teori/studio/teori_studio) dan "
             "`semester_kurikulum` di sini masih TEBakan awal - mohon dikonfirmasi "
             "kaprodi. `semester_kurikulum` dipakai untuk mendeteksi mahasiswa "
             "mengulang secara otomatis."
-        ),
+        )
+    else:
+        catatan_cb = (
+            "CETAK BIRU KURIKULUM. Sebagian baris sudah dikonfirmasi, sebagian "
+            "masih tebakan - lihat `sumber_jenis_mk`/`sumber_semester_kurikulum` "
+            "tiap baris (yang TIDAK memuat kata 'tebakan' berarti sudah "
+            "dikonfirmasi manusia). `semester_kurikulum` dipakai untuk mendeteksi "
+            "mahasiswa mengulang secara otomatis."
+        )
+    KT.tulis_json(KT.path_cetak_biru(prodi), {
+        "versi": 1,
+        "prodi": prodi,
+        "catatan": catatan_cb,
         "mata_kuliah": cetak_biru,
     })
     ditulis.append(KT.path_cetak_biru(prodi))
 
     # 3. Per MK: penawaran + sesi + nilai
-    peta_jenis = {c["kunci_mk"]: c["jenis_mk"] for c in cetak_biru}
     ringkasan = []
     for kunci, mk in IDENT.daftar_mk().items():
         ta, sem = KT.pecah_semester(mk.get("semester"))
         sesi_lama = sesi_lama_untuk(kunci, master, kunci_aktif)
+        baris_lama, dari_tree = sesi_lama
+        path_penawaran = KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json")
+        path_sesi = KT.path_berkas(prodi, ta, sem, kunci, "sesi.json")
+        path_nilai = KT.path_berkas(prodi, ta, sem, kunci, "nilai.json")
+
+        # penawaran.json lama adalah sumber UTAMA konfirmasi kaprodi (itulah yang
+        # ditulis tab Kurikulum). Cetak biru dipakai sebagai cadangan.
+        pw_lama = baca_json_aman(path_penawaran) or {}
+        cb = next((c for c in cetak_biru if c["kunci_mk"] == kunci), {})
+        jenis_mk, sumber_jenis = pilih_nilai(
+            cb.get("jenis_mk", peta_jenis.get(kunci, "teori")),
+            cb.get("sumber_jenis_mk", "tebakan-awal-dari-nama-dan-ruang"),
+            pw_lama, "jenis_mk", "sumber_jenis_mk",
+        )
+        sem_mk, sumber_sem = pilih_nilai(
+            cb.get("semester_kurikulum", sem_ke_kelas),
+            cb.get("sumber_semester_kurikulum", sumber_sem_tebakan),
+            pw_lama, "semester_kurikulum", "sumber_semester_kurikulum",
+        )
+
         penawaran = {
             "versi": 1,
             "prodi": prodi,
@@ -311,60 +482,66 @@ def main():
             "kode_mk": mk.get("kode_mk", ""),
             "nama_mk": mk.get("nama_mk", ""),
             "sks": mk.get("sks"),
-            "jenis_mk": peta_jenis[kunci],
-            "sumber_jenis_mk": "tebakan-awal-dari-nama-dan-ruang",
-            "semester_kurikulum": sem_ke_kelas,
-            "sumber_semester_kurikulum": (
-                "tebakan awal: semua angkatan {0} sekarang di semester {1} - "
-                "mohon dikonfirmasi kaprodi".format(
-                    mahasiswa[0]["angkatan"] if mahasiswa else "-", sem_ke_kelas
-                )
-            ),
+            "jenis_mk": jenis_mk,
+            "sumber_jenis_mk": sumber_jenis,
+            "semester_kurikulum": sem_mk,
+            "sumber_semester_kurikulum": sumber_sem,
             "kelas": mk.get("kelas", ""),
             "jadwal": mk.get("jadwal", ""),
             "dosen_pengasuh": list(mk.get("dosen_pengasuh") or []),
             "asisten_dosen": mk.get("asisten_dosen", ""),
         }
+        # Kalau nilainya masih tebakan, simpan jejak tebakannya supaya jelas.
+        if TEBAKAN_PENANDA in str(sumber_jenis).lower():
+            penawaran["tebakan_jenis_mk"] = tebak_jenis_mk(kunci, mk)
         penawaran["peringatan_jadwal"] = KT.peringatan_jadwal(
             penawaran["jadwal"], penawaran["sks"] or 0, penawaran["jenis_mk"]
         )
 
-        sesi_doc = bangun_sesi(kunci, penawaran, sesi_lama, ujian)
+        sesi_doc = bangun_sesi(kunci, penawaran, baris_lama, ujian,
+                               pertahankan_suntingan=dari_tree)
         masalah = KT.validasi_sesi(sesi_doc, kunci)
         if masalah:
             print("[GAGAL] sesi {0} tidak valid: {1}".format(kunci, masalah))
             return 1
 
-        nilai_rows = []
-        for idx, m in enumerate(mahasiswa):
-            nilai_rows.extend(PS.bangun_nilai_sintetis(m["npm"], idx, sesi_doc))
-        nilai_doc = {
-            "versi": 1,
-            "kunci_mk": kunci,
-            "tahun_ajar": ta,
-            "semester": sem,
-            "catatan": (
-                "NILAI SINTETIS (bukan nilai resmi dosen). Dibangkitkan sekali "
-                "supaya dashboard punya isi, dengan RNG per NPM sehingga menambah "
-                "mahasiswa lain tidak menggeser angka siapa pun. Ganti dengan data "
-                "portal begitu tersedia."
-            ),
-            "sintetis": True,
-            "nilai": nilai_rows,
-        }
+        # nilai.json: kalau sudah ada, JANGAN ditimpa. Mengganti data nilai bukan
+        # tugas migrasi struktur. Regenerasi nilai sintetis punya script sendiri.
+        nilai_lama = baca_json_aman(path_nilai)
+        if nilai_lama is not None:
+            nilai_doc = nilai_lama
+        else:
+            nilai_rows = []
+            for idx, m in enumerate(mahasiswa):
+                nilai_rows.extend(PS.bangun_nilai_sintetis(m["npm"], idx, sesi_doc))
+            nilai_doc = {
+                "versi": 1,
+                "kunci_mk": kunci,
+                "tahun_ajar": ta,
+                "semester": sem,
+                "catatan": (
+                    "NILAI SINTETIS (bukan nilai resmi dosen). Dibangkitkan sekali "
+                    "supaya dashboard punya isi, dengan RNG per NPM sehingga menambah "
+                    "mahasiswa lain tidak menggeser angka siapa pun. Ganti dengan data "
+                    "portal begitu tersedia."
+                ),
+                "sintetis": True,
+                "nilai": nilai_rows,
+            }
 
-        KT.tulis_json(KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json"), penawaran)
-        KT.tulis_json(KT.path_berkas(prodi, ta, sem, kunci, "sesi.json"), sesi_doc)
-        KT.tulis_json(KT.path_berkas(prodi, ta, sem, kunci, "nilai.json"), nilai_doc)
-        ditulis += [
-            KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json"),
-            KT.path_berkas(prodi, ta, sem, kunci, "sesi.json"),
-            KT.path_berkas(prodi, ta, sem, kunci, "nilai.json"),
-        ]
+        KT.tulis_json(path_penawaran, penawaran)
+        KT.tulis_json(path_sesi, sesi_doc)
+        ditulis += [path_penawaran, path_sesi]
+        if nilai_lama is None:
+            KT.tulis_json(path_nilai, nilai_doc)
+            ditulis.append(path_nilai)
+
         ringkasan.append({
             "kunci": kunci, "ta": ta, "sem": sem, "jenis": penawaran["jenis_mk"],
             "pertemuan": len(sesi_doc["sesi"]), "slot": KT.jumlah_slot(sesi_doc),
-            "topik_asli": sesi_doc["topik_terisi"], "nilai_baris": len(nilai_rows),
+            "topik_asli": sesi_doc["topik_terisi"],
+            "nilai_baris": len(nilai_doc.get("nilai") or []),
+            "nilai_dipertahankan": nilai_lama is not None,
             "peringatan": penawaran["peringatan_jadwal"],
         })
 
@@ -390,10 +567,16 @@ def main():
         print("  {0}".format(r["kunci"]))
         print("    {0} {1} | {2} | {3} pertemuan | {4} slot absen".format(
             r["ta"], r["sem"], r["jenis"], r["pertemuan"], r["slot"]))
-        print("    topik asli {0}, placeholder {1} | {2} baris nilai".format(
-            r["topik_asli"], r["pertemuan"] - r["topik_asli"], r["nilai_baris"]))
+        nilai_info = "{0} baris nilai".format(r["nilai_baris"])
+        if r["nilai_dipertahankan"]:
+            nilai_info += " (DIPERTAHANKAN - tidak ditimpa)"
+        print("    topik asli {0}, placeholder {1} | {2}".format(
+            r["topik_asli"], r["pertemuan"] - r["topik_asli"], nilai_info))
         for w in r["peringatan"]:
             print("    [PERINGATAN] {0}".format(w))
+    print("=" * 72)
+    print("Catatan: hasil edit dashboard (bobot, slot absen, jenis_mk, "
+          "semester_kurikulum yang dikonfirmasi) dan nilai.json DIPERTAHANKAN.")
     print("=" * 72)
     return 0
 
