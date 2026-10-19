@@ -396,9 +396,13 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         npm = str(s["npm"])
         nama = s["nama"]
 
-        # Persona MURNI dari NPM (persona.py) + RNG per NPM.
-        archetype = PS.tentukan_archetype(idx, npm)
-        rng = PS.rng_untuk(npm)
+        # Persona MURNI dari NPM (persona.py) + RNG per NPM PER MATA KULIAH.
+        # `konteks` = kunci MK: matriks karier & diagnosis ikut berpindah saat
+        # dashboard pindah MK, tapi tetap deterministic (tidak bergantung urutan
+        # baris mahasiswa).
+        konteks = str(ctx.get("kunci_mk") or "")
+        archetype = PS.tentukan_archetype(idx, npm, konteks)
+        rng = PS.rng_untuk(npm, konteks)
 
         # Kehadiran + nilai dibaca dari catatan per SLOT di tree kurikulum,
         # bukan dikarang di sini. Rincian per pertemuan tetap yang ditampilkan.

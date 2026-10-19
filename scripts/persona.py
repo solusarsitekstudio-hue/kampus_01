@@ -7,10 +7,27 @@ global (`random.seed(42)`). Akibatnya satu baris baru di Excel menggeser nilai
 SELURUH kelas (utang #1). Sekarang:
 
   * persona terikat NPM (bukan nomor baris),
-  * RNG dibuat PER MAHASISWA (`random.Random(42 + npm)`), jadi menambah atau
-    menghapus mahasiswa lain TIDAK menggeser angka siapa pun,
+  * RNG dibuat PER MAHASISWA + PER MATA KULIAH (`random.Random(_benih(npm,
+    konteks))`), jadi menambah atau menghapus mahasiswa lain TIDAK menggeser
+    angka siapa pun, dan dua mata kuliah tidak lagi menghasilkan catatan yang
+    persis sama (utang #2: kelas yang sama, angka yang sama di semua MK),
   * catatan kehadiran/nilai disimpan sebagai DATA (data/kurikulum/.../nilai.json)
     lewat `scripts/migrasi_kurikulum.py`, bukan dikarang saat compile.
+
+KONTEKS MATA KULIAH
+-------------------
+`konteks` = kunci mata kuliah (mis. "ARSITEKTUR/2025-2026/GENAP/Aplikasi Komputer").
+Nilainya hanya "bumbu" benih RNG lewat CRC32, jadi:
+
+  * `konteks=""`  -> angka PERSIS seperti perilaku lama (42 + npm). Berguna
+    untuk membuktikan bahwa perubahan itu memang datang dari konteks, bukan
+    dari RNG yang dibongkar.
+  * `konteks=<MK>` -> angka berbeda antar mata kuliah, tapi tetap deterministic
+    dan tidak bergantung pada urutan baris mahasiswa.
+
+Yang SENGAJA tidak diubah oleh konteks: `tentukan_archetype` (persona melekat
+pada mahasiswa, bukan pada mata kuliah). Kalau "bintang" jadi "at-risk" hanya
+karena pindah MK, seluruh analisis kasus di README tidak lagi bisa dirujuk.
 
 Perubahan perilaku ini disengaja (keputusan user Tahap E): angka memang
 berubah, jadi sekalian utang #1 dibayar.
@@ -20,6 +37,7 @@ import os
 import random
 import re
 import sys
+import zlib
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -39,13 +57,21 @@ ARCHETYPE_BY_NPM = {
 }
 
 
-def tentukan_archetype(idx: int, npm: str) -> str:
-    """Persona mahasiswa: MURNI dari NPM. `idx` hanya dipertahankan untuk
-    pemanggil lama dan TIDAK dipakai lagi.
+def tentukan_archetype(idx: int, npm: str, konteks: str = "") -> str:
+    """Persona mahasiswa: MURNI dari NPM. `idx` dan `konteks` hanya
+    dipertahankan agar tanda tangan fungsi seragam dengan `rng_untuk` dan
+    `bangun_nilai_sintetis`; KEDUANYA TIDAK DIPAKAI.
 
     Dulu cadangannya `idx % 7` / `idx % 4` - artinya mahasiswa yang sama bisa
     berubah persona hanya karena satu baris lain ditambah di atasnya. Sekarang
     polanya dari angka NPM sendiri, jadi posisi tidak berpengaruh sama sekali.
+
+    `konteks` (kunci mata kuliah) juga sengaja DIABAIKAN: persona adalah
+    identitas mahasiswa. Kalau konteks MK dipakai menentukan persona, satu
+    mahasiswa bisa "bintang" di Studio Perancangan dan "at-risk" di Struktur &
+    Konstruksi - analisis per kasus lalu tidak bisa dirujuk antar MK. Variasi
+    antar MK diambil dari letak absen + angkanya (lihat `rencana_pertemuan` dan
+    `_benih`).
     """
     if str(npm) in ARCHETYPE_BY_NPM:
         return ARCHETYPE_BY_NPM[str(npm)]
@@ -58,10 +84,26 @@ def tentukan_archetype(idx: int, npm: str) -> str:
     return "normal"
 
 
-def rng_untuk(npm):
-    """RNG per mahasiswa. Menambah mahasiswa lain TIDAK menggeser angkanya."""
+def _benih(npm, konteks: str = "") -> int:
+    """Benih RNG: `42 + npm` (perilaku lama) atau +CRC32(konteks) kalau ada.
+
+    `konteks=""` WAJIB menghasilkan angka yang persis sama dengan versi lama,
+    supaya "sebelum vs sesudah" bisa dibandingkan tanpa mengganti mesin RNG.
+    """
     digit = re.sub(r"\D", "", str(npm or ""))
-    return random.Random(42 + (int(digit) if digit else 0))
+    dasar = 42 + (int(digit) if digit else 0)
+    if konteks:
+        dasar += zlib.crc32(str(konteks).encode("utf-8")) % 1000000
+    return dasar
+
+
+def rng_untuk(npm, konteks: str = ""):
+    """RNG per mahasiswa PER MATA KULIAH.
+
+    Menambah mahasiswa lain tidak menggeser angkanya, dan dua mata kuliah
+    menghasilkan deret angka yang berbeda (`konteks` = kunci MK).
+    """
+    return random.Random(_benih(npm, konteks))
 
 
 # =============================================================================
@@ -106,17 +148,58 @@ PROFIL_ABSENSI = {
 }
 
 
-def rencana_pertemuan(archetype, total_pertemuan):
+def _posisi_acak(posisi, total, rng, jendela=2, ujian=()):
+    """Sebar ulang posisi absen: tetap di sekitar posisi profil, tapi antar MK beda.
+
+    Jumlah dan bauran alasan (alpha/izin/sakit/sebagian) DIPERTAHANKAN - itu
+    yang menjaga profil "at-risk" tetap at-risk. Yang bergerak hanya letaknya,
+    supaya mahasiswa yang sama tidak absen di pertemuan yang persis sama di
+    semua mata kuliah.
+
+    Pertemuan UTS/UAS (`ujian`) TIDAK dipakai sebagai tempat absen: bobotnya 20
+    dan 24, jadi satu Alpha yang tidak sengaja mendarat di sana menjatuhkan grade
+    dari C ke D hanya karena hasil undian - cerita demo jadi tidak stabil dan
+    tidak mencerminkan "bolong di pertemuan biasa" yang dimaksud profil.
+
+    Tiap posisi memilih acak dari jendela +-`jendela` pertemuan (pertama-tama
+    dari yang belum terpakai), jadi pola awal/tengah/akhir semester tetap
+    terbaca dan tidak ada pertemuan yang dobel.
+    """
+    larangan = set(ujian or ())
+    terpakai = set()
+    hasil = []
+    for p in posisi:
+        jendela_kandidat = [q for q in range(max(1, p - jendela), min(total, p + jendela) + 1)
+                            if q not in terpakai and q not in larangan]
+        if not jendela_kandidat:  # jendela penuh/kena ujian: pakai pertemuan bebas mana pun
+            jendela_kandidat = [q for q in range(1, total + 1)
+                                if q not in terpakai and q not in larangan]
+        if not jendela_kandidat:  # semua pertemuan bukan-ujian sudah terpakai
+            jendela_kandidat = [q for q in range(1, total + 1) if q not in terpakai]
+        pilih = rng.choice(jendela_kandidat)
+        terpakai.add(pilih)
+        hasil.append(pilih)
+    return hasil
+
+
+def rencana_pertemuan(archetype, total_pertemuan, rng=None, ujian=()):
     """{nomor_pertemuan: (rasio_slot_hadir, alasan)} untuk persona non-acak.
 
     Rasio 0.0 = tidak hadir satu slot pun; 0.5 = separuh slot (tampil
     "Hadir Sebagian"); 1.0 = hadir penuh.
+
+    `rng` (opsional, dari `rng_untuk(npm, konteks)`) menggeser LETAK absen per
+    mata kuliah; `ujian` = nomor pertemuan UTS/UAS yang dijauhi. Tanpa `rng`
+    hasilnya persis seperti versi lama.
     """
     if archetype == "star":
         return {}
     rencana = {}
-    for alasan, rasio_posisi in PROFIL_ABSENSI.get(archetype, []):
-        p = _pos(rasio_posisi, total_pertemuan)
+    profil = PROFIL_ABSENSI.get(archetype, [])
+    posisi = [_pos(rasio_posisi, total_pertemuan) for _alasan, rasio_posisi in profil]
+    if rng is not None and posisi:
+        posisi = _posisi_acak(posisi, total_pertemuan, rng, ujian=ujian)
+    for (alasan, _rasio_posisi), p in zip(profil, posisi):
         if alasan == "sebagian":
             rencana[p] = (0.5, "Hadir Sebagian")
         else:
@@ -137,10 +220,14 @@ def _skor_persona(archetype, rng, jenis):
     return rng.randint(75, 90) if jenis == "biasa" else rng.randint(72, 88)
 
 
-def bangun_nilai_sintetis(npm, idx, sesi_dokumen):
+def bangun_nilai_sintetis(npm, idx, sesi_dokumen, konteks=""):
     """Catatan nilai + kehadiran sintetis PER SLOT untuk satu mahasiswa.
 
     Balikkan list baris: {pertemuan, slot, status, alasan, skor}.
+
+    `konteks` = kunci mata kuliah. Dua MK menghasilkan catatan yang BERBEDA
+    (letak absen + skor), tapi masing-masing tetap deterministic: panggil ulang
+    dengan konteks yang sama -> byte yang sama.
 
     Aturan yang dipakai:
       * Satu pertemuan bisa punya beberapa slot absen (mis. 2 sesi sehari).
@@ -148,11 +235,13 @@ def bangun_nilai_sintetis(npm, idx, sesi_dokumen):
       * Pertemuan yang butuh N slot dan hanya sebagian dihadiri tampil apa
         adanya ("Hadir Sebagian") - tidak dibulatkan jadi hadir/alpha.
     """
-    archetype = tentukan_archetype(idx, npm)
-    rng = rng_untuk(npm)
+    archetype = tentukan_archetype(idx, npm, konteks)
+    rng = rng_untuk(npm, konteks)
     sesi = (sesi_dokumen or {}).get("sesi", [])
     total = len(sesi)
-    rencana = rencana_pertemuan(archetype, total)
+    # Pertemuan UTS/UAS dijauhi saat menggeser letak absen (bobotnya 20 & 24).
+    ujian = [s.get("pertemuan") for s in sesi if s.get("tipe") in ("uts", "uas")]
+    rencana = rencana_pertemuan(archetype, total, rng, ujian=ujian)
 
     baris = []
     for s in sesi:
@@ -204,3 +293,43 @@ def bangun_nilai_sintetis(npm, idx, sesi_dokumen):
                 "skor": nilai,
             })
     return baris
+
+
+# =============================================================================
+# DOKUMEN NILAI SINTETIS - SATU SUMBER UNTUK MIGRASI & SEED
+# =============================================================================
+# Sebelumnya catatan + bentuk dokumen ini ditulis ulang di
+# scripts/migrasi_kurikulum.py. Sekarang dipakai bersama supaya script seed
+# (scripts/seed_nilai_sintetis.py) dan migrasi tidak bisa berbeda bentuk.
+CATATAN_NILAI_SINTETIS = (
+    "NILAI SINTETIS (bukan nilai resmi dosen). Dibangkitkan sekali supaya "
+    "dashboard punya isi, dengan RNG per NPM + per mata kuliah sehingga "
+    "menambah mahasiswa lain tidak menggeser angka siapa pun dan dua MK tidak "
+    "berisi angka yang sama. Ganti dengan data portal begitu tersedia."
+)
+
+
+def bangun_nilai_satu_mk(daftar_mahasiswa, sesi_dokumen, konteks=""):
+    """Baris nilai sintetis untuk SATU mata kuliah (seluruh mahasiswa).
+
+    `daftar_mahasiswa`: list NPM (str) atau list dict berisi kunci "npm".
+    `konteks` = kunci MK; WAJIB diisi supaya antar MK tidak kembar.
+    """
+    baris = []
+    for idx, m in enumerate(daftar_mahasiswa):
+        npm = m.get("npm") if isinstance(m, dict) else m
+        baris.extend(bangun_nilai_sintetis(npm, idx, sesi_dokumen, konteks=konteks))
+    return baris
+
+
+def dokumen_nilai_sintetis(kunci, tahun_ajar, semester, baris):
+    """Bentuk dokumen `nilai.json` (versi 1) - satu bentuk, satu sumber."""
+    return {
+        "versi": 1,
+        "kunci_mk": kunci,
+        "tahun_ajar": tahun_ajar,
+        "semester": semester,
+        "catatan": CATATAN_NILAI_SINTETIS,
+        "sintetis": True,
+        "nilai": baris,
+    }

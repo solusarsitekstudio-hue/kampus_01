@@ -28,7 +28,8 @@ SEJAK v2.6 - `--force` TIDAK LAGI MENIMPA HASIL EDIT DASHBOARD:
     * jenis_mk dan semester_kurikulum yang sudah DIKONFIRMASI manusia
       (sumbernya bukan "tebakan"), baik di penawaran.json maupun cetak_biru_mk.json
     * nilai.json yang sudah ada TIDAK PERNAH ditimpa - regenerasi nilai sintetis
-      adalah tugas script tersendiri, bukan efek samping migrasi.
+      adalah tugas `scripts/seed_nilai_sintetis.py` (mau `--force`), bukan efek
+      samping migrasi.
 
   Sebelumnya `--force` menulis ulang bobot dari template, mengembalikan
   jenis_mk/semester_kurikulum ke tebakan mesin, dan menimpa nilai.json. Itu
@@ -511,23 +512,12 @@ def main():
         if nilai_lama is not None:
             nilai_doc = nilai_lama
         else:
-            nilai_rows = []
-            for idx, m in enumerate(mahasiswa):
-                nilai_rows.extend(PS.bangun_nilai_sintetis(m["npm"], idx, sesi_doc))
-            nilai_doc = {
-                "versi": 1,
-                "kunci_mk": kunci,
-                "tahun_ajar": ta,
-                "semester": sem,
-                "catatan": (
-                    "NILAI SINTETIS (bukan nilai resmi dosen). Dibangkitkan sekali "
-                    "supaya dashboard punya isi, dengan RNG per NPM sehingga menambah "
-                    "mahasiswa lain tidak menggeser angka siapa pun. Ganti dengan data "
-                    "portal begitu tersedia."
-                ),
-                "sintetis": True,
-                "nilai": nilai_rows,
-            }
+            # Bentuk dokumen + bumbu RNG per MK dipusatkan di persona.py supaya
+            # script seed (scripts/seed_nilai_sintetis.py) tidak bisa berbeda.
+            nilai_doc = PS.dokumen_nilai_sintetis(
+                kunci, ta, sem,
+                PS.bangun_nilai_satu_mk(mahasiswa, sesi_doc, konteks=str(kunci)),
+            )
 
         KT.tulis_json(path_penawaran, penawaran)
         KT.tulis_json(path_sesi, sesi_doc)

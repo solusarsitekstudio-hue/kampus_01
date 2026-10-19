@@ -274,26 +274,32 @@ tombol "PDF Gradebook" juga tidak lagi diketik `35` — dihitung dari data.
 | Metrik | Nilai |
 |---|---|
 | Total Mahasiswa | 35 |
-| Rata-rata Kehadiran | 85.4% (dihitung per **slot** absen, 16 pertemuan) |
-| Rata-rata Nilai Studio | **79.0** (predikat dominan B+, 13 mahasiswa) |
-| Mahasiswa At-Risk | **6** (semuanya kehadiran < 75%; 5 di antaranya juga Alpha ≥ 2x) |
-| Distribusi Grade | A=3, A-=10, B+=13, B=8, C=1, D=0 |
-| Tingkat Kelulusan | 82.9% (29 dari 35 memenuhi: tidak At-Risk **dan** nilai ≥ 70) |
+| Rata-rata Kehadiran | 85.8% (dihitung per **slot** absen, 16 pertemuan) |
+| Rata-rata Nilai Studio | **77.7** (predikat dominan A-, 14 mahasiswa) |
+| Mahasiswa At-Risk | **5** (semuanya kehadiran < 75% **dan** Alpha ≥ 2x) |
+| Distribusi Grade | A=2, A-=14, B+=6, B=10, C=3, D=0 |
+| Tingkat Kelulusan | 80.0% (28 dari 35 memenuhi: tidak At-Risk **dan** nilai ≥ 70) |
+
+> Angka di atas adalah angka **mata kuliah aktif** (Aplikasi Komputer Arsitektur
+> & QS). Karena nilai sintetis kini dibangkitkan **per mata kuliah**
+> (`scripts/seed_nilai_sintetis.py`), berpindah MK di dashboard memang
+> mengubah rata-rata kehadiran, distribusi grade, dan daftar At-Risk — itu
+> perilaku yang benar, bukan bug.
 
 ### 3 Kasus Studi (angka terbaru)
 
 1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**
-   * Kehadiran 100% (16/16 pertemuan, 32/32 slot), Grade A (94.7), Indeks Kesiapan 92.8%.
+   * Kehadiran 100% (16/16 pertemuan, 32/32 slot), Grade A (95.3), Indeks Kesiapan 93.4%.
    * Cocok untuk BIM Modeler & Architectural Designer.
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**
    * Kehadiran 62.5% (**9 pertemuan penuh + 2 pertemuan hadir sebagian**, 20/32 slot),
      **3x Alpha**, 1x Sakit, 1x Izin.
-   * **Grade C (60.0)** — bobot 0 pada pertemuan Alpha menurunkan nilai secara
+   * **Grade C (60.7)** — bobot 0 pada pertemuan Alpha menurunkan nilai secara
      signifikan. Teridentifikasi At-Risk (Alpha 3x **dan** kehadiran 62.5%).
    * Tujuan utama: demonstrate how the system **menjaga martabat** —
      tetap fokus pada talenta, dengan panduan pendampingan orang tua yang hangat.
 3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**
-   * Kehadiran 93.8% (15/16 pertemuan, 30/32 slot), Grade A (90.8), izin delegasi
+   * Kehadiran 93.8% (15/16 pertemuan, 30/32 slot), Grade A (91.0), izin delegasi
      lomba arsitektur.
 
 ---
@@ -306,7 +312,7 @@ Sistem mengintegrasikan **4 Pilar Utama**:
    * Rekap absensi bulanan 35 mahasiswa lengkap per kelas dan per individu.
    * Pencatatan tanggal sesi, mata kuliah, status (Hadir, Sakit, Izin, Alpha), serta alasan ketidakhadiran otentik.
    * Deteksi dini mahasiswa berisiko (*At-Risk Intervention*) bagi yang memiliki Alpha $\ge 2$x atau kehadiran $< 75\%$.
-   * Dilengkapi grafik web interaktif: Donut Progress Ring dan Bar Chart **per Pertemuan (P1-P16)** dengan garis patokan **Benchmark Kelas** yang dibaca dari data (sekarang 85.4%).
+   * Dilengkapi grafik web interaktif: Donut Progress Ring dan Bar Chart **per Pertemuan (P1-P16)** dengan garis patokan **Benchmark Kelas** yang dibaca dari data (sekarang 85.8%).
 2. **Pilar Rapor Interaktif & Pemetaan 10 Karier Masa Depan (Wali Murid)**:
    * **Zero Competitive Ranking**: Menghapus sistem ranking kompetitif kelas (seperti `#35 / 35`) untuk melindungi martabat mahasiswa dan perasaan wali murid. Digantikan dengan **Status Kompetensi**, **Indeks Kesiapan Profesi (%)**, dan **Predikat Capaian Individu**. Berlaku juga untuk **PDF Gradebook Kaprodi** — tabel disortir by NPM, kolom pertama = nomor absen.
    * **Visualisasi Spider-Web Radar 5 Dimensi**: Mengukur 5 pilar arsitektur (*AutoCAD*, *Detail & Presisi*, *Kedisiplinan Asistensi*, *Logika Ruang & Struktur*, dan *Manajemen Waktu*) dengan jaring laba-laba konsentris (20%, 40%, 60%, 80%, 100%).
@@ -353,9 +359,21 @@ Nilai dan status kehadiran 35 mahasiswa **dibangkitkan secara sintetis**
 disintesis diberi tanda `sintetis: true`, dan beberapa tempat di UI
 menuliskannya terang-terangan sebagai "bukan nilai resmi dosen".
 
-Angkanya **deterministik**: dibangkitkan dari `random.Random(42 + npm)` dengan
-profil per arketipe (`scripts/persona.py`). Jadi untuk NPM yang sama, hasilnya
-selalu sama — tidak berubah-ubah setiap kali dibangun ulang.
+Angkanya **deterministik**: dibangkitkan dari `random.Random(42 + npm + crc32(kunci MK))`
+dengan profil per arketipe (`scripts/persona.py`). Jadi untuk NPM + mata kuliah
+yang sama, hasilnya selalu sama — tidak berubah-ubah setiap kali dibangun ulang.
+
+Sejak Commit C, **bumbu kunci mata kuliah** ikut masuk ke benih. Sebelumnya
+ketiga MK berisi catatan yang persis sama (1120 baris kembar untuk tiga mata
+kuliah berbeda): benih `42 + npm` saja, sementara struktur sesi ketiga MK
+identik, jadi RNG-nya mencabut angka yang sama. Sekarang tiap MK berbeda —
+dengan tetap satu syarat: `konteks=""` menghasilkan angka lama persis, jadi
+perubahan ini bisa dibuktikan (lihat `tests/test_seed_per_mk.py`).
+
+Yang **sengaja tidak** ikut berubah: persona/arketipe mahasiswa
+(`tentukan_archetype`). "Bintang" tetap bintang, "at-risk" tetap at-risk di
+semua MK — kalau persona ikut berpindah, analisis per kasus di README tidak lagi
+bisa dirujuk.
 
 Kalau presensi/portal hanya mengirim **sebagian** baris (mis. baru 1 dari 2 slot
 pada satu pertemuan, atau satu pertemuan belum masuk sama sekali), sistem
@@ -469,6 +487,7 @@ python tests\test_kurikulum_api.py
 | `test_aturan.py` | Ambang At-Risk & grade benar-benar **hidup**: angka bawaan = angka lama, dan mengubah `config/aturan.json` mengubah hasil |
 | `test_belum_diinput.py` | Pertemuan dengan slot belum lengkap ditandai **"Belum Diinput"** (bukan Alpha/nilai 0), bobot dinormalisasi ulang, grade ditahan **"Belum Lengkap"**, perilaku lama bisa dipulihkan lewat config |
 | `test_migrasi_non_destruktif.py` | **`migrasi_kurikulum.py --force` tidak menghapus hasil edit**: bobot/slot/topik bertahan, `jenis_mk`/`semester_kurikulum` yang dikonfirmasi tidak dikembalikan ke tebakan, `nilai.json` byte-identik. Tree disunting sungguhan lalu dipulihkan byte-per-byte |
+| `test_seed_per_mk.py` | **Nilai sintetis beda per mata kuliah**: `konteks=""` masih = angka lama (`42 + npm`), konteks MK membuat deret berbeda tapi deterministic, persona tidak ikut berpindah, dua MK yang dulu kembar kini beda, tiga `nilai.json` di tree bisa dibangkitkan ulang persis, profil at-risk utuh, dan script seed **tidak menulis** tanpa `--force` |
 | `test_kurikulum_tree.py` | Tree kurikulum konsisten **anti-drift**: indeks `config/kurikulum.json` == hasil pindai ulang folder |
 | `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
@@ -480,13 +499,13 @@ python tests\test_kurikulum_api.py
 ## 🗺️ Peta Studi Kasus Demo
 Untuk kemudahan demonstrasi di depan Kaprodi, gunakan tombol demo cepat di pojok kanan atas:
 1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**:
-   * Profil mahasiswa unggul (Kompeten Unggul), Kehadiran 100% (16/16 pertemuan), Grade A (94.7).
-   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.5%), Architectural Designer (94.7%), dan DED Specialist (93.2%).
+   * Profil mahasiswa unggul (Kompeten Unggul), Kehadiran 100% (16/16 pertemuan), Grade A (95.3).
+   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.1%), Architectural Designer (94.1%), dan DED Specialist (91.7%).
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**:
-   * Profil mahasiswa yang membutuhkan pendampingan (3x Alpha + 1x Sakit + 1x Izin, Kehadiran 62.5% — 9 pertemuan penuh + 2 pertemuan hadir sebagian dari 16), **Grade C (60.0)**.
-   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya — Site Architect (72.3%), kategori **Sedang**. Angka ini dulu diketik manual sebagai 87% dan sekarang dihitung dari data — bukti bahwa angka yang bagus belum tentu angka yang benar.
+   * Profil mahasiswa yang membutuhkan pendampingan (3x Alpha + 1x Sakit + 1x Izin, Kehadiran 62.5% — 9 pertemuan penuh + 2 pertemuan hadir sebagian dari 16), **Grade C (60.7)**.
+   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya — Site Architect (73.7%), kategori **Sedang**. Angka ini dulu diketik manual sebagai 87% dan sekarang dihitung dari data — bukti bahwa angka yang bagus belum tentu angka yang benar.
 3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**:
-   * Profil mahasiswa kreatif konsisten, Kehadiran 93.8% (izin delegasi lomba arsitektur), Grade A (90.8).
+   * Profil mahasiswa kreatif konsisten, Kehadiran 93.8% (izin delegasi lomba arsitektur), Grade A (91.0).
 
 ---
 
@@ -501,7 +520,7 @@ Sistem dilengkapi endpoint **Dynamic On-Demand PDF Generation** (`/api/pdf/downl
 * **PDF 1A: Rekap Kehadiran Mahasiswa Bulanan** (`01_rekap_kehadiran_bulanan_*.pdf`):
   * Dikirim rutin tiap 1 bulan sekali ke orang tua.
   * Memuat kop resmi fakultas, ringkasan persentase kehadiran, 4 kartu metrik (Hadir, Sakit, Izin, Alpha).
-  * **Grafik Web**: **Donut Progress Ring Kehadiran** (warna adaptif hijau/biru/merah) serta **16-Pertemuan Bar Chart** dengan pill status kehadiran dan garis putus-putus **Benchmark Kehadiran Kelas** (angkanya dibaca dari data, sekarang 85.4%).
+  * **Grafik Web**: **Donut Progress Ring Kehadiran** (warna adaptif hijau/biru/merah) serta **16-Pertemuan Bar Chart** dengan pill status kehadiran dan garis putus-putus **Benchmark Kehadiran Kelas** (angkanya dibaca dari data, sekarang 85.8%).
   * Rincian log per pertemuan (16 baris), catatan peraturan akademik, dan stempel verifikasi Kaprodi.
 * **PDF 1B: Rapor Capaian Studio & Matriks 10 Karier Masa Depan** (`02_rapor_akhir_semester_*.pdf`):
   * Dikirim di akhir semester (2 Halaman Format A4 Portrait).
@@ -611,6 +630,19 @@ python scripts\migrasi_kurikulum.py --force
 python scripts\parse_data.py
 ```
 
+**Hanya mau membangkitkan ulang nilai sintetis (mis. setelah memperbaiki
+`scripts\persona.py`)?** Ada jalurnya sendiri — jangan hapus `nilai.json` manual:
+
+```cmd
+python scripts\seed_nilai_sintetis.py            :: lihat dulu (dry run, tidak menulis)
+python scripts\seed_nilai_sintetis.py --force     :: baru tulis (backup otomatis)
+python scripts\parse_data.py                      :: segarkan master
+```
+
+`seed_nilai_sintetis.py` melaporkan SHA lama vs baru per MK, menyalin nilai lama
+ke `data/_backup/seed_nilai_<timestamp>/`, dan **menolak menimpa** berkas yang
+tidak bertanda `"sintetis": true` (kemungkinan data portal asli).
+
 `migrasi_kurikulum.py` merapikan **struktur** tree (16 pertemuan, bobot standar,
 slot absen, penanda topik `(belum diisi - menunggu RPS)`), lalu `parse_data.py`
 membangun master + semua katalog dari tree. Keduanya **idempoten** — boleh
@@ -621,7 +653,8 @@ dan `test_rules_unchanged.py`).
 adanya: topik & deskripsi, bobot per pertemuan, jumlah slot absen, serta
 `jenis_mk`/`semester_kurikulum` yang sudah **dikonfirmasi** (sumbernya bukan
 "tebakan"), di `penawaran.json` maupun `cetak_biru_mk.json`. `nilai.json` yang
-sudah ada **tidak pernah ditimpa** — regenerasi nilai punya jalurnya sendiri.
+sudah ada **tidak pernah ditimpa** — regenerasi nilai punya jalurnya sendiri
+(`scripts\seed_nilai_sintetis.py`).
 Dibuktikan ujung-ke-ujung oleh `tests\test_migrasi_non_destruktif.py`, yang
 menyunting tree sungguhan, menjalankan `--force`, memeriksa suntingannya utuh,
 lalu memulihkan tree byte-per-byte.
@@ -667,7 +700,7 @@ kenyataannya.
 | **D-2** | Penulisan JSON memakai LF eksplisit — `data/academic_data.json` tidak lagi berubah byte-nya (LF→CRLF) setiap kali ditulis server/parse_data, sehingga "data master tidak tersentuh" bisa benar-benar dibuktikan | Tidak |
 | **E-1** | Tree kurikulum bertingkat **PRODI → TAHUN AJAR → SEMESTER → MK**; satu semester = **16 pertemuan**; bobot per pertemuan diatur di tree (wajib Σ = 100). Satuan tampilan diseragamkan jadi **Pertemuan** — penyebut "6 sesi" yang lama memang salah dan dihapus | **Ya** (sudah diregenerasi) |
 | **E-2** | Berkas Excel & PDF mentah **dilepas**. Sistem berdiri sendiri dari tree; README memuat kontrak data pengganti untuk input portal | Ya |
-| **E-3** | RNG dibangkitkan **per NPM** (`random.Random(42 + npm)`) untuk absen **dan** nilai — menambah satu mahasiswa tidak lagi menggeser nilai seluruh kelas | **Ya** (sudah diregenerasi) |
+| **E-3** | RNG dibangkitkan **per NPM** (`random.Random(42 + npm)`) untuk absen **dan** nilai — menambah satu mahasiswa tidak lagi menggeser nilai seluruh kelas. Sejak F-3 benihnya ditambah bumbu kunci MK (`konteks`) | **Ya** (sudah diregenerasi) |
 | **E-4** | "Ganti MK" tidak lagi menyalin katalog ke master: penunjuk `mata_kuliah_aktif` dipindah, lalu master + seluruh katalog dibangun ulang dari tree. Penjaga katalog lama (409) tetap dipasang sebagai jaring pengaman | Tidak |
 | **E-5** | Tab **6. Kurikulum**: ubah topik/bobot/slot/jenis_mk/semester_kurikulum dari dashboard, dengan validasi Σ bobot = 100 dan status "tebakan awal" yang tidak bisa naik sendiri jadi "dikonfirmasi" | Tidak |
 | **E-6** | Ambang At-Risk & aturan grade dipindah ke `config/aturan.json` (angka bawaan = angka lama, jadi hasil tidak bergeser sampai diubah) | Tidak |
@@ -675,13 +708,14 @@ kenyataannya.
 | **E-8** | Tombol **"Cetak Ulang Paket PDF" (Tingkat 3) diuji ujung-ke-ujung**: 11 PDF arsip tercetak dari data v2.6 dalam 12,8 detik, tanpa error. `jenis_mk` & `semester_kurikulum` ketiga MK juga sudah dikonfirmasi kaprodi lewat tab 6 | Tidak |
 | **F-1** | **"Belum diinput" tidak lagi dihitung Alpha/nilai 0.** Pertemuan dengan baris slot belum lengkap ditandai **"Belum Diinput"**, keluar dari rata-rata terbobot (bobot dinormalisasi ulang), dan grade ditahan **"Belum Lengkap"**. Aturannya hidup di `config/aturan.json` (`kehadiran.slot_belum_diisi`; `"alpha"` = perilaku lama). Badge, filter, tren, dan PDF ikut mengenali status ini | Tidak (data sekarang lengkap, nol angka bergeser) |
 | **F-2** | **`migrasi_kurikulum.py --force` tidak lagi menimpa hasil edit dashboard.** Dulu bobot direset ke template, `jenis_mk`/`semester_kurikulum` dikembalikan ke tebakan mesin, dan `nilai.json` ditimpa. Sekarang struktur dibangun ulang tetapi topik, bobot, jumlah slot, jenis_mk/semester_kurikulum yang **dikonfirmasi**, dan `nilai.json` dipertahankan. Efek sampingnya: `cetak_biru_mk.json` yang tadinya masih menulis "tebakan-awal" kini ikut sinkron ke `dikonfirmasi-dashboard` | Tidak |
+| **F-3** | **Nilai sintetis tidak lagi kembar antar mata kuliah.** Benih RNG dapat bumbu kunci MK (`crc32`), jadi tiga MK berisi catatan yang berbeda — sebelumnya 1120 baris identik untuk tiga mata kuliah. Letak absen juga ikut bergeser per MK (jumlah alpha/izin/sakit tetap, jadi profil at-risk tidak rusak) dan absen **tidak pernah ditaruh di pertemuan UTS/UAS** (bobot 20 & 24 — satu undian yang sial bisa menjatuhkan grade C ke D dan membuat cerita demo goyah). Persona/arketipe sengaja **tidak** ikut berpindah. Ditambah satu pintu regenerasi resmi: `scripts/seed_nilai_sintetis.py` (dry run tanpa `--force`, backup otomatis ke `data/_backup/`, menolak menimpa berkas yang tidak bertanda `"sintetis": true`) | **Ya** (sudah diregenerasi: kehadiran 85.4 → 85.8%, nilai 79.0 → 77.7, at-risk 6 → 5) |
 
 ### Sisa utang (belum dikerjakan)
 
 1. **Nilai per pertemuan masih sintetis** (`rng.randint`), bukan hasil koreksi
-   nyata dosen. Angkanya deterministik per NPM (E-3), tetapi tetap **bukan nilai
-   resmi**. Ganti dengan data asli lewat kontrak di bagian *Sumber Data* — aturan
-   di `kelas_rules.py` siap dipakai apa adanya.
+   nyata dosen. Angkanya deterministik per NPM **dan** per MK (E-3 + F-3),
+   tetapi tetap **bukan nilai resmi**. Ganti dengan data asli lewat kontrak di
+   bagian *Sumber Data* — aturan di `kelas_rules.py` siap dipakai apa adanya.
 2. **Alpha = 0 mutlak.** Belum ada jalur "tugas pengganti" bagi mahasiswa yang
    alpha. Ini keputusan akademik, bukan keputusan teknis — perlu kebijakan dosen
    sebelum dibuatkan fiturnya.
