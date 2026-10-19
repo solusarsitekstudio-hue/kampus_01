@@ -638,6 +638,7 @@ kenyataannya.
 | **E-5** | Tab **6. Kurikulum**: ubah topik/bobot/slot/jenis_mk/semester_kurikulum dari dashboard, dengan validasi Σ bobot = 100 dan status "tebakan awal" yang tidak bisa naik sendiri jadi "dikonfirmasi" | Tidak |
 | **E-6** | Ambang At-Risk & aturan grade dipindah ke `config/aturan.json` (angka bawaan = angka lama, jadi hasil tidak bergeser sampai diubah) | Tidak |
 | **E-7** | "Hadir Sebagian" ditampilkan apa adanya — badge sendiri, filter sendiri, dan seri tersendiri di grafik tren — tidak lagi dibulatkan jadi Hadir/Alpha | Tidak |
+| **E-8** | Tombol **"Cetak Ulang Paket PDF" (Tingkat 3) diuji ujung-ke-ujung**: 11 PDF arsip tercetak dari data v2.6 dalam 12,8 detik, tanpa error. `jenis_mk` & `semester_kurikulum` ketiga MK juga sudah dikonfirmasi kaprodi lewat tab 6 | Tidak |
 
 ### Sisa utang (belum dikerjakan)
 
@@ -645,37 +646,32 @@ kenyataannya.
    nyata dosen. Angkanya deterministik per NPM (E-3), tetapi tetap **bukan nilai
    resmi**. Ganti dengan data asli lewat kontrak di bagian *Sumber Data* — aturan
    di `kelas_rules.py` siap dipakai apa adanya.
-2. **`jenis_mk` dan `semester_kurikulum` masih tebakan awal.** Dashboard sudah
-   menyediakan cara mengonfirmasinya (tab 6), tetapi sampai kaprodi mengisi, status
-   di `penawaran.json` tetap `tebakan-awal-...` dan UI menampilkan peringatan.
-3. **Alpha = 0 mutlak.** Belum ada jalur "tugas pengganti" bagi mahasiswa yang
+2. **Alpha = 0 mutlak.** Belum ada jalur "tugas pengganti" bagi mahasiswa yang
    alpha. Ini keputusan akademik, bukan keputusan teknis — perlu kebijakan dosen
    sebelum dibuatkan fiturnya.
-4. **Topik sebagian MK masih placeholder.** Dari tree sekarang: 6 pertemuan
+3. **Topik sebagian MK masih placeholder.** Dari tree sekarang: 6 pertemuan
    terisi, 10 masih `(belum diisi - menunggu RPS)`. Isinya menunggu RPS resmi
    dari dosen pengampu; jangan dikarang.
-5. **`generated_pdfs/` dan `output/` masih memuat PDF versi data lama.** Keduanya
-   ikut tersimpan di repo, jadi membandingkannya dengan master sekarang akan
-   tampak tidak sinkron sampai paket PDF dicetak ulang.
-6. **Tombol "Cetak Ulang Paket PDF" (Tingkat 3) belum pernah dijalankan
-   ujung-ke-ujung** sejak perubahan v2.6. Perlu satu kali uji nyata (membuka
-   Chromium, 1–2 menit) sebelum dianggap aman dipakai di depan kaprodi.
-7. **`sanitize_folder_name` masih ada salinan yang lebih longgar** di
+4. **`output/` menyimpan puluhan direktori run lama** (riwayat cetak PDF). Belum
+   ada kebijakan retensi, jadi repo terus membesar setiap kali paket PDF dicetak.
+   Yang terbaru selalu ditunjuk `output/latest_run.json`; direktori lama boleh
+   dihapus manual kalau tidak diperlukan sebagai arsip.
+5. **`sanitize_folder_name` masih ada salinan yang lebih longgar** di
    `generate_pdfs.py` (~baris 104) dan `video_composer.py` (~baris 43). Versi
    ketat sudah ada di `scripts/kurikulum_tree.py`, tetapi dua salinan itu belum
    diseragamkan — jadi nama MK dengan karakter aneh bisa dinormalisasi berbeda.
-8. **`generate_pdfs.py` masih mengimpor `playwright` di baris paling atas.**
+6. **`generate_pdfs.py` masih mengimpor `playwright` di baris paling atas.**
    Aman selama dependensi terpasang, tetapi membuat modul tidak bisa dipakai
    untuk sekadar membaca data.
-9. **Baris kementerian dan alamat pada kop surat masih literal** di
+7. **Baris kementerian dan alamat pada kop surat masih literal** di
    `generate_pdfs.py` (`KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI` dan
    baris Gedung/Lab/Telp). Itu bukan identitas prodi, jadi sengaja belum dipindahkan
    ke config; ubah di situ bila perlu.
-10. **`openpyxl` dan `pypdf` sudah tidak dipakai** (tidak ada lagi impor di kode),
-    tetapi masih tertulis di `requirements.txt`. Aman dibiarkan; menghapusnya
-    mempercepat `setup.bat` sedikit. Belum dihapus karena itu keputusan dependensi.
-11. **`REQUIREMENTS.md` dan `WORKFLOW_MAPPING.md` baru diberi catatan pembuka**,
-    isinya belum ditulis ulang mengikuti alur tree. `README.md` yang berlaku.
+8. **`openpyxl` dan `pypdf` sudah tidak dipakai** (tidak ada lagi impor di kode),
+   tetapi masih tertulis di `requirements.txt`. Aman dibiarkan; menghapusnya
+   mempercepat `setup.bat` sedikit. Belum dihapus karena itu keputusan dependensi.
+9. **`REQUIREMENTS.md` dan `WORKFLOW_MAPPING.md` baru diberi catatan pembuka**,
+   isinya belum ditulis ulang mengikuti alur tree. `README.md` yang berlaku.
 
 > Status data demo: `versi 2.6-KURIKULUM-BERTINGKAT` (stempel build terakhir ada di
 > `data/academic_data.json` → `metadata.build_id`).

@@ -176,12 +176,14 @@ check("topik_terisi kembali 6", sesi_tree()["topik_terisi"] == 6, sesi_tree()["t
 check("angka master persis sama", master_ringkas() == awal,
       f"{awal} vs {master_ringkas()}")
 
-print("\n[9] Kejujuran status: menyimpan topik TIDAK menaikkan 'tebakan awal' jadi 'dikonfirmasi'")
+print("\n[9] Kejujuran status: menyimpan topik TIDAK mengubah status 'tebakan vs dikonfirmasi'")
 PEN_PATH = os.path.join(TREE, MK, "penawaran.json")
 pen_awal = io.open(PEN_PATH, encoding="utf-8", newline="").read()
 pen = json.loads(pen_awal)
-check("status awal memang tebakan", str(pen.get("sumber_jenis_mk", "")).startswith("tebakan"),
-      pen.get("sumber_jenis_mk"))
+sumber_jenis_awal = pen.get("sumber_jenis_mk")
+sumber_sem_awal = pen.get("sumber_semester_kurikulum")
+print(f"        (status saat tes dimulai: jenis={sumber_jenis_awal!r}, "
+      f"semester={str(sumber_sem_awal)[:40]!r})")
 st, _ = call("POST", "/api/kurikulum/simpan", {
     "prodi": PRODI, "tahun_ajar": TA, "semester": SEM, "kunci_mk": MK,
     "penawaran": {"jenis_mk": pen.get("jenis_mk"),
@@ -192,10 +194,11 @@ st, _ = call("POST", "/api/kurikulum/simpan", {
 })
 pen2 = json.load(io.open(PEN_PATH, encoding="utf-8"))
 check("status 200", st == 200, st)
-check("sumber_jenis_mk TETAP tebakan awal",
-      str(pen2.get("sumber_jenis_mk", "")).startswith("tebakan"), pen2.get("sumber_jenis_mk"))
-check("sumber_semester_kurikulum TETAP tebakan awal",
-      "tebakan" in str(pen2.get("sumber_semester_kurikulum", "")),
+check("sumber_jenis_mk TIDAK berubah",
+      pen2.get("sumber_jenis_mk") == sumber_jenis_awal,
+      f"{sumber_jenis_awal!r} -> {pen2.get('sumber_jenis_mk')!r}")
+check("sumber_semester_kurikulum TIDAK berubah",
+      pen2.get("sumber_semester_kurikulum") == sumber_sem_awal,
       str(pen2.get("sumber_semester_kurikulum"))[:48])
 
 print("\n[10] Kalau nilainya benar-benar diubah -> status naik jadi dikonfirmasi")
