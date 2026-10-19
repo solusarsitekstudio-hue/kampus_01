@@ -37,9 +37,12 @@ from kelas_rules import (  # noqa: E402
     at_risk_reasons,
     is_at_risk,
     hitung_nilai_terbobot,
+    cakupan_bobot,
+    GRADE_BELUM_LENGKAP,
     kategori_kecocokan_dari_skor,
     grade_dari_skor,
     persentase_kehadiran,
+    pertemuan_belum_diinput,
     pertemuan_dihitung_hadir,
     validasi_bobot,
     teks_grade,
@@ -129,13 +132,23 @@ def ringkas_kehadiran(baris_slot, sessions):
     Keputusan user (Tahap E): yang ditampilkan pertemuan, tetapi persen
     dihitung dari slot - jadi mahasiswa yang hadir 1 dari 4 slot tampil
     "Hadir Sebagian", tidak dibulatkan menjadi hadir atau alpha.
+
+    FIX: pertemuan yang baris slotnya BELUM LENGKAP (mis. baru 1 dari 2 slot,
+    atau kosong sama sekali) TIDAK lagi dianggap Alpha dan TIDAK diberi nilai 0.
+    Pertemuan itu ditandai "Belum Diinput", dikeluarkan dari hitung nilai.
+    Perilaku lama (slot kosong = Alpha) hanya dipakai bila
+    `kehadiran.slot_belum_diisi` di config diset "alpha".
     """
     per_pertemuan = {}
     for r in baris_slot:
         per_pertemuan.setdefault(int(r.get("pertemuan") or 0), []).append(r)
 
+    # Perilaku lama (slot kosong = Alpha) hanya kalau diminta eksplisit di config.
+    pakai_belum_diinput = not ATURAN.hitung_slot_kosong_sebagai_alpha()
+
     detail = []
-    hitung = {"Hadir": 0, "Hadir Sebagian": 0, "Sakit": 0, "Izin": 0, "Alpha": 0}
+    hitung = {"Hadir": 0, "Hadir Sebagian": 0, "Sakit": 0, "Izin": 0,
+              "Alpha": 0, "Belum Diinput": 0}
     slot_hadir_total = 0
     slot_total_semua = 0
     pertemuan_hadir = 0
@@ -144,21 +157,31 @@ def ringkas_kehadiran(baris_slot, sessions):
         p = int(s["pertemuan"])
         slot_total = len(s.get("slot_absen") or [])
         baris = per_pertemuan.get(p, [])
+        slot_terisi = len(baris)
         slot_hadir = sum(1 for b in baris if b.get("status") == "Hadir")
-        skor = round(sum(b.get("skor", 0) for b in baris) / slot_total, 1) if slot_total else 0.0
+        belum = pakai_belum_diinput and pertemuan_belum_diinput(slot_terisi, slot_total)
 
-        if slot_total and slot_hadir >= slot_total:
-            bucket = "Hadir"
-        elif slot_hadir <= 0:
-            status_isi = [b.get("status") for b in baris]
-            if "Sakit" in status_isi:
-                bucket = "Sakit"
-            elif "Izin" in status_isi:
-                bucket = "Izin"
-            else:
-                bucket = "Alpha"
+        if belum:
+            # Data belum masuk: jangan mengarang nilai dan jangan menghitung Alpha.
+            bucket = "Belum Diinput"
+            skor = None
         else:
-            bucket = "Hadir Sebagian"
+            skor = (
+                round(sum(b.get("skor", 0) for b in baris) / slot_total, 1)
+                if slot_total else 0.0
+            )
+            if slot_total and slot_hadir >= slot_total:
+                bucket = "Hadir"
+            elif slot_hadir <= 0:
+                status_isi = [b.get("status") for b in baris]
+                if "Sakit" in status_isi:
+                    bucket = "Sakit"
+                elif "Izin" in status_isi:
+                    bucket = "Izin"
+                else:
+                    bucket = "Alpha"
+            else:
+                bucket = "Hadir Sebagian"
 
         hitung[bucket] += 1
         if pertemuan_dihitung_hadir(slot_hadir, slot_total):
@@ -172,6 +195,10 @@ def ringkas_kehadiran(baris_slot, sessions):
                            if b.get("alasan") not in (None, "-")), "-")
         elif bucket == "Alpha":
             alasan = "Tanpa keterangan / tidak hadir di presensi portal"
+        elif bucket == "Belum Diinput":
+            alasan = ("Presensi pertemuan ini belum diinput "
+                      "({0}/{1} slot tercatat) - bukan Alpha, nilai tidak dihitung"
+                      ).format(slot_terisi, slot_total)
 
         detail.append({
             "pertemuan": p,
@@ -180,6 +207,7 @@ def ringkas_kehadiran(baris_slot, sessions):
             "topik": s.get("topik"),
             "tipe": s.get("tipe"),
             "slot_total": slot_total,
+            "slot_terisi": slot_terisi,
             "slot_hadir": slot_hadir,
             "status": bucket,
             "alasan": alasan,
@@ -383,6 +411,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         total_sakit = hitung_status["Sakit"]
         total_izin = hitung_status["Izin"]
         total_alpha = hitung_status["Alpha"]
+        total_belum_diinput = hitung_status["Belum Diinput"]
         session_scores = [d["skor"] for d in attendance_list]
 
         # Persen kehadiran berbasis SLOT (bukan jumlah pertemuan): 2 dari 4 slot
@@ -392,8 +421,12 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
 
         # FIX TAHAP B: Alpha (nilai 0) ikut dihitung dan bobot sesi dipakai.
         # FIX TAHAP E: bobot kini dari sesi.json (16 pertemuan, total 100).
+        # FIX BELUM-DIINPUT: sesi yang belum diinput keluar dari hitung nilai dan
+        # bobotnya dinormalisasi ulang; grade ditahan sampai data lengkap.
         bobot_sesi = [sess.get("bobot", 0) for sess in sessions]
         avg_score = hitung_nilai_terbobot(session_scores, bobot_sesi)
+        cakupan = cakupan_bobot(session_scores, bobot_sesi)
+        data_lengkap = total_belum_diinput == 0
         at_risk_reasons_list = at_risk_reasons(total_alpha, attendance_pct)
         student_is_at_risk = bool(at_risk_reasons_list)
 
@@ -401,7 +434,10 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         # FIX TAHAP C-4: ambang batas grade diambil dari kelas_rules.py, bukan
         # ditulis ulang sebagai rantai if/elif. Teks predikat pun diambil dari
         # satu tabel, sehingga tidak mungkin ada grade tanpa teksnya.
-        grade, pengali_kesiapan = grade_dari_skor(avg_score, attendance_pct)
+        if data_lengkap:
+            grade, pengali_kesiapan = grade_dari_skor(avg_score, attendance_pct)
+        else:
+            grade, pengali_kesiapan = GRADE_BELUM_LENGKAP, 1.0
         predikat, status_kompetensi, kesiapan_profesi = teks_grade(grade)
         indeks_kesiapan = round(avg_score * pengali_kesiapan, 1)
 
@@ -612,6 +648,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
                 "sakit": total_sakit,
                 "izin": total_izin,
                 "alpha": total_alpha,
+                "belum_diinput": total_belum_diinput,
                 "pertemuan_hadir": pertemuan_hadir,
                 "total_pertemuan": len(sessions),
                 "slot_hadir": slot_hadir_total,
@@ -619,11 +656,18 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
                 "persentase": attendance_pct,
                 "basis_persen": ATURAN.basis_persen_kehadiran(),
                 "min_slot_ratio_hadir": ATURAN.min_slot_ratio_hadir(),
+                "data_lengkap": data_lengkap,
+                "cakupan_bobot": cakupan,
+                "slot_belum_diisi": ATURAN.slot_belum_diisi(),
                 "detail": attendance_list
             },
             "akademik": {
                 "nilai_rata_rata": avg_score,
-                "nilai_rata_sederhana": round(sum(session_scores) / len(session_scores), 1),
+                "nilai_rata_sederhana": round(
+                    sum(x for x in session_scores if x is not None)
+                    / max(1, len([x for x in session_scores if x is not None])), 1),
+                "data_lengkap": data_lengkap,
+                "cakupan_bobot": cakupan,
                 "bobot_diperiksa": bobot_sesi,
                 "grade": grade,
                 "predikat": predikat,
@@ -667,13 +711,20 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
     ]
     
     # Grade distribution
-    grades_count = {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0}
+    # FIX BELUM-DIINPUT: "Belum Lengkap" punya keranjang sendiri dan TIDAK
+    # dilebur ke D - kalau dilebur, distribusi grade jadi bohong.
+    grades_count = {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0,
+                    GRADE_BELUM_LENGKAP: 0}
     for s in student_records:
-        g = s["akademik"]["grade"].split(" ")[0]
+        g = s["akademik"]["grade"]
         if g in grades_count:
             grades_count[g] += 1
         else:
-            grades_count["D"] += 1
+            g = g.split(" ")[0]
+            if g in grades_count:
+                grades_count[g] += 1
+            else:
+                grades_count["D"] += 1
 
     # Session-by-session attendance trends.
     # TAHAP E: satu pertemuan bisa punya beberapa slot absen, jadi "hadir"
@@ -688,6 +739,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         sakit_count = sum(1 for d in detail_p if d["status"] == "Sakit")
         izin_count = sum(1 for d in detail_p if d["status"] == "Izin")
         alpha_count = sum(1 for d in detail_p if d["status"] == "Alpha")
+        belum_diinput_count = sum(1 for d in detail_p if d["status"] == "Belum Diinput")
         slot_total = detail_p[0]["slot_total"] if detail_p else 0
         slot_hadir = sum(d["slot_hadir"] for d in detail_p)
         dihitung_hadir = sum(
@@ -703,6 +755,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "sakit": sakit_count,
             "izin": izin_count,
             "alpha": alpha_count,
+            "belum_diinput": belum_diinput_count,
             "slot_total": slot_total * total_mhs,
             "slot_hadir": slot_hadir,
             "dihitung_hadir": dihitung_hadir,
@@ -749,6 +802,10 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
                     d["dihitung_hadir"], total_mhs, d["hadir"], d["hadir_sebagian"]
                 )
             )
+            if d.get("belum_diinput"):
+                realisasi += " {0} mahasiswa presensinya BELUM DIINPUT.".format(
+                    d["belum_diinput"]
+                )
         evaluasi_rps.append({
             "sesi": p,
             "topik_rps": d["topik"],
@@ -780,9 +837,13 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "target_port": 40404,
             "metodologi_nilai": (
                 "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. "
-                "Nilai satu pertemuan = rata-rata nilai seluruh slot absennya."
+                "Nilai satu pertemuan = rata-rata nilai seluruh slot absennya. "
+                "Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0 (dikeluarkan "
+                "dari rata-rata dan bobotnya dinormalisasi ulang); grade ditahan "
+                "'Belum Lengkap' sampai seluruh pertemuan terisi."
             ),
             "aturan_at_risk": ATURAN.teks_at_risk(),
+            "aturan_slot_belum_diisi": ATURAN.slot_belum_diisi(),
             # --- TAHAP E: asal-usul data, supaya tidak ada yang menebak ---
             "sumber_data": "data/kurikulum/<PRODI>/<TAHUN_AJAR>/<SEMESTER>/<KUNCI_MK>/",
             "prodi": ctx.get("prodi"),
@@ -799,6 +860,13 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
                 "kehadiran sebagian tetap ditampilkan apa adanya.".format(
                     ATURAN.min_slot_ratio_hadir()
                 )
+            ),
+            "catatan_belum_diinput": (
+                "Pertemuan yang baris slot absennya belum lengkap ditandai 'Belum "
+                "Diinput' - bukan Alpha, tidak dinilai 0, dan grade mahasiswa "
+                "ditahan 'Belum Lengkap' sampai data lengkap."
+                if ATURAN.slot_belum_diisi() == "belum_diinput"
+                else "Slot absen tanpa catatan dihitung sebagai Alpha (perilaku lama)."
             ),
             "catatan_nilai": (
                 "NILAI PER PERTEMUAN MASIH SINTETIS (bukan input dosen). Ganti dengan "
@@ -826,7 +894,14 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "at_risk_npm": [s["npm"] for s in at_risk_list],
             "grade_modus": max(grades_count.items(), key=lambda kv: kv[1])[0],
             "total_lulus": sum(1 for s in student_records if not s["at_risk"]
+                               and s["akademik"]["grade"] != GRADE_BELUM_LENGKAP
                                and s["akademik"]["nilai_rata_rata"] >= 70),
+            "total_belum_lengkap": sum(
+                1 for s in student_records if not s["kehadiran"]["data_lengkap"]),
+            "total_pertemuan_belum_diinput": sum(
+                s["kehadiran"]["belum_diinput"] for s in student_records),
+            "data_kelas_lengkap": all(
+                s["kehadiran"]["data_lengkap"] for s in student_records),
             "distribusi_grade": grades_count,
             "tren_kehadiran_sesi": session_attendance_trend
         },

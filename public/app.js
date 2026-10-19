@@ -265,7 +265,12 @@ function renderKaprodiDashboard() {
       `Predikat dominan kelas ${modus}. Rata-rata nilai studio ${s.rata_nilai_studio} ` +
       `dengan rata-rata kehadiran ${s.rata_kehadiran}%. ` +
       `${s.total_at_risk} mahasiswa teridentifikasi perlu pendampingan ` +
-      `(${s.at_risk_alpha ?? "-"} berdasarkan alpha, ${s.at_risk_kehadiran ?? "-"} berdasarkan kehadiran).`;
+      `(${s.at_risk_alpha ?? "-"} berdasarkan alpha, ${s.at_risk_kehadiran ?? "-"} berdasarkan kehadiran).` +
+      ((s.total_belum_lengkap || 0) > 0
+        ? ` PERHATIAN: ${s.total_belum_lengkap} mahasiswa masih punya ` +
+          `${s.total_pertemuan_belum_diinput} pertemuan yang presensinya belum diinput ` +
+          `- grade mereka ditahan sampai data lengkap.`
+        : " Seluruh presensi pertemuan sudah terinput.");
   }
 
   renderAttendanceTrendChart(summary.tren_kehadiran_sesi || []);
@@ -289,6 +294,10 @@ function renderAttendanceTrendChart(trends) {
       // yang hanya masuk sebagian. Kalau seri ini tidak digambar, tumpukan bar
       // tidak akan berjumlah seisi kelas dan grafiknya jadi bohong.
       { name: "Hadir Sebagian", data: trends.map(t => t.hadir_sebagian || 0), color: "#2dd4bf" },
+      // BELUM DIINPUT: pertemuan yang presensinya belum masuk TIDAK dihitung
+      // Alpha (lihat config/aturan.json). Kalau seri ini tidak digambar, bar
+      // tumpuk tidak berjumlah seisi kelas dan grafiknya jadi bohong.
+      { name: "Belum Diinput", data: trends.map(t => t.belum_diinput || 0), color: "#64748b" },
       { name: "Izin / Sakit / Alpha", data: trends.map(t => (t.sakit || 0) + (t.izin || 0) + (t.alpha || 0)), color: "#f43f5e" }
     ],
     chart: { type: "bar", height: 260, stacked: true, toolbar: { show: false }, background: "transparent" },
@@ -311,7 +320,10 @@ function renderAttendanceTrendChart(trends) {
 }
 
 function renderGradeDistChart(dist) {
-  const labels = Object.keys(dist);
+  // BELUM DIINPUT: keranjang "Belum Lengkap" selalu ada di data (nilai 0 saat
+  // semua terisi). Buang yang nol supaya legenda tidak menampilkan slice hantu.
+  const entries = Object.entries(dist || {}).filter(([, v]) => v > 0);
+  const labels = entries.map(([k]) => k);
   if (!labels.length) {
     gradeDistChart = null;
     const c = document.querySelector("#chart-grade-dist");
@@ -319,10 +331,10 @@ function renderGradeDistChart(dist) {
     return;
   }
   const options = {
-    series: Object.values(dist),
+    series: entries.map(([, v]) => v),
     chart: { type: "donut", height: 230, background: "transparent" },
     labels: labels,
-    colors: ["#10b981", "#22c55e", "#06b6d4", "#3b82f6", "#f59e0b", "#ef4444"],
+    colors: ["#10b981", "#22c55e", "#06b6d4", "#3b82f6", "#f59e0b", "#ef4444", "#64748b"],
     theme: { mode: "dark" },
     legend: { position: "bottom", labels: { colors: "#cbd5e1", fontSize: "10px" } },
     stroke: { width: 2, colors: ["#0f172a"] },
@@ -367,6 +379,9 @@ function renderAttendanceTable() {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">Sakit</span>`;
       } else if (sess.status === "Izin") {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">Izin</span>`;
+      } else if (sess.status === "Belum Diinput") {
+        // BELUM DIINPUT: presensi pertemuan ini belum masuk - bukan Alpha.
+        statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-500/20 text-slate-300 border border-slate-500/40">Belum Diinput ${esc(sess.slot_terisi)}/${esc(sess.slot_total)}</span>`;
       } else {
         statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">Alpha</span>`;
       }
@@ -505,9 +520,11 @@ function selectStudent(npm) {
   const totalPertemuan = kh.total_pertemuan ?? (kh.detail || []).length;
   const pertemuanHadir = kh.pertemuan_hadir ?? kh.hadir;
   const sebagian = kh.hadir_sebagian || 0;
+  const belum = kh.belum_diinput || 0;
   setText("mhs-stat-absen-desc",
     `${pertemuanHadir} / ${totalPertemuan} Pertemuan` +
     (sebagian ? ` (${sebagian} hadir sebagian)` : "") +
+    (belum ? ` (${belum} belum diinput)` : "") +
     (kh.slot_total ? ` • ${kh.slot_hadir}/${kh.slot_total} slot` : ""));
   setText("mhs-stat-nilai", ak.nilai_rata_rata);
   setText("mhs-stat-grade", `Grade: ${ak.grade}`);
@@ -584,6 +601,8 @@ function renderStudentSessionCards(detailList) {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400">Sakit</span>`;
     } else if (item.status === "Izin") {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-sky-500/20 text-sky-400">Izin</span>`;
+    } else if (item.status === "Belum Diinput") {
+      statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-500/20 text-slate-300">Belum Diinput ${esc(item.slot_terisi)}/${esc(item.slot_total)}</span>`;
     } else {
       statPill = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-400">Alpha</span>`;
     }

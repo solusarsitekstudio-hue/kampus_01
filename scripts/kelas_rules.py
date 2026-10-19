@@ -99,10 +99,31 @@ def pertemuan_dihitung_hadir(slot_hadir: int, slot_total: int) -> bool:
     return (slot_hadir / slot_total) >= AT.min_slot_ratio_hadir()
 
 
-def status_pertemuan(slot_hadir: int, slot_total: int) -> str:
-    """Label jujur untuk satu pertemuan: Hadir / Sebagian / Alpha."""
+def pertemuan_belum_diinput(slot_terisi: int, slot_total: int) -> bool:
+    """True bila baris slot absen satu pertemuan BELUM lengkap.
+
+    `slot_total` = jumlah slot yang seharusnya ada (dari sesi.json).
+    `slot_terisi` = jumlah baris catatan yang benar-benar ada di nilai.json.
+
+    Kalau kurang, pertemuan itu bukan Alpha - datanya memang belum masuk.
+    Dipakai supaya "belum diinput" tidak diam-diam dinilai 0.
+    """
+    if not slot_total:
+        return False
+    return slot_terisi < slot_total
+
+
+def status_pertemuan(slot_hadir: int, slot_total: int, slot_terisi=None) -> str:
+    """Label jujur untuk satu pertemuan.
+
+    `slot_terisi` (opsional) = jumlah baris catatan yang ada. Bila diberikan dan
+    kurang dari `slot_total`, pertemuan ditandai "Belum Diinput" - bukan Alpha.
+    Tanpa argumen ini, perilaku lama dipertahankan (kompatibel).
+    """
     if not slot_total:
         return "-"
+    if slot_terisi is not None and pertemuan_belum_diinput(slot_terisi, slot_total):
+        return "Belum Diinput"
     if slot_hadir >= slot_total:
         return "Hadir"
     if slot_hadir <= 0:
@@ -121,6 +142,9 @@ def hitung_nilai_terbobot(session_scores, bobot_sesi):
         nilai gratis. (Dulu nilai 0 dibuang dengan `if sc > 0`.)
       * Sesi Sakit/Izin tetap dinilai 70-85, jadi mahasiswa yang sakit tidak
         dihukum atas hal yang bukan akibatnya.
+      * Sesi dengan nilai None (pertemuan yang datanya BELUM DIINPUT) TIDAK
+        dihitung, dan bobotnya ikut dikeluarkan lalu totalnya dinormalisasi.
+        Jadi data yang belum masuk tidak menekan nilai - beda dari Alpha.
       * Bobot sesi dipakai. Sesi tersibuk dihargai lebih tinggi.
 
     Bila bobot tidak lengkap/tidak cocok jumlahnya, jatuh ke rata-rata
@@ -128,14 +152,44 @@ def hitung_nilai_terbobot(session_scores, bobot_sesi):
     """
     if not session_scores:
         return 0.0
-    if not bobot_sesi or len(bobot_sesi) != len(session_scores):
-        return round(sum(session_scores) / len(session_scores), 1)
-    total_bobot = sum(bobot_sesi)
-    if total_bobot <= 0:
-        return round(sum(session_scores) / len(session_scores), 1)
+
+    # Buang sesi yang belum diinput; kalau tidak ada satu pun bobot yang cocok,
+    # pakai rata-rata sederhana atas sesi yang punya nilai.
+    ada_filter = bobot_sesi and len(bobot_sesi) == len(session_scores)
+    pasangan = [
+        (s, b if ada_filter else None)
+        for s, b in zip(session_scores, bobot_sesi or [None] * len(session_scores))
+        if s is not None
+    ]
+    if not pasangan:
+        return 0.0
+    bobot_pakai = [b for _, b in pasangan]
+    nilai_pakai = [s for s, _ in pasangan]
+
+    total_bobot = sum(b for b in bobot_pakai if isinstance(b, (int, float)))
+    if not ada_filter or total_bobot <= 0:
+        return round(sum(nilai_pakai) / len(nilai_pakai), 1)
     return round(
-        sum(s * b for s, b in zip(session_scores, bobot_sesi)) / total_bobot, 1
+        sum(s * b for s, b in pasangan) / total_bobot, 1
     )
+
+
+def cakupan_bobot(session_scores, bobot_sesi):
+    """Persen bobot yang benar-benar punya catatan (100 = lengkap).
+
+    Dipakai untuk menahan grade selama masih ada pertemuan yang belum diinput.
+    """
+    if not bobot_sesi:
+        terisi = sum(1 for s in session_scores if s is not None)
+        return round((terisi / len(session_scores)) * 100, 1) if session_scores else 0.0
+    total = sum(b for b in bobot_sesi if isinstance(b, (int, float)))
+    if total <= 0:
+        return 0.0
+    terisi = sum(
+        b for s, b in zip(session_scores, bobot_sesi)
+        if s is not None and isinstance(b, (int, float))
+    )
+    return round((terisi / total) * 100, 1)
 
 
 def validasi_bobot(bobot_sesi, keterangan=""):
@@ -216,7 +270,17 @@ TEKS_GRADE = {
         "Intervensi Pembinaan Khusus Jurusan",
         "Fokus Peningkatan Disiplin Waktu Belajar",
     ),
+    # Dipakai saat masih ada pertemuan yang datanya BELUM DIINPUT. Grade sengaja
+    # ditahan supaya nilai tidak dihitung dari data yang belum lengkap.
+    "Belum Lengkap": (
+        "Belum Dinilai (Data Presensi Belum Lengkap)",
+        "Menunggu Kelengkapan Data Nilai",
+        "Grade ditahan sampai seluruh pertemuan terisi",
+    ),
 }
+
+# Nama grade untuk mahasiswa yang datanya belum lengkap.
+GRADE_BELUM_LENGKAP = "Belum Lengkap"
 
 
 def teks_grade(grade):

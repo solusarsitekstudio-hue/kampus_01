@@ -418,6 +418,13 @@ def generate_monthly_attendance_charts_svg(student):
             pill_text = "Izin"
             pill_bg = "#e0f2fe"
             pill_fg = "#075985"
+        elif st == "Belum Diinput":
+            # BELUM DIINPUT: presensi belum masuk - bukan Alpha. Ditandai netral.
+            h = max_h * 0.12
+            b_color = "#94a3b8"
+            pill_text = "Belum Input"
+            pill_bg = "#f1f5f9"
+            pill_fg = "#475569"
         else:
             h = max_h * 0.05
             b_color = "#f43f5e"
@@ -478,10 +485,20 @@ def generate_session_bars_svg(detail):
     for sess in detail[:8]:
         # FIX TAHAP B: "skor_sesi" tidak pernah ada di object sesi (itu key array
         # di akademik), jadi fallback 85 itu reachable dan diam-diam menipu.
+        # FIX BELUM-DIINPUT: skor None = pertemuan belum diinput. Dulu dipaksa 0
+        # (terlihat seperti nilai nol), padahal datanya memang belum ada.
         score = sess.get("skor")
-        if score is None:
-            score = 0
         p = sess.get("pertemuan", 1)
+        if score is None:
+            rows += f"""
+        <g transform="translate(0, {y})">
+          <text x="0" y="8.5" font-size="7.5" font-weight="800" font-family="'JetBrains Mono', monospace" fill="#0f172a">P{p}</text>
+          <rect x="20" y="2" width="125" height="8" rx="2.5" fill="#f1f5f9" />
+          <text x="20" y="9" font-size="7.5" font-weight="800" font-family="'JetBrains Mono', monospace" fill="#94a3b8">belum diinput</text>
+        </g>
+        """
+            y += 13.5
+            continue
         w = int(score * 1.25)
         bar_col = "#10b981" if score >= 95 else ("#0284c7" if score >= 90 else "#f59e0b")
         rows += f"""
@@ -627,6 +644,8 @@ def render_monthly_attendance_html(student):
             badge = '<span class="badge badge-warning">Sakit</span>'
         elif st == "Izin":
             badge = '<span class="badge badge-info">Izin</span>'
+        elif st == "Belum Diinput":
+            badge = '<span class="badge" style="background:#f1f5f9;color:#475569;border:1px solid #cbd5e1;">Belum Diinput</span>'
         else:
             badge = '<span class="badge badge-danger">Alpha</span>'
             
@@ -774,11 +793,13 @@ def render_final_report_html(student):
 
     session_rows = ""
     for sess in student["kehadiran"]["detail"]:
+        skor = sess.get("skor")
+        sel_skor = ("-" if skor is None else skor)
         session_rows += f"""
         <tr>
           <td style="text-align: center; font-family: 'JetBrains Mono', monospace;">P{sess['pertemuan']}</td>
           <td>{sess['topik']}</td>
-          <td style="text-align: center; font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;">{sess.get('skor', sess.get('skor_sesi', 85))}</td>
+          <td style="text-align: center; font-weight: 700; color: #0f172a; font-family: 'JetBrains Mono', monospace;">{sel_skor}</td>
         </tr>
         """
 
@@ -1060,7 +1081,10 @@ def render_kaprodi_gradebook_html():
         # Dulu: D atau alpha>=3 = EVALUASI, C = REMIDI, selain itu LULUS.
         # At-risk di dashboard adalah alpha>=2 ATAU hadir<75%, jadi
         # "LULUS" di sini tidak sama dengan "tidak berisiko" di dashboard.
-        if s.get("at_risk"):
+        if not keh.get("data_lengkap", True):
+            status_lulus = ('<span class="badge" style="background:#f1f5f9;color:#475569;'
+                            'border:1px solid #cbd5e1;">BELUM LENGKAP</span>')
+        elif s.get("at_risk"):
             status_lulus = '<span class="badge badge-warning">ASISTENSI</span>'
         elif ak["nilai_rata_rata"] < 60:
             status_lulus = '<span class="badge badge-danger">EVALUASI</span>'

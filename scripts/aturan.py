@@ -35,6 +35,10 @@ BACKUP_DIR = os.path.join(BASE_DIR, "data", "_backup")
 TIPE_AT_RISK_DIKENAL = ("alpha_min", "kehadiran_min")
 BASIS_PERSEN_DIKENAL = ("slot", "pertemuan")
 SATUAN_TAMPILAN_DIKENAL = ("pertemuan", "slot")
+# Bagaimana memperlakukan slot absen yang BELUM punya baris catatan.
+#   "belum_diinput" -> jujur: bukan Alpha, tidak dihitung nilai 0 (default)
+#   "alpha"         -> perilaku lama: slot kosong dianggap Alpha/nilai 0
+SLOT_BELUM_DIISI_DIKENAL = ("belum_diinput", "alpha")
 
 _cache = {"mtime": None, "data": None}
 
@@ -100,6 +104,13 @@ def validasi(cfg):
         rasio = keh.get("min_slot_ratio_hadir")
         if not isinstance(rasio, (int, float)) or not (0 <= float(rasio) <= 1):
             masalah.append("kehadiran.min_slot_ratio_hadir harus angka 0..1.")
+        # Optional (default "belum_diinput"): kalau ada, harus nilai yang dikenal.
+        if "slot_belum_diisi" in keh and keh.get("slot_belum_diisi") not in SLOT_BELUM_DIISI_DIKENAL:
+            masalah.append(
+                "kehadiran.slot_belum_diisi harus salah satu dari {0}.".format(
+                    list(SLOT_BELUM_DIISI_DIKENAL)
+                )
+            )
 
     ar = cfg.get("at_risk")
     if not isinstance(ar, dict):
@@ -190,6 +201,21 @@ def min_slot_ratio_hadir():
     return float(kehadiran().get("min_slot_ratio_hadir", 0.5))
 
 
+def slot_belum_diisi():
+    """Cara memperlakukan slot absen yang belum punya catatan.
+
+    "belum_diinput" (default): pertemuan ditandai Belum Diinput - bukan Alpha,
+    nilainya tidak dihitung 0, dan grade ditahan sampai data lengkap.
+    "alpha": perilaku lama (slot kosong = Alpha/nilai 0).
+    """
+    return str(kehadiran().get("slot_belum_diisi", "belum_diinput"))
+
+
+def hitung_slot_kosong_sebagai_alpha():
+    """True bila slot tanpa catatan HARUS dianggap Alpha (perilaku lama)."""
+    return slot_belum_diisi() == "alpha"
+
+
 def at_risk():
     return muat().get("at_risk", {})
 
@@ -266,6 +292,13 @@ def ringkasan():
             kehadiran().get("satuan_tampilan", "pertemuan"),
             basis_persen_kehadiran(),
             min_slot_ratio_hadir(),
+        )
+    )
+    baris.append(
+        "Slot absen belum lengkap: {0} (bukan Alpha, tidak dinilai 0)".format(
+            "ditandai Belum Diinput + grade ditahan"
+            if slot_belum_diisi() == "belum_diinput"
+            else "dihitung Alpha / nilai 0 (perilaku lama)"
         )
     )
     baris.append(

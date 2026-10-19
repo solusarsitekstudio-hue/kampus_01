@@ -27,6 +27,14 @@ Bobot bawaan: 14 × 4 + UTS 20 + UAS 24 = 100   (P1..P7, P9..P15 = 4; P8 = UTS; 
   bobotnya **tepat 100**. Dashboard menolak simpan kalau tidak (HTTP 422).
 * **Alpha bernilai 0 dan DIHITUNG** sebagai bagian dari rata-rata.
   Mahasiswa yang tidak hadir **tidak** mendapat nilai gratis.
+* **Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0.** Kalau baris slot
+  absen satu pertemuan belum lengkap (portal baru mengirim sebagian, atau data
+  memang belum masuk), pertemuan itu ditandai **"Belum Diinput"** — bukan Alpha —
+  dikeluarkan dari rata-rata terbobot (bobotnya **dinormalisasi ulang**, cakupan
+  bobot dilaporkan di `akademik.cakupan_bobot`), dan grade mahasiswa ditahan
+  **"Belum Lengkap"** sampai datanya lengkap. Aturannya hidup di
+  `config/aturan.json` (`kehadiran.slot_belum_diisi`); diset `"alpha"` untuk
+  kembali ke perilaku lama (slot kosong = Alpha/nilai 0).
 * Pertemuan **Sakit** dan **Izin** tetap dinilai 70–85 (student tetap berkarya).
 Sebelumnya kode memakai `valid_scores = [sc for sc in session_scores if sc > 0]`
   yang membuang nilai 0, sehingga mahasiswa dengan Alpha tidak kehilangan nilai.
@@ -43,6 +51,7 @@ Sebelumnya kode memakai `valid_scores = [sc for sc in session_scores if sc > 0]`
 | **B** | rata-rata ≥ 70 | Kompeten Cukup |
 | **C** | rata-rata ≥ 60 | Kurang (Perlu Bimbingan Intensif) |
 | **D / Evaluasi** | rata-rata < 60 | Kritis (Rentan Evaluasi) |
+| **Belum Lengkap** | masih ada pertemuan yang presensinya belum diinput | Grade **ditahan** — bukan nilai, bukan D |
 
 ### 3. Deteksi Dini At-Risk (ATURAN SATU-SATUNYA)
 
@@ -348,6 +357,13 @@ Angkanya **deterministik**: dibangkitkan dari `random.Random(42 + npm)` dengan
 profil per arketipe (`scripts/persona.py`). Jadi untuk NPM yang sama, hasilnya
 selalu sama — tidak berubah-ubah setiap kali dibangun ulang.
 
+Kalau presensi/portal hanya mengirim **sebagian** baris (mis. baru 1 dari 2 slot
+pada satu pertemuan, atau satu pertemuan belum masuk sama sekali), sistem
+**tidak** menganggapnya Alpha dan **tidak** memberi nilai 0: pertemuan itu
+ditandai **"Belum Diinput"**, dikeluarkan dari rata-rata, dan grade ditahan
+**"Belum Lengkap"**. Jadi data yang belum ada tidak pernah dihukum seperti
+mahasiswa tidak hadir.
+
 Ganti angka sintetis itu dengan data asli **tanpa mengubah kode**: tulis
 barisnya ke `nilai.json` di tree MK (lihat kontrak di bawah).
 
@@ -376,6 +392,10 @@ sederhana dan tidak berubah-ubah:
 | `slot` | nomor slot absen dalam pertemuan itu (mulai 1) | `1` |
 | `status` | `Hadir`, `Hadir Sebagian`, `Sakit`, `Izin`, `Alpha` | `Hadir` |
 | `skor` | nilai pertemuan itu, 0..100 | `95` |
+
+> Baris yang **tidak dikirim** portal = "belum diinput", bukan Alpha. Sistem
+> menghitungnya sendiri: pertemuan dengan slot yang belum lengkap ditandai
+> "Belum Diinput" dan nilai mahasiswa ditahan "Belum Lengkap".
 
 Aturan yang **dijaga sistem** (akan menolak/mengoreksi sendiri):
 
@@ -431,6 +451,7 @@ REM tanpa server:
 python tests\test_rules_unchanged.py
 python tests\test_readme_accuracy.py
 python tests\test_aturan.py
+python tests\test_belum_diinput.py
 python tests\test_kurikulum_tree.py
 python tests\test_identitas.py
 
@@ -445,6 +466,7 @@ python tests\test_kurikulum_api.py
 | `test_rules_unchanged.py` | Regenerasi data **tetap identik** dengan master — tidak ada angka yang bergeser |
 | `test_readme_accuracy.py` | **Setiap angka di README ini cocok dengan data** — tidak ada lagi angka yang diketik manual dan salah |
 | `test_aturan.py` | Ambang At-Risk & grade benar-benar **hidup**: angka bawaan = angka lama, dan mengubah `config/aturan.json` mengubah hasil |
+| `test_belum_diinput.py` | Pertemuan dengan slot belum lengkap ditandai **"Belum Diinput"** (bukan Alpha/nilai 0), bobot dinormalisasi ulang, grade ditahan **"Belum Lengkap"**, perilaku lama bisa dipulihkan lewat config |
 | `test_kurikulum_tree.py` | Tree kurikulum konsisten **anti-drift**: indeks `config/kurikulum.json` == hasil pindai ulang folder |
 | `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
@@ -639,6 +661,7 @@ kenyataannya.
 | **E-6** | Ambang At-Risk & aturan grade dipindah ke `config/aturan.json` (angka bawaan = angka lama, jadi hasil tidak bergeser sampai diubah) | Tidak |
 | **E-7** | "Hadir Sebagian" ditampilkan apa adanya — badge sendiri, filter sendiri, dan seri tersendiri di grafik tren — tidak lagi dibulatkan jadi Hadir/Alpha | Tidak |
 | **E-8** | Tombol **"Cetak Ulang Paket PDF" (Tingkat 3) diuji ujung-ke-ujung**: 11 PDF arsip tercetak dari data v2.6 dalam 12,8 detik, tanpa error. `jenis_mk` & `semester_kurikulum` ketiga MK juga sudah dikonfirmasi kaprodi lewat tab 6 | Tidak |
+| **F-1** | **"Belum diinput" tidak lagi dihitung Alpha/nilai 0.** Pertemuan dengan baris slot belum lengkap ditandai **"Belum Diinput"**, keluar dari rata-rata terbobot (bobot dinormalisasi ulang), dan grade ditahan **"Belum Lengkap"**. Aturannya hidup di `config/aturan.json` (`kehadiran.slot_belum_diisi`; `"alpha"` = perilaku lama). Badge, filter, tren, dan PDF ikut mengenali status ini | Tidak (data sekarang lengkap, nol angka bergeser) |
 
 ### Sisa utang (belum dikerjakan)
 
