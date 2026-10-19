@@ -47,13 +47,13 @@ if errorlevel 1 (
 )
 
 echo.
-echo [3/3] Mengompilasi data awal dari file Excel & PDF...
+echo [3/3] Membangun data awal dari tree kurikulum (data\kurikulum\)...
 if exist "data\academic_data.json" (
     echo [SKIP] data\academic_data.json sudah ada, tidak ditimpa.
 ) else (
     %PY% scripts\parse_data.py
     if errorlevel 1 (
-        echo [ERROR] Gagal parse data. Periksa sumber Excel/PDF di scripts\parse_data.py
+        echo [ERROR] Gagal parse data. Periksa isi data\kurikulum\ dan config\identitas.json
         pause
         exit /b 1
     )

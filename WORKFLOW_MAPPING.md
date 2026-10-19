@@ -3,6 +3,13 @@
 
 Dokumen ini memetakan alur data ujung-ke-ujung (End-to-End Pipeline) dari sumber portal kampus hingga menjadi alat monitoring Kaprodi, rapor interaktif wali murid, dan mesin viral marketing media sosial.
 
+> **⚠️ Dokumen ini menggambarkan alur v2.5 (Excel/PDF → JSON).** Sejak **v2.6**
+> sumber data adalah **tree kurikulum** `data/kurikulum/...` (PRODI → TAHUN AJAR →
+> SEMESTER → MK → 16 pertemuan), dan dashboard bisa menyuntingnya dari tab
+> **6. Kurikulum**. Diagram di bawah tetap berguna untuk melihat ke mana data
+> mengalir, tetapi kotak "Excel/PDF mentah" sudah tidak ada. Acuan yang berlaku:
+> `README.md`.
+
 ---
 
 ### 🗺️ Diagram Alur Data Sistem

@@ -3,6 +3,12 @@
 
 Dokumen ini memuat daftar kebutuhan teknis, dependensi perangkat lunak, konfigurasi jaringan/port, serta prasyarat lingkungan untuk menjalankan sistem.
 
+> **⚠️ Sebagian isi dokumen ini menggambarkan alur v2.5.** Sejak **v2.6**
+> sumber data bukan lagi Excel/PDF, melainkan **tree kurikulum**
+> `data/kurikulum/<PRODI>/<TAHUN AJAR>/<SEMESTER>/<MK>/`. Bagian yang menyebut
+> `DAFTAR MAHASISWA.xlsx` / `02 rekap qs pratikum.pdf` hanya berlaku sebagai
+> sejarah. Acuan yang berlaku: `README.md`.
+
 ---
 
 ### 1. Spesifikasi Perangkat Lunak (Software Stack)

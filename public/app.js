@@ -274,6 +274,7 @@ function renderKaprodiDashboard() {
 }
 
 function renderAttendanceTrendChart(trends) {
+  setText("chart-trend-count", trends.length ? `${trends.length} Pertemuan` : "— Pertemuan");
   if (!trends.length) {
     attendanceTrendChart = null;
     const c = document.querySelector("#chart-attendance-trend");

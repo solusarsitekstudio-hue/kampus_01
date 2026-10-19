@@ -430,7 +430,7 @@ def generate_monthly_attendance_charts_svg(student):
         bar_svg += f'<rect x="{x}" y="{y}" width="{bar_width}" height="{h}" rx="4" fill="{b_color}" />\n'
         bar_svg += f'<rect x="{x - 2}" y="{y - 13}" width="{bar_width + 4}" height="11" rx="3" fill="{pill_bg}" stroke="{b_color}" stroke-width="0.75" />\n'
         bar_svg += f'<text x="{x + bar_width/2}" y="{y - 4.5}" text-anchor="middle" font-size="7.5" font-weight="700" fill="{pill_fg}">{pill_text}</text>\n'
-        bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 11}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#0f172a">Sesi {sess.get("pertemuan", i+1)}</text>\n'
+        bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 11}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#0f172a">P{sess.get("pertemuan", i+1)}</text>\n'
         # FIX TAHAP B: pakai tanggal_display ("03 Juni 2026"), bukan ISO mentah
         date_str = sess.get("tanggal_display") or sess.get("tanggal") or f"P{i+1}"
         bar_svg += f'<text x="{x + bar_width/2}" y="{base_y + 20}" text-anchor="middle" font-size="6.5" font-family="monospace" fill="#64748b">{date_str}</text>\n'
@@ -561,7 +561,7 @@ def generate_kaprodi_class_charts_svg(summary):
     return f"""
     <svg width="100%" height="110" viewBox="0 0 760 110" xmlns="http://www.w3.org/2000/svg">
       <rect x="10" y="2" width="345" height="106" rx="6" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
-      <text x="20" y="16" font-size="8.5" font-weight="800" fill="#0f172a">TREN KEHADIRAN KELAS (SESI 1 - {n_tren})</text>
+      <text x="20" y="16" font-size="8.5" font-weight="800" fill="#0f172a">TREN KEHADIRAN KELAS (PERTEMUAN 1 - {n_tren})</text>
       <circle cx="250" cy="13" r="3.5" fill="#10b981" />
       <text x="256" y="15" font-size="7" fill="#334155">Hadir</text>
       <circle cx="285" cy="13" r="3.5" fill="#f43f5e" />
@@ -684,7 +684,7 @@ def render_monthly_attendance_html(student):
         <div class="card-box" style="background: #ecfdf5; border-color: #a7f3d0; text-align: center;">
           <div style="font-size: 10px; color: #047857; font-weight: 600;">Total Kehadiran</div>
           <div style="font-size: 20px; font-weight: 900; color: #065f46;">{kehadiran['persentase']}%</div>
-          <div style="font-size: 9.5px; color: #047857;">{kehadiran['hadir']} dari {len(detail)} Sesi</div>
+          <div style="font-size: 9.5px; color: #047857;">{kehadiran['hadir']} dari {len(detail)} Pertemuan</div>
         </div>
         <div class="card-box" style="background: #fefce8; border-color: #fef08a; text-align: center;">
           <div style="font-size: 10px; color: #a16207; font-weight: 600;">Sakit (Izin Medis)</div>
@@ -712,12 +712,12 @@ def render_monthly_attendance_html(student):
       </div>
 
       <div style="margin-bottom: 6px; font-size: 11px; font-weight: 700; color: #0f172a;">
-        Rincian Log Presensi & Alasan per Sesi:
+        Rincian Log Presensi & Alasan per Pertemuan:
       </div>
       <table>
         <thead>
           <tr>
-            <th style="width: 50px; text-align: center;">Sesi</th>
+            <th style="width: 68px; text-align: center;">Pertemuan</th>
             <th style="width: 95px;">Tanggal</th>
             <th>Topik Materi Pembelajaran Studio</th>
             <th style="width: 75px; text-align: center;">Status</th>
@@ -898,12 +898,12 @@ def render_final_report_html(student):
         <!-- Column 2: Session Scores Table & Mini Progress Bars -->
         <div>
           <div style="font-size: 10px; font-weight: 700; color: #0f172a; margin-bottom: 2px;">
-            Rincian Nilai {len(akademik.get('skor_sesi', []))} Sesi Praktikum:
+            Rincian Nilai {len(akademik.get('skor_sesi', []))} Pertemuan:
           </div>
           <table style="margin: 2px 0 5px 0;">
             <thead>
               <tr>
-                <th style="width: 35px; text-align: center; font-size: 8.5px; padding: 3px 4px;">Sesi</th>
+                <th style="width: 52px; text-align: center; font-size: 8.5px; padding: 3px 4px;">Pertemuan</th>
                 <th style="font-size: 8.5px; padding: 3px 4px;">Topik Modul Praktikum</th>
                 <th style="width: 45px; text-align: center; font-size: 8.5px; padding: 3px 4px;">Nilai</th>
               </tr>
@@ -1232,7 +1232,7 @@ def render_dosen_curriculum_audit_html():
     for e in evaluasi:
         rps_rows += f"""
         <tr>
-          <td style="text-align: center; font-weight: 700; font-family: 'JetBrains Mono';">Sesi {e['sesi']}</td>
+          <td style="text-align: center; font-weight: 700; font-family: 'JetBrains Mono';">Pertemuan {e['sesi']}</td>
           <td><strong>{e['topik_rps']}</strong></td>
           <td style="font-size: 10px; color: #334155;">{e['realisasi_kelas']}</td>
           <td style="text-align: center; font-weight: 800; font-family: 'JetBrains Mono'; color: #0284c7;">{e['skor_keselarasan']}%</td>
@@ -1287,7 +1287,7 @@ def render_dosen_curriculum_audit_html():
           <tr>
             <th>Nama Dosen / Asisten</th>
             <th>Peran Pengajaran</th>
-            <th style="width: 130px; text-align: center;">Realisasi Sesi</th>
+            <th style="width: 140px; text-align: center;">Realisasi Pertemuan</th>
             <th style="width: 140px;">Keterangan Mutu</th>
           </tr>
         </thead>
@@ -1308,7 +1308,7 @@ def render_dosen_curriculum_audit_html():
       <table>
         <thead>
           <tr>
-            <th style="width: 50px; text-align: center;">Sesi</th>
+            <th style="width: 68px; text-align: center;">Pertemuan</th>
             <th style="width: 160px;">Topik Standar RPS</th>
             <th>Realisasi Materi di Lab LIKDA</th>
             <th style="width: 60px; text-align: center;">Skor Match</th>

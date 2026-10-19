@@ -10,6 +10,11 @@ persis hal yang paling merusak kepercayaan pada sistem ini.
 Tes ini menurunkan setiap klaim dari data/academic_data.json, lalu memastikan
 klaim itu benar-benar tertulis di README.md. Kalau angkanya tidak cocok, tes
 GAGAL - jadi README tidak bisa lagi diam-diam berbohong.
+
+Sejak v2.6 klaim "porsi kehadiran" memakai satuan PERTEMUAN + SLOT (bukan
+penyebut 6 yang lama), dan tes ikut mengunci bahwa angka-angka salah versi lama
+("6 Sesi Praktikum", benchmark 83.3%, keselarasan 96.0%, grafik P1-P6) tidak
+boleh muncul lagi.
 """
 import io
 import json
@@ -47,19 +52,24 @@ pct_lulus = round(cs["total_lulus"] / cs["total_mahasiswa"] * 100, 1)
 
 klaim = [
     ("Total mahasiswa",            f"| Total Mahasiswa | {cs['total_mahasiswa']} |"),
-    ("Rata-rata kehadiran",        f"| Rata-rata Kehadiran | {cs['rata_kehadiran']}% |"),
+    ("Rata-rata kehadiran",        f"| Rata-rata Kehadiran | {cs['rata_kehadiran']}%"),
     ("Rata-rata nilai studio",     f"**{cs['rata_nilai_studio']}**"),
     ("Predikat dominan + jumlah",  f"predikat dominan {modus}, {dist[modus]} mahasiswa"),
     ("Jumlah at-risk",             f"| Mahasiswa At-Risk | **{cs['total_at_risk']}**"),
     ("Distribusi grade",           f"A={dist['A']}, A-={dist['A-']}, B+={dist['B+']}, B={dist['B']}, C={dist['C']}, D={dist['D']}"),
     ("Tingkat kelulusan",          f"{pct_lulus}% ({cs['total_lulus']} dari {cs['total_mahasiswa']}"),
+    ("Versi master",               f"`{d['metadata']['versi']}`"),
+    ("Standar pertemuan",          f"satu semester = **{d['metadata']['pertemuan_total']} pertemuan**"),
     ("Yazid kehadiran",            f"Kehadiran {int(YAZID['kehadiran']['persentase'])}%"),
     ("Yazid nilai + grade",        f"Grade {YAZID['akademik']['grade']} ({YAZID['akademik']['nilai_rata_rata']})"),
     ("Yazid indeks kesiapan",      f"Indeks Kesiapan {YAZID['akademik']['indeks_kesiapan']}%"),
-    ("Rozi kehadiran + porsi",     f"Kehadiran {int(ROZI['kehadiran']['persentase'])}% ({(ROZI['kehadiran']['hadir'])}/6)"),
+    ("Rozi kehadiran + porsi",     f"Kehadiran {ROZI['kehadiran']['persentase']}% "
+                                   f"(**{ROZI['kehadiran']['hadir']} pertemuan penuh + "
+                                   f"{ROZI['kehadiran']['hadir_sebagian']} pertemuan hadir sebagian**, "
+                                   f"{ROZI['kehadiran']['slot_hadir']}/{ROZI['kehadiran']['slot_total']} slot)"),
     ("Rozi jumlah alpha",          f"{ROZI['kehadiran']['alpha']}x Alpha"),
     ("Rozi jumlah sakit",          f"{ROZI['kehadiran']['sakit']}x Sakit"),
-    ("Rozi grade + nilai",         f"Grade D / Evaluasi ({ROZI['akademik']['nilai_rata_rata']})"),
+    ("Rozi grade + nilai",         f"Grade {ROZI['akademik']['grade']} ({ROZI['akademik']['nilai_rata_rata']})"),
     ("Alsa kehadiran",             f"Kehadiran {ALSA['kehadiran']['persentase']}%"),
     ("Alsa nilai + grade",         f"Grade {ALSA['akademik']['grade']} ({ALSA['akademik']['nilai_rata_rata']})"),
     ("Yazid karir BIM Modeler",    f"BIM Modeler ({karir(YAZID, 'BIM Modeler')}%)"),
@@ -95,6 +105,10 @@ sisa_salah = [
     ("Plug angka kelulusan lama",  "71.4%"),
     ("Nilai karangan Rozi",        "Site Architect 87.0%"),
     ("Nilai Alsa versi salah",     "91.8"),
+    ("Penyebut 6 sesi (salah)",    "6 Sesi Praktikum"),
+    ("Benchmark lama 83.3%",       "83.3%"),
+    ("Keselarasan karangan 96.0%", "96.0%"),
+    ("Grafik P1-P6 (bukan 16)",    "P1-P6"),
 ]
 print("\n  -- angka lama yang harus sudah hilang --")
 for label, potongan in sisa_salah:

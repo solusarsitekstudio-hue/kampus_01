@@ -362,7 +362,7 @@ def render_vertical_slides_html(student, course_info, images):
         
         <div class="image-card">
           <img src="{img_urls[0]}">
-          <div class="img-tag">📐 SESI 1: PENGENALAN AUTOCAD & GAMBAR KERJA</div>
+          <div class="img-tag">📐 PERTEMUAN 1: PENGENALAN AUTOCAD &amp; GAMBAR KERJA</div>
         </div>
         
         <div class="footer-card">
