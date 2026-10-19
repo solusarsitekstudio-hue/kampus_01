@@ -585,24 +585,35 @@ Sistem dilengkapi endpoint **Dynamic On-Demand PDF Generation** (`/api/pdf/downl
 
 ### 2. Dokumen untuk Kaprodi:
 * **PDF 2: Laporan Penilaian Dosen & Master Gradebook 35 Mahasiswa** (`03_laporan_penilaian_kaprodi_master_gradebook.pdf`):
-  * Format **A4 Landscape** eksekutif untuk rapat yudisium dan arsip akreditasi BAN-PT/LAM Teknik.
+  * Format **A4 Landscape** eksekutif untuk rapat yudisium dan arsip internal prodi.
   * Memuat 5 kartu statistik makro kelas.
-  * **Grafik Web Analitik Kelas**:
-    1. **Tren Kehadiran per Pertemuan (P1-P16)**: Stacked bar chart mahasiswa Hadir penuh / Hadir sebagian / Absen.
+  * **Grafik Web Analitik Kelas** (kedua grafik dihitung dari data, tidak ada batang yang diketik):
+    1. **Tren Kehadiran per Pertemuan (P1-P16)**: stacked bar chart 16 pertemuan dengan
+       **4 seri** — Hadir penuh, Hadir sebagian, Belum diinput, dan Absen. Jumlah serinya
+       selalu sama dengan jumlah mahasiswa, jadi grafiknya tidak bisa "menghilangkan"
+       mahasiswa yang hanya masuk sebagian.
     2. **Distribusi Grade Nilai Kelas**: Histogram sebaran grade nilai huruf (A, A-, B+, B, C, D) seluruh 35 mahasiswa.
   * Master Table 35 mahasiswa **terurut berdasarkan NPM** (tanpa peringkat) dengan log nilai per pertemuan berbobot dan status kelulusan. Angka kelulusan, predikat modus, dan jumlah at-risk dihitung dari data, bukan ditulis manual.
 
 ### 3. Dokumen untuk Dosen dari Kaprodi:
 * **PDF 3: Laporan Evaluasi Dosen & Keselarasan Kurikulum / Modul RPS** (`04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf`):
   * Laporan audit mutu pengajaran (QA Dosen) dari Kaprodi kepada tim pengampu.
-  * Realisasi presensi tim pengajar (100% terlaksana).
-  * **Audit Kesesuaian Materi vs Modul RPS**: Evaluasi 16 pertemuan terhadap capaian CPMK/CPL. Rata-rata **87.8%** — *"Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik"*.
-  * ⚠️ **Jujur soal angkanya:** `skor_keselarasan` per pertemuan **belum** mengukur
-    keselarasan materi yang sesungguhnya. Untuk sementara ia dipakai sebagai
-    **proksi persen kehadiran** pertemuan itu (lihat `metodologi_keselarasan` di
-    data master). Jadi angka 87.8% berarti "kehadiran kelas", bukan "mutu
-    keselarasan RPS". Menggantinya dengan penilaian materi yang benar butuh
-    rubrik dari dosen.
+  * **Presensi tim pengajar: TIDAK diklaim.** Dulu baris ini menulis "Realisasi presensi
+    tim pengajar (100% terlaksana)" — padahal sistem ini tidak pernah mencatat presensi
+    dosen; angka itu hanya berarti "jumlah pertemuan yang terdefinisi". Sekarang tabel
+    QA menulis apa adanya: *belum ada rekap presensi dosen*.
+  * **Keterlaksanaan Materi vs Modul RPS**: 16 pertemuan dinilai dari **persen kehadiran
+    kelas**, rata-rata **88.9%**.
+  * ⚠️ **Jujur soal angkanya:** angka itu bernama `keterlaksanaan_persen` (dulu
+    `skor_keselarasan` — nama lama menyesatkan) dan artinya **"kelas hadir"**, bukan
+    "mutu materi selaras RPS". Menggantinya dengan penilaian materi yang benar butuh
+    rubrik dari dosen; sampai itu ada, `status_penilaian_rps = "belum_tersedia"`.
+  * **CPMK masih placeholder** (4 butir generik berulang) — ditandai `cpmk_status =
+    "placeholder"` di data dan `(placeholder)` di tabel PDF, sampai RPS resmi disediakan.
+  * ❌ **Klaim akreditasi DIHAPUS.** Data ini dulu memuat `"Terakreditasi Sangat Baik /
+    Memenuhi Standar CPMK & CPL LAM Teknik"`. Itu klaim **status akreditasi** yang tidak
+    pernah diverifikasi siapa pun; perangkat lunak tidak berhak menyatakannya. Badge
+    "Terakreditasi IAI" pada PDF 1A (dokumen yang dikirim ke orang tua) juga dibuang.
 
 ---
 

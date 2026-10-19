@@ -1003,7 +1003,7 @@ def render_final_report_html(student):
       <div class="card-box" style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px; margin-bottom: 8px;">
         <div style="font-size: 11px; font-weight: 800; color: #0f172a; margin-bottom: 6px; display: flex; align-items: center; justify-content: space-between;">
           <span>🤖 DIAGNOSIS AKADEMIK & PSIKOLOGI BELAJAR MAHASISWA:</span>
-          <span style="font-size: 9px; font-weight: 700; color: #047857; background: #dcfce7; padding: 2px 6px; border-radius: 4px;">Terakreditasi IAI</span>
+          <span style="font-size: 9px; font-weight: 700; color: #92400e; background: #fef3c7; padding: 2px 6px; border-radius: 4px;">Narasi otomatis • nilai per pertemuan sintetis</span>
         </div>
 
         <div style="margin-bottom: 6px;">
@@ -1318,8 +1318,8 @@ def render_dosen_curriculum_audit_html():
           <td style="text-align: center; font-weight: 700; font-family: 'JetBrains Mono';">Pertemuan {e['sesi']}</td>
           <td><strong>{e['topik_rps']}</strong></td>
           <td style="font-size: 10px; color: #334155;">{e['realisasi_kelas']}</td>
-          <td style="text-align: center; font-weight: 800; font-family: 'JetBrains Mono'; color: #0284c7;">{e['skor_keselarasan']}%</td>
-          <td style="font-size: 9.5px; color: #64748b;">{e['cpmk']}</td>
+          <td style="text-align: center; font-weight: 800; font-family: 'JetBrains Mono'; color: #0284c7;">{e['keterlaksanaan_persen']}%</td>
+          <td style="font-size: 9.5px; color: #64748b;">{e['cpmk']} <em style="color: #b45309;">(placeholder)</em></td>
         </tr>
         """
 
@@ -1328,7 +1328,7 @@ def render_dosen_curriculum_audit_html():
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Laporan Evaluasi Dosen & Keselarasan Modul - Kaprodi Arsitektur</title>
+      <title>Laporan Evaluasi Dosen & Keterlaksanaan Modul - Kaprodi Arsitektur</title>
       <style>
         {COMMON_CSS}
         @page {{ size: A4 portrait; margin: 14mm 15mm 14mm 15mm; }}
@@ -1349,7 +1349,7 @@ def render_dosen_curriculum_audit_html():
 
       <div style="text-align: center; margin-bottom: 14px;">
         <h4 style="font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
-          LAPORAN EVALUASI AKUNTABILITAS DOSEN & KESELARASAN KURIKULUM MODUL AJAR
+          LAPORAN EVALUASI AKUNTABILITAS DOSEN & KETERLAKSANAAN KURIKULUM MODUL AJAR
         </h4>
         <p style="font-size: 10px; color: #64748b;">Diterbitkan oleh Ketua Program Studi kepada Tim Dosen Pengasuh Mata Kuliah</p>
       </div>
@@ -1379,13 +1379,13 @@ def render_dosen_curriculum_audit_html():
         </tbody>
       </table>
 
-      <!-- Section 2: RPS Alignment Audit -->
+      <!-- Section 2: Keterlaksanaan Materi (BUKAN audit mutu RPS) -->
       <div style="margin-top: 14px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
         <span style="font-size: 11px; font-weight: 700; color: #0f172a;">
-          2. Audit Keselarasan Materi Pembelajaran vs Modul RPS (Rencana Pembelajaran Semester):
+          2. Keterlaksanaan Materi Pembelajaran vs Modul RPS (Rencana Pembelajaran Semester):
         </span>
         <span class="badge badge-gold" style="font-size: 10.5px;">
-          RATA-RATA KESELARASAN: {audit.get('skor_keselarasan_rata_rata', '-')}%
+          RATA-RATA KETERLAKSANAAN: {audit.get('keterlaksanaan_rata_rata', '-')}%
         </span>
       </div>
       <table>
@@ -1394,14 +1394,22 @@ def render_dosen_curriculum_audit_html():
             <th style="width: 68px; text-align: center;">Pertemuan</th>
             <th style="width: 160px;">Topik Standar RPS</th>
             <th>Realisasi Materi di Lab LIKDA</th>
-            <th style="width: 60px; text-align: center;">Skor Match</th>
-            <th style="width: 140px;">Capaian CPMK</th>
+            <th style="width: 76px; text-align: center;">Keterlaksanaan</th>
+            <th style="width: 140px;">CPMK (placeholder)</th>
           </tr>
         </thead>
         <tbody>
           {rps_rows}
         </tbody>
       </table>
+      <p style="font-size: 9px; color: #92400e; background: #fffbeb; border: 1px solid #fde68a; border-radius: 5px; padding: 5px 7px; margin-top: 6px; text-align: justify;">
+        <strong>Catatan kejujuran:</strong> angka pada kolom <em>Keterlaksanaan</em> adalah
+        <strong>proksi persen kehadiran</strong> pertemuan tersebut — <strong>bukan</strong> penilaian
+        mutu keselarasan materi terhadap RPS, dan <strong>bukan</strong> penilaian akreditasi.
+        Kolom <em>CPMK</em> masih <strong>placeholder</strong> sampai RPS resmi disediakan.
+        Presensi tim pengajar belum pernah direkap di sistem ini, sehingga laporan ini
+        tidak mengklaim tingkat kehadiran dosen.
+      </p>
 
       <!-- Section 3: Class Rapor Outcome & Feedback from Kaprodi -->
       <div class="card-box" style="background: #f8fafc; border-left: 4px solid #0284c7; margin-top: 10px;">

@@ -2,8 +2,8 @@
   "metadata": {
     "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
     "versi": "2.6-KURIKULUM-BERTINGKAT",
-    "generated_at": "2026-10-19T15:45:52+07:00",
-    "build_id": "20261019_154552",
+    "generated_at": "2026-10-19T15:59:53+07:00",
+    "build_id": "20261019_155953",
     "target_port": 40404,
     "metodologi_nilai": "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. Nilai satu pertemuan = rata-rata nilai seluruh slot absennya. Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0 (dikeluarkan dari rata-rata dan bobotnya dinormalisasi ulang); grade ditahan 'Belum Lengkap' sampai seluruh pertemuan terisi.",
     "aturan_at_risk": "Alpha >= 2x ATAU Kehadiran < 75%",
@@ -20,8 +20,9 @@
     "catatan_kehadiran": "Persen kehadiran dihitung dari SLOT absen (slot_hadir/slot_total), bukan jumlah pertemuan. Ada DUA ukuran 'hadir' yang sengaja dipisah supaya tidak ada angka yang bisa dibaca dua cara: (1) `pertemuan_penuh` = pertemuan yang SEMUA slotnya hadir (ini yang dipakai rapor/PDF); (2) `pertemuan_ambang_terpenuhi` = pertemuan dengan slot hadir minimal 50% (ambang di config/aturan.json). Sisa statusnya (hadir sebagian, sakit, izin, alpha, belum diinput) ditampilkan apa adanya.",
     "catatan_belum_diinput": "Pertemuan yang baris slot absennya belum lengkap ditandai 'Belum Diinput' - bukan Alpha, tidak dinilai 0, dan grade mahasiswa ditahan 'Belum Lengkap' sampai data lengkap.",
     "catatan_nilai": "NILAI PER PERTEMUAN MASIH SINTETIS (bukan input dosen). Ganti dengan data portal begitu tersedia; berkas sumber ditandai `sintetis: true`.",
-    "metodologi_keselarasan": "skor_keselarasan per pertemuan = persen kehadiran pertemuan tersebut (proxy keterlaksanaan), bukan penilaian RPS terpisah.",
-    "catatan_cpmk": "CPMK di laporan audit masih placeholder sampai RPS resmi disediakan."
+    "metodologi_keterlaksanaan": "keterlaksanaan_persen per pertemuan = persen kehadiran pertemuan tersebut (proksi keterlaksanaan), BUKAN penilaian keselarasan RPS. Field ini dulu bernama skor_keselarasan - nama itu menyesatkan dan sudah diganti.",
+    "catatan_cpmk": "CPMK di laporan audit masih PLACEHOLDER (4 butir generik yang berulang) sampai RPS resmi disediakan. Setiap baris ditandai cpmk_status = 'placeholder' supaya tidak dikira capaian resmi prodi.",
+    "catatan_status_rps": "Sistem ini TIDAK menyatakan status akreditasi program studi. Klaim 'Terakreditasi ... / Memenuhi Standar CPMK & CPL' yang dulu ada di data sudah dibuang karena tidak pernah diverifikasi."
   },
   "course": {
     "kode_mk": "5412522233",
@@ -653,20 +654,20 @@
       {
         "nama": "Aprilia Yunita, S.T., M.T.",
         "peran": "Dosen Pengasuh Utama",
-        "kehadiran": "16 / 16 Pertemuan (100%)",
-        "status": "Sangat Baik & Tepat Waktu"
+        "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
       },
       {
         "nama": "Duddy Fajriansyah, S.T., M.T.",
         "peran": "Dosen Pengasuh Pendamping",
-        "kehadiran": "16 / 16 Pertemuan (100%)",
-        "status": "Sangat Baik & Tepat Waktu"
+        "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
       },
       {
         "nama": "Adrian Ridhoa, S.T.",
         "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
-        "kehadiran": "16 / 16 Pertemuan (100%)",
-        "status": "Aktif Membimbing Asistensi Teknis"
+        "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
       }
     ],
     "evaluasi_kurikulum_rps": [
@@ -674,117 +675,134 @@
         "sesi": 1,
         "topik_rps": "Pengenalan AutoCAD & Gambar Denah Dasar",
         "realisasi_kelas": "Materi tersampaikan; 31 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 30, hadir sebagian 1, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 88.6,
-        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah"
+        "keterlaksanaan_persen": 88.6,
+        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 2,
         "topik_rps": "Medium Drawing: Kolom, Dinding & Dimensi",
         "realisasi_kelas": "Materi tersampaikan; 30 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 28, hadir sebagian 2, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 85.7,
-        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus"
+        "keterlaksanaan_persen": 85.7,
+        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 3,
         "topik_rps": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
         "realisasi_kelas": "Materi tersampaikan; 31 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 30, hadir sebagian 1, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 88.6,
-        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya"
+        "keterlaksanaan_persen": 88.6,
+        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 4,
         "topik_rps": "Medium Drawing: Gambar Potongan & Detail Pondasi",
         "realisasi_kelas": "Materi tersampaikan; 32 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 29, hadir sebagian 3, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 91.4,
-        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja"
+        "keterlaksanaan_persen": 91.4,
+        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 5,
         "topik_rps": "Publishing Drawing: Layout, Sheet & Plotting PDF",
         "realisasi_kelas": "Materi tersampaikan; 31 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 30, hadir sebagian 1, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 88.6,
-        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah"
+        "keterlaksanaan_persen": 88.6,
+        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 6,
         "topik_rps": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
         "realisasi_kelas": "Materi tersampaikan; 30 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 28, hadir sebagian 2, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 85.7,
-        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus"
+        "keterlaksanaan_persen": 85.7,
+        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 7,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 31 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 30, hadir sebagian 1, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 88.6,
-        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya"
+        "keterlaksanaan_persen": 88.6,
+        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 8,
         "topik_rps": "Ujian Tengah Semester",
         "realisasi_kelas": "Evaluasi tengah semester diikuti 32 dari 35 mahasiswa.",
-        "skor_keselarasan": 91.4,
-        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja"
+        "keterlaksanaan_persen": 91.4,
+        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 9,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 33 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 31, hadir sebagian 2, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 94.3,
-        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah"
+        "keterlaksanaan_persen": 94.3,
+        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 10,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 31 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 28, hadir sebagian 3, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 88.6,
-        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus"
+        "keterlaksanaan_persen": 88.6,
+        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 11,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 29 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 28, hadir sebagian 1, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 82.9,
-        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya"
+        "keterlaksanaan_persen": 82.9,
+        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 12,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 32 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 27, hadir sebagian 5, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 91.4,
-        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja"
+        "keterlaksanaan_persen": 91.4,
+        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 13,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 30 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 26, hadir sebagian 4, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 85.7,
-        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah"
+        "keterlaksanaan_persen": 85.7,
+        "cpmk": "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 14,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 27 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 26, hadir sebagian 1, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 77.1,
-        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus"
+        "keterlaksanaan_persen": 77.1,
+        "cpmk": "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 15,
         "topik_rps": "(belum diisi - menunggu RPS)",
         "realisasi_kelas": "Materi tersampaikan; 34 dari 35 mahasiswa memenuhi ambang kehadiran (hadir penuh 32, hadir sebagian 2, sisanya sakit/izin/alpha).",
-        "skor_keselarasan": 97.1,
-        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya"
+        "keterlaksanaan_persen": 97.1,
+        "cpmk": "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya",
+        "cpmk_status": "placeholder"
       },
       {
         "sesi": 16,
         "topik_rps": "Ujian Akhir Semester",
         "realisasi_kelas": "Evaluasi akhir semester diikuti 34 dari 35 mahasiswa.",
-        "skor_keselarasan": 97.1,
-        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja"
+        "keterlaksanaan_persen": 97.1,
+        "cpmk": "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja",
+        "cpmk_status": "placeholder"
       }
     ],
-    "skor_keselarasan_rata_rata": 88.9,
-    "keterangan_akreditasi": "Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik",
+    "keterlaksanaan_rata_rata": 88.9,
+    "status_penilaian_rps": "belum_tersedia",
+    "keterangan_status_rps": "Penilaian keselarasan materi vs RPS/CPMK BELUM dilakukan - menunggu RPS resmi dan rubrik penilaian dari dosen. Angka 'keterlaksanaan' di atas adalah proksi persen kehadiran pertemuan, bukan penilaian mutu materi. Sistem ini tidak menyatakan status akreditasi program studi apa pun.",
     "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
   },
   "students": [

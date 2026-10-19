@@ -777,8 +777,11 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
 
     # Lecturer and Curriculum Audit Data (for Kaprodi -> Dosen QA Report)
     total_sesi = len(sessions)
-    # FIX TAHAP B: "6 / 6 Pertemuan (100%)" dulu ditulis manual. Sekarang dihitung.
-    kehadiran_dosen = f"{total_sesi} / {total_sesi} Pertemuan (100%)"
+    # HONESTY: baris ini DULU menulis "16 / 16 Pertemuan (100%)" untuk SEMUA dosen.
+    # Angka itu tidak berarti apa pun tentang dosen - ia cuma "jumlah pertemuan yang
+    # terdefinisi di sesi.json". Tidak ada satu pun tempat di sistem ini yang
+    # mencatat presensi dosen, jadi laporan QA tidak boleh mengklaim 100%.
+    kehadiran_dosen = "Belum ada rekap presensi dosen (diisi manual oleh prodi)"
     tim_pengajar = []
     # FIX: tim pengajar TIDAK lagi disalin manual di sini. Diambil dari
     # course_info (yang bersumber dari config/identitas.json): dosen pengasuh
@@ -788,19 +791,23 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "nama": _nama_dosen,
             "peran": "Dosen Pengasuh Utama" if _i == 0 else "Dosen Pengasuh Pendamping",
             "kehadiran": kehadiran_dosen,
-            "status": "Sangat Baik & Tepat Waktu"
+            "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
         })
     tim_pengajar.append({
         "nama": course_info["asisten_dosen"],
         "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
         "kehadiran": kehadiran_dosen,
-        "status": "Aktif Membimbing Asistensi Teknis"
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
     })
 
     # TAHAP E: baris evaluasi RPS DIBANGUN dari sesi.json (16 pertemuan), bukan
     # 6 baris yang disalin manual. Topik asli dari RPS/portal, realisasi dihitung
-    # dari kehadiran nyata. `skor_keselarasan` di sini adalah PROXY persen
-    # kehadiran pertemuan - bukan penilaian RPS terpisah (dicatat di metadata).
+    # dari kehadiran nyata.
+    #
+    # KOSAKATA JUJUR (dulu menyesatkan): field `skor_keselarasan` diganti
+    # `keterlaksanaan_persen`. Isinya = persen kehadiran pertemuan tersebut,
+    # BUKAN penilaian keselarasan materi vs RPS. Nama lama membuat pembaca mengira
+    # ada audit mutu yang sebenarnya tidak pernah dilakukan.
     evaluasi_rps = []
     for d in session_attendance_trend:
         p = d["pertemuan"]
@@ -823,8 +830,11 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "sesi": p,
             "topik_rps": d["topik"],
             "realisasi_kelas": realisasi,
-            "skor_keselarasan": d["memenuhi_ambang_pct"],
+            "keterlaksanaan_persen": d["memenuhi_ambang_pct"],
             "cpmk": CPMK_PLACEHOLDER[(p - 1) % len(CPMK_PLACEHOLDER)],
+            # Ditandai di DATA (bukan hanya di teks PDF) supaya tidak ada yang
+            # mengira CPMK ini hasil penetapan prodi.
+            "cpmk_status": "placeholder",
         })
 
     # FIX TAHAP B: hitung dari data, jangan diketik manual.
@@ -833,11 +843,21 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
     dosen_audit = {
         "tim_pengajar": tim_pengajar,
         "evaluasi_kurikulum_rps": evaluasi_rps,
-        "skor_keselarasan_rata_rata": (
-            round(sum(e["skor_keselarasan"] for e in evaluasi_rps) / len(evaluasi_rps), 1)
+        "keterlaksanaan_rata_rata": (
+            round(sum(e["keterlaksanaan_persen"] for e in evaluasi_rps) / len(evaluasi_rps), 1)
             if evaluasi_rps else 0.0
         ),
-        "keterangan_akreditasi": "Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik",
+        # HONESTY: dulu di sini tertulis "Terakreditasi Sangat Baik / Memenuhi
+        # Standar CPMK & CPL LAM Teknik". Itu klaim STATUS AKREDITASI yang tidak
+        # pernah diverifikasi siapa pun dan tidak boleh dikarang oleh perangkat
+        # lunak. Diganti pernyataan status yang benar-benar diketahui.
+        "status_penilaian_rps": "belum_tersedia",
+        "keterangan_status_rps": (
+            "Penilaian keselarasan materi vs RPS/CPMK BELUM dilakukan - menunggu RPS "
+            "resmi dan rubrik penilaian dari dosen. Angka 'keterlaksanaan' di atas "
+            "adalah proksi persen kehadiran pertemuan, bukan penilaian mutu materi. "
+            "Sistem ini tidak menyatakan status akreditasi program studi apa pun."
+        ),
         "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
     }
 
@@ -891,12 +911,20 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
                 if (ctx.get("nilai_dokumen") or {}).get("sintetis")
                 else "Nilai berasal dari berkas nilai MK (bukan sintetis)."
             ),
-            "metodologi_keselarasan": (
-                "skor_keselarasan per pertemuan = persen kehadiran pertemuan tersebut "
-                "(proxy keterlaksanaan), bukan penilaian RPS terpisah."
+            "metodologi_keterlaksanaan": (
+                "keterlaksanaan_persen per pertemuan = persen kehadiran pertemuan tersebut "
+                "(proksi keterlaksanaan), BUKAN penilaian keselarasan RPS. Field ini dulu "
+                "bernama skor_keselarasan - nama itu menyesatkan dan sudah diganti."
             ),
             "catatan_cpmk": (
-                "CPMK di laporan audit masih placeholder sampai RPS resmi disediakan."
+                "CPMK di laporan audit masih PLACEHOLDER (4 butir generik yang berulang) "
+                "sampai RPS resmi disediakan. Setiap baris ditandai cpmk_status = "
+                "'placeholder' supaya tidak dikira capaian resmi prodi."
+            ),
+            "catatan_status_rps": (
+                "Sistem ini TIDAK menyatakan status akreditasi program studi. Klaim "
+                "'Terakreditasi ... / Memenuhi Standar CPMK & CPL' yang dulu ada di data "
+                "sudah dibuang karena tidak pernah diverifikasi."
             ),
         },
         "course": course_info,
