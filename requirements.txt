@@ -1,5 +1,18 @@
-openpyxl>=3.1.2
-pypdf>=4.0.0
+# Dependensi SIAK-KAPRODI. Dipasang otomatis oleh setup.bat.
+#
+# Sejak v2.6 sistem TIDAK lagi membaca Excel/PDF mentah sebagai sumber data
+# (sumbernya tree kurikulum di data/kurikulum/), jadi openpyxl dan pypdf sudah
+# DIHAPUS dari daftar ini - tidak ada satu pun impor di kode. Kalau suatu saat
+# fitur impor berkas mentah dikembalikan, tambahkan lagi di sini.
+#
+# Catatan non-pip:
+#   * Chromium untuk Playwright dipasang terpisah: python -m playwright install chromium
+#   * Tailwind CSS TIDAK lewat pip; CSS-nya dibangun statis sekali pakai
+#     scripts/build_tailwind.bat (butuh Node.js), hasilnya public/vendor/tailwind.css
+
+# WAJIB - mencetak 11 PDF resmi lewat Chromium (scripts/generate_pdfs.py).
 playwright>=1.40.0
+
+# OPSIONAL - hanya untuk video 9:16 (numpy) dan narasi suara (edge-tts, butuh internet).
 numpy>=1.26.0
 edge-tts>=6.1.9

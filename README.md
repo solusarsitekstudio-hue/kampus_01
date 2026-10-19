@@ -4,7 +4,12 @@
 > **Perubahan besar v2.6:** data perkuliahan tidak lagi dibaca dari berkas Excel/PDF
 > mentah. Sumbernya sekarang **tree kurikulum bertingkat** di `data/kurikulum/`
 > (PRODI → TAHUN AJAR → SEMESTER → MATA KULIAH → 16 PERTEMUAN), dan dashboard bisa
-> **menyuntingnya** dari tab **6. Kurikulum**.
+> **menyuntingnya** dari tab **6. Kurikulum**. Sejak *Commit C*, nilai presensi
+> sintetis juga **berbeda per mata kuliah** (dulu ketiga MK berisi angka yang sama).
+
+> 📄 Dokumen pendamping (sudah diperbarui mengikuti alur v2.6):
+> [`WORKFLOW_MAPPING.md`](WORKFLOW_MAPPING.md) — peta alur data & 6 tab dashboard;
+> [`REQUIREMENTS.md`](REQUIREMENTS.md) — dependensi, port, endpoint API, prasyarat.
 
 ---
 
@@ -471,8 +476,12 @@ python tests\test_readme_accuracy.py
 python tests\test_aturan.py
 python tests\test_belum_diinput.py
 python tests\test_migrasi_non_destruktif.py
+python tests\test_seed_per_mk.py
 python tests\test_kurikulum_tree.py
 python tests\test_identitas.py
+
+python tests\test_identitas.py
+python tests\test_docs_dependensi.py
 
 REM dengan server aktif (run_server.bat dulu):
 python tests\test_server_http.py
@@ -493,6 +502,7 @@ python tests\test_kurikulum_api.py
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
 | `test_catalog_guard.py` | Ganti mata kuliah tidak bisa memundurkan data master (termasuk 409 untuk katalog versi lama) |
 | `test_kurikulum_api.py` | API tree kurikulum: fail-closed 404/400, bobot ≠ 100 ditolak **tanpa** menulis berkas, suntingan masuk ke tree **dan** katalog, dan status "tebakan vs dikonfirmasi" tidak bisa naik sendiri |
+| `test_docs_dependensi.py` | Dokumen & dependensi tidak boleh basi: setiap impor pihak ketiga ada di `requirements.txt` (dan sebaliknya, tidak ada paket mati seperti `openpyxl`/`pypdf`), nomor port seragam di kode+kedua dokumen, setiap rute `/api/...` tercantum di `REQUIREMENTS.md`, dan tidak ada lagi klaim alur v2.5 (penyebut sesi lama maupun aset dari CDN) |
 
 ---
 
@@ -593,6 +603,8 @@ e:\WORKSPACE\KAMPUS_01\
 │
 ├── data/
 │   ├── kurikulum/                               <-- ★ SUMBER KEBENARAN (ditulis manusia)
+│   │   ├── <PRODI>/mahasiswa.json               <-- daftar mahasiswa (nama hanya di sini)
+│   │   ├── <PRODI>/cetak_biru_mk.json           <-- cetak biru jenis_mk & semester_kurikulum
 │   │   └── <PRODI>/<TAHUN AJAR>/<SEMESTER>/<KUNCI_MK>/
 │   │       ├── penawaran.json                   <-- identitas MK di semester ini
 │   │       ├── sesi.json                        <-- 16 pertemuan: topik/bobot/slot absen
@@ -620,7 +632,9 @@ e:\WORKSPACE\KAMPUS_01\
 ├── generated_pdfs/                              <-- Salinan PDF yang ikut disimpan di repo
 ├── process_input.bat                            <-- Bangun katalog / sinkron dari tree
 ├── run_server.bat                               <-- Menjalankan Server (Port 40404)
-└── stop_server.bat                              <-- Mematikan Server Bersih
+├── stop_server.bat                              <-- Mematikan Server Bersih
+├── WORKFLOW_MAPPING.md                          <-- Peta alur data & 6 tab dashboard
+└── REQUIREMENTS.md                              <-- Dependensi, port, endpoint, prasyarat
 ```
 
 **Mau membangun ulang semuanya?** Cukup:
@@ -709,6 +723,7 @@ kenyataannya.
 | **F-1** | **"Belum diinput" tidak lagi dihitung Alpha/nilai 0.** Pertemuan dengan baris slot belum lengkap ditandai **"Belum Diinput"**, keluar dari rata-rata terbobot (bobot dinormalisasi ulang), dan grade ditahan **"Belum Lengkap"**. Aturannya hidup di `config/aturan.json` (`kehadiran.slot_belum_diisi`; `"alpha"` = perilaku lama). Badge, filter, tren, dan PDF ikut mengenali status ini | Tidak (data sekarang lengkap, nol angka bergeser) |
 | **F-2** | **`migrasi_kurikulum.py --force` tidak lagi menimpa hasil edit dashboard.** Dulu bobot direset ke template, `jenis_mk`/`semester_kurikulum` dikembalikan ke tebakan mesin, dan `nilai.json` ditimpa. Sekarang struktur dibangun ulang tetapi topik, bobot, jumlah slot, jenis_mk/semester_kurikulum yang **dikonfirmasi**, dan `nilai.json` dipertahankan. Efek sampingnya: `cetak_biru_mk.json` yang tadinya masih menulis "tebakan-awal" kini ikut sinkron ke `dikonfirmasi-dashboard` | Tidak |
 | **F-3** | **Nilai sintetis tidak lagi kembar antar mata kuliah.** Benih RNG dapat bumbu kunci MK (`crc32`), jadi tiga MK berisi catatan yang berbeda — sebelumnya 1120 baris identik untuk tiga mata kuliah. Letak absen juga ikut bergeser per MK (jumlah alpha/izin/sakit tetap, jadi profil at-risk tidak rusak) dan absen **tidak pernah ditaruh di pertemuan UTS/UAS** (bobot 20 & 24 — satu undian yang sial bisa menjatuhkan grade C ke D dan membuat cerita demo goyah). Persona/arketipe sengaja **tidak** ikut berpindah. Ditambah satu pintu regenerasi resmi: `scripts/seed_nilai_sintetis.py` (dry run tanpa `--force`, backup otomatis ke `data/_backup/`, menolak menimpa berkas yang tidak bertanda `"sintetis": true`) | **Ya** (sudah diregenerasi: kehadiran 85.4 → 85.8%, nilai 79.0 → 77.7, at-risk 6 → 5) |
+| **F-4** | **Dokumen & dependensi dibereskan.** `WORKFLOW_MAPPING.md` ditulis ulang mengikuti alur v2.6 (tree kurikulum, 6 tab, diagram Fase 1–5, peta 12 tes, struktur folder riil); `REQUIREMENTS.md` ditulis ulang (port & endpoint yang benar-benar ada, dependensi, prasyarat, tabel perintah). `openpyxl` dan `pypdf` **dihapus** dari `requirements.txt` (tidak ada impor di kode sejak v2.6) dan teks `setup.bat` ikut disesuaikan. Supaya tidak bisa basi lagi, ditambahkan **`tests/test_docs_dependensi.py`**: impor kode ↔ `requirements.txt` (tanpa paket mati), nomor port seragam, tiap rute `/api/...` wajib tercantum di `REQUIREMENTS.md`, dan dokumen dilarang mengklaim alur v2.5 (penyebut sesi lama, aset dari CDN) | Tidak (tidak menyentuh angka) |
 
 ### Sisa utang (belum dikerjakan)
 
@@ -737,11 +752,6 @@ kenyataannya.
    `generate_pdfs.py` (`KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI` dan
    baris Gedung/Lab/Telp). Itu bukan identitas prodi, jadi sengaja belum dipindahkan
    ke config; ubah di situ bila perlu.
-8. **`openpyxl` dan `pypdf` sudah tidak dipakai** (tidak ada lagi impor di kode),
-   tetapi masih tertulis di `requirements.txt`. Aman dibiarkan; menghapusnya
-   mempercepat `setup.bat` sedikit. Belum dihapus karena itu keputusan dependensi.
-9. **`REQUIREMENTS.md` dan `WORKFLOW_MAPPING.md` baru diberi catatan pembuka**,
-   isinya belum ditulis ulang mengikuti alur tree. `README.md` yang berlaku.
 
 > Status data demo: `versi 2.6-KURIKULUM-BERTINGKAT` (stempel build terakhir ada di
 > `data/academic_data.json` → `metadata.build_id`).
