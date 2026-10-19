@@ -19,6 +19,6 @@
   ],
   "asisten_dosen": "Adrian Ridhoa, S.T.",
   "peringatan_jadwal": [
-    "jadwal 210 menit/minggu, sedangkan 3 SKS x 50 menit = 150 menit (70 menit/SKS)"
+    "jadwal 210 menit/minggu, sedangkan patokan sistem 3 SKS x 50 menit = 150 menit (70 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
   ]
 }

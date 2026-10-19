@@ -2,8 +2,8 @@
   "metadata": {
     "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
     "versi": "2.6-KURIKULUM-BERTINGKAT",
-    "generated_at": "2026-10-19T14:53:02+07:00",
-    "build_id": "20261019_145302",
+    "generated_at": "2026-10-19T15:38:38+07:00",
+    "build_id": "20261019_153838",
     "target_port": 40404,
     "metodologi_nilai": "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. Nilai satu pertemuan = rata-rata nilai seluruh slot absennya. Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0 (dikeluarkan dari rata-rata dan bobotnya dinormalisasi ulang); grade ditahan 'Belum Lengkap' sampai seluruh pertemuan terisi.",
     "aturan_at_risk": "Alpha >= 2x ATAU Kehadiran < 75%",
@@ -49,7 +49,7 @@
       "topik": "Pengenalan AutoCAD & Gambar Denah Dasar",
       "deskripsi": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands (Line, Circle, Rectangle), Import Gambar sebagai referensi denah.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -69,7 +69,7 @@
       "topik": "Medium Drawing: Kolom, Dinding & Dimensi",
       "deskripsi": "Menggambar dan Mengedit: menggambar kolom struktur, dinding bata, notasi arsitektural dan penarikan garis dimensi presisi.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -89,7 +89,7 @@
       "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
       "deskripsi": "Pendalaman materi layer manajemen, pemberian arsiran material (hatch), dan pembuatan block kusen pintu dan jendela.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -109,7 +109,7 @@
       "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi",
       "deskripsi": "Menggambar Potongan Bangunan (A-A & B-B), sinkronisasi denah dengan garis potongan, dan membuat detail pondasi batu kali.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -129,7 +129,7 @@
       "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF",
       "deskripsi": "Layout etiket gambar standar arsitektur, pengenalan sheet viewport, plot ke PDF standar cetak A3, dan estimasi dasar daftar volume.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -149,7 +149,7 @@
       "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
       "deskripsi": "Menghitung Volume dari item pekerjaan arsitektur dari gambar CAD, input tabel volume, dan evaluasi hasil kompilasi portofolio.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -169,7 +169,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -189,7 +189,7 @@
       "topik": "Ujian Tengah Semester",
       "deskripsi": "Evaluasi tengah semester.",
       "bobot": 20,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -209,7 +209,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -229,7 +229,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -249,7 +249,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -269,7 +269,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -289,7 +289,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -309,7 +309,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -329,7 +329,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -349,7 +349,7 @@
       "topik": "Ujian Akhir Semester",
       "deskripsi": "Evaluasi akhir semester.",
       "bobot": 24,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,

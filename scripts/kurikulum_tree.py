@@ -315,6 +315,33 @@ def daftar_mk(prodi, tahun_ajar, semester):
 # =============================================================================
 # 6. VALIDASI SESI (16 pertemuan standar kampus)
 # =============================================================================
+# Topik yang BUKAN materi asli: belum diisi (menunggu RPS) atau memang jadwal ujian.
+# Dipakai untuk menghitung penanda "topik sudah terisi".
+LABEL_UJIAN_TOPIK = ("Ujian Tengah Semester", "Ujian Akhir Semester")
+TOPIK_PLACEHOLDER = "(belum diisi - menunggu RPS)"
+PLACEHOLDER_TOPIK = {"", TOPIK_PLACEHOLDER, "(belum diisi)"} | set(LABEL_UJIAN_TOPIK)
+
+
+def topik_terverifikasi(topik):
+    """True bila topik pertemuan benar-benar materi, bukan placeholder/ujian.
+
+    SATU-SATUNYA tempat aturan ini ditulis. Sebelumnya ada DUA versi berbeda:
+    `migrasi_kurikulum.py` membandingkan dengan daftar tetap, sedangkan
+    `server.py` menambah syarat "tidak diawali tanda kurung". Dua versi itu bisa
+    menghasilkan status berbeda untuk topik yang sama - dan status ini masuk ke
+    dokumen resmi. Aturan yang dipakai sekarang = versi yang lebih ketat:
+    tidak kosong, tidak diawali '(', dan bukan label UTS/UAS.
+
+    CATATAN: nama field-nya dulu `tanggal_terverifikasi`, padahal yang diukur
+    adalah ISI TOPIK - tidak ada hubungannya dengan verifikasi tanggal. Nama itu
+    sudah diganti menjadi `topik_terverifikasi` supaya tidak menyesatkan.
+    """
+    teks = str(topik or "").strip()
+    if not teks or teks.startswith("("):
+        return False
+    return teks not in LABEL_UJIAN_TOPIK
+
+
 def validasi_sesi(dokumen, kunci_mk="", aturan_modul=None):
     """Balikkan daftar masalah. Kosong = valid. Dipakai sebelum menulis.
 

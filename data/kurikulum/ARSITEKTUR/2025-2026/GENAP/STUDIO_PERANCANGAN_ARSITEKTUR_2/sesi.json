@@ -13,7 +13,7 @@
       "topik": "Analisis Tapak, Iklim & Orientasi Matahari",
       "deskripsi": "Studi konteks tapak, angin, kontur tanah, dan vegetasi.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -33,7 +33,7 @@
       "topik": "Konsep Desain & Hubungan Ruang (Bubble Diagram)",
       "deskripsi": "Zonasi privat-publik, matriks kedekatan ruang, dan sketsa gubahan massa.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -53,7 +53,7 @@
       "topik": "Pengembangan Denah & Sirkulasi Tropis",
       "deskripsi": "Penataan bukaan ventilasi silang, pencahayaan alami, dan hirarki ruang.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -73,7 +73,7 @@
       "topik": "Tampak, Fasad Arsitektur & Potongan Ruang",
       "deskripsi": "Eksplorasi material sekunder (secondary skin), tritisan, dan estetika tampak.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -93,7 +93,7 @@
       "topik": "Maket Studi Skala 1:50 & Eksplorasi 3D",
       "deskripsi": "Pembuatan maket fisik karton studi dan visualisasi spasial.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -113,7 +113,7 @@
       "topik": "Presentasi Panel Sayembara & Sidang Studio",
       "deskripsi": "Penataan lembar presentasi A1, render eksterior/interior, dan presentasi lisan.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -133,7 +133,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -153,7 +153,7 @@
       "topik": "Ujian Tengah Semester",
       "deskripsi": "Evaluasi tengah semester.",
       "bobot": 20,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -173,7 +173,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -193,7 +193,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -213,7 +213,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -233,7 +233,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -253,7 +253,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -273,7 +273,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -293,7 +293,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -313,7 +313,7 @@
       "topik": "Ujian Akhir Semester",
       "deskripsi": "Evaluasi akhir semester.",
       "bobot": 24,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,

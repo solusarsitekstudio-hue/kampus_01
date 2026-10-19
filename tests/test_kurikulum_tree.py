@@ -9,6 +9,7 @@ Yang dibuktikan:
   4. Validasi jadwal hanya PERINGATAN, bukan penolakan.
   5. Tree di disk lengkap: 16 pertemuan, UTS 8, UAS 16, bobot = 100 per MK.
   6. Index `config/kurikulum.json` == hasil pindai ulang folder (tanpa drift).
+  7. Nilai sintetis ditandai jelas + penanda topik SATU aturan (topik_terverifikasi).
 """
 import io
 import json
@@ -163,6 +164,53 @@ for prodi in KT.daftar_prodi():
             for kunci in KT.daftar_mk(prodi, ta, sem):
                 d = KT.muat_mk(prodi, ta, sem, kunci)
                 check(f"{kunci}: ditandai sintetis", d["nilai"].get("sintetis") is True)
+
+print("\n8. Penanda topik: satu aturan, nama yang jujur (bukan 'tanggal_terverifikasi')")
+check("topik nyata -> True", KT.topik_terverifikasi("Analisis Tapak & Orientasi Matahari") is True)
+check("placeholder RPS -> False", KT.topik_terverifikasi(KT.TOPIK_PLACEHOLDER) is False)
+check("topik diawali '(' -> False", KT.topik_terverifikasi("(belum ada)") is False)
+check("label UTS -> False", KT.topik_terverifikasi("Ujian Tengah Semester") is False)
+check("label UAS -> False", KT.topik_terverifikasi("Ujian Akhir Semester") is False)
+check("teks kosong -> False", KT.topik_terverifikasi("") is False)
+
+for prodi in KT.daftar_prodi():
+    for ta in KT.daftar_tahun(prodi):
+        for sem in KT.daftar_semester(prodi, ta):
+            for kunci in KT.daftar_mk(prodi, ta, sem):
+                d = KT.muat_mk(prodi, ta, sem, kunci)
+                baris = d["sesi"]["sesi"]
+                sisa_lama = [b for b in baris if "tanggal_terverifikasi" in b]
+                ada_baru = all("topik_terverifikasi" in b for b in baris)
+                hitung_isi = sum(1 for b in baris if b["topik_terverifikasi"])
+                check(f"{kunci}: semua baris pakai penanda baru",
+                      ada_baru and not sisa_lama,
+                      f"baru={ada_baru} sisa_lama={len(sisa_lama)}")
+                check(f"{kunci}: counter cocok dengan isi baris",
+                      hitung_isi == d["sesi"].get("topik_terisi")
+                      and (len(baris) - hitung_isi) == d["sesi"].get("topik_placeholder"),
+                      f"{hitung_isi} vs {d['sesi'].get('topik_terisi')}")
+
+# Aturan penanda HANYA boleh ada di satu tempat. Dulu migrasi_kurikulum.py dan
+# server.py punya versi masing-masing, dan keduanya bisa berbeda hasil. Sidik
+# jarinya adalah potongan `startswith("(")`; tes ini sendiri dikecualikan karena
+# memang harus menyebut potongan itu untuk mencarinya.
+kode_py = []
+for _dir, _sub, _files in os.walk(HERE):
+    if any(p in _dir for p in (".git", "scratch", "__pycache__")):
+        continue
+    for _f in _files:
+        if _f.endswith(".py"):
+            kode_py.append(os.path.join(_dir, _f))
+duplikat = []
+for _p in kode_py:
+    _nama = os.path.basename(_p)
+    if _nama in ("kurikulum_tree.py", os.path.basename(__file__)):
+        continue
+    with open(_p, "r", encoding="utf-8-sig") as _fh:
+        _isi = _fh.read()
+    if 'startswith("(")' in _isi:
+        duplikat.append(os.path.relpath(_p, HERE))
+check("aturan penanda topik tidak disalin ke berkas lain", not duplikat, str(duplikat))
 
 print("=" * 72)
 print("HASIL: " + ("SEMUA OK" if ok else "ADA YANG GAGAL"))

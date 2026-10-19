@@ -818,12 +818,12 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                     ]
 
         # Status "terverifikasi" DIHITUNG dari isi topik, bukan disetel manusia -
-        # supaya tidak ada baris placeholder yang naik status sendiri.
+        # supaya tidak ada baris placeholder yang naik status sendiri. Aturannya
+        # SATU tempat: KT.topik_terverifikasi() (dulu server.py punya versi sendiri).
         for baris in sesi_lama.values():
-            topik = str(baris.get("topik") or "").strip()
-            baris["tanggal_terverifikasi"] = bool(topik) and not topik.startswith("(") and \
-                topik not in ("Ujian Tengah Semester", "Ujian Akhir Semester")
-        sesi_dok["topik_terisi"] = sum(1 for b in sesi_lama.values() if b["tanggal_terverifikasi"])
+            baris.pop("tanggal_terverifikasi", None)  # nama lama (sebelum 2026-10-19)
+            baris["topik_terverifikasi"] = KT.topik_terverifikasi(baris.get("topik"))
+        sesi_dok["topik_terisi"] = sum(1 for b in sesi_lama.values() if b["topik_terverifikasi"])
         sesi_dok["topik_placeholder"] = len(sesi_lama) - sesi_dok["topik_terisi"]
 
         masalah = KT.validasi_sesi(sesi_dok, kunci, aturan_modul=AT)

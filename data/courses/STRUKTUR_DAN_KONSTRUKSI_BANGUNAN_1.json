@@ -2,8 +2,8 @@
   "metadata": {
     "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
     "versi": "2.6-KURIKULUM-BERTINGKAT",
-    "generated_at": "2026-10-19T14:53:02+07:00",
-    "build_id": "20261019_145302",
+    "generated_at": "2026-10-19T15:38:38+07:00",
+    "build_id": "20261019_153838",
     "target_port": 40404,
     "metodologi_nilai": "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. Nilai satu pertemuan = rata-rata nilai seluruh slot absennya. Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0 (dikeluarkan dari rata-rata dan bobotnya dinormalisasi ulang); grade ditahan 'Belum Lengkap' sampai seluruh pertemuan terisi.",
     "aturan_at_risk": "Alpha >= 2x ATAU Kehadiran < 75%",
@@ -48,7 +48,7 @@
       "topik": "Sistem Pembebanan Bangunan & Logika Statika",
       "deskripsi": "Beban mati, beban hidup, beban gempa, dan distribusi beban ke tanah.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -68,7 +68,7 @@
       "topik": "Substruktur: Pondasi Dangkal & Daya Dukung Tanah",
       "deskripsi": "Pondasi batu kali, pondasi telapak setempat (footplate), dan sloof pengikat.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -88,7 +88,7 @@
       "topik": "Superstruktur: Kolom & Balok Beton Bertulang",
       "deskripsi": "Dimensi praktis, selimut beton, detail penulangan sengkang, dan sambungan.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -108,7 +108,7 @@
       "topik": "Konstruksi Rangka Atap Kuda-Kuda Kayu",
       "deskripsi": "Geometri kuda-kuda, sambungan takikan gigi, plat beugel, reng & usuk.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -128,7 +128,7 @@
       "topik": "Detail Sambungan Kusen, Pintu & Ventilasi",
       "deskripsi": "Angkur kusen, sponeng, ram kaca, dan ambang pintu.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -148,7 +148,7 @@
       "topik": "Kompilasi Gambar Detail Rencana Struktur Final",
       "deskripsi": "Penyusunan gambar kerja rencana pondasi, sloof, kolom, dan rencana atap.",
       "bobot": 4,
-      "tanggal_terverifikasi": true,
+      "topik_terverifikasi": true,
       "slot_absen": [
         {
           "slot": 1,
@@ -168,7 +168,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -188,7 +188,7 @@
       "topik": "Ujian Tengah Semester",
       "deskripsi": "Evaluasi tengah semester.",
       "bobot": 20,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -208,7 +208,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -228,7 +228,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -248,7 +248,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -268,7 +268,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -288,7 +288,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -308,7 +308,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -328,7 +328,7 @@
       "topik": "(belum diisi - menunggu RPS)",
       "deskripsi": "",
       "bobot": 4,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,
@@ -348,7 +348,7 @@
       "topik": "Ujian Akhir Semester",
       "deskripsi": "Evaluasi akhir semester.",
       "bobot": 24,
-      "tanggal_terverifikasi": false,
+      "topik_terverifikasi": false,
       "slot_absen": [
         {
           "slot": 1,

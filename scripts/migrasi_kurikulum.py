@@ -180,17 +180,9 @@ def bobot_lama(baris_lama):
     return b if 0 <= b <= 100 else None
 
 
-# Teks topik yang BUKAN topik asli (hasil generate/pending RPS). Dipakai untuk
-# menilai apakah sebuah baris pertemuan benar-benar berasal dari sumber lama -
-# supaya migrasi yang diulang tidak pelan-pelan menaikkan status placeholder
-# menjadi "terverifikasi".
-PLACEHOLDER_TOPIK = {
-    "",
-    "(belum diisi - menunggu RPS)",
-    "(belum diisi)",
-    "Ujian Tengah Semester",
-    "Ujian Akhir Semester",
-}
+# Teks topik yang BUKAN topik asli + aturan penandanya SEKARANG hidup di
+# scripts/kurikulum_tree.py (`KT.topik_terverifikasi`, `KT.TOPIK_PLACEHOLDER`).
+# Dulu ada DUA salinan aturan (di sini dan di server.py) yang bisa berbeda hasil.
 
 
 def bangun_sesi(kunci, penawaran, sesi_lama, ujian, pertahankan_suntingan=False):
@@ -256,7 +248,7 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian, pertahankan_suntingan=False)
             elif tipe == "uas":
                 topik, deskripsi = "Ujian Akhir Semester", "Evaluasi akhir semester."
             else:
-                topik, deskripsi = "(belum diisi - menunggu RPS)", ""
+                topik, deskripsi = KT.TOPIK_PLACEHOLDER, ""
 
         if tanggal:
             try:
@@ -293,7 +285,7 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian, pertahankan_suntingan=False)
             "topik": topik,
             "deskripsi": deskripsi,
             "bobot": bobot,
-            "tanggal_terverifikasi": topik.strip() not in PLACEHOLDER_TOPIK,
+            "topik_terverifikasi": KT.topik_terverifikasi(topik),
             "slot_absen": slots,
         })
 
@@ -305,8 +297,8 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian, pertahankan_suntingan=False)
             "bobot harus berjumlah 100. Slot absen per pertemuan boleh diubah "
             "(1, 2, atau lebih) sesuai jadwal MK.".format(ujian.get("uts"), ujian.get("uas"))
         ),
-        "topik_terisi": sum(1 for b in baris if b["tanggal_terverifikasi"]),
-        "topik_placeholder": sum(1 for b in baris if not b["tanggal_terverifikasi"]),
+        "topik_terisi": sum(1 for b in baris if b["topik_terverifikasi"]),
+        "topik_placeholder": sum(1 for b in baris if not b["topik_terverifikasi"]),
         "sesi": baris,
     }
 
