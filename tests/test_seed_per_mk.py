@@ -18,6 +18,8 @@ Yang dibuktikan sekarang:
      persis dari sesi.json + mahasiswa.json (tidak ada data tersembunyi).
   6. Profil at-risk tetap utuh (jumlah alpha tidak hilang) di semua MK.
   7. Script seed menolak menulis tanpa `--force` (dry run benar-benar kering).
+  8. **Kunci golden**: tiga SHA nilai.json dikunci; pergeseran diam-diam (mis.
+     urutan draw RNG) akan gagal tes ini, memaksa baseline ulang disengaja.
 """
 import hashlib
 import io
@@ -201,6 +203,22 @@ check("tiga MK -> tiga KPI berbeda", len(set(kpi.values())) == 3, str(kpi))
 check("dataset tiap MK melaporkan kode MK-nya sendiri (bukan MK aktif yang nyangkut)",
       all(kunci_terbaca[k] == KT.baca_json(_path("penawaran.json", k))["kode_mk"]
           for k in MK_DIKENAL), str(kunci_terbaca))
+
+print("\n9. Kunci golden: hash nilai.json untuk menangkap pergeseran diam-diam")
+print("   Angka demo (kehadiran 85.8%, nilai 77.7, at-risk 5) terkunci ke tiga")
+print("   file ini. Kalau urutan draw RNG berubah (meski logika sama), SHA akan")
+print("   berubah DAN tes ini GAGAL — artinya angka demo ikut bergeser dan")
+print("   README / tes lain HARUS di-baseline ulang dengan sengaja.")
+GOLDEN = {
+    "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": "F415DFE93053",
+    "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": "3A1814A483E2",
+    "STUDIO_PERANCANGAN_ARSITEKTUR_2": "10C3DF04DAE2",
+}
+for kunci, expected in GOLDEN.items():
+    with open(_path("nilai.json", kunci), "rb") as f:
+        actual = hashlib.sha256(f.read()).hexdigest()[:12].upper()
+    check(f"{kunci[:34]}: SHA == kunci golden", actual == expected,
+          f"actual={actual} expected={expected}")
 
 print("\n" + "=" * 76)
 print("HASIL: " + ("SEMUA OK" if ok else "ADA YANG GAGAL"))
