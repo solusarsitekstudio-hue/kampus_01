@@ -81,35 +81,47 @@ ALASAN_IZIN = [
 ]
 
 
-def _pos(rasio_pertemuan, total):
-    """Ubah 'pertemuan ke-3 dari 16' menjadi nomor yang benar utk total berapa pun."""
-    return max(1, min(total, int(round(rasio_pertemuan * total / 16.0))))
+def _pos(rasio, total):
+    """Pecahan semester (0.15) -> nomor pertemuan (2). Aman utk total berapa pun."""
+    return max(1, min(total, int(round(rasio * total))))
+
+
+# Profil absensi per persona, dinyatakan sebagai PECAHAN semester (bukan nomor
+# pertemuan), supaya tetap masuk akal kalau `pertemuan_total` di config diubah.
+#   "alpha" / "izin" / "sakit" = 1 pertemuan penuh tidak hadir
+#   "sebagian"                 = hanya separuh slot yang diisi
+PROFIL_ABSENSI = {
+    "high": [("izin", 0.30)],
+    "good": [("sakit", 0.40), ("izin", 0.75)],
+    # Absensi sedang: bolong, tapi masih di sekitar ambang 75% kehadiran.
+    "moderate_absent": [
+        ("alpha", 0.20), ("sebagian", 0.35), ("izin", 0.45),
+        ("sakit", 0.65), ("alpha", 0.80), ("sebagian", 0.90),
+    ],
+    # Absensi berat: beberapa alpha tanpa keterangan.
+    "at_risk": [
+        ("alpha", 0.15), ("sebagian", 0.25), ("alpha", 0.35), ("izin", 0.50),
+        ("sakit", 0.60), ("alpha", 0.75), ("sebagian", 0.85),
+    ],
+}
 
 
 def rencana_pertemuan(archetype, total_pertemuan):
     """{nomor_pertemuan: (rasio_slot_hadir, alasan)} untuk persona non-acak.
 
-    Rasio 0.0 = tidak hadir satu slot pun; 0.5 = separuh slot (tampil "Hadir
-    Sebagian"); 1.0 = hadir penuh.
+    Rasio 0.0 = tidak hadir satu slot pun; 0.5 = separuh slot (tampil
+    "Hadir Sebagian"); 1.0 = hadir penuh.
     """
-    p = lambda n: _pos(n, total_pertemuan)  # noqa: E731
     if archetype == "star":
         return {}
-    if archetype == "at_risk":
-        return {
-            p(3): (0.0, "Alpha"),
-            p(5): (0.0, "Sakit"),
-            p(11): (0.0, "Alpha"),
-        }
-    if archetype == "moderate_absent":
-        return {
-            p(4): (0.0, "Izin"),
-            p(4 + 8): (0.0, "Izin"),
-            p(9): (0.5, "Hadir Sebagian"),
-        }
-    if archetype == "high":
-        return {p(6): (0.0, "Izin")}
-    return {}
+    rencana = {}
+    for alasan, rasio_posisi in PROFIL_ABSENSI.get(archetype, []):
+        p = _pos(rasio_posisi, total_pertemuan)
+        if alasan == "sebagian":
+            rencana[p] = (0.5, "Hadir Sebagian")
+        else:
+            rencana[p] = (0.0, alasan.capitalize())
+    return rencana
 
 
 def _skor_persona(archetype, rng, jenis):

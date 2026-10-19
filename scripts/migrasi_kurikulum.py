@@ -66,7 +66,21 @@ def tebak_jenis_mk(kunci, mk):
 
 
 def sesi_lama_untuk(kunci, master, kunci_aktif):
-    """6 topik lama: MK aktif dari master, MK lain dari artefak data/courses/."""
+    """Topik yang sudah pernah ada, untuk DIPERTAHANKAN saat membangun tree.
+
+    Urutan prioritas: tree kurikulum (paling baru, sudah berisi suntingan) ->
+    master/katalog (artefak kompilasi). Tujuannya supaya migrasi boleh dijalankan
+    berulang tanpa menimpa topik yang sudah benar.
+    """
+    try:
+        prodi, ta, sem = lokasi_mk(kunci)
+        if prodi and ta and sem:
+            path_tree = KT.path_berkas(prodi, ta, sem, kunci, "sesi.json")
+            if os.path.exists(path_tree):
+                return [dict(s) for s in KT.baca_json(path_tree).get("sesi", [])]
+    except Exception:  # noqa: BLE001 - tree belum ada = wajar saat migrasi pertama
+        pass
+
     if kunci == kunci_aktif:
         return [dict(s) for s in master.get("sessions", [])]
     path = os.path.join(COURSES_DIR, "{0}.json".format(kunci))
@@ -78,19 +92,55 @@ def sesi_lama_untuk(kunci, master, kunci_aktif):
     return []
 
 
+def lokasi_mk(kunci):
+    """(prodi, tahun_ajar, semester) untuk satu MK, dari config/identitas.json."""
+    inst = IDENT.institusi()
+    mk = IDENT.mk(kunci)
+    ta, sem = KT.pecah_semester(mk.get("semester"))
+    return inst.get("prodi", ""), ta, sem
+
+
+# Teks topik yang BUKAN topik asli (hasil generate/pending RPS). Dipakai untuk
+# menilai apakah sebuah baris pertemuan benar-benar berasal dari sumber lama -
+# supaya migrasi yang diulang tidak pelan-pelan menaikkan status placeholder
+# menjadi "terverifikasi".
+PLACEHOLDER_TOPIK = {
+    "",
+    "(belum diisi - menunggu RPS)",
+    "(belum diisi)",
+    "Ujian Tengah Semester",
+    "Ujian Akhir Semester",
+}
+
+
 def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
-    """16 pertemuan standar kampus dari 6 topik lama + struktur baru."""
+    """16 pertemuan standar kampus, topik lama dipertahankan apa adanya."""
     total = AT.pertemuan_total()
     bobot_t = AT.standar_kampus()["bobot_template"]
     jenis = penawaran["jenis_mk"]
 
-    # Tanggal: pertemuan 1..6 memakai tanggal ASLI; sisanya turunan mingguan.
-    dasar = None
-    if sesi_lama:
+    # Peta per NOMOR PERTEMUAN (bukan per posisi daftar). Ini yang membuat
+    # migrasi aman diulang: topik/tanggal yang sudah ada tidak ditimpa.
+    lama_per_pertemuan = {}
+    for s in sesi_lama:
         try:
-            dasar = datetime.strptime(sesi_lama[-1]["tanggal"], "%Y-%m-%d")
-        except (KeyError, ValueError):
-            dasar = None
+            lama_per_pertemuan[int(s.get("pertemuan"))] = s
+        except (TypeError, ValueError):
+            continue
+
+    # Tanggal dasar = tanggal TERAKHIR yang berasal dari sumber lama. Tanggal
+    # turunan pertemuan 7..16 dihitung mingguan dari titik itu, jadi hasilnya
+    # sama setiap kali migrasi dijalankan.
+    dasar = None
+    for s in sesi_lama:
+        tgl = s.get("tanggal")
+        if not tgl:
+            continue
+        try:
+            d = datetime.strptime(tgl, "%Y-%m-%d")
+        except ValueError:
+            continue
+        dasar = d if dasar is None else max(dasar, d)
     if dasar is None:
         dasar = datetime(2026, 6, 3)
 
@@ -107,27 +157,29 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
         else:
             tipe = "teori"
 
-        asli = i <= len(sesi_lama)
-        if asli:
-            topik = sesi_lama[i - 1].get("topik", "")
-            deskripsi = sesi_lama[i - 1].get("deskripsi", "")
-            tanggal = sesi_lama[i - 1].get("tanggal")
-        elif tipe == "uts":
-            topik, deskripsi, tanggal = "Ujian Tengah Semester", "Evaluasi tengah semester.", None
-        elif tipe == "uas":
-            topik, deskripsi, tanggal = "Ujian Akhir Semester", "Evaluasi akhir semester.", None
-        else:
-            topik = "(belum diisi - menunggu RPS)"
-            deskripsi = ""
-            tanggal = None
+        lama = lama_per_pertemuan.get(i)
+        topik = (lama or {}).get("topik", "")
+        deskripsi = (lama or {}).get("deskripsi", "")
+        tanggal = (lama or {}).get("tanggal")
+
+        # Baris baru (belum ada di sumber lama) dibuat dari struktur standar.
+        if not topik:
+            if tipe == "uts":
+                topik, deskripsi = "Ujian Tengah Semester", "Evaluasi tengah semester."
+            elif tipe == "uas":
+                topik, deskripsi = "Ujian Akhir Semester", "Evaluasi akhir semester."
+            else:
+                topik, deskripsi = "(belum diisi - menunggu RPS)", ""
 
         if tanggal:
             try:
                 d = datetime.strptime(tanggal, "%Y-%m-%d")
             except ValueError:
-                d = dasar + timedelta(days=7 * (i - 6))
-        else:
-            d = dasar + timedelta(days=7 * (i - len(sesi_lama) if sesi_lama else i - 1))
+                tanggal = None
+        if not tanggal:
+            # Pertemuan 1..6 punya tanggal asli; sisanya mingguan dari baseline.
+            offset = i - max(len(lama_per_pertemuan), 6)
+            d = dasar + timedelta(days=7 * offset)
 
         if tipe == "uts":
             bobot = bobot_t["uts"]
@@ -144,7 +196,7 @@ def bangun_sesi(kunci, penawaran, sesi_lama, ujian):
             "topik": topik,
             "deskripsi": deskripsi,
             "bobot": bobot,
-            "tanggal_terverifikasi": bool(asli),
+            "tanggal_terverifikasi": topik.strip() not in PLACEHOLDER_TOPIK,
             "slot_absen": [
                 {"slot": j + 1, "label": "Absen {0}".format(j + 1)}
                 for j in range(SLOT_ABSEN_DEFAULT)

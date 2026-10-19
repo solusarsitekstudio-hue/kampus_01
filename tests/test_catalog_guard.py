@@ -85,7 +85,7 @@ check("status 200", st == 200, st)
 tengah = master_ringkas()
 check("master benar-benar berganti MK", tengah["kode"] != awal["kode"],
       f"{awal['kode']} -> {tengah['kode']}")
-check("versi tetap 2.5 (tidak mundur)", tengah["versi"] == "2.5-GOLDEN-DEMO",
+check("versi tidak mundur (sama seperti master awal)", tengah["versi"] == awal["versi"],
       tengah["versi"])
 
 print(f"\n[3] Balik ke MK awal -> angka harus PERSIS kembali seperti semula")

@@ -913,7 +913,7 @@ def render_final_report_html(student):
             </tbody>
           </table>
           <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 6px;">
-            <div style="font-size: 8px; font-weight: 700; color: #475569; margin-bottom: 2px;">GRAFIK PROGRESS CAPAIAN PER SESI (P1 - P6):</div>
+            <div style="font-size: 8px; font-weight: 700; color: #475569; margin-bottom: 2px;">GRAFIK PROGRESS CAPAIAN PER PERTEMUAN:</div>
             {generate_session_bars_svg(student["kehadiran"]["detail"])}
           </div>
         </div>

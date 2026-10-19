@@ -95,22 +95,36 @@ beda = [k for k in (
 check("11 field identitas config == master", not beda, f"beda: {beda}")
 
 # ---------------------------------------------------------------------------
-print("\n[3] Katalog runtime dibangun dari config, sesi tetap utuh")
+print("\n[3] Katalog runtime dibangun dari tree kurikulum (bukan template kode)")
 import process_input as P  # noqa: E402
+import kurikulum_tree as KT  # noqa: E402
+import aturan as AT  # noqa: E402
 
-check("katalog punya 3 MK", len(P.DEFAULT_COURSES) == 3, len(P.DEFAULT_COURSES))
-sesi_kosong = [k for k, v in P.DEFAULT_COURSES.items() if not v.get("sessions")]
-check("tiap MK punya daftar sesi", not sesi_kosong, f"kosong: {sesi_kosong}")
-ident_beda = []
-for kunci, mk_cfg in ID.daftar_mk().items():
-    kat = P.DEFAULT_COURSES.get(kunci, {})
-    for f in ("kode_mk", "nama_mk", "sks", "kelas", "semester", "jadwal",
-              "dosen_pengasuh", "asisten_dosen"):
-        if kat.get(f) != mk_cfg.get(f):
-            ident_beda.append(f"{kunci}.{f}")
-check("identitas katalog == config", not ident_beda, f"beda: {ident_beda}")
-total_sesi = sum(len(v["sessions"]) for v in P.DEFAULT_COURSES.values())
-check("total sesi = 18 (3 MK x 6)", total_sesi == 18, total_sesi)
+kursus = P.daftar_kursus()
+check("tree memuat 3 MK", len(kursus) == 3, len(kursus))
+check("setiap MK punya kunci & kode MK",
+      all(k.get("kunci_mk") and k.get("kode_mk") for k in kursus), "")
+kode_kursus = sorted(k["kode_mk"] for k in kursus)
+kode_config = sorted(v["kode_mk"] for v in ID.daftar_mk().values())
+check("kode MK di tree == kode di config", kode_kursus == kode_config,
+      f"{kode_kursus} vs {kode_config}")
+
+# Setiap MK di tree harus punya {pertemuan_total} pertemuan (bukan 6 yang dulu).
+salah_sesi = []
+total_sesi = 0
+for prodi in KT.daftar_prodi():
+    for ta in KT.daftar_tahun(prodi):
+        for sem in KT.daftar_semester(prodi, ta):
+            for kunci in KT.daftar_mk(prodi, ta, sem):
+                n = len(KT.baca_json(
+                    KT.path_berkas(prodi, ta, sem, kunci, "sesi.json"))["sesi"])
+                total_sesi += n
+                if n != AT.pertemuan_total():
+                    salah_sesi.append(f"{kunci}={n}")
+check("tiap MK punya {0} pertemuan".format(AT.pertemuan_total()),
+      not salah_sesi, f"salah: {salah_sesi}")
+check("total pertemuan = 3 x {0}".format(AT.pertemuan_total()),
+      total_sesi == 3 * AT.pertemuan_total(), total_sesi)
 
 # ---------------------------------------------------------------------------
 print("\n[4] Tidak ada identitas yang masih di-hardcode di kode")

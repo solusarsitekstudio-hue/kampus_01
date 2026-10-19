@@ -1,27 +1,35 @@
-import openpyxl
-import pypdf
+"""parse_data: bangun data/academic_data.json DARI tree kurikulum.
+
+TAHAP E - SUMBER DATA PINDAH
+----------------------------
+Dulu file ini membaca `D:\\Desktop\\- HAL LAIN\\DAFTAR MAHASISWA.xlsx` dan
+`...\\02 rekap qs pratikum.pdf` (folder pribadi), dan mengarang 6 sesi di dalam
+kode. Akibatnya sistem tidak mandiri dan jumlah pertemuan tidak bisa dipercaya.
+
+Sekarang sumbernya tree kurikulum:
+
+    data/kurikulum/<PRODI>/<TAHUN_AJAR>/<SEMESTER>/<KUNCI_MK>/
+
+File ini menjadi "compiler": membaca identitas + 16 pertemuan + catatan nilai,
+lalu menghitung. Tidak ada lagi `random.seed(42)` global - RNG dibuat PER
+MAHASISWA (`persona.rng_untuk(npm)`), sehingga menambah satu baris tidak
+menggeser nilai seluruh kelas (utang #1 dibayar).
+"""
 import json
 import os
-import random
 import sys
 from datetime import datetime
 
-# Seed for reproducibility so data stays consistent across runs
-random.seed(42)
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-EXCEL_PATH = r"D:\Desktop\- HAL LAIN\DAFTAR MAHASISWA.xlsx"
-PDF_PATH = r"D:\Desktop\- HAL LAIN\kirim\02 rekap qs pratikum.pdf"
-OUTPUT_DIR = os.path.join(BASE_DIR, "data")
-OUTPUT_JSON = os.path.join(OUTPUT_DIR, "academic_data.json")
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_JSON = os.path.join(DATA_DIR, "academic_data.json")
 
 # =============================================================================
 # ATURAN KELAS -> SATU MODUL BERSAMA (FIX TAHAP C-4)
 # =============================================================================
-# Aturan nilai, at-risk, dan badge karier TIDAK lagi didefinisikan di file ini.
-# Ketiga file (parse_data.py, process_input.py, generate_pdfs.py) mengimpor
-# dari scripts/kelas_rules.py supaya tidak ada lagi salinan yang bisa berbeda.
-# Inilah akar yang dulu melahirkan 4 aturan at-risk berbeda dalam 1 aplikasi.
+# Aturan nilai, at-risk, dan badge karier TIDAK didefinisikan di file ini.
+# Semua modul mengimpor dari scripts/kelas_rules.py supaya tidak ada salinan
+# yang bisa berbeda - akar yang dulu melahirkan 4 aturan at-risk berbeda.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from kelas_rules import (  # noqa: E402
     at_risk_alpha_min,
@@ -31,91 +39,162 @@ from kelas_rules import (  # noqa: E402
     hitung_nilai_terbobot,
     kategori_kecocokan_dari_skor,
     grade_dari_skor,
+    persentase_kehadiran,
+    pertemuan_dihitung_hadir,
+    validasi_bobot,
     teks_grade,
 )
 # FIX TAHAP E: ambang at-risk & teksnya kini dari satu sumber config/aturan.json.
 import aturan as ATURAN  # noqa: E402
 
-# FIX: identitas (mata kuliah, dosen, asisten, ketua prodi, institusi) sekarang
-# dibaca dari SATU sumber -- config/identitas.json lewat scripts/identitas.py.
-# Dulu nama-nama ini disalin manual di file ini DAN di process_input.py.
+# FIX: identitas (mata kuliah, dosen, asisten, ketua prodi, institusi) dibaca
+# dari SATU sumber -- config/identitas.json lewat scripts/identitas.py.
 import identitas as IDENT  # noqa: E402
+# Tree kurikulum bertingkat + persona/RNG per NPM.
+import kurikulum_tree as KT  # noqa: E402
+import persona as PS  # noqa: E402
 
 
-def parse_students(excel_path):
-    wb = openpyxl.load_workbook(excel_path)
-    ws = wb['QS']
-    students = []
-    for r in range(15, ws.max_row + 1):
-        no = ws.cell(row=r, column=2).value
-        npm = ws.cell(row=r, column=3).value
-        nama = ws.cell(row=r, column=4).value
-        if npm and nama:
-            students.append({
-                "no": int(no) if no else len(students) + 1,
-                "npm": str(npm).strip(),
-                "nama": str(nama).strip()
-            })
-    return students
+# =============================================================================
+# SUMBER DATA: TREE KURIKULUM (bukan Excel/PDF lagi)
+# =============================================================================
+def mk_aktif_dari_tree(kunci=None):
+    """(prodi, tahun_ajar, semester, kunci_mk) untuk satu MK.
 
-def parse_syllabus(pdf_path):
-    sessions = [
-        {
-            "pertemuan": 1,
-            "tanggal": "2026-06-03",
-            "tanggal_display": "03 Juni 2026",
-            "topik": "Pengenalan AutoCAD & Gambar Denah Dasar",
-            "deskripsi": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands (Line, Circle, Rectangle), Import Gambar sebagai referensi denah.",
-            "bobot": 15
-        },
-        {
-            "pertemuan": 2,
-            "tanggal": "2026-06-10",
-            "tanggal_display": "10 Juni 2026",
-            "topik": "Medium Drawing: Kolom, Dinding & Dimensi",
-            "deskripsi": "Menggambar dan Mengedit: menggambar kolom struktur, dinding bata, notasi arsitektural dan penarikan garis dimensi presisi.",
-            "bobot": 15
-        },
-        {
-            "pertemuan": 3,
-            "tanggal": "2026-06-24",
-            "tanggal_display": "24 Juni 2026",
-            "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
-            "deskripsi": "Pendalaman materi layer manajemen, pemberian arsiran material (hatch), dan pembuatan block kusen pintu dan jendela.",
-            "bobot": 15
-        },
-        {
-            "pertemuan": 4,
-            "tanggal": "2026-07-01",
-            "tanggal_display": "01 Juli 2026",
-            "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi",
-            "deskripsi": "Menggambar Potongan Bangunan (A-A & B-B), sinkronisasi denah dengan garis potongan, dan membuat detail pondasi batu kali.",
-            "bobot": 20
-        },
-        {
-            "pertemuan": 5,
-            "tanggal": "2026-07-08",
-            "tanggal_display": "08 Juli 2026",
-            "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF",
-            "deskripsi": "Layout etiket gambar standar arsitektur, pengenalan sheet viewport, plot ke PDF standar cetak A3, dan estimasi dasar daftar volume.",
-            "bobot": 15
-        },
-        {
-            "pertemuan": 6,
-            "tanggal": "2026-07-15",
-            "tanggal_display": "15 Juli 2026",
-            "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
-            "deskripsi": "Menghitung Volume dari item pekerjaan arsitektur dari gambar CAD, input tabel volume, dan evaluasi hasil kompilasi portofolio.",
-            "bobot": 20
-        }
-    ]
-    return sessions
+    `kunci=None` berarti MK yang sedang aktif di config/identitas.json. Kunci
+    yang diminta HARUS ada di config/identitas.json (fail-closed), karena
+    identitas MK tetap satu sumber di sana.
+    """
+    inst = IDENT.institusi()
+    kunci = kunci or IDENT.mk_aktif()
+    mk = IDENT.mk(kunci)
+    ta, sem = KT.pecah_semester(mk.get("semester"))
+    return inst.get("prodi", ""), ta, sem, kunci
+
+
+def muat_kurikulum(kunci=None):
+    """Baca identitas mahasiswa + penawaran + 16 sesi + nilai dari tree.
+
+    Fail-closed: berkas tidak lengkap atau bobot tidak berjumlah 100 = raise.
+    Dulu sumber yang gagal diam-diam jatuh ke template lain, dan dashboard
+    menampilkan topik mata kuliah yang salah tanpa satu pun pesan error.
+    """
+    prodi, ta, sem, kunci = mk_aktif_dari_tree(kunci)
+    path_mhs = KT.path_mahasiswa(prodi)
+    if not os.path.exists(path_mhs):
+        raise ValueError(
+            "Identitas mahasiswa belum ada: {0}\n"
+            "Bangun dulu: python scripts\\migrasi_kurikulum.py".format(path_mhs)
+        )
+    mahasiswa = KT.baca_json(path_mhs).get("mahasiswa") or []
+    if not mahasiswa:
+        raise ValueError("Tidak ada mahasiswa di {0}".format(path_mhs))
+
+    data = KT.muat_mk(prodi, ta, sem, kunci)
+    penawaran, sesi_doc, nilai_doc = data["penawaran"], data["sesi"], data["nilai"]
+
+    masalah = KT.validasi_sesi(sesi_doc, kunci)
+    if masalah:
+        raise ValueError("sesi.json '{0}' tidak valid:\n- {1}".format(
+            kunci, "\n- ".join(masalah)))
+    masalah_bobot = validasi_bobot(KT.bobot_sesi(sesi_doc), kunci)
+    if masalah_bobot:
+        raise ValueError("Bobot sesi '{0}' tidak valid:\n- {1}".format(
+            kunci, "\n- ".join(masalah_bobot)))
+
+    return {
+        "prodi": prodi,
+        "tahun_ajar": ta,
+        "semester": sem,
+        "kunci_mk": kunci,
+        "mahasiswa": mahasiswa,
+        "penawaran": penawaran,
+        "sesi_dokumen": sesi_doc,
+        "sessions": list(sesi_doc.get("sesi") or []),
+        "nilai_dokumen": nilai_doc,
+    }
+
+
+def kelompokkan_nilai(nilai_dokumen):
+    """{npm: [baris slot]} dari berkas nilai."""
+    hasil = {}
+    for r in (nilai_dokumen or {}).get("nilai", []):
+        hasil.setdefault(str(r.get("npm")), []).append(r)
+    return hasil
+
+
+def ringkas_kehadiran(baris_slot, sessions):
+    """Rincian kehadiran PER PERTEMUAN, jujur sampai tingkat slot.
+
+    Keputusan user (Tahap E): yang ditampilkan pertemuan, tetapi persen
+    dihitung dari slot - jadi mahasiswa yang hadir 1 dari 4 slot tampil
+    "Hadir Sebagian", tidak dibulatkan menjadi hadir atau alpha.
+    """
+    per_pertemuan = {}
+    for r in baris_slot:
+        per_pertemuan.setdefault(int(r.get("pertemuan") or 0), []).append(r)
+
+    detail = []
+    hitung = {"Hadir": 0, "Hadir Sebagian": 0, "Sakit": 0, "Izin": 0, "Alpha": 0}
+    slot_hadir_total = 0
+    slot_total_semua = 0
+    pertemuan_hadir = 0
+
+    for s in sessions:
+        p = int(s["pertemuan"])
+        slot_total = len(s.get("slot_absen") or [])
+        baris = per_pertemuan.get(p, [])
+        slot_hadir = sum(1 for b in baris if b.get("status") == "Hadir")
+        skor = round(sum(b.get("skor", 0) for b in baris) / slot_total, 1) if slot_total else 0.0
+
+        if slot_total and slot_hadir >= slot_total:
+            bucket = "Hadir"
+        elif slot_hadir <= 0:
+            status_isi = [b.get("status") for b in baris]
+            if "Sakit" in status_isi:
+                bucket = "Sakit"
+            elif "Izin" in status_isi:
+                bucket = "Izin"
+            else:
+                bucket = "Alpha"
+        else:
+            bucket = "Hadir Sebagian"
+
+        hitung[bucket] += 1
+        if pertemuan_dihitung_hadir(slot_hadir, slot_total):
+            pertemuan_hadir += 1
+        slot_hadir_total += slot_hadir
+        slot_total_semua += slot_total
+
+        alasan = "-"
+        if bucket in ("Sakit", "Izin"):
+            alasan = next((b.get("alasan") for b in baris
+                           if b.get("alasan") not in (None, "-")), "-")
+        elif bucket == "Alpha":
+            alasan = "Tanpa keterangan / tidak hadir di presensi portal"
+
+        detail.append({
+            "pertemuan": p,
+            "tanggal": s.get("tanggal"),
+            "tanggal_display": s.get("tanggal_display"),
+            "topik": s.get("topik"),
+            "tipe": s.get("tipe"),
+            "slot_total": slot_total,
+            "slot_hadir": slot_hadir,
+            "status": bucket,
+            "alasan": alasan,
+            "skor": skor,
+        })
+
+    return detail, hitung, pertemuan_hadir, slot_hadir_total, slot_total_semua
 
 # CATATAN: `kategori_kecocokan_dari_skor()` sekarang diimpor dari kelas_rules.py
 # (FIX TAHAP C-4) supaya hanya ada satu definisi di seluruh sistem.
 
 
-def generate_10_career_matrix(nama, avg_score, competency, archetype):
+def generate_10_career_matrix(nama, avg_score, competency, archetype, rng):
+    """10 matriks karier. `rng` WAJIB dari persona.rng_untuk(npm) supaya
+    angka seorang mahasiswa tidak bergeser karena mahasiswa lain berubah."""
     base_score = avg_score
     cad_val = competency["penguasaan_cad"]
     det_val = competency["ketelitian_detail"]
@@ -126,7 +205,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 1,
             "profesi": "Architectural Designer (Arsitek Perancang Pratama)",
             "bidang_industri": "Biro Konsultan Perencana Arsitektur & Desain",
-            "kecocokan_persen": min(98, round(base_score * 0.98 + random.uniform(0.5, 2.5), 1)),
+            "kecocokan_persen": min(98, round(base_score * 0.98 + rng.uniform(0.5, 2.5), 1)),
             "kategori_kecocokan": "Sangat Tinggi",
             "analisis_potensi": f"Ananda {nama} memiliki kepekaan proporsi spasial dan kemampuan memadukan fungsi denah dengan estetika tampak yang sangat harmonis.",
             "keterampilan_kunci": "Konsep Tata Ruang, Denah Fungsi, Sketsa Arsitektur, AutoCAD 2D",
@@ -136,7 +215,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 2,
             "profesi": "BIM Modeler & Coordinator (Building Information Modeling)",
             "bidang_industri": "Kontraktor EPC Multinasional / Konsultan Rekayasa Digital",
-            "kecocokan_persen": min(99, round(cad_val * 0.99 + random.uniform(0.5, 1.8), 1)),
+            "kecocokan_persen": min(99, round(cad_val * 0.99 + rng.uniform(0.5, 1.8), 1)),
             "kategori_kecocokan": "Sangat Tinggi",
             "analisis_potensi": "Kerapian manajemen layer dan kedisiplinan koordinasi gambar digital menjadi modal emas dalam adopsi teknologi BIM 3D/4D industri konstruksi modern.",
             "keterampilan_kunci": "Manajemen Layer Standar IAI, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
@@ -146,7 +225,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 3,
             "profesi": "Quantity Surveyor (QS) & Cost Estimator Bangunan",
             "bidang_industri": "BUMN Karya / Developer Properti Skala Besar",
-            "kecocokan_persen": min(96, round(det_val * 0.96 + random.uniform(0.5, 2.5), 1)),
+            "kecocokan_persen": min(96, round(det_val * 0.96 + rng.uniform(0.5, 2.5), 1)),
             "kategori_kecocokan": "Tinggi",
             "analisis_potensi": "Kemampuan membaca dimensi gambar dan mengekstraksi volume pekerjaan galian serta beton secara teliti sangat dicari di bidang estimasi anggaran proyek.",
             "keterampilan_kunci": "Kalkulasi Volume Galian/Pondasi, Penyusunan BQ, Analisis Satuan Harga (AHSP)",
@@ -156,7 +235,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 4,
             "profesi": "Detail Engineering Drawing (DED) Specialist",
             "bidang_industri": "Konsultan Perancangan Teknis & Rekayasa Gambar Kerja",
-            "kecocokan_persen": min(97, round(det_val * 0.97 + random.uniform(0.5, 2.5), 1)),
+            "kecocokan_persen": min(97, round(det_val * 0.97 + rng.uniform(0.5, 2.5), 1)),
             "kategori_kecocokan": "Sangat Tinggi",
             "analisis_potensi": "Karakter gambar yang teliti dalam menampilkan garis potongan dan detail pondasi batu kali membuktikan ananda siap memproduksi dokumen tender konstruksi resmi.",
             "keterampilan_kunci": "Potongan Vertikal Bangunan, Detail Sambungan Pondasi, Standar Notasi PUPR",
@@ -166,7 +245,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 5,
             "profesi": "Interior Architect & Space Planner",
             "bidang_industri": "Studio Interior Arsitektur & Desain Hunian Komersial",
-            "kecocokan_persen": min(95, round(base_score * 0.94 + random.uniform(1.0, 3.5), 1)),
+            "kecocokan_persen": min(95, round(base_score * 0.94 + rng.uniform(1.0, 3.5), 1)),
             "kategori_kecocokan": "Tinggi",
             "analisis_potensi": "Sentuhan detail pada denah hunian dan pemahaman ergonomi sirkulasi manusia menjadikan ananda berpeluang besar unggul di sektor desain interior.",
             "keterampilan_kunci": "Sirkulasi Mikro, Ergonomi Ruang Tamu/Kamar, Detail Kusen & Pintu, Material Finishing",
@@ -176,7 +255,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 6,
             "profesi": "3D Architectural Visualizer & CG Artist",
             "bidang_industri": "Creative Architectural Media & Studio Rendering Internasional",
-            "kecocokan_persen": min(95, round(cad_val * 0.93 + random.uniform(1.0, 3.5), 1)),
+            "kecocokan_persen": min(95, round(cad_val * 0.93 + rng.uniform(1.0, 3.5), 1)),
             "kategori_kecocokan": "Tinggi",
             "analisis_potensi": "Daya bayang visual bentuk bangunan ananda sangat kuat, memungkinkan transformasi gambar kerja 2D menjadi visualisasi 3D fotorealistik yang memukau klien.",
             "keterampilan_kunci": "Pemodelan 3D Isometrik/Aksonometrik, Komposisi Kamera, Pencahayaan Alami, Visual Storytelling",
@@ -186,7 +265,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 7,
             "profesi": "Site Architect & Pengawas Lapangan Konstruksi",
             "bidang_industri": "Kontraktor Pelaksana Bangunan / Manajemen Konstruksi (MK)",
-            "kecocokan_persen": min(94, round(str_val * 0.94 + random.uniform(0.5, 2.5), 1)),
+            "kecocokan_persen": min(94, round(str_val * 0.94 + rng.uniform(0.5, 2.5), 1)),
             "kategori_kecocokan": "Tinggi",
             "analisis_potensi": "Pemahaman yang solid mengenai sistem kolom praktis dan elevasi muka tanah memudahkan ananda mengawasi kesesuaian fisik lapangan dengan dokumen gambar kerja.",
             "keterampilan_kunci": "Verifikasi Gambar As-Built, Pengawasan Mutu Beton, Deteksi Kesalahan Elevasi Lapangan",
@@ -196,7 +275,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 8,
             "profesi": "Landscape Architect Assistant",
             "bidang_industri": "Studio Arsitektur Lansekap & Perencanaan Wilayah",
-            "kecocokan_persen": min(92, round(base_score * 0.90 + random.uniform(0.5, 3.0), 1)),
+            "kecocokan_persen": min(92, round(base_score * 0.90 + rng.uniform(0.5, 3.0), 1)),
             "kategori_kecocokan": "Sesuai",
             "analisis_potensi": "Kepekaan terhadap kontur tapak dan transisi ruang luar (teras) ke ruang dalam mendukung perancangan lansekap tapak berkelanjutan.",
             "keterampilan_kunci": "Tata Hijau, Analisis Orientasi Matahari & Angin, Drainase Tapak, Desain Hardscape",
@@ -206,7 +285,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 9,
             "profesi": "Green Building & Sustainable Design Specialist",
             "bidang_industri": "Konsultan Bangunan Hijau & Sertifikasi Efisiensi Energi",
-            "kecocokan_persen": min(93, round(str_val * 0.92 + random.uniform(0.5, 2.8), 1)),
+            "kecocokan_persen": min(93, round(str_val * 0.92 + rng.uniform(0.5, 2.8), 1)),
             "kategori_kecocokan": "Sesuai",
             "analisis_potensi": "Penerapan ventilasi silang pada denah dan perlindungan bukaan dinding menunjukkan intuisi desain pasif hemat energi yang sangat dibutuhkan industri saat ini.",
             "keterampilan_kunci": "Desain Pasif Tropis, Pencahayaan Alami Optimal, Shading Fasad, Efisiensi Energi",
@@ -216,7 +295,7 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
             "id": 10,
             "profesi": "Project Planner & Kontraktor Mandiri (Design & Build)",
             "bidang_industri": "Wirausaha Kreatif Sektor Jasa Rancang Bangun",
-            "kecocokan_persen": min(95, round(base_score * 0.92 + random.uniform(1.0, 3.5), 1)),
+            "kecocokan_persen": min(95, round(base_score * 0.92 + rng.uniform(1.0, 3.5), 1)),
             "kategori_kecocokan": "Tinggi",
             "analisis_potensi": "Penguasaan paket lengkap dari gambar arsitektur, potongan struktur, hingga perhitungan volume biaya memberikan modal independen untuk mendirikan biro sendiri.",
             "keterampilan_kunci": "Penguasaan End-to-End Desain ke Konstruksi, Komunikasi Klien, Negosiasi Anggaran, Manajemen Tim",
@@ -231,55 +310,34 @@ def generate_10_career_matrix(nama, avg_score, competency, archetype):
     return careers
 
 # =============================================================================
-# PERSONA / ARCHETYPE - TERIKAT KE NPM, BUKAN KE NOMOR BARIS EXCEL
+# PERSONA / ARCHETYPE - dipindah ke scripts/persona.py (TAHAP E)
 # =============================================================================
-# FIX TAHAP C-3.
-#
-# Sebelumnya persona ditentukan dari posisi baris:
-#     if idx == 0  -> "star"
-#     elif idx == 10 -> "at_risk"
-#     elif idx == 1  -> "high"
-#     elif idx % 7 == 0 -> ...
-#
-# Masalahnya: begitu satu mahasiswa ditambah/dihapus/diurutkan ulang di
-# DAFTAR MAHASISWA.xlsx, SEMUA posisi bergeser satu langkah. Akibatnya
-# mahasiswa yang sama bisa berubah persona: yang tadinya "star" jadi
-# "normal", mahasiswa bermasalah bisa jadi tidak terdeteksi, dan seluruh
-# narasi rapor (yang banyak menyesuaikan archetype) ikut berubah tanpa
-# ada yang menyadarinya.
-#
-# Sekarang persona terikat ke NPM. Kalau mahasiswa pindah baris, dia tetap
-# membawa personanya.
-ARCHETYPE_BY_NPM = {
-    "2510015410010": "star",      # M YAZID ZIDANE MULYADI
-    "2510015410011": "at_risk",   # ROZI ANDRIAN SURVA
-    "2510015410001": "high",      # ALSA DMI YESYA PUTRI
-}
+# Dulu blok ini ada DI SINI dan memakai `idx % 7` sebagai cadangan, sehingga
+# menambah satu baris membuat mahasiswa lain berubah persona. Sekarang persona
+# MURNI dari NPM, dan RNG-nya juga per NPM. Satu sumber: scripts/persona.py.
+tentukan_archetype = PS.tentukan_archetype
 
 
-def tentukan_archetype(idx: int, npm: str) -> str:
-    """Persona mahasiswa: NPM dulu, baru pola posisi sebagai cadangan.
-
-    Catatan penting: fungsi ini hanya memperbaiki IKATAN persona. Angka
-    (skor per sesi) masih diambil dari satu urutan `random` bersama, jadi
-    menambah satu baris Excel tetap menggeser angka seluruh kelas. Untuk
-    benar-benar mandiri per mahasiswa, RNG harus di-seed per NPM
-    (lihat catatan "utang" di README).
-    """
-    if str(npm) in ARCHETYPE_BY_NPM:
-        return ARCHETYPE_BY_NPM[str(npm)]
-    if idx % 7 == 0:
-        return "moderate_absent"
-    if idx % 4 == 0:
-        return "good"
-    return "normal"
+# =============================================================================
+# CPMK PLACEHOLDER
+# =============================================================================
+# Dipakai laporan audit dosen -> kaprodi. BELUM dari RPS resmi dan BUKAN klaim
+# capaian pembelajaran; hanya pengingat agar kolomnya tidak kosong dan tidak
+# terkesan sudah final. Ganti dengan CPMK resmi dari RPS saat tersedia.
+CPMK_PLACEHOLDER = [
+    "CPMK-1: Menguasai konsep dasar dan instrumen kerja mata kuliah",
+    "CPMK-2: Mampu menerapkan prosedur kerja standar pada studi kasus",
+    "CPMK-3: Mampu menyusun keluaran kerja sesuai standar profesinya",
+    "CPMK-4: Mampu mempublikasikan dan mengomunikasikan hasil kerja",
+]
 
 
-def generate_student_profiles(students, sessions):
+def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
     # FIX: identitas mata kuliah TIDAK lagi disalin di sini. Dibaca dari satu
     # sumber (config/identitas.json). Kunci yang ditulis SENGAJA dikunci ke 11
     # kunci yang sama seperti sebelumnya, supaya academic_data.json tidak berubah.
-    _ident = IDENT.lengkapi()
+    ctx = ctx or {}
+    _ident = IDENT.lengkapi(ctx.get("kunci_mk"))
     course_info = {
         k: _ident[k]
         for k in (
@@ -304,122 +362,36 @@ def generate_student_profiles(students, sessions):
     _asisten = str(course_info["asisten_dosen"])
     _total_sesi = len(sessions)
 
-    reasons_sakit = [
-        "Sakit demam & flu (surat dokter terlampir)",
-        "Sakit radang tenggorokan & istirahat dokter",
-        "Kondisi fisik drop pasca asistensi studio malam",
-        "Sakit tifus rawat jalan (ada konfirmasi dokter)"
-    ]
-    reasons_izin = [
-        "Izin delegasi Sayembara Desain Arsitektur Nasional",
-        "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-        "Izin urusan keluarga mendesak di luar kota",
-        "Izin servis laptop kendala hardware crash AutoCAD"
-    ]
-
     student_records = []
 
     for idx, s in enumerate(students):
-        npm = s["npm"]
+        npm = str(s["npm"])
         nama = s["nama"]
-        
-        # Archetype determination - terikat NPM, bukan nomor baris (FIX C-3)
-        archetype = tentukan_archetype(idx, npm)
 
-        attendance_list = []
-        total_hadir = 0
-        total_sakit = 0
-        total_izin = 0
-        total_alpha = 0
-        session_scores = []
+        # Persona MURNI dari NPM (persona.py) + RNG per NPM.
+        archetype = PS.tentukan_archetype(idx, npm)
+        rng = PS.rng_untuk(npm)
 
-        for sess in sessions:
-            p_num = sess["pertemuan"]
-            
-            if archetype == "star":
-                status = "Hadir"
-                alasan = "-"
-                score = random.randint(92, 98)
-            elif archetype == "at_risk":
-                if p_num in [2, 4]:
-                    status = "Alpha"
-                    alasan = "Tanpa keterangan / tidak hadir di presensi portal"
-                    score = 0
-                elif p_num == 3:
-                    status = "Sakit"
-                    alasan = "Sakit radang tenggorokan (surat menyusul)"
-                    score = 65
-                else:
-                    status = "Hadir"
-                    alasan = "-"
-                    score = random.randint(68, 75)
-            elif archetype == "moderate_absent":
-                if p_num == 3:
-                    status = "Izin"
-                    alasan = random.choice(reasons_izin)
-                    score = 78
-                elif p_num == 5:
-                    status = "Sakit"
-                    alasan = random.choice(reasons_sakit)
-                    score = 80
-                else:
-                    status = "Hadir"
-                    alasan = "-"
-                    score = random.randint(80, 88)
-            elif archetype == "high":
-                if p_num == 4:
-                    status = "Izin"
-                    alasan = "Izin delegasi Sayembara Desain Arsitektur"
-                    score = 88
-                else:
-                    status = "Hadir"
-                    alasan = "-"
-                    score = random.randint(88, 95)
-            else:
-                roll = random.random()
-                if roll < 0.85:
-                    status = "Hadir"
-                    alasan = "-"
-                    score = random.randint(75, 90)
-                elif roll < 0.92:
-                    status = "Izin"
-                    alasan = random.choice(reasons_izin)
-                    score = random.randint(72, 85)
-                elif roll < 0.97:
-                    status = "Sakit"
-                    alasan = random.choice(reasons_sakit)
-                    score = random.randint(70, 82)
-                else:
-                    status = "Alpha"
-                    alasan = "Tanpa surat konfirmasi / kendala transportasi"
-                    score = 0
+        # Kehadiran + nilai dibaca dari catatan per SLOT di tree kurikulum,
+        # bukan dikarang di sini. Rincian per pertemuan tetap yang ditampilkan.
+        baris_slot = nilai_per_npm.get(npm, [])
+        (attendance_list, hitung_status, pertemuan_hadir,
+         slot_hadir_total, slot_total_semua) = ringkas_kehadiran(baris_slot, sessions)
 
-            if status == "Hadir":
-                total_hadir += 1
-            elif status == "Sakit":
-                total_sakit += 1
-            elif status == "Izin":
-                total_izin += 1
-            elif status == "Alpha":
-                total_alpha += 1
+        total_hadir = hitung_status["Hadir"]
+        total_sebagian = hitung_status["Hadir Sebagian"]
+        total_sakit = hitung_status["Sakit"]
+        total_izin = hitung_status["Izin"]
+        total_alpha = hitung_status["Alpha"]
+        session_scores = [d["skor"] for d in attendance_list]
 
-            attendance_list.append({
-                "pertemuan": p_num,
-                "tanggal": sess["tanggal"],
-                "tanggal_display": sess["tanggal_display"],
-                "topik": sess["topik"],
-                "status": status,
-                "alasan": alasan,
-                "skor": score
-            })
-            session_scores.append(score)
+        # Persen kehadiran berbasis SLOT (bukan jumlah pertemuan): 2 dari 4 slot
+        # = 50%. Ini yang membuat kehadiran sebagian terbaca jujur, bukan
+        # dibulatkan diam-diam menjadi hadir atau alpha.
+        attendance_pct = persentase_kehadiran(slot_hadir_total, slot_total_semua)
 
-        attendance_pct = round((total_hadir / len(sessions)) * 100, 1)
-
-        # FIX TAHAP B: Alpha (nilai 0) sekarang ikut dihitung, dan bobot sesi
-        # benar-benar dipakai. Nilai 0 HANYA muncul pada sesi Alpha - sesi
-        # sakit/izin tetap dapat nilai 70-85, jadi mahasiswa yang sakit tidak
-        # dihukum atas hal yang bukanureknya.
+        # FIX TAHAP B: Alpha (nilai 0) ikut dihitung dan bobot sesi dipakai.
+        # FIX TAHAP E: bobot kini dari sesi.json (16 pertemuan, total 100).
         bobot_sesi = [sess.get("bobot", 0) for sess in sessions]
         avg_score = hitung_nilai_terbobot(session_scores, bobot_sesi)
         at_risk_reasons_list = at_risk_reasons(total_alpha, attendance_pct)
@@ -537,13 +509,13 @@ def generate_student_profiles(students, sessions):
             alert_color = "sky"
 
         else:
-            base_cad = random.randint(76, 88)
+            base_cad = rng.randint(76, 88)
             competency = {
                 "penguasaan_cad": base_cad,
-                "ketelitian_detail": random.randint(75, 87),
-                "kedisiplinan_asistensi": random.randint(76, 90),
-                "logika_ruang_struktur": random.randint(74, 88),
-                "manajemen_waktu": random.randint(72, 86)
+                "ketelitian_detail": rng.randint(75, 87),
+                "kedisiplinan_asistensi": rng.randint(76, 90),
+                "logika_ruang_struktur": rng.randint(74, 88),
+                "manajemen_waktu": rng.randint(72, 86)
             }
             karakter_spasial = (
                 f"Ananda {nama} memperlihatkan etos kerja studio yang positif, aktif berdiskusi di laboratorium LIKDA, dan menunjukkan "
@@ -566,7 +538,7 @@ def generate_student_profiles(students, sessions):
             alert_color = "blue"
 
         # Generate Customized 10 Real Career Matrix
-        career_matrix = generate_10_career_matrix(nama, avg_score, competency, archetype)
+        career_matrix = generate_10_career_matrix(nama, avg_score, competency, archetype, rng)
 
         # Video Storyboard for Student Showcase (Focus on pride, progress, and motivating parents)
         video_storyboard = {
@@ -628,7 +600,7 @@ def generate_student_profiles(students, sessions):
         )
 
         student_records.append({
-            "no": s["no"],
+            "no": s.get("no", idx + 1),
             "npm": npm,
             "nama": nama,
             "archetype": archetype,
@@ -636,10 +608,17 @@ def generate_student_profiles(students, sessions):
             "alasan_at_risk": at_risk_reasons_list,
             "kehadiran": {
                 "hadir": total_hadir,
+                "hadir_sebagian": total_sebagian,
                 "sakit": total_sakit,
                 "izin": total_izin,
                 "alpha": total_alpha,
+                "pertemuan_hadir": pertemuan_hadir,
+                "total_pertemuan": len(sessions),
+                "slot_hadir": slot_hadir_total,
+                "slot_total": slot_total_semua,
                 "persentase": attendance_pct,
+                "basis_persen": ATURAN.basis_persen_kehadiran(),
+                "min_slot_ratio_hadir": ATURAN.min_slot_ratio_hadir(),
                 "detail": attendance_list
             },
             "akademik": {
@@ -673,7 +652,7 @@ def generate_student_profiles(students, sessions):
     # Class-level aggregates for Kaprodi Executive Suite
     total_mhs = len(student_records)
     if total_mhs == 0:
-        raise ValueError("Tidak ada mahasiswa yang berhasil dibaca dari Excel.")
+        raise ValueError("Tidak ada mahasiswa yang bisa dibaca dari tree kurikulum.")
     class_hadir_pct = round(sum(s["kehadiran"]["persentase"] for s in student_records) / total_mhs, 1)
     class_avg_score = round(sum(s["akademik"]["nilai_rata_rata"] for s in student_records) / total_mhs, 1)
     # FIX TAHAP B: pakai fungsi aturan yang sama (alpha>=2 ATAU hadir<75%).
@@ -696,23 +675,38 @@ def generate_student_profiles(students, sessions):
         else:
             grades_count["D"] += 1
 
-    # Session-by-session attendance trends
+    # Session-by-session attendance trends.
+    # TAHAP E: satu pertemuan bisa punya beberapa slot absen, jadi "hadir"
+    # perlu dibedakan dari "hadir sebagian". Ambang 50% slot (aturan.json)
+    # menentukan siapa yang DIHITUNG hadir - angka ini yang dipakai persen.
     session_attendance_trend = []
     for sess in sessions:
         p_num = sess["pertemuan"]
-        hadir_count = sum(1 for s in student_records if s["kehadiran"]["detail"][p_num - 1]["status"] == "Hadir")
-        sakit_count = sum(1 for s in student_records if s["kehadiran"]["detail"][p_num - 1]["status"] == "Sakit")
-        izin_count = sum(1 for s in student_records if s["kehadiran"]["detail"][p_num - 1]["status"] == "Izin")
-        alpha_count = sum(1 for s in student_records if s["kehadiran"]["detail"][p_num - 1]["status"] == "Alpha")
+        detail_p = [s["kehadiran"]["detail"][p_num - 1] for s in student_records]
+        hadir_count = sum(1 for d in detail_p if d["status"] == "Hadir")
+        sebagian_count = sum(1 for d in detail_p if d["status"] == "Hadir Sebagian")
+        sakit_count = sum(1 for d in detail_p if d["status"] == "Sakit")
+        izin_count = sum(1 for d in detail_p if d["status"] == "Izin")
+        alpha_count = sum(1 for d in detail_p if d["status"] == "Alpha")
+        slot_total = detail_p[0]["slot_total"] if detail_p else 0
+        slot_hadir = sum(d["slot_hadir"] for d in detail_p)
+        dihitung_hadir = sum(
+            1 for d in detail_p if pertemuan_dihitung_hadir(d["slot_hadir"], d["slot_total"])
+        )
         session_attendance_trend.append({
             "pertemuan": p_num,
             "tanggal": sess["tanggal_display"],
             "topik": sess["topik"],
+            "tipe": sess.get("tipe"),
             "hadir": hadir_count,
+            "hadir_sebagian": sebagian_count,
             "sakit": sakit_count,
             "izin": izin_count,
             "alpha": alpha_count,
-            "hadir_pct": round((hadir_count / total_mhs) * 100, 1)
+            "slot_total": slot_total * total_mhs,
+            "slot_hadir": slot_hadir,
+            "dihitung_hadir": dihitung_hadir,
+            "hadir_pct": round((dihitung_hadir / total_mhs) * 100, 1) if total_mhs else 0.0
         })
 
     # Lecturer and Curriculum Audit Data (for Kaprodi -> Dosen QA Report)
@@ -737,61 +731,41 @@ def generate_student_profiles(students, sessions):
         "status": "Aktif Membimbing Asistensi Teknis"
     })
 
-    # FIX TAHAP B: "35 mahasiswa" diketik manual -> pakai jumlah riil.
-    # (Dosen audit untuk kanal ini disinkronkan juga oleh process_input.py saat ganti MK)
-    DOSEN_AUDIT_SESI = [
-            {
-                "sesi": 1,
-                "topik_rps": "Pengenalan AutoCAD: Interface, Toolbar, Basic Commands, Import Gambar denah",
-                "realisasi_kelas": f"Materi tersampaikan penuh, {total_mhs} mahasiswa berhasil import denah referensi & setup workspace.",
-                "skor_keselarasan": 98,
-                "cpmk": "CPMK-1: Mampu mengoperasikan antarmuka CAD standar industri"
-            },
-            {
-                "sesi": 2,
-                "topik_rps": "Medium Drawing: Menggambar dan Mengedit kolom, dinding, notasi dan dimensi",
-                "realisasi_kelas": "Praktek penarikan garis kolom beton, dinding bata 15cm, dan penarikan dimensi presisi tuntas.",
-                "skor_keselarasan": 96,
-                "cpmk": "CPMK-2: Menguasai teknik penggambaran elemen arsitektur 2D presisi"
-            },
-            {
-                "sesi": 3,
-                "topik_rps": "Medium Drawing: Layer, Memberi Arsiran (Hatch), Blok Kusen Jendela & Pintu",
-                "realisasi_kelas": "Pengaturan layer lineweight standar IAI dan pembuatan dynamic block pintu/jendela terverifikasi.",
-                "skor_keselarasan": 95,
-                "cpmk": "CPMK-2: Menguasai teknik penggambaran elemen arsitektur 2D presisi"
-            },
-            {
-                "sesi": 4,
-                "topik_rps": "Medium Drawing: Menggambar Potongan A-A & B-B, sinkronisasi denah, Detail Pondasi",
-                "realisasi_kelas": "Mahasiswa memproyeksikan garis denah ke potongan vertikal dan detail pondasi batu kali 1:20.",
-                "skor_keselarasan": 94,
-                "cpmk": "CPMK-3: Mampu menyusun gambar potongan dan detail konstruksi bangunan"
-            },
-            {
-                "sesi": 5,
-                "topik_rps": "Publishing Drawing: Layout, Pengenalan Sheet, Plot ke PDF dan dasar list volume",
-                "realisasi_kelas": "Setting viewport layout skala 1:100 pada etiket resmi dan export ke lembar PDF cetak A3.",
-                "skor_keselarasan": 97,
-                "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
-            },
-            {
-                "sesi": 6,
-                "topik_rps": "Scheduling Drawing: Menghitung Volume pekerjaan dari gambar dan plotting final",
-                "realisasi_kelas": "Ekstraksi luasan dinding, volume pondasi, dan kompilasi tabel Quantity Surveying selesai 100%.",
-                "skor_keselarasan": 96,
-                "cpmk": "CPMK-4: Mampu mempublikasikan lembar kerja standar profesional"
-            }
-        ]
+    # TAHAP E: baris evaluasi RPS DIBANGUN dari sesi.json (16 pertemuan), bukan
+    # 6 baris yang disalin manual. Topik asli dari RPS/portal, realisasi dihitung
+    # dari kehadiran nyata. `skor_keselarasan` di sini adalah PROXY persen
+    # kehadiran pertemuan - bukan penilaian RPS terpisah (dicatat di metadata).
+    evaluasi_rps = []
+    for d in session_attendance_trend:
+        p = d["pertemuan"]
+        if d["tipe"] in ("uts", "uas"):
+            realisasi = "Evaluasi {0} semester diikuti {1} dari {2} mahasiswa.".format(
+                "tengah" if d["tipe"] == "uts" else "akhir", d["dihitung_hadir"], total_mhs
+            )
+        else:
+            realisasi = (
+                "Materi tersampaikan; {0} dari {1} mahasiswa memenuhi ambang kehadiran "
+                "(hadir penuh {2}, hadir sebagian {3}, sisanya sakit/izin/alpha).".format(
+                    d["dihitung_hadir"], total_mhs, d["hadir"], d["hadir_sebagian"]
+                )
+            )
+        evaluasi_rps.append({
+            "sesi": p,
+            "topik_rps": d["topik"],
+            "realisasi_kelas": realisasi,
+            "skor_keselarasan": d["hadir_pct"],
+            "cpmk": CPMK_PLACEHOLDER[(p - 1) % len(CPMK_PLACEHOLDER)],
+        })
 
     # FIX TAHAP B: hitung dari data, jangan diketik manual.
     # Dulu ditulis 96.0 dan kebetulan cocok, tapi diam-diam bohong begitu
     # satu skor berubah.
     dosen_audit = {
         "tim_pengajar": tim_pengajar,
-        "evaluasi_kurikulum_rps": DOSEN_AUDIT_SESI,
-        "skor_keselarasan_rata_rata": round(
-            sum(e["skor_keselarasan"] for e in DOSEN_AUDIT_SESI) / len(DOSEN_AUDIT_SESI), 1
+        "evaluasi_kurikulum_rps": evaluasi_rps,
+        "skor_keselarasan_rata_rata": (
+            round(sum(e["skor_keselarasan"] for e in evaluasi_rps) / len(evaluasi_rps), 1)
+            if evaluasi_rps else 0.0
         ),
         "keterangan_akreditasi": "Terakreditasi Sangat Baik / Memenuhi Standar CPMK & CPL LAM Teknik",
         "catatan_kaprodi": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
@@ -800,12 +774,45 @@ def generate_student_profiles(students, sessions):
     dataset = {
         "metadata": {
             "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
-            "versi": "2.5-GOLDEN-DEMO",
+            "versi": "2.6-KURIKULUM-BERTINGKAT",
             "generated_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%S+07:00"),
             "build_id": datetime.now().strftime("%Y%m%d_%H%M%S"),
             "target_port": 40404,
-            "metodologi_nilai": "Rata-rata TERBEBOT per sesi. Alpha bernilai 0 dan ikut dihitung.",
+            "metodologi_nilai": (
+                "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. "
+                "Nilai satu pertemuan = rata-rata nilai seluruh slot absennya."
+            ),
             "aturan_at_risk": ATURAN.teks_at_risk(),
+            # --- TAHAP E: asal-usul data, supaya tidak ada yang menebak ---
+            "sumber_data": "data/kurikulum/<PRODI>/<TAHUN_AJAR>/<SEMESTER>/<KUNCI_MK>/",
+            "prodi": ctx.get("prodi"),
+            "tahun_ajar": ctx.get("tahun_ajar"),
+            "semester": ctx.get("semester"),
+            "kunci_mk": ctx.get("kunci_mk"),
+            "pertemuan_total": len(sessions),
+            "slot_absen_total": KT.jumlah_slot(ctx.get("sesi_dokumen") or {}),
+            "basis_persen_kehadiran": ATURAN.basis_persen_kehadiran(),
+            "min_slot_ratio_hadir": ATURAN.min_slot_ratio_hadir(),
+            "catatan_kehadiran": (
+                "Persen kehadiran dihitung dari SLOT absen, bukan jumlah pertemuan. "
+                "Satu pertemuan dihitung hadir bila minimal {0:.0%} slotnya terisi; "
+                "kehadiran sebagian tetap ditampilkan apa adanya.".format(
+                    ATURAN.min_slot_ratio_hadir()
+                )
+            ),
+            "catatan_nilai": (
+                "NILAI PER PERTEMUAN MASIH SINTETIS (bukan input dosen). Ganti dengan "
+                "data portal begitu tersedia; berkas sumber ditandai `sintetis: true`."
+                if (ctx.get("nilai_dokumen") or {}).get("sintetis")
+                else "Nilai berasal dari berkas nilai MK (bukan sintetis)."
+            ),
+            "metodologi_keselarasan": (
+                "skor_keselarasan per pertemuan = persen kehadiran pertemuan tersebut "
+                "(proxy keterlaksanaan), bukan penilaian RPS terpisah."
+            ),
+            "catatan_cpmk": (
+                "CPMK di laporan audit masih placeholder sampai RPS resmi disediakan."
+            ),
         },
         "course": course_info,
         "sessions": sessions,
@@ -829,37 +836,57 @@ def generate_student_profiles(students, sessions):
 
     return dataset
 
+def bangun_dataset(kunci=None):
+    """Bangun dataset akademik lengkap untuk satu MK dari tree kurikulum.
+
+    `kunci=None` = MK aktif. Dipakai oleh main() (untuk MASTER) dan oleh
+    process_input (untuk membangun katalog MK lain). Karena RNG-nya per NPM dan
+    sumbernya berkas, hasilnya DETERMINISTIK: membangun dua kali menghasilkan
+    angka yang sama persis (dibuktikan tests/test_rules_unchanged.py).
+    """
+    ctx = muat_kurikulum(kunci)
+    nilai_per_npm = kelompokkan_nilai(ctx["nilai_dokumen"])
+    return generate_student_profiles(
+        ctx["mahasiswa"], ctx["sessions"], nilai_per_npm, ctx
+    )
+
+
 def main():
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    print("Membaca data mahasiswa dari Excel...")
-    students = parse_students(EXCEL_PATH)
-    print(f"Berhasil membaca {len(students)} data mahasiswa.")
+    os.makedirs(DATA_DIR, exist_ok=True)
 
-    print("Membaca silabus dan rekap praktikum dari PDF...")
-    sessions = parse_syllabus(PDF_PATH)
-    print(f"Berhasil memetakan {len(sessions)} sesi praktikum AutoCAD & QS.")
+    print("Membaca kurikulum dari tree (data/kurikulum/...):")
+    ctx = muat_kurikulum()
+    print("  - prodi       : {0}".format(ctx["prodi"]))
+    print("  - mata kuliah : {0} ({1})".format(
+        ctx["penawaran"].get("nama_mk"), ctx["kunci_mk"]))
+    print("  - periode     : {0} {1}".format(ctx["semester"], ctx["tahun_ajar"]))
+    print("  - pertemuan   : {0} | slot absen {1}".format(
+        len(ctx["sessions"]), KT.jumlah_slot(ctx["sesi_dokumen"])))
+    print("  - mahasiswa   : {0}".format(len(ctx["mahasiswa"])))
 
-    print("Mengompilasi dataset akademik dengan analisis mendalam & 10 matriks karier...")
-    dataset = generate_student_profiles(students, sessions)
+    print("Mengompilasi dataset akademik (10 matriks karier per mahasiswa)...")
+    dataset = bangun_dataset()
 
     # newline="\n" WAJIB: json.dump di Windows default-nya menulis CRLF, sehingga
     # academic_data.json berubah byte-nya setiap regenerate walau isinya sama.
     with open(OUTPUT_JSON, "w", encoding="utf-8", newline="\n") as f:
         json.dump(dataset, f, indent=2, ensure_ascii=False)
 
-    print(f"Dataset berhasil disimpan ke: {OUTPUT_JSON}")
+    print("Dataset berhasil disimpan ke: {0}".format(OUTPUT_JSON))
     print("Ringkasan Kelas:")
-    print(f" - Total Mahasiswa: {dataset['class_summary']['total_mahasiswa']}")
-    print(f" - Rata-rata Kehadiran: {dataset['class_summary']['rata_kehadiran']}%")
-    print(f" - Rata-rata Nilai Studio: {dataset['class_summary']['rata_nilai_studio']}")
-    print(f" - Mahasiswa At-Risk: {dataset['class_summary']['total_at_risk']}")
+    print(" - Total Mahasiswa: {0}".format(dataset["class_summary"]["total_mahasiswa"]))
+    print(" - Rata-rata Kehadiran: {0}%".format(dataset["class_summary"]["rata_kehadiran"]))
+    print(" - Rata-rata Nilai Studio: {0}".format(dataset["class_summary"]["rata_nilai_studio"]))
+    print(" - Mahasiswa At-Risk: {0}".format(dataset["class_summary"]["total_at_risk"]))
 
     # FIX TAHAP C-5: file ini hanya menulis data MASTER. Tanpa langkah berikut,
     # katalog di data/courses/ bisa tertinggal satu versi di belakang master -
     # dan sekali "ganti mata kuliah" master ikut mundur tanpa pesan error.
+    # TAHAP E: katalog untuk SEMUA MK dibangun ulang dari tree (bukan hanya yang
+    # aktif), supaya tidak ada lagi katalog yang memakai aturan lama.
     try:
-        from process_input import sinkronkan_katalog_aktif
-        sinkronkan_katalog_aktif()
+        from process_input import sinkronkan_katalog
+        sinkronkan_katalog()
     except Exception as e:  # noqa: BLE001
         print(f"[PERINGATAN] Katalog mata kuliah tidak disinkronkan: {e}")
         print("            Jalankan: python scripts\\process_input.py --sync-katalog")

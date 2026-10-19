@@ -330,33 +330,33 @@
       "npm": "2510015410001",
       "pertemuan": 5,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
       "skor": 95
     },
     {
       "npm": "2510015410001",
       "pertemuan": 5,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
       "skor": 95
     },
     {
       "npm": "2510015410001",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-      "skor": 91
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 94
     },
     {
       "npm": "2510015410001",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
-      "skor": 91
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 94
     },
     {
       "npm": "2510015410001",
@@ -1114,16 +1114,16 @@
       "npm": "2510015410004",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit radang tenggorokan & istirahat dokter",
       "skor": 81
     },
     {
       "npm": "2510015410004",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
       "skor": 81
     },
     {
@@ -1132,7 +1132,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 79
+      "skor": 90
     },
     {
       "npm": "2510015410004",
@@ -1140,7 +1140,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 79
+      "skor": 90
     },
     {
       "npm": "2510015410004",
@@ -1148,7 +1148,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 73
+      "skor": 78
     },
     {
       "npm": "2510015410004",
@@ -1156,7 +1156,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 73
+      "skor": 78
     },
     {
       "npm": "2510015410004",
@@ -1164,7 +1164,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 90
+      "skor": 82
     },
     {
       "npm": "2510015410004",
@@ -1172,7 +1172,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 90
+      "skor": 82
     },
     {
       "npm": "2510015410004",
@@ -1196,7 +1196,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 78
     },
     {
       "npm": "2510015410004",
@@ -1204,23 +1204,23 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 78
     },
     {
       "npm": "2510015410004",
       "pertemuan": 12,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
+      "skor": 75
     },
     {
       "npm": "2510015410004",
       "pertemuan": 12,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
+      "status": "Izin",
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 75
     },
     {
       "npm": "2510015410004",
@@ -1228,7 +1228,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 78
+      "skor": 85
     },
     {
       "npm": "2510015410004",
@@ -1236,23 +1236,23 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410004",
+      "pertemuan": 14,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 78
     },
     {
       "npm": "2510015410004",
       "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
-    },
-    {
-      "npm": "2510015410004",
-      "pertemuan": 14,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 75
+      "skor": 78
     },
     {
       "npm": "2510015410004",
@@ -1260,7 +1260,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 89
     },
     {
       "npm": "2510015410004",
@@ -1268,7 +1268,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 89
     },
     {
       "npm": "2510015410004",
@@ -1276,7 +1276,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 78
     },
     {
       "npm": "2510015410004",
@@ -1284,7 +1284,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 78
     },
     {
       "npm": "2510015410005",
@@ -1834,109 +1834,13 @@
       "npm": "2510015410007",
       "pertemuan": 3,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410007",
       "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 4,
-      "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 4,
-      "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 5,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 5,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 6,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 6,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 7,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 87
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 7,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 87
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410007",
-      "pertemuan": 9,
       "slot": 2,
       "status": "Alpha",
       "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
@@ -1944,19 +1848,115 @@
     },
     {
       "npm": "2510015410007",
-      "pertemuan": 10,
+      "pertemuan": 4,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 4,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 5,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 5,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 7,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
       "skor": 81
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 7,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410007",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Sakit",
+      "alasan": "Kondisi fisik drop pasca asistensi studio malam",
+      "skor": 88
     },
     {
       "npm": "2510015410007",
       "pertemuan": 10,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
+      "skor": 88
     },
     {
       "npm": "2510015410007",
@@ -1978,33 +1978,33 @@
       "npm": "2510015410007",
       "pertemuan": 12,
       "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 87
     },
     {
       "npm": "2510015410007",
       "pertemuan": 12,
       "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 87
     },
     {
       "npm": "2510015410007",
       "pertemuan": 13,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410007",
       "pertemuan": 13,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410007",
@@ -2012,15 +2012,15 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 85
     },
     {
       "npm": "2510015410007",
       "pertemuan": 14,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410007",
@@ -2028,7 +2028,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 84
     },
     {
       "npm": "2510015410007",
@@ -2036,7 +2036,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 84
     },
     {
       "npm": "2510015410007",
@@ -2044,7 +2044,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 84
     },
     {
       "npm": "2510015410007",
@@ -2052,7 +2052,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 84
     },
     {
       "npm": "2510015410008",
@@ -2138,16 +2138,16 @@
       "npm": "2510015410008",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
       "skor": 84
     },
     {
       "npm": "2510015410008",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit tifus rawat jalan (ada konfirmasi dokter)",
       "skor": 84
     },
     {
@@ -2156,7 +2156,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 75
+      "skor": 88
     },
     {
       "npm": "2510015410008",
@@ -2164,7 +2164,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 75
+      "skor": 88
     },
     {
       "npm": "2510015410008",
@@ -2172,7 +2172,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 85
     },
     {
       "npm": "2510015410008",
@@ -2180,7 +2180,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 85
     },
     {
       "npm": "2510015410008",
@@ -2188,7 +2188,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 82
     },
     {
       "npm": "2510015410008",
@@ -2196,7 +2196,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 82
     },
     {
       "npm": "2510015410008",
@@ -2204,7 +2204,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 87
     },
     {
       "npm": "2510015410008",
@@ -2212,7 +2212,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 87
     },
     {
       "npm": "2510015410008",
@@ -2220,7 +2220,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 85
     },
     {
       "npm": "2510015410008",
@@ -2228,23 +2228,23 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 85
     },
     {
       "npm": "2510015410008",
       "pertemuan": 12,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 87
+      "status": "Izin",
+      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
+      "skor": 84
     },
     {
       "npm": "2510015410008",
       "pertemuan": 12,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 87
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
+      "skor": 84
     },
     {
       "npm": "2510015410008",
@@ -2252,7 +2252,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 80
     },
     {
       "npm": "2510015410008",
@@ -2260,7 +2260,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 80
     },
     {
       "npm": "2510015410008",
@@ -2268,7 +2268,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 83
     },
     {
       "npm": "2510015410008",
@@ -2276,39 +2276,39 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410008",
+      "pertemuan": 15,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410008",
+      "pertemuan": 15,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410008",
+      "pertemuan": 16,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 84
     },
     {
       "npm": "2510015410008",
-      "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410008",
-      "pertemuan": 15,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410008",
-      "pertemuan": 16,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410008",
       "pertemuan": 16,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 79
+      "skor": 84
     },
     {
       "npm": "2510015410009",
@@ -2586,33 +2586,33 @@
       "npm": "2510015410011",
       "pertemuan": 2,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410011",
       "pertemuan": 2,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410011",
       "pertemuan": 3,
       "slot": 1,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 71
     },
     {
       "npm": "2510015410011",
       "pertemuan": 3,
       "slot": 2,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 71
     },
     {
       "npm": "2510015410011",
@@ -2626,1225 +2626,1225 @@
       "npm": "2510015410011",
       "pertemuan": 4,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410011",
       "pertemuan": 5,
       "slot": 1,
-      "status": "Sakit",
-      "alasan": "Sakit radang tenggorokan & istirahat dokter",
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 71
     },
     {
       "npm": "2510015410011",
       "pertemuan": 5,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 71
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 7,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 73
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 7,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 73
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
+      "skor": 69
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 69
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 74
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 74
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
+      "skor": 75
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Sakit",
+      "alasan": "Sakit radang tenggorokan & istirahat dokter",
+      "skor": 75
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 68
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 13,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 68
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 14,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 14,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 15,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 74
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 15,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 74
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 16,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410011",
+      "pertemuan": 16,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 1,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 1,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 2,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 2,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 3,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 3,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 4,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 4,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 5,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 5,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 7,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 7,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 72
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 13,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 14,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 14,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 15,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 15,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 16,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410013",
+      "pertemuan": 16,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 1,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 1,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 2,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 2,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 3,
+      "slot": 1,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 3,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 4,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 4,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 5,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 5,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 7,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 7,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Sakit",
+      "alasan": "Sakit tifus rawat jalan (ada konfirmasi dokter)",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 13,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 14,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 14,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 15,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 15,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 16,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410014",
+      "pertemuan": 16,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 1,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 1,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 2,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 2,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 3,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 80
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 3,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 80
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 4,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 4,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 5,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 5,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 7,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 7,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 80
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 80
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 75
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 75
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 78
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 78
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 13,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 14,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 14,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 15,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 15,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 16,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410015",
+      "pertemuan": 16,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 82
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 1,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 1,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 2,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 2,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 3,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 3,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 4,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 4,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 5,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 5,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 6,
       "slot": 2,
       "status": "Sakit",
       "alasan": "Kondisi fisik drop pasca asistensi studio malam",
-      "skor": 71
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 6,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 71
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 6,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 71
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 7,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 70
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 7,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 70
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 72
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 72
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 74
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 74
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 71
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 71
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 72
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 13,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 72
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 70
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 14,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 70
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 68
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 15,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 68
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 16,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 70
-    },
-    {
-      "npm": "2510015410011",
-      "pertemuan": 16,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 70
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 1,
-      "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
       "skor": 77
     },
     {
-      "npm": "2510015410013",
-      "pertemuan": 1,
-      "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 2,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 2,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 3,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 4,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 4,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 5,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 5,
-      "slot": 2,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 6,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 6,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410013",
+      "npm": "2510015410016",
       "pertemuan": 7,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 7,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 72
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 72
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 13,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 14,
-      "slot": 2,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 15,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
       "skor": 83
     },
     {
-      "npm": "2510015410013",
-      "pertemuan": 15,
+      "npm": "2510015410016",
+      "pertemuan": 7,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
       "skor": 83
     },
     {
-      "npm": "2510015410013",
-      "pertemuan": 16,
+      "npm": "2510015410016",
+      "pertemuan": 8,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410013",
-      "pertemuan": 16,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 1,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 1,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 2,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 2,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 3,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 4,
-      "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
       "skor": 87
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 4,
+      "npm": "2510015410016",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410016",
+      "pertemuan": 12,
       "slot": 2,
       "status": "Izin",
       "alasan": "Izin urusan keluarga mendesak di luar kota",
-      "skor": 87
+      "skor": 86
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 5,
+      "npm": "2510015410016",
+      "pertemuan": 13,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 83
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 5,
+      "npm": "2510015410016",
+      "pertemuan": 13,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 83
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 6,
+      "npm": "2510015410016",
+      "pertemuan": 14,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 80
+      "skor": 89
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 6,
+      "npm": "2510015410016",
+      "pertemuan": 14,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 80
+      "skor": 89
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 7,
+      "npm": "2510015410016",
+      "pertemuan": 15,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 86
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 7,
+      "npm": "2510015410016",
+      "pertemuan": 15,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 86
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 9,
+      "npm": "2510015410016",
+      "pertemuan": 16,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
       "skor": 88
     },
     {
-      "npm": "2510015410014",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Alpha",
-      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
-      "skor": 0
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 13,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 14,
+      "npm": "2510015410016",
+      "pertemuan": 16,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
       "skor": 88
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 15,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 16,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410014",
-      "pertemuan": 16,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 1,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 1,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 2,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 2,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 3,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 4,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 4,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 5,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 5,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 6,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 6,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 7,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 7,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 75
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 78
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 78
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 13,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 14,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 15,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 16,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410015",
-      "pertemuan": 16,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 1,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 1,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 2,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 2,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 3,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 4,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 4,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 5,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 5,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 6,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 6,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 7,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 7,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 13,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 85
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 14,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 15,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 16,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410016",
-      "pertemuan": 16,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
     },
     {
       "npm": "2510015410017",
@@ -4698,16 +4698,16 @@
       "npm": "2510015410020",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit tifus rawat jalan (ada konfirmasi dokter)",
       "skor": 79
     },
     {
       "npm": "2510015410020",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit tifus rawat jalan (ada konfirmasi dokter)",
       "skor": 79
     },
     {
@@ -4716,7 +4716,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 89
+      "skor": 80
     },
     {
       "npm": "2510015410020",
@@ -4724,7 +4724,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 89
+      "skor": 80
     },
     {
       "npm": "2510015410020",
@@ -4732,7 +4732,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 78
     },
     {
       "npm": "2510015410020",
@@ -4740,7 +4740,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 78
     },
     {
       "npm": "2510015410020",
@@ -4748,7 +4748,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 89
+      "skor": 77
     },
     {
       "npm": "2510015410020",
@@ -4756,7 +4756,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 89
+      "skor": 77
     },
     {
       "npm": "2510015410020",
@@ -4764,7 +4764,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 80
+      "skor": 88
     },
     {
       "npm": "2510015410020",
@@ -4772,7 +4772,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 80
+      "skor": 88
     },
     {
       "npm": "2510015410020",
@@ -4780,7 +4780,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 76
     },
     {
       "npm": "2510015410020",
@@ -4788,203 +4788,107 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 77
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 13,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 14,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
       "skor": 76
     },
     {
       "npm": "2510015410020",
-      "pertemuan": 14,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 15,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 16,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410020",
-      "pertemuan": 16,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 79
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 1,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 1,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 2,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 2,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 3,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 4,
+      "pertemuan": 12,
       "slot": 1,
       "status": "Izin",
       "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-      "skor": 84
+      "skor": 83
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 4,
+      "npm": "2510015410020",
+      "pertemuan": 12,
       "slot": 2,
       "status": "Izin",
-      "alasan": "Izin delegasi Sayembara Desain Arsitektur Nasional",
-      "skor": 84
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 83
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 5,
+      "npm": "2510015410020",
+      "pertemuan": 13,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 88
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 5,
+      "npm": "2510015410020",
+      "pertemuan": 13,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 88
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 6,
+      "npm": "2510015410020",
+      "pertemuan": 14,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 89
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 6,
+      "npm": "2510015410020",
+      "pertemuan": 14,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 89
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 7,
+      "npm": "2510015410020",
+      "pertemuan": 15,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 76
     },
     {
-      "npm": "2510015410021",
-      "pertemuan": 7,
+      "npm": "2510015410020",
+      "pertemuan": 15,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 76
+    },
+    {
+      "npm": "2510015410020",
+      "pertemuan": 16,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 73
+    },
+    {
+      "npm": "2510015410020",
+      "pertemuan": 16,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 73
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 8,
+      "pertemuan": 1,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 1,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 2,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
@@ -4992,7 +4896,7 @@
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 8,
+      "pertemuan": 2,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
@@ -5000,15 +4904,15 @@
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 9,
+      "pertemuan": 3,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 87
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 9,
+      "pertemuan": 3,
       "slot": 2,
       "status": "Alpha",
       "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
@@ -5016,7 +4920,7 @@
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 10,
+      "pertemuan": 4,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
@@ -5024,7 +4928,7 @@
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 10,
+      "pertemuan": 4,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
@@ -5032,51 +4936,147 @@
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 11,
+      "pertemuan": 5,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 83
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 11,
+      "pertemuan": 5,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 83
     },
     {
       "npm": "2510015410021",
-      "pertemuan": 12,
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 81
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 7,
       "slot": 1,
       "status": "Izin",
       "alasan": "Izin urusan keluarga mendesak di luar kota",
-      "skor": 82
+      "skor": 87
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 7,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Sakit",
+      "alasan": "Sakit radang tenggorokan & istirahat dokter",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Sakit",
+      "alasan": "Sakit radang tenggorokan & istirahat dokter",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
     },
     {
       "npm": "2510015410021",
       "pertemuan": 12,
       "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-      "skor": 82
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
     },
     {
       "npm": "2510015410021",
       "pertemuan": 13,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410021",
       "pertemuan": 13,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410021",
@@ -5084,12 +5084,20 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 83
     },
     {
       "npm": "2510015410021",
       "pertemuan": 14,
       "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410021",
+      "pertemuan": 15,
+      "slot": 1,
       "status": "Hadir",
       "alasan": "-",
       "skor": 84
@@ -5097,18 +5105,10 @@
     {
       "npm": "2510015410021",
       "pertemuan": 15,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410021",
-      "pertemuan": 15,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 83
+      "skor": 84
     },
     {
       "npm": "2510015410021",
@@ -5116,7 +5116,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 81
     },
     {
       "npm": "2510015410021",
@@ -5124,7 +5124,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 81
     },
     {
       "npm": "2510015410022",
@@ -5722,16 +5722,16 @@
       "npm": "2510015410024",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit tifus rawat jalan (ada konfirmasi dokter)",
       "skor": 85
     },
     {
       "npm": "2510015410024",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Kondisi fisik drop pasca asistensi studio malam",
       "skor": 85
     },
     {
@@ -5740,7 +5740,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 90
     },
     {
       "npm": "2510015410024",
@@ -5748,7 +5748,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 90
     },
     {
       "npm": "2510015410024",
@@ -5756,7 +5756,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 77
     },
     {
       "npm": "2510015410024",
@@ -5764,87 +5764,87 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
+      "skor": 77
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 79
+    },
+    {
+      "npm": "2510015410024",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 82
     },
     {
       "npm": "2510015410024",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 90
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410024",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410024",
       "pertemuan": 13,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 82
     },
     {
       "npm": "2510015410024",
@@ -5852,7 +5852,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 79
+      "skor": 76
     },
     {
       "npm": "2510015410024",
@@ -5860,7 +5860,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 79
+      "skor": 76
     },
     {
       "npm": "2510015410024",
@@ -5868,7 +5868,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 81
     },
     {
       "npm": "2510015410024",
@@ -5876,7 +5876,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 81
     },
     {
       "npm": "2510015410024",
@@ -5884,7 +5884,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 82
     },
     {
       "npm": "2510015410024",
@@ -5892,7 +5892,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 84
+      "skor": 82
     },
     {
       "npm": "2510015410025",
@@ -6698,109 +6698,13 @@
       "npm": "2510015410028",
       "pertemuan": 3,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410028",
       "pertemuan": 3,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 4,
-      "slot": 1,
-      "status": "Izin",
-      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 4,
-      "slot": 2,
-      "status": "Izin",
-      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
-      "skor": 84
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 5,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 5,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 6,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 6,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 7,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 7,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 82
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410028",
-      "pertemuan": 9,
       "slot": 2,
       "status": "Alpha",
       "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
@@ -6808,55 +6712,71 @@
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 10,
+      "pertemuan": 4,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 84
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 10,
+      "pertemuan": 4,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 82
+      "skor": 84
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 11,
+      "pertemuan": 5,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 88
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 11,
+      "pertemuan": 5,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 88
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 12,
+      "pertemuan": 6,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 88
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 6,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 7,
       "slot": 1,
       "status": "Izin",
-      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
-      "skor": 85
+      "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
+      "skor": 86
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 12,
+      "pertemuan": 7,
       "slot": 2,
       "status": "Izin",
       "alasan": "Izin servis laptop kendala hardware crash AutoCAD",
-      "skor": 85
+      "skor": 86
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 13,
+      "pertemuan": 8,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
@@ -6864,7 +6784,7 @@
     },
     {
       "npm": "2510015410028",
-      "pertemuan": 13,
+      "pertemuan": 8,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
@@ -6872,19 +6792,99 @@
     },
     {
       "npm": "2510015410028",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Sakit",
+      "alasan": "Sakit radang tenggorokan & istirahat dokter",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Sakit",
+      "alasan": "Sakit radang tenggorokan & istirahat dokter",
+      "skor": 84
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 87
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410028",
+      "pertemuan": 13,
+      "slot": 2,
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
+    },
+    {
+      "npm": "2510015410028",
       "pertemuan": 14,
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 80
+      "skor": 87
     },
     {
       "npm": "2510015410028",
       "pertemuan": 14,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
+      "status": "Alpha",
+      "alasan": "Tanpa keterangan / tidak hadir di presensi portal",
+      "skor": 0
     },
     {
       "npm": "2510015410028",
@@ -6892,7 +6892,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 86
     },
     {
       "npm": "2510015410028",
@@ -6900,7 +6900,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 86
     },
     {
       "npm": "2510015410028",
@@ -6908,7 +6908,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 78
     },
     {
       "npm": "2510015410028",
@@ -6916,7 +6916,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 78
     },
     {
       "npm": "2510015410029",
@@ -7770,16 +7770,16 @@
       "npm": "2510015410032",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit tifus rawat jalan (ada konfirmasi dokter)",
       "skor": 80
     },
     {
       "npm": "2510015410032",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Kondisi fisik drop pasca asistensi studio malam",
       "skor": 80
     },
     {
@@ -7788,7 +7788,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 87
+      "skor": 89
     },
     {
       "npm": "2510015410032",
@@ -7796,103 +7796,103 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
+      "skor": 89
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 8,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 8,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 85
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 9,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 9,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 83
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 10,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 10,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 11,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 11,
+      "slot": 2,
+      "status": "Hadir",
+      "alasan": "-",
+      "skor": 76
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "skor": 86
+    },
+    {
+      "npm": "2510015410032",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 87
     },
     {
       "npm": "2510015410032",
-      "pertemuan": 8,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 8,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 9,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 9,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 10,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 10,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 88
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 11,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 11,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 83
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 86
-    },
-    {
-      "npm": "2510015410032",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 76
-    },
-    {
-      "npm": "2510015410032",
       "pertemuan": 13,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 76
+      "skor": 87
     },
     {
       "npm": "2510015410032",
@@ -7900,7 +7900,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 83
     },
     {
       "npm": "2510015410032",
@@ -7908,7 +7908,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 86
+      "skor": 83
     },
     {
       "npm": "2510015410032",
@@ -7932,7 +7932,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 85
     },
     {
       "npm": "2510015410032",
@@ -7940,7 +7940,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 88
+      "skor": 85
     },
     {
       "npm": "2510015410033",
@@ -8538,16 +8538,16 @@
       "npm": "2510015410036",
       "pertemuan": 6,
       "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
       "skor": 84
     },
     {
       "npm": "2510015410036",
       "pertemuan": 6,
       "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
+      "status": "Sakit",
+      "alasan": "Sakit demam & flu (surat dokter terlampir)",
       "skor": 84
     },
     {
@@ -8556,7 +8556,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 76
+      "skor": 81
     },
     {
       "npm": "2510015410036",
@@ -8564,7 +8564,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 76
+      "skor": 81
     },
     {
       "npm": "2510015410036",
@@ -8572,7 +8572,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 74
+      "skor": 82
     },
     {
       "npm": "2510015410036",
@@ -8580,7 +8580,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 74
+      "skor": 82
     },
     {
       "npm": "2510015410036",
@@ -8588,7 +8588,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 83
     },
     {
       "npm": "2510015410036",
@@ -8596,7 +8596,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 83
     },
     {
       "npm": "2510015410036",
@@ -8604,7 +8604,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 89
     },
     {
       "npm": "2510015410036",
@@ -8612,7 +8612,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 85
+      "skor": 89
     },
     {
       "npm": "2510015410036",
@@ -8620,7 +8620,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 83
+      "skor": 80
     },
     {
       "npm": "2510015410036",
@@ -8628,39 +8628,39 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
+      "skor": 80
+    },
+    {
+      "npm": "2510015410036",
+      "pertemuan": 12,
+      "slot": 1,
+      "status": "Izin",
+      "alasan": "Izin kegiatan studi banding Ikatan Mahasiswa Arsitektur (IMA)",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410036",
+      "pertemuan": 12,
+      "slot": 2,
+      "status": "Izin",
+      "alasan": "Izin urusan keluarga mendesak di luar kota",
+      "skor": 90
+    },
+    {
+      "npm": "2510015410036",
+      "pertemuan": 13,
+      "slot": 1,
+      "status": "Hadir",
+      "alasan": "-",
       "skor": 83
     },
     {
       "npm": "2510015410036",
-      "pertemuan": 12,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410036",
-      "pertemuan": 12,
-      "slot": 2,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 89
-    },
-    {
-      "npm": "2510015410036",
-      "pertemuan": 13,
-      "slot": 1,
-      "status": "Hadir",
-      "alasan": "-",
-      "skor": 80
-    },
-    {
-      "npm": "2510015410036",
       "pertemuan": 13,
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 80
+      "skor": 83
     },
     {
       "npm": "2510015410036",
@@ -8668,7 +8668,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 90
+      "skor": 81
     },
     {
       "npm": "2510015410036",
@@ -8676,7 +8676,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 90
+      "skor": 81
     },
     {
       "npm": "2510015410036",
@@ -8684,7 +8684,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 75
     },
     {
       "npm": "2510015410036",
@@ -8692,7 +8692,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 75
     },
     {
       "npm": "2510015410036",
@@ -8700,7 +8700,7 @@
       "slot": 1,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 84
     },
     {
       "npm": "2510015410036",
@@ -8708,7 +8708,7 @@
       "slot": 2,
       "status": "Hadir",
       "alasan": "-",
-      "skor": 81
+      "skor": 84
     },
     {
       "npm": "2510015410038",

@@ -92,243 +92,80 @@ from kurikulum_tree import (  # noqa: E402
     course_folder_key,
     sanitize_folder_name,
 )
+import kurikulum_tree as KT  # noqa: E402
 
 # =============================================================================
-# SESI / TOPIK / BOBOT PER MATA KULIAH (isi materi, BUKAN identitas)
+# KATALOG MATA KULIAH = HASIL KOMPILASI DARI TREE KURIKULUM
 # =============================================================================
-# Nama MK, kode MK, SKS, kelas, semester, jadwal, dosen pengasuh, asisten, dan
-# ketua prodi TIDAK ada di sini - semuanya di config/identitas.json.
-# Yang tersisa di bawah murni daftar sesi (isi materi) milik tiap mata kuliah.
-SESI_BAWAAN = {
-    "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": {
-        "sessions": [
-            {"pertemuan": 1, "tanggal": "2026-06-03", "tanggal_display": "03 Juni 2026", "topik": "Pengenalan AutoCAD & Gambar Denah Dasar", "deskripsi": "Interface, Commands, Referensi Denah 1:100.", "bobot": 15},
-            {"pertemuan": 2, "tanggal": "2026-06-10", "tanggal_display": "10 Juni 2026", "topik": "Medium Drawing: Kolom, Dinding & Dimensi", "deskripsi": "Kolom struktur, dinding bata, dan garis dimensi presisi.", "bobot": 15},
-            {"pertemuan": 3, "tanggal": "2026-06-24", "tanggal_display": "24 Juni 2026", "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela", "deskripsi": "Layer standar IAI, hatch material, dynamic blocks.", "bobot": 15},
-            {"pertemuan": 4, "tanggal": "2026-07-01", "tanggal_display": "01 Juli 2026", "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi", "deskripsi": "Potongan vertikal A-A & detail pondasi batu kali 1:20.", "bobot": 20},
-            {"pertemuan": 5, "tanggal": "2026-07-08", "tanggal_display": "08 Juni 2026", "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF", "deskripsi": "Etiket standar, viewport sheet, cetak PDF A3.", "bobot": 15},
-            {"pertemuan": 6, "tanggal": "2026-07-15", "tanggal_display": "15 Juli 2026", "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final", "deskripsi": "Perhitungan volume material QS dan evaluasi portofolio.", "bobot": 20}
-        ]
-    },
-    "STUDIO_PERANCANGAN_ARSITEKTUR_2": {
-        "sessions": [
-            {"pertemuan": 1, "tanggal": "2026-06-01", "tanggal_display": "01 Juni 2026", "topik": "Analisis Tapak, Iklim & Orientasi Matahari", "deskripsi": "Studi konteks tapak, angin, kontur tanah, dan vegetasi.", "bobot": 15},
-            {"pertemuan": 2, "tanggal": "2026-06-08", "tanggal_display": "08 Juni 2026", "topik": "Konsep Desain & Hubungan Ruang (Bubble Diagram)", "deskripsi": "Zonasi privat-publik, matriks kedekatan ruang, dan sketsa gubahan massa.", "bobot": 15},
-            {"pertemuan": 3, "tanggal": "2026-06-22", "tanggal_display": "22 Juni 2026", "topik": "Pengembangan Denah & Sirkulasi Tropis", "deskripsi": "Penataan bukaan ventilasi silang, pencahayaan alami, dan hirarki ruang.", "bobot": 20},
-            {"pertemuan": 4, "tanggal": "2026-06-29", "tanggal_display": "29 Juni 2026", "topik": "Tampak, Fasad Arsitektur & Potongan Ruang", "deskripsi": "Eksplorasi material sekunder (secondary skin), tritisan, dan estetika tampak.", "bobot": 20},
-            {"pertemuan": 5, "tanggal": "2026-07-06", "tanggal_display": "06 Juli 2026", "topik": "Maket Studi Skala 1:50 & Eksplorasi 3D", "deskripsi": "Pembuatan maket fisik karton studi dan visualisasi spasial.", "bobot": 15},
-            {"pertemuan": 6, "tanggal": "2026-07-13", "tanggal_display": "13 Juli 2026", "topik": "Presentasi Panel Sayembara & Sidang Studio", "deskripsi": "Penataan lembar presentasi A1, render eksterior/interior, dan presentasi lisan.", "bobot": 15}
-        ]
-    },
-    "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": {
-        "sessions": [
-            {"pertemuan": 1, "tanggal": "2026-06-02", "tanggal_display": "02 Juni 2026", "topik": "Sistem Pembebanan Bangunan & Logika Statika", "deskripsi": "Beban mati, beban hidup, beban gempa, dan distribusi beban ke tanah.", "bobot": 15},
-            {"pertemuan": 2, "tanggal": "2026-06-09", "tanggal_display": "09 Juni 2026", "topik": "Substruktur: Pondasi Dangkal & Daya Dukung Tanah", "deskripsi": "Pondasi batu kali, pondasi telapak setempat (footplate), dan sloof pengikat.", "bobot": 15},
-            {"pertemuan": 3, "tanggal": "2026-06-23", "tanggal_display": "23 Juni 2026", "topik": "Superstruktur: Kolom & Balok Beton Bertulang", "deskripsi": "Dimensi praktis, selimut beton, detail penulangan sengkang, dan sambungan.", "bobot": 20},
-            {"pertemuan": 4, "tanggal": "2026-06-30", "tanggal_display": "30 Juni 2026", "topik": "Konstruksi Rangka Atap Kuda-Kuda Kayu", "deskripsi": "Geometri kuda-kuda, sambungan takikan gigi, plat beugel, reng & usuk.", "bobot": 20},
-            {"pertemuan": 5, "tanggal": "2026-07-07", "tanggal_display": "07 Juli 2026", "topik": "Detail Sambungan Kusen, Pintu & Ventilasi", "deskripsi": "Angkur kusen, sponeng, ram kaca, dan ambang pintu.", "bobot": 15},
-            {"pertemuan": 6, "tanggal": "2026-07-14", "tanggal_display": "14 Juli 2026", "topik": "Kompilasi Gambar Detail Rencana Struktur Final", "deskripsi": "Penyusunan gambar kerja rencana pondasi, sloof, kolom, dan rencana atap.", "bobot": 15}
-        ]
-    }
-}
-
-
-def _katalog_dari_identitas():
-    """Gabung identitas (config/identitas.json) + sesi (SESI_BAWAAN) -> katalog.
-
-    Urutan kunci sengaja dipertahankan persis seperti literal lama supaya
-    keluaran JSON tidak berubah hanya karena refactor ini.
-    """
-    institusi = IDENT.institusi()
-    katalog = {}
-    for kunci, mk in IDENT.daftar_mk().items():
-        katalog[kunci] = {
-            "kode_mk": mk["kode_mk"],
-            "nama_mk": mk["nama_mk"],
-            "prodi": institusi.get("prodi", ""),
-            "fakultas": institusi.get("fakultas", ""),
-            "semester": mk["semester"],
-            "sks": mk["sks"],
-            "kelas": mk["kelas"],
-            "jadwal": mk["jadwal"],
-            "ketua_prodi": institusi.get("ketua_prodi", ""),
-            "dosen_pengasuh": list(mk["dosen_pengasuh"]),
-            "asisten_dosen": mk["asisten_dosen"],
-            "sessions": [dict(s) for s in (SESI_BAWAAN.get(kunci) or {}).get("sessions", [])],
-        }
-    return katalog
-
-
-DEFAULT_COURSES = _katalog_dari_identitas()
+# TAHAP E: SESI_BAWAAN + template katalog + deepcopy master sudah DIBUANG.
+#
+# Dulu sesi (topik, tanggal, bobot) disimpan sebagai literal di file INI dan
+# juga di dalam template katalog, lalu master disalin-dalam untuk "membuat"
+# dataset mata kuliah lain. Akibatnya satu mata kuliah punya DUA kebenaran, dan
+# dashboard pernah menampilkan topik AutoCAD sambil mengaku sedang membuka
+# Struktur (bug Tahap B). Sekarang sumbernya satu: tree kurikulum, dan katalog
+# hanyalah HASIL KOMPILASI - dibangun oleh fungsi yang SAMA dengan yang
+# menulis master (parse_data.bangun_dataset).
+def daftar_kursus():
+    """Daftar mata kuliah yang benar-benar ada di tree kurikulum."""
+    hasil = []
+    for prodi in KT.daftar_prodi():
+        for ta in KT.daftar_tahun(prodi):
+            for sem in KT.daftar_semester(prodi, ta):
+                for kunci in KT.daftar_mk(prodi, ta, sem):
+                    try:
+                        penawaran = KT.baca_json(
+                            KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json"))
+                    except KT.KurikulumError:
+                        continue
+                    hasil.append({
+                        "kunci_mk": kunci,
+                        "nama_mk": penawaran.get("nama_mk", kunci),
+                        "kode_mk": penawaran.get("kode_mk", ""),
+                        "sks": penawaran.get("sks"),
+                        "jenis_mk": penawaran.get("jenis_mk", ""),
+                        "prodi": penawaran.get("prodi", prodi),
+                        "tahun_ajar": ta,
+                        "semester": sem,
+                    })
+    return hasil
 
 
 def load_or_create_course_dataset(course_folder_name, force_reload=True):
-    course_path = os.path.join(COURSES_DIR, f"{course_folder_name}.json")
-    master_path = os.path.join(DATA_DIR, "academic_data.json")
-    
-    if os.path.exists(course_path) and not force_reload:
-        with open(course_path, "r", encoding="utf-8") as f:
-            return json.load(f)
+    """Kompilasi dataset satu MK dari tree kurikulum, lalu simpan sebagai katalog.
 
-    # Base students from academic_data.json
-    if not os.path.exists(master_path):
-        from parse_data import main as parse_main
-        parse_main()
-
-    with open(master_path, "r", encoding="utf-8") as f:
-        base_data = json.load(f)
-
-    cfg = DEFAULT_COURSES.get(course_folder_name)
-    if not cfg:
-        # FIX TAHAP A: dulu_unknown course di-return apa adanya (base_data),
-        # lalu process_raw_input TETAP menimpa academic_data.json - artinya
-        # "ganti mata kuliah" diam-diam merusak dataset aktif. Sekarang stop.
+    `force_reload` dipertahankan supaya pemanggil lama tidak perlu diubah; hasil
+    selalu segar karena tree adalah sumbernya, bukan angka yang disimpan.
+    """
+    tersedia = {k["kunci_mk"]: k for k in daftar_kursus()}
+    if course_folder_name not in tersedia:
         raise ValueError(
-            f"Mata kuliah '{course_folder_name}' tidak dikenal.\n"
-            f"Pilihan yang tersedia:\n"
-            + "\n".join(f"  - {k}" for k in DEFAULT_COURSES)
-            + "\n\nLihat juga folder: data/courses/"
+            "Mata kuliah '{0}' tidak ada di tree kurikulum.\n"
+            "Pilihan yang tersedia:\n".format(course_folder_name)
+            + "\n".join("  - {0}".format(k) for k in sorted(tersedia))
+            + "\n\nLihat juga: config/kurikulum.json (bangun ulang dengan "
+              "python scripts\\index_kurikulum.py)"
         )
 
-    # Generate specialized dataset for this course
-    import copy
-    new_data = copy.deepcopy(base_data)
-    new_sessions = cfg["sessions"]
-    n_sesi = len(new_sessions)
+    # Import di dalam fungsi: parse_data mengimpor process_input (untuk
+    # sinkronkan_katalog) -> hindari impor melingkar saat modul dimuat.
+    from parse_data import bangun_dataset
 
-    new_data["course"]["kode_mk"] = cfg["kode_mk"]
-    new_data["course"]["nama_mk"] = cfg["nama_mk"]
-    new_data["course"]["sks"] = cfg["sks"]
-    new_data["course"]["kelas"] = cfg["kelas"]
-    new_data["course"]["jadwal"] = cfg["jadwal"]
-    new_data["course"]["dosen_pengasuh"] = cfg["dosen_pengasuh"]
-    new_data["sessions"] = new_sessions
+    dataset = bangun_dataset(course_folder_name)
+    dataset.setdefault("metadata", {})["course_folder"] = course_folder_name
+    course_path = os.path.join(COURSES_DIR, "{0}.json".format(course_folder_name))
 
-    # ------------------------------------------------------------------
-    # FIX TAHAP B - bug paling diam-diam di seluruh sistem:
-    # Hanya blok "sessions" yang diganti. Akibatnya saat mata kuliah
-    # di-switch ke Struktur/Beton:
-    #   students[].kehadiran.detail[].topik  -> masih "Pengenalan AutoCAD"
-    #   class_summary.tren_kehadiran_sesi[].topik -> masih "Pengenalan AutoCAD"
-    #   tanggal/tanggal_display -> masih tanggal AutoCAD
-    # Jadi header dashboard berubah ke "Struktur", tapi grafik, tabel rekap,
-    # dan kartu sesi tetap menampilkan AutoCAD. Tabel berbohong.
-    # ------------------------------------------------------------------
-    lama_ke_sesi_baru = {}
-    for i, s in enumerate(new_sessions):
-        lama_ke_sesi_baru[i] = s
-
-    for st in new_data.get("students", []):
-        detail = st.get("kehadiran", {}).get("detail", [])
-        for i, item in enumerate(detail):
-            if i >= n_sesi:
-                break
-            s_baru = lama_ke_sesi_baru[i]
-            item["pertemuan"] = s_baru["pertemuan"]
-            item["tanggal"] = s_baru["tanggal"]
-            item["tanggal_display"] = s_baru["tanggal_display"]
-            item["topik"] = s_baru["topik"]
-
-    # Hitung ulang agregat kelas yang bergantung pada sesi
-    students_baru = new_data.get("students", [])
-    if students_baru:
-        n_mhs = len(students_baru)
-        # bobot sesi ikut berubah kalau template-nya beda
-        bobot = [s.get("bobot", 0) for s in new_sessions]
-        total_bobot = sum(bobot) or len(new_sessions)
-        for st in students_baru:
-            skor = [d.get("skor", 0) for d in st["kehadiran"]["detail"][:n_sesi]]
-            if len(skor) == n_sesi and total_bobot:
-                st["akademik"]["nilai_rata_rata"] = round(
-                    sum(s * b for s, b in zip(skor, bobot)) / total_bobot, 1)
-                st["akademik"]["bobot_diperiksa"] = bobot
-                # FIX TAHAP C-4: predikat, status, dan indeks kesiapan WAJIB
-                # dihitung ulang setiap kali nilainya berubah. Sebelumnya nilai
-                # diperbarui tetapi grade dibiarkan dari mata kuliah lama,
-                # sehingga bisa muncul nilai baru berdampingan dengan predikat
-                # lama - dokumen resmi yang bertentangan dengan dirinya sendiri.
-                # (grade_dari_skor dari kelas_rules.py; teks predikat dicari
-                # lewat TEKS_GRADE yang sama dengan parse_data.py.)
-                g_baru, pengali = grade_dari_skor(
-                    st["akademik"]["nilai_rata_rata"],
-                    st["kehadiran"]["persentase"])
-                teks = teks_grade(g_baru)
-                st["akademik"]["grade"] = g_baru
-                st["akademik"]["predikat"] = teks[0]
-                st["akademik"]["status_kompetensi"] = teks[1]
-                st["akademik"]["kesiapan_profesi"] = teks[2]
-                st["akademik"]["indeks_kesiapan"] = round(
-                    st["akademik"]["nilai_rata_rata"] * pengali, 1)
-
-        tren = []
-        for s_baru in new_sessions:
-            p = s_baru["pertemuan"]
-            baris = [st["kehadiran"]["detail"][p - 1] for st in students_baru
-                     if len(st["kehadiran"]["detail"]) >= p]
-            hadir = sum(1 for b in baris if b["status"] == "Hadir")
-            tren.append({
-                "pertemuan": p,
-                "tanggal": s_baru["tanggal_display"],
-                "topik": s_baru["topik"],
-                "hadir": hadir,
-                "sakit": sum(1 for b in baris if b["status"] == "Sakit"),
-                "izin": sum(1 for b in baris if b["status"] == "Izin"),
-                "alpha": sum(1 for b in baris if b["status"] == "Alpha"),
-                "hadir_pct": round((hadir / n_mhs) * 100, 1),
-            })
-        cs = new_data.setdefault("class_summary", {})
-        cs["total_mahasiswa"] = n_mhs
-        cs["tren_kehadiran_sesi"] = tren
-        cs["rata_kehadiran"] = round(
-            sum(st["kehadiran"]["persentase"] for st in students_baru) / n_mhs, 1)
-        cs["rata_nilai_studio"] = round(
-            sum(st["akademik"]["nilai_rata_rata"] for st in students_baru) / n_mhs, 1)
-        # At-risk dihitung ulang dengan aturan yang sama (alpha>=2 atau hadir<75%)
-        at_risk = [st for st in students_baru if st.get("at_risk")]
-        cs["total_at_risk"] = len(at_risk)
-        cs["at_risk_alpha"] = sum(1 for st in students_baru
-                                  if st["kehadiran"]["alpha"] >= (at_risk_alpha_min() or 0))
-        cs["at_risk_kehadiran"] = sum(1 for st in students_baru
-                                      if st["kehadiran"]["persentase"] < (at_risk_kehadiran_min() or 0))
-        cs["at_risk_npm"] = [st["npm"] for st in at_risk]
-        dist = {"A": 0, "A-": 0, "B+": 0, "B": 0, "C": 0, "D": 0}
-        for st in students_baru:
-            g = st["akademik"]["grade"].split(" ")[0]
-            dist[g if g in dist else "D"] += 1
-        cs["distribusi_grade"] = dist
-        cs["grade_modus"] = max(dist.items(), key=lambda kv: kv[1])[0]
-        cs["total_lulus"] = sum(1 for st in students_baru
-                                if not st.get("at_risk")
-                                and st["akademik"]["nilai_rata_rata"] >= 70)
-
-    # Update audit RPS
-    new_data["dosen_audit"]["nama_mk"] = cfg["nama_mk"]
-    new_data["dosen_audit"]["kode_mk"] = cfg["kode_mk"]
-    rps = new_data.get("dosen_audit", {}).get("evaluasi_kurikulum_rps", [])
-    for i, s in enumerate(new_sessions):
-        if i < len(rps):
-            rps[i]["sesi"] = s["pertemuan"]
-            rps[i]["topik_rps"] = s["topik"]
-            rps[i]["realisasi_kelas"] = (
-                f"Materi '{s['topik']}' tersampaikan penuh sesuai RPS dan modul praktikum.")
-
-    # Tim pengajar mengikuti template mata kuliah
-    pengajar = new_data.get("dosen_audit", {}).get("tim_pengajar", [])
-    if pengajar:
-        # Sisakan entri terakhir untuk asisten dosen
-        for i, nama in enumerate(cfg["dosen_pengasuh"]):
-            if i < len(pengajar):
-                pengajar[i]["nama"] = nama
-        pengajar[-1]["nama"] = cfg["asisten_dosen"]
-        for p in pengajar:
-            p["kehadiran"] = f"{n_sesi} / {n_sesi} Pertemuan (100%)"
-
-    new_data["metadata"]["course_folder"] = course_folder_name
-
-    # Save to courses library (atomic)
-    atomic_write_json(course_path, new_data)
-
-    return new_data
+    # Tulis hanya kalau isinya benar-benar berbeda: supaya menjalankan
+    # sinkronisasi berkali-kali tidak membuat git selalu merasa repo kotor.
+    lama = None
+    try:
+        if os.path.exists(course_path):
+            lama = KT.baca_json(course_path)
+    except KT.KurikulumError:
+        lama = None
+    if lama != dataset:
+        atomic_write_json(course_path, dataset)
+    return dataset
 
 def process_raw_input(course_name, timestamp_str=None):
     course_folder = course_folder_key(course_name)
@@ -395,65 +232,53 @@ def process_raw_input(course_name, timestamp_str=None):
 # =============================================================================
 # FIX TAHAP C-5 - SINKRONISASI KATALOG MATA KULIAH
 # =============================================================================
-def sinkronkan_katalog_aktif(verbose=True):
-    """Segarkan katalog MK yang sedang aktif supaya identik dengan master.
+def sinkronkan_katalog(verbose=True):
+    """Bangun ulang SEMUA katalog di data/courses/ dari tree kurikulum.
 
-    Kenapa perlu: `parse_data.py` hanya menulis data MASTER. File katalog di
-    `data/courses/` bisa tertinggal satu versi di belakangnya tanpa ada yang
-    menyadari. Kalau katalog MK aktif tertinggal, sekali "ganti mata kuliah"
-    akan mengembalikan seluruh sistem ke aturan lama.
+    Katalog adalah artefak build. Kalau tertinggal satu versi, sekali "ganti
+    mata kuliah" akan mengembalikan seluruh sistem ke aturan lama - ini BUKAN
+    teori: katalog MK aktif pernah tertinggal di 2.0 sementara master 2.5, lalu
+    satu kali ganti MK membuat At-Risk melompat 10 -> 1 dan nilai 80.6 -> 82.5
+    tanpa satu pun pesan error.
 
-    Ini bukan teori: katalog MK aktif tertinggal di 2.0 sementara master sudah
-    2.5, lalu satu kali ganti MK membuat At-Risk melompat 10 -> 1 dan nilai
-    80.6 -> 82.5 tanpa pesan error apa pun.
-
-    Untuk MK yang SEDANG AKTIF, isi yang benar adalah MASTER ITU SENDIRI, bukan
-    hasil template - karena master berasal dari Excel + PDF asli (deskripsi,
-    topik RPS, dan tanggalnya lengkap). Fungsi ini menyalin master ke katalog.
-    TIDAK ada angka yang dihitung ulang.
-
-    Mengembalikan daftar pasangan (nama_file, keterangan).
+    TAHAP E: cara amannya membangun ULANG dari tree, bukan menyalin master -
+    karena master hanya memuat SATU mata kuliah, sedangkan tree memuat semuanya.
+    Karena hasil kompilasi deterministik, membangun ulang tidak mengubah angka.
     """
-    master_path = os.path.join(DATA_DIR, "academic_data.json")
-    if not os.path.exists(master_path):
-        raise FileNotFoundError(f"Data master tidak ditemukan: {master_path}")
-    with open(master_path, "r", encoding="utf-8") as f:
-        master = json.load(f)
-
-    kode_master = str(master.get("course", {}).get("kode_mk") or "")
-    versi_master = master.get("metadata", {}).get("versi")
     hasil = []
-    if kode_master and os.path.isdir(COURSES_DIR):
-        for nama in sorted(os.listdir(COURSES_DIR)):
-            if not nama.endswith(".json"):
-                continue
-            path = os.path.join(COURSES_DIR, nama)
+    for k in daftar_kursus():
+        kunci = k["kunci_mk"]
+        path = os.path.join(COURSES_DIR, "{0}.json".format(kunci))
+        versi_lama = None
+        if os.path.exists(path):
             try:
-                with open(path, "r", encoding="utf-8") as f:
-                    isi = json.load(f)
-            except (OSError, json.JSONDecodeError) as e:
-                hasil.append((nama, f"DILEWATI (tidak terbaca: {e})"))
-                continue
-            if str(isi.get("course", {}).get("kode_mk") or "") != kode_master:
-                continue  # bukan MK aktif -> memang memakai template, biarkan
-            versi_lama = isi.get("metadata", {}).get("versi")
-            if versi_lama == versi_master:
-                hasil.append((nama, f"sudah seversi ({versi_master})"))
-                continue
-            atomic_write_json(path, master)
-            hasil.append((nama, f"{versi_lama} -> {versi_master}"))
+                versi_lama = KT.baca_json(path).get("metadata", {}).get("versi")
+            except KT.KurikulumError:
+                versi_lama = "rusak"
+        try:
+            dataset = load_or_create_course_dataset(kunci)
+        except Exception as e:  # noqa: BLE001
+            hasil.append((kunci, "GAGAL: {0}".format(e)))
+            continue
+        versi_baru = dataset.get("metadata", {}).get("versi")
+        if versi_lama == versi_baru:
+            hasil.append((kunci, "sudah seversi ({0})".format(versi_baru)))
+        else:
+            hasil.append((kunci, "{0} -> {1}".format(versi_lama, versi_baru)))
 
     if verbose:
         print("=" * 65)
-        print("[SINKRON KATALOG] Menyamakan katalog MK aktif dengan master")
-        print(f"Master : {master.get('course', {}).get('nama_mk')} "
-              f"({kode_master}) versi {versi_master}")
+        print("[SINKRON KATALOG] Membangun ulang katalog dari tree kurikulum")
         if not hasil:
-            print("  (tidak ada file katalog yang cocok dengan MK aktif)")
+            print("  (tree kurikulum kosong)")
         for nama, ket in hasil:
-            print(f"  - {nama:50} {ket}")
+            print("  - {0:52} {1}".format(nama, ket))
         print("=" * 65)
     return hasil
+
+
+# Nama lama dipertahankan supaya pemanggil lama (dan tes lama) tidak pecah.
+sinkronkan_katalog_aktif = sinkronkan_katalog
 
 if __name__ == "__main__":
     import argparse
@@ -465,6 +290,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.sync_katalog:
-        sinkronkan_katalog_aktif()
+        sinkronkan_katalog()
     else:
         process_raw_input(args.course, args.timestamp)
