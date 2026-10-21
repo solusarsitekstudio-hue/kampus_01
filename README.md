@@ -312,6 +312,15 @@ dilihat. Semua yang belum terverifikasi punya penanda di data/config-nya sendiri
 
 ### 11. Rekap Periode Lintas MK — Tab 8 (sejak Tahap G)
 
+> **Reposisi Tab 1 (keputusan user 2026-10-21):** muka Dashboard Kaprodi kini
+> **kompetensi-first** — 4 KPI (Rata Nilai Studio, Indeks Kesiapan Kelas,
+> Kompetensi Kelas radar-rata, Perlu Pendampingan) + chart **Tren Nilai Kelas**
+> + **Radar Kompetensi Kelas** + **Peta MK Rawan** (5 MK rata nilai terendah
+> lintas semester dari tree, klik Detail = drill-down tanpa mengubah MK aktif).
+> Presensi & tabel ketidakhadiran tetap lengkap tapi tenggelam ke bagian
+> **"Konteks Presensi"** (collapsible) di bawah — kehadiran jadi konteks, bukan
+> bintang. Tren Nilai Kelas ikut filter bulan (Level 1).
+
 Satu MK = master flat, tapi kaprodi menanyakan **"keadaan seluruh semester ini,
 di semua mata kuliah, bagaimana?"**. Jawabannya ada di tab **8. Rekap Periode** +
 filter baru di tab 1, semuanya menghitung **dari tree** (bukan dari master):
@@ -342,9 +351,18 @@ Aturan di dalamnya (teruji `tests/test_periode.py`):
 
 Laporan **satu mahasiswa, lintas seluruh MK** di tree (bukan hanya MK aktif),
 empat lapis: **per bulan → per MK → per semester → sepanjang kuliah**. Sumbernya
-satu modul: `scripts/portofolio.py` (`GET /api/portofolio?npm=<NPM>`), dibangun
-dari **katalog build** `data/courses/*.json` — jadi angkanya sama dengan dashboard,
-bukan hitungan kedua.
+kompilasi fitur `scripts/fitur_mahasiswa.py` — **dipindah utuh dari
+`scripts/portofolio.py`** yang kini jadi **pembungkus tipis** demi kompatibilitas
+(`GET /api/portofolio?npm=<NPM>`), dibangun dari **katalog build**
+`data/courses/*.json` — jadi angkanya sama dengan dashboard, bukan hitungan kedua.
+
+Keputusan optimasi Zona 2 (2026-10-21) di dalamnya:
+
+* **Satu buka katalog per MK, bukan per NPM** — versi lama membuka ulang 30 katalog
+  (≈ 21,6 MB) untuk SETIAP mahasiswa (terukur ~280 ms per NPM; 35 mahasiswa = ~10 dtk).
+  Kini indeks per-MK ber-*stamp* `mtime+ukuran` menyimpan **ringkasan fitur**
+  (katalog utuh tidak bertahan di memori): mahasiswa ke-2 dst. ~ms level tanpa buka
+  katalog; hanya MK yang berubah yang dibaca ulang.
 
 Aturan di dalamnya (teruji `tests/test_portofolio.py`):
 
@@ -353,7 +371,9 @@ Aturan di dalamnya (teruji `tests/test_portofolio.py`):
   dengan chip bulanan dashboard).
 * **Fail-closed** — npm kosong → 400, npm tidak dikenal → 404, katalog MK rusak →
   laporan tetap jalan dengan baris "gagal + alasan".
-* **Cache ber-tanda mtime** — cache usang sendiri saat katalog dibangun ulang.
+* **Cache ber-stempel per-MK (`mtime_ns`, `ukuran`)** — slice MK basi dibangun
+  ulang sendirian; cache per-NPM ditandai hash stamp SEMUA katalog tree, jadi
+  katalog apa pun yang berubah (atau hilang) membuat nilai cache itu basi.
 * **Deterministik** — dokumen identik setiap dibaca ulang selama berkas tidak
   berubah.
 
@@ -801,7 +821,7 @@ python tests\test_kurikulum_api.py
 | `test_kurikulum_tree.py` | Tree kurikulum konsisten **anti-drift**: indeks `config/kurikulum.json` == hasil pindai ulang folder |
 | `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, jumlah MK = 30, kode MK katalog == config, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
 | `test_diagnosis.py` | **Mesin diagnosis v3** (templat, tanpa RNG): klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel sumber, matriks 10 karier deterministik (profil sama → peringkat sama; bonus sebidang +4 & clamp cap), narasi templat v2 unik per profil |
-| `test_portofolio.py` | **Portofolio 4 lapis per mahasiswa dari katalog semua MK**: aturan bulanan netral ("Belum Diinput" & grup "Tanpa Tanggal"), fail-closed (npm kosong/ tak dikenal/rusak), determinism + cache mtime, label potensi dari `AMBANG` diagnosis.py, radar dengan sumber jujur, cluster kanal bidang (dedup MK kembar), dimensi khas selalu `estimasi`, matriks karier sepanjang kuliah terurut + bonus sebidang |
+| `test_portofolio.py` | **Portofolio 4 lapis per mahasiswa dari katalog semua MK**: aturan bulanan netral ("Belum Diinput" & grup "Tanpa Tanggal"), fail-closed (npm kosong/ tak dikenal/rusak), determinism + cache stempel per-MK (Zona 2), label potensi dari `AMBANG` diagnosis.py, radar dengan sumber jujur, cluster kanal bidang (dedup MK kembar), dimensi khas selalu `estimasi`, matriks karier sepanjang kuliah terurut + bonus sebidang |
 | `test_engine.py` | **Engine cek input & output (terpisah)**: duplikat data masuk via SHA-256 (isi sama nama beda → duplikat + kembaran dilaporkan), tandai-diproses fail-closed, siklus tulis `guna_lama` → `overwrite_logika` / `overwrite_integritas` → `tulis_baru`, audit utuh/hilang, regroup npm dari nama berkas, dan **run terbaru selamat** saat rapikan + lapis kirim dibangun |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
 | `test_catalog_guard.py` | Ganti mata kuliah tidak bisa memundurkan data master (termasuk 409 untuk katalog versi lama) |
@@ -885,7 +905,8 @@ Sistem dilengkapi endpoint **Dynamic On-Demand PDF Generation** (`/api/pdf/downl
 * **PDF 06: Portofolio Lengkap 4 Lapis** (`06_portofolio_lengkap_<npm>_<nama>.pdf`)
   via `/api/pdf/download?type=portofolio_lengkap&npm=<NPM>` — tombol unduh di
   **Tab 9. Portofolio Mahasiswa**.
-* Sumber angka `scripts/portofolio.py` dari **seluruh katalog** `data/courses/`
+* Sumber angka `scripts/fitur_mahasiswa.py` (via pembungkus tipis
+  `scripts/portofolio.py`) dari **seluruh katalog** `data/courses/`
   (semua MK sepanjang kuliah), bukan hanya MK aktif: KPI sepanjang kuliah,
   rollup per semester, tabel per MK, chip kehadiran per bulan (aturan netral
   "Belum Diinput" sama dengan dashboard).

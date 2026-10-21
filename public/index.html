@@ -221,26 +221,9 @@
           </div>
         </div>
 
-        <!-- 4 KPI CARDS -->
+        <!-- 4 KPI CARDS - REPOSISI (keputusan user 2026-10-21): nilai & kompetensi
+             jadi muka; kehadiran diturunkan ke bagian "Konteks Presensi" di bawah -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
-            <div class="flex items-center justify-between">
-              <span class="text-xs text-slate-400 font-medium">Total Mahasiswa</span>
-              <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400"><i data-lucide="users" class="w-4 h-4"></i></span>
-            </div>
-            <div class="text-2xl font-bold text-white mt-2" id="kpi-total-mhs">-</div>
-            <div class="text-[11px] text-slate-400 mt-1" id="kpi-kelas-desc">Memuat data...</div>
-          </div>
-
-          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
-            <div class="flex items-center justify-between">
-              <span class="text-xs text-slate-400 font-medium">Rata-rata Kehadiran</span>
-              <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="check-circle-2" class="w-4 h-4"></i></span>
-            </div>
-            <div class="text-2xl font-bold text-emerald-400 mt-2" id="kpi-kehadiran">-</div>
-            <div class="text-[11px] text-slate-400 mt-1">Standar kelayakan ujian &#8805; 75%</div>
-          </div>
-
           <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
             <div class="flex items-center justify-between">
               <span class="text-xs text-slate-400 font-medium">Rata-rata Nilai Studio</span>
@@ -250,9 +233,27 @@
             <div class="text-[11px] text-slate-400 mt-1">Predikat kelas: <strong id="kpi-predikat-desc">-</strong></div>
           </div>
 
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Indeks Kesiapan Kelas</span>
+              <span class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400"><i data-lucide="gauge" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-cyan-300 mt-2" id="kpi-kesiapan">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="kpi-kesiapan-desc">Rata indeks kesiapan seluruh mahasiswa aktif</div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Kompetensi Kelas</span>
+              <span class="p-2 rounded-lg bg-violet-500/10 text-violet-400"><i data-lucide="radar" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-violet-300 mt-2" id="kpi-komp">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="kpi-komp-desc">Rata 5 dim kompetensi lintas mahasiswa</div>
+          </div>
+
           <div class="bg-slate-800/60 rounded-xl p-4 border border-rose-500/30 bg-rose-500/5">
             <div class="flex items-center justify-between">
-              <span class="text-xs text-rose-300 font-medium">Mahasiswa At-Risk</span>
+              <span class="text-xs text-rose-300 font-medium">Perlu Pendampingan</span>
               <span class="p-2 rounded-lg bg-rose-500/20 text-rose-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>
             </div>
             <div class="text-2xl font-bold text-rose-400 mt-2" id="kpi-at-risk">-</div>
@@ -280,76 +281,140 @@
         </div>
       </div>
 
-      <!-- CHARTS ROW -->
+      <!-- CHARTS ROW - REPOSISI: tren NILAI kelas jadi bintang; radar kelas +
+           distribusi grade di kolom kanan; kehadiran pindah ke Konteks Presensi -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Attendance Trend Chart -->
+        <!-- Tren Nilai Kelas per Pertemuan (baru - rata skor slot lintas mahasiswa) -->
         <div class="lg:col-span-2 bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
           <div class="flex items-center justify-between mb-3">
             <div>
               <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Tren Kehadiran & Partisipasi per Pertemuan
+                <i data-lucide="trending-up" class="w-4 h-4 text-amber-400"></i> Tren Nilai Kelas per Pertemuan
               </h3>
-              <p class="text-xs text-slate-400 mt-0.5">Pemantauan volume mahasiswa hadir vs berhalangan di Lab LIKDA</p>
+              <p class="text-xs text-slate-400 mt-0.5">Rata-rata skor praktikum lintas mahasiswa - ikut filter bulan di Konteks Presensi</p>
             </div>
-            <span id="chart-trend-count" class="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">— Pertemuan</span>
+            <span id="chart-nilai-count" class="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">— Pertemuan</span>
           </div>
-          <div id="chart-attendance-trend" class="min-h-[260px]"></div>
+          <div id="chart-nilai-trend" class="min-h-[260px]"></div>
         </div>
 
-        <!-- Grade Distribution Chart -->
-        <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <div>
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                  <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i> Distribusi Nilai Studio
-                </h3>
-                <p class="text-xs text-slate-400 mt-0.5">Sebaran grade evaluasi tugas AutoCAD</p>
-              </div>
+        <!-- Kolom kanan: radar kompetensi kelas + distribusi grade -->
+        <div class="flex flex-col gap-6">
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="radar" class="w-4 h-4 text-violet-400"></i> Radar Kompetensi Kelas
+              </h3>
+              <span id="radar-kelas-count" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">— Mhs</span>
             </div>
-            <div id="chart-grade-dist" class="min-h-[220px]"></div>
+            <div id="chart-radar-kelas" class="min-h-[210px]"></div>
+            <p class="text-[10px] text-slate-500 mt-1" id="radar-kelas-legend">Rata 5 dim lintas mahasiswa MK aktif.</p>
           </div>
-          
-          <!-- Alert summary box -->
-          <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300">
-            <span class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
-              <i data-lucide="info" class="w-3.5 h-3.5"></i> Catatan Evaluasi Kaprodi:
-            </span>
-            <span id="kaprodi-note">Memuat ringkasan capaian kelas...</span>
+
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg flex flex-col justify-between flex-1">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i> Distribusi Nilai Studio
+                  </h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Sebaran grade evaluasi tugas AutoCAD</p>
+                </div>
+              </div>
+              <div id="chart-grade-dist" class="min-h-[220px]"></div>
+            </div>
+
+            <!-- Alert summary box -->
+            <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300">
+              <span class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i> Catatan Evaluasi Kaprodi:
+              </span>
+              <span id="kaprodi-note">Memuat ringkasan capaian kelas...</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- TABLE REKAP BULANAN -->
-      <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg overflow-hidden">
-        <div class="p-5 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <!-- PETA MK RAWAN: 5 MK rata nilai terendah lintas semester (dari /api/periode
+           semua_semester). Klik Detail = drill-down kurikulum TANPA pindah MK aktif -->
+      <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="map-pinned" class="w-4 h-4 text-rose-400"></i> Peta MK Rawan (Rata Nilai Terendah Lintas Semester)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Prioritas pendampingan prodi - dihitung dari tree kurikulum, bukan satu MK</p>
+          </div>
+          <span id="mk-rawan-status" class="text-[11px] text-slate-500">Memuat peta MK…</span>
+        </div>
+        <div id="mk-rawan-list" class="grid grid-cols-1 lg:grid-cols-2 gap-2"></div>
+      </div>
+
+      <!-- KONTEKS PRESESI: ditenggelamkan (keputusan reposisi 2026-10-21) -
+           kaprodi tetap punya akses data presensi, tapi bukan lagi muka dashboard -->
+      <details id="konteks-presensi" class="group bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg overflow-hidden" ontoggle="onPresensiToggle(event)">
+        <summary class="flex items-center justify-between p-5 cursor-pointer select-none hover:bg-slate-900/40 transition">
           <div>
             <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <i data-lucide="table" class="w-4 h-4 text-sky-400"></i> Rekap Presensi & Riwayat Ketidakhadiran Mahasiswa
+              <i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-400"></i> Konteks Presensi — Rekap Kehadiran &amp; Riwayat Ketidakhadiran
             </h3>
-            <p class="text-xs text-slate-400 mt-0.5">Menampilkan status kehadiran, tanggal matkul, dan catatan alasan per individu</p>
+            <p class="text-xs text-slate-400 mt-0.5">Detail presensi &amp; tren kehadiran; angka kelayakan ujian &#8805; 75%</p>
+          </div>
+          <span class="flex items-center gap-3 text-xs">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono">
+              Kehadiran <span id="kpi-kehadiran">-</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform"></i>
+          </span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 border-t border-slate-800/60">
+          <!-- ROW CHART KEHADIRAN (dari muka lama; ikut filter bulan) -->
+          <div class="rounded-xl p-4 border border-slate-800 mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Tren Kehadiran &amp; Partisipasi per Pertemuan
+                </h4>
+                <p class="text-xs text-slate-400 mt-0.5">Pemantauan volume mahasiswa hadir vs berhalangan di Lab LIKDA</p>
+              </div>
+              <span id="chart-trend-count" class="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">— Pertemuan</span>
+            </div>
+            <div id="chart-attendance-trend" class="min-h-[260px]"></div>
           </div>
 
-          <!-- Controls & Filters -->
-          <div class="flex items-center flex-wrap gap-2.5">
-            <!-- Search -->
+          <!-- TABEL PRES + FILTERS -->
+          <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono tracking-wider sticky top-0 border-b border-slate-800 z-10">
+                <tr>
+                  <th class="px-4 py-3">No</th>
+                  <th class="px-4 py-3">NPM</th>
+                  <th class="px-4 py-3">Nama Mahasiswa</th>
+                  <th class="px-4 py-3">Pertemuan &amp; Tanggal</th>
+                  <th class="px-4 py-3">Topik Pembelajaran</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Alasan Ketidakhadiran</th>
+                  <th class="px-4 py-3 text-center">Akumulasi Alpha</th>
+                  <th class="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-table-body" class="divide-y divide-slate-800/60 font-medium">
+                <!-- Rendered via app.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-3 flex items-center flex-wrap gap-2.5">
             <div class="relative">
               <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
               <input type="text" id="table-search" placeholder="Cari nama / NPM..." oninput="filterTable()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition w-44">
             </div>
-
-            <!-- Bulan filter (LEVEL 1): dari tanggal ISO sesi.json; pertemuan
-                 tanpa tanggal masuk grup "Tanpa Tanggal", bukan bulan salah -->
             <select id="filter-bulan" onchange="onBulanBerubah()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
               <option value="all">Semua Bulan</option>
             </select>
-
-            <!-- Session Filter (diisi otomatis dari data oleh app.js) -->
             <select id="filter-session" onchange="filterTable()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
               <option value="all">Semua Sesi</option>
             </select>
-
-            <!-- Status Filter -->
             <select id="filter-status" onchange="filterTable()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
               <option value="all">Semua Status</option>
               <option value="Hadir">Hadir (penuh)</option>
@@ -361,29 +426,7 @@
             </select>
           </div>
         </div>
-
-        <!-- The Table -->
-        <div class="overflow-x-auto max-h-[480px] overflow-y-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono tracking-wider sticky top-0 border-b border-slate-800 z-10">
-              <tr>
-                <th class="px-4 py-3">No</th>
-                <th class="px-4 py-3">NPM</th>
-                <th class="px-4 py-3">Nama Mahasiswa</th>
-                <th class="px-4 py-3">Pertemuan &amp; Tanggal</th>
-                <th class="px-4 py-3">Topik Pembelajaran</th>
-                <th class="px-4 py-3">Status</th>
-                <th class="px-4 py-3">Alasan Ketidakhadiran</th>
-                <th class="px-4 py-3 text-center">Akumulasi Alpha</th>
-                <th class="px-4 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="attendance-table-body" class="divide-y divide-slate-800/60 font-medium">
-              <!-- Rendered via app.js -->
-            </tbody>
-          </table>
-        </div>
-      </div>
+      </details>
     </section>
 
 

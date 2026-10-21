@@ -61,7 +61,7 @@ flowchart TD
     end
 
     subgraph S4["Fase 4: Sepuluh Tab Dashboard"]
-        H1 --> OUT1["Tab 1: Dashboard Kaprodi (KPI, At-Risk, filter bulan, tren P1-P16)"]
+        H1 --> OUT1["Tab 1: Dashboard Kaprodi (reposisi 2026-10-21:<br/>KPI nilai/kesiapan/kompetensi + tren nilai + radar kelas<br/>+ peta MK rawan; presensi tenggelam ke Konteks Presensi)"]
         H1 --> OUT2["Tab 2: Rapor Wali Murid (radar 5 pilar, 10 karier)"]
         H1 --> OUT3["Tab 3: Portofolio & Video Progres (deck 16:9, video 9:16)"]
         H1 --> OUT4["Tab 4: Simulator WhatsApp (3 lampiran PDF)"]
@@ -110,12 +110,13 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 ### 🏛️ Pemetaan Modul Fungsional (10 Tab + Mesin)
 
 #### 1. Tab Dashboard Kaprodi (`kaprodi`)
-* **Tujuan**: visibilitas penuh Kaprodi atas disiplin perkuliahan & nilai satu MK.
-* **Fitur**:
-  * KPI: rata-rata kehadiran (per **slot** absen), rata-rata nilai, jumlah At-Risk, tingkat kelulusan.
-  * Distribusi status: **Hadir, Hadir Sebagian, Sakit, Izin, Alpha, Belum Diinput** (6 keranjang, bukan 4).
-  * Grafik per pertemuan **P1–P16** dengan garis patokan *Benchmark Kelas* yang dibaca dari data.
-  * **At-Risk Alert**: akumulasi Alpha $\ge 2$ **atau** kehadiran $< 75\%$ (ambang di `config/aturan.json`).
+* **Tujuan**: visibilitas penuh Kaprodi atas **mutu capaian** kelas satu MK; disiplin jadi konteks, bukan bintang.
+* **Fitur (reposisi 2026-10-21, kompetensi-first)**:
+  * KPI: **Rata Nilai Studio** (bintang), **Indeks Kesiapan Kelas** (rata `indeks_kesiapan`), **Kompetensi Kelas** (rata 5 dim + jujur berapa dim punya komponen terukur), **Perlu Pendampingan** (At-Risk).
+  * Chart **Tren Nilai Kelas per Pertemuan** (rata skor praktikum lintas mahasiswa, ikut filter bulan) + **Radar Kompetensi Kelas** + Distribusi Grade.
+  * **Peta MK Rawan**: 5 MK rata nilai terendah lintas semester dari tree (`/api/periode?semua_semester=1`); klik Detail = drill-down kurikulum **tanpa mengubah MK aktif**.
+  * **Konteks Presensi** (collapsible bawah): tabel presensi + filter bulan/sesi/status + Tren Kehadiran P1–P16 — tetap lengkap, bukan lagi muka dashboard.
+  * **At-Risk**: akumulasi Alpha $\ge 2$ **atau** kehadiran $< 75\%$ (ambang di `config/aturan.json`).
   * Pemilih mata kuliah (katalog `data/courses/`) — ganti MK memicu kompilasi ulang master dari tree.
 
 #### 2. Tab Rapor Wali Murid (`wali`)
@@ -174,7 +175,9 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
   * Dropdown 35 mahasiswa → KPI 4 lapis + accordion 6 semester (kartu MK +
     chip bulanan), 4 tombol unduh PDF (termasuk **PDF 06 Portofolio Lengkap**).
   * Endpoint `GET /api/portofolio?npm=<NPM>` dari `scripts/portofolio.py`
-    (sumber: katalog build `data/courses/` = SEMUA MK di tree; cache mtime;
+    (kini pembungkus tipis kompilasi fitur `scripts/fitur_mahasiswa.py`
+    — Zona 2: satu buka katalog **per MK** ber-stempel `mtime+ukuran`,
+    bukan per NPM; sumber: katalog build `data/courses/` = SEMUA MK di tree;
     fail-closed npm kosong 400 / tak dikenal 404 / katalog rusak tidak
     membatalkan laporan).
   * **Analisis Potensi**: label potensi & ambang **pinjam satu sumber**
@@ -230,7 +233,8 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `scripts/kelas_rules.py` | Satu-satunya tempat aturan nilai: bobot, grade, At-Risk, status pertemuan, "Belum Diinput" |
 | `scripts/periode.py` | Agregasi rekap per-periode DARI TREE (`/api/periode`): per MK / per semester / rollup semua; At-Risk per MK, belum-diinput netral, cache ber-tanda mtime |
 | `scripts/diagnosis.py` | **Mesin diagnosis v3 (templat, tanpa RNG)**: klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel, narasi templat v2, matriks 10 karier deterministik + bonus sebidang. Satu sumber ambang/label untuk tab wali, tab 8, tab 9 & PDF |
-| `scripts/portofolio.py` | Agregator portofolio 4 lapis per mahasiswa dari katalog ALL MK (`/api/portofolio`): bulanan netral, rollup semester, analisis potensi dari nilai, cache mtime, fail-closed |
+| `scripts/fitur_mahasiswa.py` | KOMPILASI FITUR satu mahasiswa dari katalog all MK (Zona 2): indeks per-MK ber-stempel `mtime+ukuran` (satu buka per MK sepanjang umur proses, hanya MK basi dibaca ulang), transformasi 4 lapis + analisis potensi dipindah utuh dari portofolio lama |
+| `scripts/portofolio.py` | Pembungkus tipis `fitur_mahasiswa.kumpulan` (`/api/portofolio`): API lama tetap (`kumpulan_portofolio`, `_label_potensi`, `_isis_detail_bulanan`), konsumen tidak terusik |
 | `scripts/bidang.py` | Peta 5 kanal bidang MK (keyword kunci/nama), dimensi khas per kanal + trafo estimasi (70% nilai kanal + 30% radar terukur, selalu label estimasi), konstanta bonus karier sebidang — satu sumber untuk tab 9 & PDF 06 |
 | `scripts/aturan.py` | Pembaca + validator `config/aturan.json` (fail-closed kalau rusak) |
 | `scripts/identitas.py` | Pembaca/penulis `config/identitas.json` (backup dulu, tulis atomik) |

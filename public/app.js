@@ -22,6 +22,10 @@ let videoGenerating = false;
 let attendanceTrendChart = null;
 let gradeDistChart = null;
 let radarCompetencyChart = null;
+// REPOSISI Tab 1 (2026-10-21): chart analisis baru + cache peta MK rawan
+let nilaiTrendChart = null;
+let radarKelasChart = null;
+let mkRawanState = { prodi: null, dimuat: false, baris: [] };
 
 // =============================================================================
 // UTILITAS
@@ -178,8 +182,9 @@ async function loadAcademicData() {
 function syncActiveCourseToUi(course) {
   if (!course || !course.nama_mk) return;
   setText("current-course-title", course.nama_mk);
-  muatKurikulum().catch(() => { /* header tetap jalan walau tree gagal dibaca */ });
-  setText("kpi-kelas-desc", course.kelas || "");
+  muatKurikulum()
+    .then(() => { muatMkRawan(); }) // peta MK rawan pakai prodi dari pohon
+    .catch(() => { /* header tetap jalan walau tree gagal dibaca */ });
   setText("kpi-jadwal-desc", course.jadwal || "");
   // Asisten mengikuti MK aktif - tiap MK boleh punya asisten berbeda
   // (diatur per-MK di menu Pengaturan).
@@ -840,9 +845,11 @@ function renderKaprodiDashboard() {
   if (!masterData) return;
 
   const summary = masterData.class_summary || {};
-  setText("kpi-total-mhs", summary.total_mahasiswa ?? "-");
-  setText("kpi-kehadiran", `${summary.rata_kehadiran ?? "-"}%`);
+
+  // REPOSISI Tab 1 (keputusan user 2026-10-21): nilai & kompetensi jadi muka.
+  renderKpiKelas(summary);
   setText("kpi-nilai", summary.rata_nilai_studio ?? "-");
+  setText("kpi-kehadiran", `${summary.rata_kehadiran ?? "-"}%`);
   setText("kpi-at-risk", `${summary.total_at_risk ?? 0} Mahasiswa`);
 
   // Badge periode Level 2 + ringkasan bulan Level 1
@@ -885,9 +892,242 @@ function renderKaprodiDashboard() {
         : " Seluruh presensi pertemuan sudah terinput.");
   }
 
-  renderAttendanceTrendChart(summary.tren_kehadiran_sesi || []);
+  // Chart analisis (bintang baru) + presensi (konteks, di details bawah)
+  renderNilaiTrendChart();
+  renderRadarKelasChart();
   renderGradeDistChart(summary.distribusi_grade || {});
+  renderAttendanceTrendChart(summary.tren_kehadiran_sesi || []);
   renderAttendanceTable();
+  muatMkRawan();
+}
+
+// =============================================================================
+// TAB 1 REPOSISI: agregat kompetensi kelas dari master (tanpa angka baru dari
+// luar - semua dari akademik.kompetensi & indeks_kesiapan mahasiswa).
+// =============================================================================
+const _DIMS_KELAS = ["penguasaan_cad", "ketelitian_detail", "kedisiplinan_asistensi",
+  "logika_ruang_struktur", "manajemen_waktu"];
+
+function kelasKompetensi() {
+  const per = {};
+  const kesiapan = [];
+  (masterData.students || []).forEach(s => {
+    const sip = Number((s.akademik || {}).indeks_kesiapan);
+    if (Number.isFinite(sip)) kesiapan.push(sip);
+    const comp = (s.akademik || {}).kompetensi || {};
+    const sumber = (s.ai_diagnosis || {}).radar_sumber || {};
+    _DIMS_KELAS.forEach(d => {
+      const v = comp[d];
+      if (typeof v !== "number") return;
+      const isi = (per[d] = per[d] || { sum: 0, n: 0, terukur: 0 });
+      isi.sum += v;
+      isi.n += 1;
+      if (sumber[d] === "terukur") isi.terukur += 1;
+    });
+  });
+  const rata = {};
+  _DIMS_KELAS.forEach(d => {
+    rata[d] = (per[d] && per[d].n)
+      ? Math.round((per[d].sum / per[d].n) * 10) / 10 : null;
+  });
+  const rataKesiapan = kesiapan.length
+    ? Math.round((kesiapan.reduce((a, b) => a + b, 0) / kesiapan.length) * 10) / 10
+    : null;
+  return { rata, per, kesiapanSemua: kesiapan, rataKesiapan };
+}
+
+function renderKpiKelas(summary) {
+  const k = kelasKompetensi();
+  const kelas = (masterData.course && masterData.course.kelas) || "-";
+  const nMhs = k.kesiapanSemua.length;
+  setText("kpi-kesiapan", k.rataKesiapan != null ? k.rataKesiapan : "-");
+  setText("kpi-kesiapan-desc",
+    `Kelas ${kelas} • rata indeks ${nMhs} mahasiswa aktif`);
+
+  const nilaiDim = _DIMS_KELAS.map(d => k.rata[d]).filter(v => v != null);
+  const rataKomp = nilaiDim.length
+    ? Math.round((nilaiDim.reduce((a, b) => a + b, 0) / nilaiDim.length) * 10) / 10
+    : null;
+  const dimTerukur = _DIMS_KELAS.filter(d =>
+    k.per[d] && k.per[d].n && k.per[d].terukur > 0).length;
+  setText("kpi-komp", rataKomp != null ? rataKomp : "-");
+  setText("kpi-komp-desc",
+    `Rata 5 dim • ${dimTerukur}/5 dim punya komponen terukur, sisanya estimasi`);
+}
+
+/** Chart TREN NILAI KELAS: rata skor praktikum per pertemuan lintas mahasiswa.
+ *  Sumber: kehadiran.detail[].skor master (yang benar-benar terisi) - netral
+ *  terhadap "Belum Diinput" & slot kosong, ikut filter bulan (Level 1). */
+function renderNilaiTrendChart() {
+  if (!masterData) return;
+  const setP = pertemuanDalamBulan();
+  const agg = {};
+  (masterData.students || []).forEach(s => {
+    ((s.kehadiran || {}).detail || []).forEach(d => {
+      d = d || {};
+      if (setP && !setP.has(String(d.pertemuan))) return;
+      if (d.status === "Belum Diinput" || !d.slot_terisi) return; // netral
+      if (typeof d.skor !== "number") return;
+      const a = (agg[d.pertemuan] = agg[d.pertemuan] ||
+        { sum: 0, n: 0, tanggal: d.tanggal_display || d.tanggal || "" });
+      a.sum += d.skor;
+      a.n += 1;
+    });
+  });
+  const urut = Object.keys(agg).map(Number).sort((a, b) => a - b);
+  const counter = document.getElementById("chart-nilai-count");
+  if (counter) counter.textContent = urut.length ? `${urut.length} Pertemuan` : "— Pertemuan";
+  if (!urut.length) {
+    nilaiTrendChart = null;
+    const c = document.querySelector("#chart-nilai-trend");
+    if (c) c.innerHTML = `<p class="text-xs text-slate-500 italic py-8 text-center">Belum ada skor yang terisi - tren nilai menunggu input.</p>`;
+    return;
+  }
+  const data = urut.map(p => Math.round((agg[p].sum / agg[p].n) * 10) / 10);
+  const options = {
+    series: [{ name: "Rata Nilai Kelas (0-100)", data }],
+    chart: { type: "area", height: 260, toolbar: { show: false }, background: "transparent", zoom: { enabled: false } },
+    theme: { mode: "dark" },
+    colors: ["#f59e0b"],
+    fill: { type: "gradient", gradient: { shadeIntensity: 0.4, opacityFrom: 0.45, opacityTo: 0.05 } },
+    stroke: { width: 2.5, curve: "smooth" },
+    markers: { size: 3, colors: ["#ffc800"] },
+    dataLabels: { enabled: true, style: { fontSize: "9px", colors: ["#cbd5e1"] },
+      formatter: (v) => (v == null ? "" : String(v)) },
+    xaxis: {
+      categories: urut.map(p => `P${p}`),
+      labels: { style: { colors: "#94a3b8", fontSize: "11px" } },
+      axisBorder: { color: "#334155" },
+      tooltip: { enabled: false },
+    },
+    yaxis: { min: 0, max: 100, labels: { style: { colors: "#94a3b8", fontSize: "11px" } } },
+    grid: { borderColor: "#1e293b" },
+    tooltip: {
+      y: { formatter: (v, o) => {
+        const p = urut[o.dataPointIndex];
+        return `P${p}${agg[p].tanggal ? " • " + agg[p].tanggal : ""}: rata ${v} (${agg[p].n} skor terisi)`;
+      } },
+    },
+  };
+  nilaiTrendChart = mountChart(nilaiTrendChart, "#chart-nilai-trend", options);
+}
+
+/** Chart RADAR KELAS: rata 5 dim kompetensi lintas mahasiswa MK aktif. */
+function renderRadarKelasChart() {
+  if (!masterData) return;
+  const k = kelasKompetensi();
+  const countEl = document.getElementById("radar-kelas-count");
+  if (countEl) countEl.textContent = `${k.kesiapanSemua.length} Mhs`;
+  const legend = document.getElementById("radar-kelas-legend");
+  const nilai = _DIMS_KELAS.map(d => k.rata[d]);
+  const labels = ["Penguasaan CAD", "Detail & Presisi", "Kedisiplinan Studio",
+    "Logika Ruang/Struktur", "Manajemen Waktu"];
+  if (legend) {
+    const dimTerukur = _DIMS_KELAS.filter(d =>
+      k.per[d] && k.per[d].n && k.per[d].terukur > 0).length;
+    legend.textContent = dimTerukur === 5
+      ? "Rata 5 dim lintas mahasiswa - semua dim punya komponen terukur."
+      : `${dimTerukur}/5 dim punya komponen terukur • sisanya estimasi dari proksi sinyal.`;
+  }
+  if (!nilai.some(v => v != null)) {
+    radarKelasChart = null;
+    const c = document.querySelector("#chart-radar-kelas");
+    if (c) c.innerHTML = `<p class="text-xs text-slate-500 italic py-6 text-center">Kompetensi belum terhitung.</p>`;
+    return;
+  }
+  const options = {
+    series: [{ name: "Rata Kompetensi Kelas", data: nilai.map(v => v ?? 0) }],
+    chart: { type: "radar", height: 250, toolbar: { show: false }, background: "transparent" },
+    labels,
+    colors: ["#a78bfa"],
+    markers: { size: 3, colors: ["#c4b5fd"] },
+    fill: { opacity: 0.3, colors: ["#a78bfa"] },
+    yaxis: { max: 100, show: false },
+    xaxis: { labels: { style: { colors: Array(5).fill("#cbd5e1"), fontSize: "10px", fontWeight: 600 } } },
+    theme: { mode: "dark" },
+  };
+  radarKelasChart = mountChart(radarKelasChart, "#chart-radar-kelas", options);
+}
+
+// =============================================================================
+// TAB 1 REPOSISI: PETA MK RAWAN - 5 MK rata nilai terendah lintas semester
+// dari /api/periode?semua_semester=1 (sumber tree, bukan master 1 MK).
+// =============================================================================
+async function muatMkRawan() {
+  const host = document.getElementById("mk-rawan-list");
+  const statusEl = document.getElementById("mk-rawan-status");
+  if (!host || !masterData) return;
+  const prodi = ((pohonKurikulum && pohonKurikulum.aktif && pohonKurikulum.aktif.prodi) ||
+    ((pohonKurikulum && pohonKurikulum.prodi) || [])[0] || "");
+  if (!prodi) {
+    if (statusEl) statusEl.textContent = "Tree kurikulum belum terbaca — menunggu konteks prodi.";
+    return;
+  }
+  if (!mkRawanState.dimuat || mkRawanState.prodi !== prodi) {
+    if (statusEl) statusEl.textContent = "Menghitung dari tree kurikulum…";
+    host.innerHTML = "";
+    try {
+      const res = await fetch(`/api/periode?prodi=${encodeURIComponent(prodi)}&semua_semester=1`,
+        { cache: "no-store" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      // Baris dari dokumen semua TA: flatten per TA->semester.
+      let baris = [];
+      (data.tahun_ajar ? Object.values(data.tahun_ajar) : []).forEach(semMap => {
+        Object.values(semMap || {}).forEach(dok => {
+          baris = baris.concat(dok.baris || []);
+        });
+      });
+      mkRawanState = { prodi, dimuat: true, baris };
+    } catch (err) {
+      if (statusEl) statusEl.textContent = `Gagal memuat: ${err.message}`;
+      return;
+    }
+  }
+
+  const kandidat = mkRawanState.baris
+    .filter(b => b && !b.rusak && b.nilai_rata != null)
+    .sort((a, b) => a.nilai_rata - b.nilai_rata)
+    .slice(0, 5);
+  if (statusEl) {
+    statusEl.textContent = kandidat.length
+      ? `${kandidat.length} MK prioritas (dari ${mkRawanState.baris.length} MK di tree)`
+      : "Belum ada MK dengan nilai tercatat.";
+  }
+  if (!kandidat.length) {
+    host.innerHTML = `<p class="text-xs text-slate-500 italic col-span-full">Belum ada katalog MK dengan nilai di tree.</p>`;
+    return;
+  }
+  host.innerHTML = kandidat.map(b => `
+    <div class="flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-900/50 px-3 py-2.5">
+      <div class="min-w-0">
+        <div class="text-xs font-bold text-slate-100 truncate" title="${escapeHtml(b.nama_mk)}">${escapeHtml(b.nama_mk)}</div>
+        <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(_tampilTahun(b.tahun_ajar))} ${escapeHtml(b.semester)}${b.kode_mk ? ` • ${escapeHtml(b.kode_mk)}` : ""}</div>
+      </div>
+      <div class="flex items-center gap-3 flex-shrink-0 text-[11px] font-mono">
+        <span class="text-emerald-300">${b.kehadiran_rata != null ? b.kehadiran_rata + "%" : "-"}</span>
+        <span class="${b.jumlah_at_risk ? "text-rose-300 font-bold" : "text-slate-500"}">${b.jumlah_at_risk ?? 0} risiko</span>
+        <strong class="text-amber-300 font-black">${b.nilai_rata}</strong>
+        <button data-mkrawan class="touch-target px-2 py-1 rounded-lg bg-slate-800 hover:bg-cyan-500/20 text-cyan-300 border border-slate-700 hover:border-cyan-500/40 transition"
+          data-prodi="${escapeHtml(b.prodi || "")}" data-ta="${escapeHtml(b.tahun_ajar || "")}"
+          data-sem="${escapeHtml(b.semester || "")}" data-kunci="${escapeHtml(b.kunci_mk || "")}">
+          Detail
+        </button>
+      </div>
+    </div>`).join("");
+  host.querySelectorAll("[data-mkrawan]").forEach(btn => {
+    btn.addEventListener("click", () =>
+      rekapLihatMk(btn.dataset.prodi, btn.dataset.ta, btn.dataset.sem, btn.dataset.kunci));
+  });
+}
+
+/** Buka/tutup bagian Konteks Presensi: chart kehadiran digambar ulang setelah
+ *  terlihat (Apex di dalam kontainer hidden punya lebar 0 -> perlu render ulang). */
+function onPresensiToggle(ev) {
+  if (ev.target.open && attendanceTrendChart) {
+    setTimeout(() => { try { attendanceTrendChart.render(); } catch (e) { /* noop */ } }, 120);
+  }
+  if (window.lucide) lucide.createIcons();
 }
 
 function renderAttendanceTrendChart(trends) {
@@ -2019,6 +2259,7 @@ async function terapkanKeDokumen() {
   if (hasil) {
     // Master + katalog diregenerasi -> cache perkembangan lintas-MK basi.
     perkembanganPotensi = {};
+    mkRawanState = { prodi: null, dimuat: false, baris: [] }; // peta MK rawan ikut regen
     await loadAcademicData();
   }
 }
@@ -2438,6 +2679,7 @@ async function simpanKurikulum() {
     // Katalog dibangun ulang -> cache perkembangan lintas-MK (chip "sepanjang
     // kuliah" tab 8 & kartu tren tab wali) basi; jangan sampai data lama tampil.
     perkembanganPotensi = {};
+    mkRawanState = { prodi: null, dimuat: false, baris: [] }; // peta MK rawan ikut regen
     await muatKurikulum();
     await muatDetailKurikulum();
     await loadAcademicData();
