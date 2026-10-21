@@ -140,7 +140,7 @@ scripts/parse_data.py  (kompilasi, tidak mengarang angka)
         ▼
 server.py (Python stdlib, port 40404) ──▶ REST API ──▶ public/app.js (SPA offline)
         │
-        ├──▶ 7 tab dashboard (lihat bagian 4)
+        ├──▶ 10 tab dashboard (lihat bagian 4)
         └──▶ output/<MK>/<TIMESTAMP>/  11 PDF + manifest.json
 ```
 
@@ -151,17 +151,20 @@ isi `data/kurikulum/` dan `config/identitas.json`.
 
 ---
 
-## 4. Tujuh tab dashboard
+## 4. Sepuluh tab dashboard
 
 | Tab | Nama | Fungsi utama | Sumber data |
 |---|---|---|---|
-| 1 | Dashboard Kaprodi | KPI kelas, tren P1–P16, daftar At-Risk, rekap presensi bulanan | `academic_data.json` |
+| 1 | Dashboard Kaprodi | **Kompetensi-first ( reposisi 2026-10-21)**: KPI Nilai/Kesiapan/Kompetensi/Pendampingan, tren nilai kelas, radar kelas, **peta MK rawan lintas semester**; presensi tetap lengkap di bagian bawah collapsible "Konteks Presensi" | `academic_data.json` + tree (`/api/periode`) |
 | 2 | Rapor Wali Murid | Rapor per mahasiswa, radar 5 pilar, matriks 10 karier | `academic_data.json` |
 | 3 | Portofolio & Video Progres | Deck 16:9, pratinjau + unduh video 9:16, salin caption Instagram | `output/`, `public/videos/` |
 | 4 | Simulator WhatsApp | Pesan ke wali murid + tautan 3 lampiran PDF | `output/` |
 | 5 | Pengaturan | Identitas institusi/dosen, terapkan ke dokumen, cetak ulang PDF | `config/identitas.json` |
 | 6 | Kurikulum | Sunting topik, bobot, slot absen, jenis MK (Σ bobot wajib 100) | `data/kurikulum/` |
 | 7 | Info | Halaman penjelasan ini | `public/info.md` |
+| 8 | Rekap Periode | Rekap 4 level: per bulan, per MK, semua MK satu semester, semua semester — dihitung dari tree | `/api/periode` |
+| 9 | Portofolio Mahasiswa | Portofolio 4 lapis + analisis potensi dari nilai (kanal bidang, dimensi khas, matriks karier) | `/api/portofolio` |
+| 10 | Engine | Pindai inbox, audit integritas berkas, rapikan, lapis kirim | `data/engine/` |
 
 Tab 5 memakai **tiga tingkat** perubahan supaya dokumen resmi tidak berubah diam-diam:
 **Simpan Identitas** (label dashboard) → **Terapkan ke Dokumen** (data master + PDF
@@ -286,14 +289,16 @@ tangan; pakai `scripts/impor` supaya tervalidasi, terbackup, dan ada jejak audit
 
 ---
 
-## 8. Status pengembangan (jujur, per 20 Oktober 2026)
+## 8. Status pengembangan (jujur, per 21 Oktober 2026)
 
 > Bagian ini memisahkan **yang sudah ada kodenya** dari **yang masih rencana**.
 > Fitur yang belum aktif tidak boleh dibaca sebagai klaim.
 
-### 8.1 Sudah aktif — lewat CLI (belum ada tombolnya di dashboard)
+### 8.1 Sudah aktif — tombol di Tab 10 Engine + CLI tinjau/terima
 
-**Impor nilai dari portal (Excel / CSV / HTML)**
+**Impor nilai dari portal (Excel / CSV / HTML)** — pemindaian inbox, audit
+duplikat, dan audit output kini punya tombol di **Tab 10 Engine**; peninjauan
+staging masih lewat CLI:
 
 ```text
 input/inbox/  →  deteksi isi  →  baca tabel  →  baris kanonik  →  validasi

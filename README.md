@@ -531,6 +531,38 @@ jalur paksa, fail-closed registry).
 
 ---
 
+### 15. Peta 10 Tab Dashboard & Reposisi Tab 1 (keputusan user 2026-10-21)
+
+Tab 1 reposisi **kompetensi-first**: yang kaprodi butuh melihat duluan adalah
+mutu capaian, bukan absensi. Kehadiran tidak dihapus — hanya diturunkan
+pangkatnya menjadi konteks.
+
+| Bagian Tab 1 (urutan baru) | Isi | Sumber |
+| --- | --- | --- |
+| 4 KPI | **Rata Nilai Studio** (★) · **Indeks Kesiapan Kelas** (rata `indeks_kesiapan`) · **Kompetensi Kelas** (rata 5 dim + jujur sumber) · **Perlu Pendampingan** (At-Risk) | master |
+| Tren Nilai Kelas | rata skor praktikum per pertemuan lintas mahasiswa; ikut filter bulan (Level 1); slot kosong & "Belum Diinput" netral | master (`kehadiran.detail[].skor`) |
+| Radar Kompetensi Kelas | rata 5 dim lintas mahasiswa + keterangan berapa dim berkomponen terukur | master (`akademik.kompetensi`) |
+| Distribusi Grade | donat sebaran grade (tetap) | master |
+| **Peta MK Rawan** | 5 MK rata nilai terendah **lintas semester**; klik Detail = drill-down kurikulum **tanpa mengubah MK aktif**; cache per prodi, basi otomatis saat simpan kurikulum | tree via `GET /api/periode?semua_semester=1` |
+| Konteks Presensi | tabel presensi + filter bulan/sesi/status + tren kehadiran P1–P16, di `<details>` collapsible; chart digambar ulang saat dibuka | master |
+
+Peta 10 tab keseluruhan:
+
+| Tab | Nama | Inti |
+| --- | --- | --- |
+| 1 | Dashboard Kaprodi | Peta kompetensi kelas (reposisi) + Konteks Presensi |
+| 2 | Rapor Wali Murid | Radar 5 dim, matriks 10 karier, narasi humanis |
+| 3 | Portofolio & Video Progres | Deck 16:9 interaktif, video 9:16, caption IG |
+| 4 | Simulator WhatsApp | Pesan wali + 3 lampiran PDF (nama berkas sesuai generator) |
+| 5 | Pengaturan | Tiga tingkat identitas: simpan → terapkan → cetak ulang |
+| 6 | Kurikulum | Sunting tree: topik, bobot, slot, jenis MK (Σ = 100) |
+| 7 | Info | Dokumentasi `public/info.md` (render markdown) |
+| 8 | Rekap Periode | Rekap 4 level dari tree (`/api/periode`) |
+| 9 | Portofolio Mahasiswa | 4 lapis + analisis potensi dari nilai (indeks per-MK) |
+| 10 | Engine | Pindai inbox, audit integritas, rapikan, lapis kirim |
+
+---
+
 ## 📊 Angka Ril Demo Saat Ini (versi `2.6-KURIKULUM-BERTINGKAT`)
 
 > Stempel build tidak lagi ditulis di sini (dulu sering tertinggal basi).
