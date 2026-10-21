@@ -539,8 +539,22 @@ def _analisis_potensi(mk_semua, arah, nama=""):
         lem_sekanal = sorted((m for m in mk_sekanal if m.get("nilai") is not None),
                              key=lambda m: m["nilai"])[:2]
         if radar:
+            # Lapis A "potensi karier berbukti" (keputusan user 2026-10-21):
+            # matriks menerima KONTEKS profil nyata - skor karier sekanal
+            # ditimbang dari nilai MK sekanal + dim khas, bukan bonus datar.
             matriks_kuliah = DIAG.matriks_karier(
-                radar, nama or "", bidang_terkuat=kanal_top["kanal"])
+                radar, nama or "", bidang_terkuat=kanal_top["kanal"],
+                konteks={
+                    "kanal_terkuat": kanal_top["kanal"],
+                    "nama_kanal": kanal_top["nama"],
+                    "mk_sekanal": [
+                        {"nama_mk": m.get("nama_mk"), "nilai": m.get("nilai"),
+                         "grade": m.get("grade")}
+                        for m in mk_sekanal
+                    ],
+                    "rata_nilai": rata_nilai,
+                    "dimensi_khas": dim_khas,
+                })
         if rata_nilai is not None:
             t = kanal_top["mk_teratas"]
             potongan.insert(0, (

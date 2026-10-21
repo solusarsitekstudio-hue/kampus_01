@@ -76,7 +76,8 @@ eksternal seperti di atas.
 | `/api/kurikulum/detail?prodi=&tahun_ajar=&semester=&kunci_mk=` | Isi satu MK dari tree (16 pertemuan) |
 | `/api/periode?prodi=&tahun_ajar=&semester=` | Rekap semua MK satu semester dari tree (Level 3); bentuk lain `semua_semester=1` untuk rollup semua semester-semua MK (Level 4). Agregasi di `scripts/periode.py`, at-risk per MK, pertemuan belum diinput netral |
 | `/api/perkembangan?npm=` | Perkembangan sepanjang kuliah satu mahasiswa (rollup semester + arah tren ±5, `scripts/periode.py`) |
-| `/api/portofolio?npm=` | Laporan portofolio 4 lapis per mahasiswa (bulanan → MK → semester → sepanjang kuliah) + analisis potensi dari nilai: cluster kanal bidang (`scripts/bidang.py`), dimensi khas bidang terkuat (estimasi jujur), matriks karier sepanjang kuliah dengan bonus sebidang. Fail-closed: npm kosong → 400, npm tak dikenal → 404 |
+| `/api/portofolio?npm=` | Laporan portofolio 4 lapis per mahasiswa (bulanan → MK → semester → sepanjang kuliah) + analisis potensi dari nilai: cluster kanal bidang (`scripts/bidang.py`), dimensi khas bidang terkuat (estimasi jujur), matriks karier sepanjang kuliah berbukti (bukti nyata per karier, karier sekanal ditimbang bukti kanal). Fail-closed: npm kosong → 400, npm tak dikenal → 404 |
+| `POST /api/portofolio/ai` | Lapis B: narasi top-N karier dirapikan engine Gemini rotary (`scripts/ai_karier.py`); angka bukti dikirim & diverifikasi (angka di hasil ⊆ bukti), gagal = template Lapis A; hasil dicache `data/ai_karier_cache.json`; config `config/ai_karier.json` (nonaktif = tidak pernah memanggil engine) |
 | `/api/course_data?course=` | Data mendalam satu MK dari katalog `data/courses/` |
 | `/api/student/<npm>` | Data mendalam satu mahasiswa (profil, radar, diagnosis, karier, pesan WA) |
 | `/api/student/images?npm=...` | Berkas gambar pendukung portofolio mahasiswa |

@@ -342,6 +342,10 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._api_engine_input_post()
         if path == "/api/engine/output":
             return self._api_engine_output_post()
+        # LAPIS B potensi karier: narasi top-N dirapikan engine Gemini rotary
+        # (fail-closed; angka bukti diverifikasi; hasil dicache).
+        if path == "/api/portofolio/ai":
+            return self._api_portofolio_ai()
         return self._send_error_json(404, f"Endpoint POST tidak dikenal: {path}")
 
     # --------------------------------------------------------- API identitas
@@ -677,7 +681,68 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                 404, "NPM '{0}' tidak ditemukan di katalog mana pun. "
                      "Jalankan scripts\\parse_data.py jika katalog belum dibangun."
                      .format(npm))
+        # LAPIS B: narasi AI dari CACHE saja (tanpa kuota). Bukti berubah =
+        # kunci cache basi = otomatis kembali ke template Lapis A.
+        try:
+            import ai_karier as AK
+            prodi = self._konteks_aktif()[0]
+            AK.terapkan_cache(hasil, prodi, npm)
+        except Exception:  # noqa: BLE001  (lapis AI tidak boleh merusak inti)
+            pass
         return self._send_json(200, hasil)
+
+    def _api_portofolio_ai(self):
+        """LAPIS B potensi karier (keputusan user 2026-10-21).
+
+        POST /api/portofolio/ai  body: {"npm": "...", "paksa": false}
+        Narasi top-N karier dirapikan engine Gemini rotary milik pengguna:
+        - bukti (Lapis A) dikirim sebagai satu-satunya angka yang boleh ada
+        - verifikasi angka-_subset bukti; gagal = item dibuang
+        - hasil dicache data/ai_karier_cache.json per (prodi, npm, sha bukti)
+        """
+        try:
+            body = self._baca_body_json()
+        except ValueError as e:
+            return self._send_error_json(400, str(e))
+        npm = str((body or {}).get("npm", "")).strip()
+        if not npm:
+            return self._send_error_json(400, "Parameter 'npm' wajib diisi.")
+        paksa = bool((body or {}).get("paksa", False))
+        KT = self._modul_kurikulum()
+        PF = self._modul_portofolio()
+        try:
+            with PERIODE_LOCK:  # hitung kumpulan; membutuhkan pesanan katalog
+                kumpulan = PF.kumpulan_portofolio(npm)
+        except (KT.KurikulumError, ValueError) as e:
+            return self._send_error_json(400, str(e))
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Gagal menghitung portofolio: {0}".format(_sanitize_error(e)))
+        if kumpulan is None:
+            return self._send_error_json(404, "NPM '{0}' tidak dikenal.".format(npm))
+
+        import ai_karier as AK
+        prodi = self._konteks_aktif()[0]
+        # PANGGILAN ENGINE DI LUAR PERIODE_LOCK (bisa 5-30 detik)
+        try:
+            hasil, sebab = AK.narasi_ai(kumpulan, prodi, npm, paksa=paksa)
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Lapis AI gagal: {0}".format(_sanitize_error(e)))
+        if hasil is None:
+            return self._send_json(200, {
+                "ok": False, "sebab": sebab,
+                "pesan": "Narasi tetap memakai template Lapis A (fail-closed)."})
+        kumpulan = AK.terapkan_ke_potensi(kumpulan, hasil)
+        jumlah = sum(1 for c in
+                     (kumpulan.get("analisis_potensi", {}).get(
+                         "matriks_karier_kuliah") or [])
+                     if c.get("analisis_sumber") == "ai")
+        return self._send_json(200, {
+            "ok": True, "jumlah": jumlah, "model": hasil.get("model"),
+            "stempel": hasil.get("stempel"), "tercache": bool(hasil.get("cache"))})
+        # kumpulan tidak dikirim utuh: UI memanggil /api/portofolio biasa
+        # untuk ambil hasil final (cache sudah ditempel otomatis di sana).
 
     def _api_student(self, path: str):
         if not os.path.exists(DATA_FILE):

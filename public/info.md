@@ -55,6 +55,13 @@ manual per anak — pekerjaan yang biasanya menghabiskan waktu asisten/dosen.
 
 ### 2.3 Analisis kekuatan & potensi (bukan sekadar nilai)
 
+> Sejak 21 Oktober 2026 matriks karier **berbukti**: tiap baris karier punya
+> field `bukti` (angka nyata MK/kanal yang mendasari skor), narasinya dibangun
+> dari angka itu (bukan kalimat statis), dan karier sebidang ditimbang bukti
+> kanal — bukan bonus datar. Narasi 3 karier teratas bisa dirapikan engine
+> Gemini rotary (tombol "Rapikan dengan AI" di Tab 9); angka di hasil AI
+> diverifikasi harus muncul di bukti — satu angka karangan = dibuang.
+
 - **Radar 5 pilar**: penguasaan CAD, ketelitian detail, kedisiplinan asistensi,
   logika ruang & struktur, manajemen waktu.
 - **Matriks 10 profesi**: persentase kecocokan, bidang industri, keterampilan kunci,

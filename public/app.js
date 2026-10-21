@@ -406,6 +406,49 @@ function _targetPortofolio() {
   return currentStudent ? String(currentStudent.npm) : null;
 }
 
+/** LAPIS B potensi karier: narasi top-N dirapikan engine Gemini rotary.
+ *  Fail-closed: gagal/p refusal -> tetap template; sukses -> reload portofolio
+ *  (cache AI sudah ditempel otomatis server di /api/portofolio). */
+let _aiKarrierJalan = false;
+async function kirimKierAI(paksa = false) {
+  const npm = _targetPortofolio();
+  const btn = document.getElementById("porto-ai-btn");
+  if (_aiKarrierJalan || !npm) return;
+  _aiKarrierJalan = true;
+  const label = btn ? btn.innerHTML : "";
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader" class="w-3 h-3 animate-spin"></i> AI menyunting…`;
+  }
+  try {
+    const res = await fetch("/api/portofolio/ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ npm: String(npm), paksa: !!paksa }),
+    });
+    const data = await res.json();
+    if (!res.ok || data.ok === false) {
+      toast(
+        `${data.sebab || `HTTP ${res.status}`} — narasi tetap pakai template (fail-closed).`,
+        "warn");
+      return;
+    }
+    toast(
+      `Narasi ${data.jumlah} karier dirapikan AI${data.model ? " (" + data.model + ")" : ""} — langsung tampil & ikut PDF berikutnya.`,
+      "ok");
+    await _ambilPortofolio(npm);
+  } catch (err) {
+    toast(`Lapis AI gagal: ${err.message} — narasi tetap template Lapis A.`, "error");
+  } finally {
+    _aiKarrierJalan = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = label;
+      if (window.lucide) lucide.createIcons();
+    }
+  }
+}
+
 async function _ambilPortofolio(npm) {
   if (!npm) return;
   const isi = document.getElementById("porto-isi");
@@ -543,11 +586,14 @@ function _renderAnalisisPotensi(d) {
       ${top ? "★ " : ""}${escapeHtml(k.nama)} ${k.rata_nilai} (${k.jumlah_mk} MK)</span>`;
   }).join(" ");
   const karierTop = (a.matriks_karier_kuliah || []).slice(0, 3).map(c => `
-    <div class="flex items-center justify-between gap-2 py-0.5">
-      <span class="text-[11px] text-slate-300 truncate">${escapeHtml(c.profesi)}</span>
-      <span class="text-[11px] font-mono shrink-0 ${c.kategori_kecocokan === "Sangat Tinggi"
+    <div class="py-0.5 border-b border-violet-500/10 last:border-b-0">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-[11px] text-slate-300 truncate" title="${escapeHtml(c.analisis_potensi || "")}">${escapeHtml(c.profesi)}</span>
+        <span class="text-[11px] font-mono shrink-0 ${c.kategori_kecocokan === "Sangat Tinggi"
         ? "text-emerald-300" : c.kategori_kecocokan === "Tinggi" ? "text-lime-300" : "text-slate-400"}">
-        ${c.kecocokan_persen}% · ${escapeHtml(c.kategori_kecocokan)}</span>
+          ${c.kecocokan_persen}% · ${escapeHtml(c.kategori_kecocokan)}${c.analisis_sumber === "ai" ? " · AI" : ""}</span>
+      </div>
+      ${c.analisis_potensi ? `<p class="text-[10px] text-slate-400 leading-snug mt-0.5 text-justify">${escapeHtml(c.analisis_potensi)}</p>` : ""}
     </div>`).join("");
 
   const dist = Object.entries(a.distribusi || {}).map(([k, v]) =>
@@ -566,7 +612,14 @@ function _renderAnalisisPotensi(d) {
       <div class="space-y-1.5">${barKhas}</div>
       ${karierTop ? `
       <div class="mt-2.5 pt-2 border-t border-violet-500/20">
-        <p class="text-[10px] font-bold text-slate-300 mb-1 uppercase tracking-wide">Arah Karier Sepanjang Kuliah (bonus sebidang, lainnya tetap)</p>
+        <div class="flex items-center justify-between gap-2 mb-1 flex-wrap">
+          <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wide">Arah Karier Sepanjang Kuliah (bonus sebidang, lainnya tetap)</p>
+          <button id="porto-ai-btn" onclick="kirimKierAI()"
+            title="Narasi 3 karier teratas dirapikan engine Gemini rotary. Angka bukti dikunci & diverifikasi - AI tidak bisa menambah angka. Gagal = kembali ke template."
+            class="touch-target px-2 py-1 rounded-lg text-[10px] font-bold border border-cyan-500/40 bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 transition flex items-center gap-1">
+            <i data-lucide="sparkles" class="w-3 h-3"></i> Rapikan dengan AI
+          </button>
+        </div>
         ${karierTop}
       </div>` : ""}
     </div>` : ""}

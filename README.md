@@ -563,6 +563,40 @@ Peta 10 tab keseluruhan:
 
 ---
 
+### 16. Potensi Karier Berbukti + Lapis AI Narasi (keputusan user 2026-10-21)
+
+Matriks karier sepanjang kuliah (Tab 9, PDF 06) direkonstruksi "berbukti":
+
+**Lapis A — tanpa AI (deterministik, satu sumber):**
+* **Skor karier sekanal ditimbang bukti kanal**, bukan bonus datar +4 lagi:
+  `base_mix × 0,7 + kanal_skor × 0,3`, dengan `kanal_skor`
+  = 0,5 rata nilai MK sekanal + 0,5 rata dim khas
+  (`scripts/bidang.py` satu sumber: `TIMBANG_KANAL`, `CAMPUR_KANAL_DIM`).
+  Panggilan tanpa konteks (per-MK) tetap perilaku lama (+4) — kompatibel.
+* Field baru **`bukti`** di setiap baris karier: rangkaian angka nyata
+  (dim penopang, kanal terkuat, jumlah + rata MK sekanal, dim khas terkuat).
+* **`analisis_potensi` DIBANGUN dari bukti** — tidak ada lagi kalimat statis
+  yang identik untuk semua mahasiswa; `saran_pengembangan` miring ke dim
+  penopang terlemah ("Langkah konkret: perkuat …").
+* Fail-closed: MK sekanal tanpa nilai tidak mengarang skor; cap profesi tetap.
+* Teruji `tests/test_karier_berbukti.py` (deterministik, monoton, cap,
+  kompatibilitas perilaku lama).
+
+**Lapis B — narasi AI Gemini rotary (`scripts/ai_karier.py`, fail-closed):**
+* Tombol **"Rapikan dengan AI"** di Tab 9 → `POST /api/portofolio/ai`;
+  hanya **top-N karier** (default 3, config `config/ai_karier.json`) yang
+  dikirim — hemat kuota engine 7 akun.
+* Prompt dikunci: model hanya diberi bukti dan dilarang menambah angka.
+  **Verifikasi angka-⊆-bukti**: satu angka karangan → item dibuang.
+  Gagal total = kembali ke template Lapis A. Tidak pernah ada angka nyata.
+* Cache `data/ai_karier_cache.json` per (prodi, npm, sha bukti) — bukti
+  berubah = kunci basi otomatis. `/api/portofolio` biasa menempel cache
+  **tanpa memanggil engine** → Tab 9, PDF 06, dan WA langsung sinkron.
+* Config nonaktif/bas tidak ada file = AI mati total (fail-closed default).
+* Teruji `tests/test_karier_ai_failclosed.py` (tanpa engine; kuota aman).
+
+---
+
 ## 📊 Angka Ril Demo Saat Ini (versi `2.6-KURIKULUM-BERTINGKAT`)
 
 > Stempel build tidak lagi ditulis di sini (dulu sering tertinggal basi).

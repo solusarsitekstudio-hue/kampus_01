@@ -83,6 +83,17 @@ DISPLAY_KANAL = {
 }
 
 BONUS_KARIER_SEBIDANG = 4.0  # +4 kecocokan karier sekanal (clamp cap karier)
+#                                                                              #
+#   TIMBANG BARU (keputusan user 2026-10-21, "potensi karier berbukti"):
+#   bonus datar +4 diganti bukti nyata kanal saat konteks profil tersedia.
+#   skor_sekanal = base_mix*(1-TIMBANG_KANAL)
+#                + kanal_skor*TIMBANG_KANAL, dgn
+#   kanal_skor  = 0.5*rata_nilai_kanal + 0.5*rata_dim_khas
+#                 (rata nilai MK sekanal & rata dimensi khas bidang).
+#   Konteks hilang (panggilan per-MK tanpa profil) -> jatuh ke aturan lama
+#   (+4) supaya perilaku lama tetap dijamin.
+TIMBANG_KANAL = 0.30          # pangsa skor kanal atas skor karier sekanal
+CAMPUR_KANAL_DIM = 0.5        # 0.5 rata nilai kanal + 0.5 rata dim khas
 
 def kanal_dari_mk(kunci_mk, nama_mk=""):
     """Kanal bidang dari kunci/nama MK. Fallback HUMANAS + keyword bulat."""

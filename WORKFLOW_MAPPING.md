@@ -69,7 +69,7 @@ flowchart TD
         H1 --> OUT6["Tab 6: Kurikulum (sunting topik/bobot/slot/jenis_mk)"]
         H1 --> OUT7["Tab 7: Info (dokumentasi public/info.md)"]
         H1 --> OUT8["Tab 8: Rekap Periode (API /api/periode, Level 3 & 4)"]
-        H1 --> OUT9["Tab 9: Portofolio Mahasiswa (API /api/portofolio, 4 lapis +<br/>analisis potensi dari nilai: kanal bidang - terkuat - dimensi khas)"]
+        H1 --> OUT9["Tab 9: Portofolio Mahasiswa (API /api/portofolio, 4 lapis +<br/>analisis potensi berbukti: matriks karier ditimbang bukti kanal,<br/>narasi dinamis dari angka; lapis AI Gemini = POST /api/portofolio/ai)"]
         H1 --> OUT10["Tab 10: Engine (pindai inbox → duplikat via SHA-256;<br/>audit integritas output + rapikan + lapis kirim)"]
     end
 

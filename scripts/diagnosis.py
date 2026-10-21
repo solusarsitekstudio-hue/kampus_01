@@ -315,23 +315,44 @@ _KANAL_KARIER = {
 }
 
 
-def matriks_karier(radar_nilai, nama, bidang_terkuat=None):
+def matriks_karier(radar_nilai, nama, bidang_terkuat=None, konteks=None):
     """Kecocokan = campuran berbobot dimensi radar, cap per profesi. Tanpa RNG:
     profil sama -> peringkat sama. Kategori tetap dari satu sumber kelas_rules.
 
-    `bidang_terkuat` kanal dari bidang.py: karier SEKANAL dapat bonus
-    BIDANG.BONUS_KARIER_SEBIDANG (dichalk sebelum cap karier), karier kanal
-    lain tetap tampil dengan bobot dasarnya.
+    DUA MODE (keputusan user 2026-10-21, "potensi karier berbukti"):
+    * `konteks` TERSEDIA (profil sepanjang kuliah dari fitur_mahasiswa):
+      karier SEKANAL ditimbang bukan lagi bonus datar +4, tapi bukti kanal:
+      base_mix*(1-TIMBANG_KANAL) + kanal_skor*TIMBANG_KANAL, dengan
+      kanal_skor = 0.5*rata_nilai_kanal + 0.5*rata_dim_khas (bidang.py,
+      SATU SUMBER). Tiap item dapat `bukti` (rangkaian angka nyata) dan
+      `analisis_potensi` yang DIBANGUN dari angka (narasi dinamis), bukan
+      kalimat statis. Keterampilan kunci tetap definisi profesi.
+    * `konteks` TIDAK ada (panggilan per-MK): perilaku lama dipertahankan
+      (bonus +4, kalimat statis per profesi) supaya tab per-MK tetap stabil.
     """
     hasil = []
+    untuk = bool(konteks) and bool(bidang_terkuat)
     for _id, profesi, bidang, bobot, cap, analisis, keterampilan, saran in _KARIER:
         skor = 0.0
+        kontribusi = []  # (dim, kontribusi_skor) buat narasi dinamis
         for dim, koef in bobot:
-            skor += float(radar_nilai.get(dim, 0)) * koef
+            isi = float(radar_nilai.get(dim, 0)) * koef
+            skor += isi
+            if dim != "nilai":
+                kontribusi.append((dim, isi))
+            else:  # "nilai" = rata nilai keseluruhan, bukan dim radar
+                kontribusi.append(("nilai", isi))
+        sekanal = False
         if bidang_terkuat and _KANAL_KARIER.get(_id) == bidang_terkuat:
-            skor += BIDANG.BONUS_KARIER_SEBIDANG
+            sekanal = True
+            if untuk:
+                kanal_skor = _skor_kanal_bukti(radar_nilai, konteks, kontribusi)
+                skor = skor * (1.0 - BIDANG.TIMBANG_KANAL) \
+                    + kanal_skor * BIDANG.TIMBANG_KANAL
+            else:
+                skor += BIDANG.BONUS_KARIER_SEBIDANG
         kecocokan = min(cap, max(1.0, round(skor, 1)))
-        hasil.append({
+        item = {
             "id": _id,
             "profesi": profesi,
             "bidang_industri": bidang,
@@ -340,9 +361,114 @@ def matriks_karier(radar_nilai, nama, bidang_terkuat=None):
             "analisis_potensi": analisis.format(nama=nama),
             "keterampilan_kunci": keterampilan,
             "saran_pengembangan": saran,
-        })
+        }
+        if untuk:
+            item["bukti"] = _bukti_karier(
+                _id, profesi, kecocokan, bobot, kontribusi, radar_nilai,
+                konteks, sekanal, nama)
+            item["analisis_potensi"] = _narasi_karier(
+                analisis, item["bukti"], nama, sekanal)
+            item["saran_pengembangan"] = _saran_karier(
+                saran, bobot, kontribusi, radar_nilai)
+        hasil.append(item)
     hasil.sort(key=lambda c: (-c["kecocokan_persen"], c["id"]))
     return hasil
+
+
+def _skor_kanal_bukti(radar_nilai, konteks, kontribusi):
+    """Kanal skor dari bukti nyata: rata nilai MK sekanal + rata dim khas.
+    Item alpha/tanpa nilai dikeluarkan; kekurangan angka = proporsional
+    dari yang ada (fail-closed ke base, bukan angka karangan)."""
+    isi_kanal = []
+    for m in (konteks.get("mk_sekanal") or []):
+        v = (m.get("nilai") if m.get("nilai") is not None else None)
+        if v is not None:
+            isi_kanal.append(float(v))
+    dim_k = konteks.get("dimensi_khas") or {}
+    isi_khas = [float(v["nilai"]) for k, v in (dim_k or {}).items()
+                if isinstance(v, dict) and v.get("nilai") is not None]
+    bagian = [0.5 * (sum(isi_kanal) / len(isi_kanal)) if isi_kanal else 0.0,
+              0.5 * (sum(isi_khas) / len(isi_khas)) if isi_khas else 0.0]
+    # kalau salah satu penguat hilang, tumpasnya di base (proporsi jujur):
+    andal = sum(w for w, ada in zip((0.5, 0.5), (bool(isi_kanal), bool(isi_khas))) if ada)
+    if andal <= 0:
+        # tidak ada bukti kanal sama sekali -> pakai radar generik
+        return max(1.0, round(sum(i for _, i in kontribusi), 1))
+    return max(1.0, round(sum(bagian) / andal, 1))
+
+
+def _arah(kecocokan):
+    return "{0:.1f}%".format(kecocokan).replace(".0%", "%")
+
+
+def _bukti_karier(_id, profesi, kecocokan, bobot, kontribusi, radar_nilai,
+                  konteks, sekanal, nama):
+    """Rangkaian bukti angka nyata yang mendasari satu baris karier.
+    Deterministik: profil sama -> bukti sama persis."""
+    isi = []
+    top = sorted(kontribusi, key=lambda kv: (-kv[1], kv[0]))[:2]
+    for dim, tot in top:
+        if dim == "nilai":
+            rata = konteks.get("rata_nilai")
+            if rata is not None:
+                isi.append("rata nilai sepanjang kuliah {0}".format(_g(rata)))
+        else:
+            v = radar_nilai.get(dim)
+            if v is not None:
+                isi.append("{0} {1}".format(_LABEL_DIM.get(dim, dim), _g(v)))
+    if sekanal:
+        k = konteks.get("kanal_terkuat")
+        if k:
+            isi.append("kanal terkuat {0}".format(
+                BIDANG.nama_kanal(konteks.get("kanal_terkuat"))
+                if konteks.get("kanal_terkuat") else k))
+        km = konteks.get("mk_sekanal") or []
+        jml = len(km)
+        if jml:
+            vals = [float(m["nilai"]) for m in km if m.get("nilai") is not None]
+            if vals:
+                isi.append("{0} MK {1} rata {2}".format(
+                    jml, konteks.get("nama_kanal") or "sekanal", _g(
+                        round(sum(vals) / len(vals), 1))))
+        dim_k = konteks.get("dimensi_khas") or {}
+        if dim_k:
+            atas = sorted(dim_k.items(), key=lambda kv: -kv[1].get("nilai", 0))[:1]
+            if atas:
+                isi.append("dim khas terkuat {0} {1}".format(
+                    atas[0][1].get("label") or atas[0][0],
+                    _g(atas[0][1].get("nilai"))))
+    isi.append("skor kecocokan {0}".format(_g(kecocokan)))
+    return isi
+
+
+def _g(v):
+    """Angka rapi tanpa nol tak berguna (85.0 -> 85, 84.3 tetap)."""
+    f = float(v)
+    return "{0:g}".format(round(f, 1))
+
+
+def _narasi_karier(analisis_statis, bukti, nama, sekanal):
+    """Narasi dinamis: kalimat dibangun dari bukti angka, dibungkus nama.
+    Bukan kalimat statis yang identik untuk semua mahasiswa. Lapis AI
+    (ai_karier.py) hanya merapikan gaya — bukti tetap satu sumber."""
+    nama = nama or "mahasiswa"
+    if not bukti:
+        return analisis_statis.format(nama=nama)
+    return ("Ananda {0} diproyeksikan mendekati profil ini dari bukti nyata: {1}."
+            .format(nama, "; ".join(bukti)))
+
+
+def _saran_karier(saran_default, bobot, kontribusi, radar_nilai):
+    """Saran default profesi + satu kalimat miring ke dim penopang terlemah."""
+    dim_karier = [d for d, _ in bobot if d != "nilai"]
+    if not dim_karier:
+        return saran_default
+    lemah = min(((d, float(radar_nilai.get(d, 0)))
+                 for d in dim_karier), key=lambda kv: kv[1])
+    if lemah[1] <= 0:
+        return saran_default
+    return "{0} Langkah konkret: perkuat {1} (saat ini {2}).".format(
+        saran_default, _LABEL_DIM.get(lemah[0], lemah[0]), _g(lemah[1]))
 
 
 # --------------------------------------------------------------------------- #
