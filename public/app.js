@@ -134,6 +134,7 @@ async function loadAcademicData() {
     renderKaprodiDashboard();
     populateStudentDropdown();
     populateSessionFilter();
+    populateBulanFilter();
 
     // Jumlah mahasiswa pada label tombol dihitung dari data, bukan diketik "35".
     setText("hero-jml-mhs", masterData.students.length);
@@ -180,6 +181,12 @@ function syncActiveCourseToUi(course) {
   muatKurikulum().catch(() => { /* header tetap jalan walau tree gagal dibaca */ });
   setText("kpi-kelas-desc", course.kelas || "");
   setText("kpi-jadwal-desc", course.jadwal || "");
+  // Asisten mengikuti MK aktif - tiap MK boleh punya asisten berbeda
+  // (diatur per-MK di menu Pengaturan).
+  const asisten = course.asisten_dosen || "-";
+  setText("header-asisten", asisten);
+  setText("wali-asisten", asisten);
+  setText("wa-asisten-nama", asisten);
 }
 
 /** Filter sesi dibangun dari data, bukan dari topik AutoCAD yang diketik manual. */
@@ -198,8 +205,116 @@ function populateSessionFilter() {
   sel.value = current || "all";
 }
 
+// =============================================================================
+// LEVEL 1: FILTER PER BULAN (Kaprodi) — dari tanggal ISO sesi.json
+// =============================================================================
+// Keputusan user (2026-10-21): pertemuan tanpa tanggal (placeholder) dikelompokkan
+// sendiri di "Tanpa Tanggal", BUKAN ikut bulan yang salah.
+const GRUP_TANPA_TANGGAL = "-";
+
+function bulanDariTanggal(t) {
+  t = String(t || "").trim();
+  return /^\d{4}-\d{2}/.test(t) ? t.slice(0, 7) : GRUP_TANPA_TANGGAL;
+}
+
+function labelBulan(b) {
+  if (b === GRUP_TANPA_TANGGAL) return "Tanpa Tanggal";
+  const [y, m] = b.split("-");
+  const nama = ["Januari","Februari","Maret","April","Mei","Juni","Juli",
+    "Agustus","September","Oktober","November","Desember"][Number(m) - 1] || m;
+  return `${nama} ${y}`;
+}
+
+function populateBulanFilter() {
+  const sel = document.getElementById("filter-bulan");
+  if (!sel || !masterData) return;
+  const current = sel.value || "all";
+  const hitung = {};
+  masterData.sessions.forEach(s => {
+    const b = bulanDariTanggal(s.tanggal);
+    hitung[b] = (hitung[b] || 0) + 1;
+  });
+  const urut = Object.keys(hitung)
+    .sort((a, b2) => (a === GRUP_TANPA_TANGGAL) - (b2 === GRUP_TANPA_TANGGAL) || a.localeCompare(b2));
+  sel.innerHTML = `<option value="all">Semua Bulan (${masterData.sessions.length} pertemuan)</option>`;
+  urut.forEach(b => {
+    const opt = document.createElement("option");
+    opt.value = b;
+    opt.textContent = `${labelBulan(b)} (${hitung[b]})`;
+    sel.appendChild(opt);
+  });
+  sel.value = urut.includes(current) ? current : "all";
+}
+
+function bulanAktif() {
+  const sel = document.getElementById("filter-bulan");
+  return sel ? sel.value : "all";
+}
+
+function pertemuanDalamBulan() {
+  const b = bulanAktif();
+  if (b === "all") return null; // null = tidak memfilter
+  return new Set(masterData.sessions
+    .filter(s => bulanDariTanggal(s.tanggal) === b)
+    .map(s => String(s.pertemuan)));
+}
+
+/** KPI ringkas satu bulan: rata kehadiran slot atas pertemuan yang datanya
+ *  lengkap (belum diinput NETRAL - aturan yang sama dengan Batch B). */
+function ringkasBulanAktif() {
+  const setP = pertemuanDalamBulan();
+  if (!masterData || !setP) return null;
+  let hadir = 0, total = 0, belum = 0;
+  masterData.students.forEach(s => {
+    (s.kehadiran && s.kehadiran.detail || []).forEach(d => {
+      if (!setP.has(String(d.pertemuan))) return;
+      if (d.status === "Belum Diinput") { belum++; return; } // netral
+      hadir += (d.slot_hadir || 0);
+      total += (d.slot_total || 0);
+    });
+  });
+  const b = bulanAktif();
+  return {
+    label: labelBulan(b),
+    kehadiran: total
+      ? `${Math.round((hadir / total) * 1000) / 10}%`
+      : "belum bisa dihitung",
+    pertemuan: setP.size,
+    belum: belum,
+  };
+}
+
+function onBulanBerubah() {
+  renderKaprodiDashboard();
+}
+
+/** Badge Level 2: konteks periode eksplisit dari MASTER (bukan ditebak). */
+function updatePeriodeBadge() {
+  const el = document.getElementById("kaprodi-periode-badge");
+  if (!el || !masterData) return;
+  const md = masterData.metadata || {};
+  const parts = [
+    md.tahun_ajar || "-",
+    (md.semester || "").toUpperCase(),
+    (masterData.course && masterData.course.nama_mk) || md.kunci_mk || "-",
+  ].filter(Boolean);
+  const semuaLengkap = md.tahun_ajar && md.semester && md.kunci_mk;
+  el.innerHTML =
+    `<i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-sky-400"></i> ` +
+    `Periode data: <strong class="text-slate-200">${parts
+      .map(p => escapeHtml(p)).join(" · ")}</strong>` +
+    (semuaLengkap ? "" : " <span class='text-amber-400'>(metadata master tidak lengkap)</span>");
+  if (window.lucide) lucide.createIcons();
+}
+
 // Switch Active Navigation Tabs
-function switchTab(tabName) {
+function switchTab(tabName, opsi) {
+  // Membuka tab Kurikulum lewat menu = kembali ke MK aktif. Drill-down dari
+  // tab Rekap memakai {pertahankanOverride:true} supaya MK yang dipilih tetap
+  // ditampilkan tanpa memicu switch_course.
+  if (tabName === "kurikulum" && !(opsi && opsi.pertahankanOverride)) {
+    detailOverrideKonteks = null;
+  }
   document.querySelectorAll(".tab-section").forEach(sec => sec.classList.add("hidden"));
   document.querySelectorAll(".tab-btn").forEach(btn => {
     btn.classList.remove("active-tab");
@@ -229,7 +344,493 @@ function switchTab(tabName) {
       .then(() => muatDetailKurikulum())
       .catch(err => toast(`Tree kurikulum tidak bisa dibaca: ${err.message}`, "error", 8000));
   }
+  // Tab Rekap Periode: ambil ulang agregasi + panel potensi tiap kali dibuka,
+  // supaya yang tampil adalah isi tree saat ini (cache di server usang sendiri
+  // via mtime).
+  if (tabName === "rekap") { muatRekap(); muatPotensiMk(); }
+  // Tab 9 Portofolio: isi dropdown sekali, lalu muat data mahasiswa terpilih.
+  if (tabName === "portofolio") muatPortofolio();
+  // Tab 10 Engine: auto-load HANYA pertama kali tab dibuka per sesi. Pindai
+  // & audit menulis/queries bisa memicu tulis registry; muat berulang tiap
+  // buka tab = kerja ulang + spam tulis (bug #5). Buka ulang tab pakai
+  // tombol Pindai/Audit manual.
+  if (tabName === "engine" && !window.__engineSudahMuat) {
+    engineInputPindai(); engineOutputAudit();
+    window.__engineSudahMuat = true;
+  }
+  // Tab Info: dokumentasi dibaca dari public/info.md (di-cache setelah sukses).
+  if (tabName === "info") muatInfoSistem();
   if (window.lucide) lucide.createIcons();
+}
+
+// =============================================================================
+// TAB 9: PORTOFOLIO MAHASISWA 4 LAPIS (keputusan user 2026-10-21)
+// =============================================================================
+// Sumber satu pintu: /api/portofolio?npm=... (katalog SEMUA MK di tree):
+//   lapis 1 per bulan, lapis 2 per MK, lapis 3 per semester, lapis 4 kumulatif.
+// PDF lengkap via /api/pdf/download?type=portofolio_lengkap (mesin v3 juga).
+// =============================================================================
+
+let _portofolioData = null;    // hasil /api/portofolio mahasiswa aktif
+let _portofolioMuat = false;   // dropdown sudah diisi masterData?
+
+/** Isi dropdown sekali + muat data mahasiswa terpilih (default MK aktif). */
+function muatPortofolio() {
+  if (!masterData) {
+    toast("Data master belum dimuat, coba lagi sebentar.", "error");
+    return;
+  }
+  const sel = document.getElementById("porto-sel");
+  if (!sel) return;
+  if (!sel.options.length) {
+    masterData.students.forEach(s => {
+      const opt = document.createElement("option");
+      opt.value = s.npm;
+      opt.textContent = `${s.nama} — ${s.npm}`;
+      sel.appendChild(opt);
+    });
+  }
+  if (!sel.value && masterData.students.length) {
+    sel.value = _targetPortofolio() || String(masterData.students[0].npm);
+  }
+  _ambilPortofolio(sel.value);
+}
+
+function _targetPortofolio() {
+  // Prioritas: mahasiswa yang sedang dipilih di tab wali (kesinambungan UX).
+  return currentStudent ? String(currentStudent.npm) : null;
+}
+
+async function _ambilPortofolio(npm) {
+  if (!npm) return;
+  const isi = document.getElementById("porto-isi");
+  if (isi) isi.innerHTML = `<p class="text-slate-500 italic text-sm">Memuat portofolio…</p>`;
+  // Kosongkan kanvas dari muatan sebelumnya biar tidak menampilkan data
+  // mahasiswa lama saat loading data mahasiswa baru.
+  const kpi = document.getElementById("porto-kpi");
+  const anl = document.getElementById("porto-analisis");
+  if (kpi) kpi.innerHTML = "";
+  if (anl) anl.innerHTML = "";
+  try {
+    const res = await fetch(`/api/portofolio?npm=${encodeURIComponent(npm)}`,
+      { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    _portofolioData = data;
+    _renderPortofolio(data);
+  } catch (err) {
+    _portofolioData = null;
+    if (isi) isi.innerHTML =
+      `<p class="text-rose-300 text-sm">Gagal memuat portofolio: ${escapeHtml(err.message)}</p>`;
+  }
+}
+
+/** Lapis 4: KPI kumulatif sepanjang kuliah. */
+function _portoKpi(d) {
+  const arah = d.arah_nilai === "naik" ? ["↑ Naik", "text-emerald-300 border-emerald-500/40 bg-emerald-500/10"]
+    : d.arah_nilai === "turun" ? ["↓ Turun", "text-rose-300 border-rose-500/40 bg-rose-500/10"]
+    : d.arah_nilai === "stabil" ? ["→ Stabil", "text-slate-300 border-slate-600/60 bg-slate-800/60"]
+    : ["-", "text-slate-400 border-slate-700 bg-slate-800/60"];
+  const kartu = (label, nilai) => `
+    <div class="bg-[#0f172a] rounded-xl p-3 border border-slate-800 shadow">
+      <span class="text-[10px] text-slate-500 block mb-0.5">${label}</span>
+      <strong class="text-xl font-black text-white">${escapeHtml(nilai)}</strong>
+    </div>`;
+  return [
+    kartu("Total MK Ditempuh", String(d.jumlah_mk)),
+    kartu("MK At-Risk", `${d.jumlah_mk_at_risk}`),
+    kartu("Rata Nilai (30 MK)", d.rata_nilai != null ? String(d.rata_nilai) : "-"),
+    kartu("Rata Kehadiran", d.rata_kehadiran != null ? `${d.rata_kehadiran}%` : "-"),
+    kartu("Total Alpha", `${d.total_alpha} hari`),
+    `<div class="bg-[#0f172a] rounded-xl p-3 border ${arah[1]} shadow">
+       <span class="text-[10px] text-slate-500 block mb-0.5">Arah Tren (±5)</span>
+       <strong class="text-xl font-black">${escapeHtml(arah[0])}${d.delta_nilai_terakhir != null ? `<span class="text-xs font-semibold"> (${d.delta_nilai_terakhir > 0 ? "+" : ""}${d.delta_nilai_terakhir})</span>` : ""}</strong>
+     </div>`,
+  ].join("");
+}
+
+/** Lapis 1: sel bulanan (aturan sama dengan _chipBulananDetail di tab 8). */
+function _portoSelBulanan(bulanan) {
+  if (!bulanan || !bulanan.length) return "";
+  const namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+                     "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+  return `<div class="flex flex-wrap gap-1 mt-2">${bulanan.map(b => {
+    const pct = b.hadir_persen;
+    const warna = pct == null ? "text-slate-500"
+      : pct >= 85 ? "text-emerald-300 bg-emerald-500/10"
+      : pct >= 75 ? "text-amber-300 bg-amber-500/10"
+      : "text-rose-300 bg-rose-500/10";
+    const ym = String(b.bulan).split("-");
+    const label = `${namaBulan[Number(ym[1]) - 1] || "?"} ${ym[0].slice(2)}`;
+    const tt = `${b.pertemuan} pertemuan • hadir ${pct != null ? pct + "%" : "-"} • rata skor ${b.rata_skor != null ? b.rata_skor : "-"}`;
+    return `<span class="px-1.5 py-0.5 rounded border border-slate-700/50 text-[10px] font-semibold ${warna}" title="${escapeHtml(tt)}">${escapeHtml(label)} ${pct != null ? Math.round(pct) + "%" : "-"}</span>`;
+  }).join("")}</div>`;
+}
+
+/** ANALISIS NILAI -> POTENSI: label + radar lintas MK + MK terkuat/terlemah.
+ *  Ambang ambang label pinjam AMBANG diagnosis v3 (skor 85/90, 80/85, 70/75) -
+ *  dihitung server dari nilai katalog, bukan dari absen. */
+function _renderAnalisisPotensi(d) {
+  const host = document.getElementById("porto-analisis");
+  const sebar = document.getElementById("porto-analisis-sebaran");
+  if (!host) return;
+  const a = d.analisis_potensi;
+  if (!a || !a.label) {
+    host.innerHTML = `<p class="text-slate-500 italic text-sm">Analisis potensi belum tersedia (data nilai belum lengkap).</p>`;
+    if (sebar) sebar.textContent = "-";
+    return;
+  }
+
+  const warnaLabel = a.label.startsWith("POTENSI TINGGI")
+    ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/40"
+    : a.label.startsWith("POTENSI BAIK")
+    ? "bg-sky-500/15 text-sky-300 border-sky-500/40"
+    : a.label.startsWith("POTENSI MEMADAI")
+    ? "bg-amber-500/15 text-amber-300 border-amber-500/40"
+    : a.label.startsWith("BUTUH")
+    ? "bg-rose-500/15 text-rose-300 border-rose-500/40"
+    : "bg-slate-500/15 text-slate-300 border-slate-600/50";
+
+  const namaDim = {
+    penguasaan_cad: "Penguasaan CAD",
+    ketelitian_detail: "Detail Gambar",
+    kedisiplinan_asistensi: "Kedisiplinan Studio",
+    logika_ruang_struktur: "Logika Ruang/Struktur",
+    manajemen_waktu: "Manajemen Waktu",
+  };
+  const saran = a.radar_sumber || {};
+  const barRadar = Object.entries(a.radar || {}).map(([k, v]) => {
+    const est = saran[k] === "estimasi";
+    return `<div class="flex items-center gap-2">
+      <span class="w-32 shrink-0 text-[10px] text-slate-400">${escapeHtml(namaDim[k] || k)}${est ? " *" : ""}</span>
+      <div class="flex-1 h-2.5 bg-slate-900 rounded overflow-hidden border border-slate-800">
+        <div class="h-full rounded ${est ? "bg-slate-500" : "bg-gradient-to-r from-emerald-600 to-lime-500"}" style="width:${Math.max(2, Math.min(100, v))}%"></div>
+      </div>
+      <strong class="w-8 text-right text-xs ${est ? "text-slate-400" : "text-emerald-300"}">${v}</strong>
+    </div>`;
+  }).join("");
+
+  const kolom = (judul, daftar, kelas) => `
+    <div class="rounded-xl border ${kelas} p-3">
+      <p class="text-[10px] font-bold text-slate-300 mb-1.5 uppercase tracking-wide">${judul}</p>
+      ${(daftar || []).map(x => `
+        <div class="flex items-center justify-between gap-2 py-0.5">
+          <span class="text-[11px] text-slate-300 truncate">${escapeHtml(x.nama_mk)}</span>
+          <span class="text-[11px] font-mono font-bold">${escapeHtml(String(x.nilai))} ${escapeHtml(x.grade || "")}</span>
+        </div>`).join("") || '<p class="text-slate-600 italic text-[10px]">-</p>'}
+    </div>`;
+
+  // --- Analisis pusat: bidang terkuat -> dimensi menyesuaikan (estimasi jujur)
+  const kanal = a.kanal || [];
+  const barKhas = Object.entries(a.dimensi_khas || {}).map(([id, v]) => `
+    <div class="flex items-center gap-2">
+      <span class="w-32 shrink-0 text-[10px] text-violet-200">${escapeHtml(v.label)} *</span>
+      <div class="flex-1 h-2.5 bg-slate-900 rounded overflow-hidden border border-violet-900/60">
+        <div class="h-full rounded bg-gradient-to-r from-violet-600 to-fuchsia-400" style="width:${Math.max(2, Math.min(100, v.nilai))}%"></div>
+      </div>
+      <strong class="w-8 text-right text-xs text-violet-300">${v.nilai}</strong>
+    </div>`).join("");
+  const chipsKanal = kanal.map(k => {
+    const top = k.kanal === a.kanal_terkuat;
+    return `<span class="px-2 py-0.5 rounded border text-[10px] font-mono ${top
+      ? "border-violet-400/60 bg-violet-500/15 text-violet-200 font-bold"
+      : "border-slate-700/60 bg-slate-800/70 text-slate-400"}">
+      ${top ? "★ " : ""}${escapeHtml(k.nama)} ${k.rata_nilai} (${k.jumlah_mk} MK)</span>`;
+  }).join(" ");
+  const karierTop = (a.matriks_karier_kuliah || []).slice(0, 3).map(c => `
+    <div class="flex items-center justify-between gap-2 py-0.5">
+      <span class="text-[11px] text-slate-300 truncate">${escapeHtml(c.profesi)}</span>
+      <span class="text-[11px] font-mono shrink-0 ${c.kategori_kecocokan === "Sangat Tinggi"
+        ? "text-emerald-300" : c.kategori_kecocokan === "Tinggi" ? "text-lime-300" : "text-slate-400"}">
+        ${c.kecocokan_persen}% · ${escapeHtml(c.kategori_kecocokan)}</span>
+    </div>`).join("");
+
+  const dist = Object.entries(a.distribusi || {}).map(([k, v]) =>
+    `<span class="px-2 py-0.5 rounded border border-slate-700/60 bg-slate-800/70 text-[10px] font-mono text-slate-300">${escapeHtml(k)} × ${v}</span>`
+  ).join(" ");
+
+  host.innerHTML = `
+    <div class="flex items-center gap-3 flex-wrap mb-3">
+      <span class="px-3 py-1 rounded-lg border text-sm font-black ${warnaLabel}">${escapeHtml(a.label)}</span>
+      <span class="text-[11px] text-slate-400">${escapeHtml(a.alasan)}</span>
+    </div>
+    ${barKhas ? `
+    <div class="rounded-xl border border-violet-500/30 bg-violet-500/5 p-3 mb-3" id="porto-bidang">
+      <p class="text-[10px] font-bold uppercase tracking-wide text-violet-200 mb-2" title="Analisis berpusat di bidang terkuat: dimensi khas bidang = 70% rata nilai MK sebidang + 30% radar terukur (dia estimasi, tidak sebagai fakta).">🎯 Analisis Pusat: Bidang Terkuat (dimensi menyesuaikan bidang — estimasi)</p>
+      <div class="flex flex-wrap gap-1.5 mb-2">${chipsKanal}</div>
+      <div class="space-y-1.5">${barKhas}</div>
+      ${karierTop ? `
+      <div class="mt-2.5 pt-2 border-t border-violet-500/20">
+        <p class="text-[10px] font-bold text-slate-300 mb-1 uppercase tracking-wide">Arah Karier Sepanjang Kuliah (bonus sebidang, lainnya tetap)</p>
+        ${karierTop}
+      </div>` : ""}
+    </div>` : ""}
+    <div class="grid lg:grid-cols-2 gap-4">
+      <div class="space-y-1.5">${barRadar || '<p class="text-slate-600 italic text-xs">belum ada radar</p>'}
+        <p class="text-[9px] text-slate-600 mt-1">* estimasi: dim dirata dari proksi sinyal lain; dim tanpa * terukur langsung dari nilai kinerja.</p>
+      </div>
+      <div class="space-y-2">
+        <div class="grid grid-cols-2 gap-2">
+          ${kolom("MK Terkuat", a.mk_terkuat, "border-emerald-500/30")}
+          ${kolom("MK Terlemah", a.mk_terlemah, "border-rose-500/30")}
+        </div>
+        <p class="text-[11px] text-slate-300 leading-relaxed border-l-2 border-emerald-500/40 pl-2">
+          ${escapeHtml(a.rekomendasi || "-")}
+        </p>
+        <div class="flex flex-wrap gap-1.5">${dist || '<span class="text-slate-600 text-[10px] italic">tidak ada data diagnosis</span>'}</div>
+      </div>
+    </div>`;
+
+  if (sebar) {
+    const s = a.sebaran || {};
+    sebar.textContent = s.deviasi != null
+      ? `nilai ${s.terendah}–${s.tertinggi} • deviasi ${s.deviasi} (makin kecil makin konsisten)`
+      : "-";
+  }
+  if (window.lucide) lucide.createIcons();
+}
+
+/** Lapis 3 (accordion) berisi lapis 2 (per MK) + lapis 1 (bulanan expand). */
+function _renderPortofolio(d) {
+  const isi = document.getElementById("porto-isi");
+  const meta = document.getElementById("porto-meta");
+  const kpi = document.getElementById("porto-kpi");
+  if (!isi) return;
+
+  if (kpi) kpi.innerHTML = _portoKpi(d);
+  _renderAnalisisPotensi(d);
+  if (meta) {
+    meta.textContent = `${d.jumlah_mk} MK${d.mk_gagal && d.mk_gagal.length
+      ? ` • ${d.mk_gagal.length} katalog tak terbaca` : ""}`;
+  }
+
+  const atRiskBadge = (bar) => bar
+    ? `<span class="px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/40 text-[9px] font-bold">AT-RISK</span>`
+    : "";
+  const gradeWarna = (g) => (g === "A" || g === "AB") ? "text-emerald-300"
+    : (g === "B") ? "text-sky-300" : (g === "C") ? "text-amber-300"
+    : "text-rose-300";
+
+  isi.innerHTML = (d.semester || []).map((s, si) => `
+    <div class="rounded-xl border border-slate-800 overflow-hidden">
+      <button onclick="togglePortofolioSemester(${si})"
+        class="w-full flex items-center justify-between px-4 py-3 bg-slate-900/70 hover:bg-slate-900 transition text-left">
+        <span class="flex items-center gap-2">
+          <i id="porto-chev-${si}" data-lucide="chevron-right" class="w-4 h-4 text-slate-500 transition-transform"></i>
+          <span class="text-sm font-bold text-white">${escapeHtml(_tampilTahun(s.tahun_ajar))} ${escapeHtml(s.semester)}</span>
+          ${s.jumlah_at_risk ? `<span class="text-[9px] font-bold text-rose-300">${s.jumlah_at_risk} MK at-risk</span>` : ""}
+        </span>
+        <span class="text-[10px] text-slate-400 font-mono">
+          ${s.jumlah_mk} MK • nilai ${s.rata_nilai != null ? s.rata_nilai : "-"} • hadir ${s.rata_kehadiran != null ? s.rata_kehadiran + "%" : "-"}
+        </span>
+      </button>
+      <div id="porto-sem-${si}" class="hidden px-4 pb-3 pt-1 space-y-2 bg-slate-950/40">
+        ${(s.mk || []).map(m => `
+          <div class="rounded-lg border border-slate-800 p-3">
+            <div class="flex items-center justify-between gap-2 flex-wrap">
+              <span class="text-xs font-bold text-slate-100">${escapeHtml(m.nama_mk)}
+                ${atRiskBadge(m.at_risk)}</span>
+              <span class="text-[10px] font-mono text-slate-400">
+                <span class="${gradeWarna(m.grade)} font-black">${escapeHtml(m.grade || "-")}</span>
+                ${m.nilai != null ? escapeHtml(String(m.nilai)) : "-"} • hadir ${m.kehadiran != null ? m.kehadiran + "%" : "-"} • alpha ${m.alpha ?? 0} hari
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">${escapeHtml(m.status_alert || "-")}</p>
+            ${_portoSelBulanan(m.bulanan) || "<p class=\"text-[10px] text-slate-600 italic mt-1\">Rekap bulanan belum tersedia (pertemuan belum diinput/bertanggal).</p>"}
+          </div>`).join("")}
+      </div>
+    </div>`).join("") || `<p class="text-slate-500 italic text-sm">Belum ada katalog MK untuk mahasiswa ini.</p>`;
+
+  if (window.lucide) lucide.createIcons();
+}
+
+/** Accordion: buka/tutup 1 semester + putar chevron. */
+function togglePortofolioSemester(si) {
+  const isi = document.getElementById(`porto-sem-${si}`);
+  const chev = document.getElementById(`porto-chev-${si}`);
+  if (!isi) return;
+  isi.classList.toggle("hidden");
+  if (chev) chev.classList.toggle("rotate-90");
+}
+
+/** Unduh PDF (lengkap / bulanan / rapor / deck) — pasangan aksi tab 9. */
+function unduhPortofolioPdf(tipe) {
+  const sel = document.getElementById("porto-sel");
+  const npm = sel && sel.value ? sel.value : _targetPortofolio();
+  if (!npm) {
+    toast("Pilih mahasiswa dulu, bro.", "error");
+    return;
+  }
+  const url = `/api/pdf/download?type=${tipe}&npm=${encodeURIComponent(npm)}`;
+  window.open(url, "_blank");
+}
+
+// =============================================================================
+// TAB 7: INFO SISTEM (markdown lokal, dirender tanpa pustaka eksternal)
+// =============================================================================
+let infoMdCache = null;
+
+async function muatInfoSistem(paksa = false) {
+  const host = document.getElementById("info-md");
+  const status = document.getElementById("info-status");
+  if (!host) return;
+
+  if (infoMdCache && !paksa) {
+    host.innerHTML = infoMdCache;
+    return;
+  }
+
+  host.innerHTML = '<p class="text-sm text-slate-400">Memuat penjelasan sistem…</p>';
+  if (status) status.textContent = "";
+
+  try {
+    const res = await fetch("info.md", { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const teks = await res.text();
+    infoMdCache = renderMarkdown(teks);
+    host.innerHTML = infoMdCache;
+    if (status) {
+      status.textContent = `Dimuat ${new Date().toLocaleTimeString("id-ID")}`;
+    }
+    if (window.lucide) lucide.createIcons();
+  } catch (err) {
+    host.innerHTML = `<div class="info-error">Penjelasan sistem tidak bisa dibaca: <strong>${escapeHtml(err.message)}</strong>.
+      Pastikan berkas <code>public/info.md</code> ada, lalu klik Muat Ulang.</div>`;
+    if (status) status.textContent = "Gagal memuat";
+  }
+}
+
+function escapeHtml(teks) {
+  return String(teks)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Inline markdown: `kode`, **tebal**, *miring*, [teks](tautan).
+function renderInline(teks) {
+  const kode = [];
+  let t = String(teks).replace(/`([^`]+)`/g, (_, isi) => {
+    kode.push(`<code>${escapeHtml(isi)}</code>`);
+    return `\u0000${kode.length - 1}\u0000`;
+  });
+
+  t = escapeHtml(t);
+  t = t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, href) => {
+    const aman = /^(https?:|#|\/|\.\/|[\w-]+\.md)/i.test(href) ? href : "#";
+    const luar = /^https?:/i.test(aman) ? ' target="_blank" rel="noopener noreferrer"' : "";
+    return `<a href="${aman}"${luar}>${label}</a>`;
+  });
+  t = t.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  t = t.replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>");
+  return t.replace(/\u0000(\d+)\u0000/g, (_, i) => kode[Number(i)]);
+}
+
+function barisTabel(baris) {
+  return baris.replace(/^\s*\|/, "").replace(/\|\s*$/, "").split("|").map(s => s.trim());
+}
+
+function adalahAwalTabel(lines, i) {
+  if (i + 1 >= lines.length) return false;
+  if (!lines[i].includes("|")) return false;
+  return /^\s*\|?[\s:|-]*-[\s:|-]*\|[\s:|-]*$/.test(lines[i + 1]) && lines[i + 1].includes("-");
+}
+
+// Parser markdown blok: heading, code fence, blockquote, tabel, list, hr, paragraf.
+function renderMarkdown(md) {
+  const lines = String(md).replace(/\r\n?/g, "\n").split("\n");
+  const out = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    if (!line.trim()) { i++; continue; }
+
+    const fence = line.match(/^```(\w*)\s*$/);
+    if (fence) {
+      const buf = [];
+      i++;
+      while (i < lines.length && !/^```\s*$/.test(lines[i])) { buf.push(lines[i]); i++; }
+      i++; // lewati penutup
+      out.push(`<pre class="info-pre"><code>${escapeHtml(buf.join("\n"))}</code></pre>`);
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,6})\s+(.*)$/);
+    if (heading) {
+      const lv = heading[1].length;
+      out.push(`<h${lv}>${renderInline(heading[2].trim())}</h${lv}>`);
+      i++;
+      continue;
+    }
+
+    if (/^\s*(---+|\*\*\*+|___+)\s*$/.test(line)) {
+      out.push("<hr>");
+      i++;
+      continue;
+    }
+
+    if (/^\s*>\s?/.test(line)) {
+      const buf = [];
+      while (i < lines.length && /^\s*>\s?/.test(lines[i])) {
+        buf.push(lines[i].replace(/^\s*>\s?/, ""));
+        i++;
+      }
+      out.push(`<blockquote>${renderMarkdown(buf.join("\n"))}</blockquote>`);
+      continue;
+    }
+
+    if (adalahAwalTabel(lines, i)) {
+      const kepala = barisTabel(lines[i]);
+      i += 2;
+      const isi = [];
+      while (i < lines.length && lines[i].includes("|") && lines[i].trim()) {
+        isi.push(barisTabel(lines[i]));
+        i++;
+      }
+      const th = kepala.map(c => `<th>${renderInline(c)}</th>`).join("");
+      const tr = isi.map(r => `<tr>${r.map(c => `<td>${renderInline(c)}</td>`).join("")}</tr>`).join("");
+      out.push(`<div class="info-table-wrap"><table><thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`);
+      continue;
+    }
+
+    if (/^\s*([-*+]|\d+\.)\s+/.test(line)) {
+      const berurut = /^\s*\d+\./.test(line);
+      const item = [];
+      while (i < lines.length && /^\s*([-*+]|\d+\.)\s+/.test(lines[i])) {
+        item.push(lines[i].replace(/^\s*([-*+]|\d+\.)\s+/, ""));
+        i++;
+        // Baris lanjutan yang di-indentasi tetap milik bullet yang sama.
+        while (
+          i < lines.length && /^\s{2,}\S/.test(lines[i]) &&
+          !/^\s*([-*+]|\d+\.)\s+/.test(lines[i]) &&
+          !adalahAwalTabel(lines, i)
+        ) {
+          item[item.length - 1] += " " + lines[i].trim();
+          i++;
+        }
+      }
+      const tag = berurut ? "ol" : "ul";
+      out.push(`<${tag}>${item.map(t => `<li>${renderInline(t)}</li>`).join("")}</${tag}>`);
+      continue;
+    }
+
+    const buf = [];
+    while (
+      i < lines.length && lines[i].trim() &&
+      !/^(#{1,6}\s|```|\s*>\s?|\s*([-*+]|\d+\.)\s+|---)/.test(lines[i]) &&
+      !adalahAwalTabel(lines, i)
+    ) {
+      buf.push(lines[i].trim());
+      i++;
+    }
+    if (!buf.length) { i++; continue; }
+    out.push(`<p>${renderInline(buf.join(" "))}</p>`);
+  }
+
+  return out.join("\n");
 }
 
 // =============================================================================
@@ -243,6 +844,17 @@ function renderKaprodiDashboard() {
   setText("kpi-kehadiran", `${summary.rata_kehadiran ?? "-"}%`);
   setText("kpi-nilai", summary.rata_nilai_studio ?? "-");
   setText("kpi-at-risk", `${summary.total_at_risk ?? 0} Mahasiswa`);
+
+  // Badge periode Level 2 + ringkasan bulan Level 1
+  updatePeriodeBadge();
+  const ringkasB = ringkasBulanAktif();
+  const bulanSel = document.getElementById("filter-bulan");
+  if (bulanSel && ringkasB && bulanAktif() !== "all") {
+    bulanSel.title =
+      `Kehadiran ${ringkasB.label}: ${ringkasB.kehadiran}` +
+      ` atas ${ringkasB.pertemuan} pertemuan` +
+      (ringkasB.belum ? `, ${ringkasB.belum} entri belum diinput (netral)` : "");
+  }
 
   // Predikat kelas dihitung dari distribusi, bukan teks hardcoded
   if (summary.distribusi_grade) {
@@ -279,8 +891,12 @@ function renderKaprodiDashboard() {
 }
 
 function renderAttendanceTrendChart(trends) {
-  setText("chart-trend-count", trends.length ? `${trends.length} Pertemuan` : "— Pertemuan");
-  if (!trends.length) {
+  // FILTER BULAN (Level 1): pertemuan di luar bulan pilihan tidak digambar.
+  const setP = pertemuanDalamBulan();
+  let tapis = Array.isArray(trends) ? trends : [];
+  if (setP) tapis = tapis.filter(t => setP.has(String(t.pertemuan)));
+  setText("chart-trend-count", tapis.length ? `${tapis.length} Pertemuan` : "— Pertemuan");
+  if (!tapis.length) {
     attendanceTrendChart = null;
     const c = document.querySelector("#chart-attendance-trend");
     if (c) c.innerHTML = `<p class="text-xs text-slate-500 italic py-8 text-center">Data tren kehadiran belum tersedia.</p>`;
@@ -289,22 +905,22 @@ function renderAttendanceTrendChart(trends) {
 
   const options = {
     series: [
-      { name: "Hadir Penuh", data: trends.map(t => t.hadir_penuh ?? t.hadir ?? 0), color: "#10b981" },
+      { name: "Hadir Penuh", data: tapis.map(t => t.hadir_penuh ?? t.hadir ?? 0), color: "#10b981" },
       // TAHAP E: satu pertemuan bisa punya beberapa slot absen, jadi ada murid
       // yang hanya masuk sebagian. Kalau seri ini tidak digambar, tumpukan bar
       // tidak akan berjumlah seisi kelas dan grafiknya jadi bohong.
-      { name: "Hadir Sebagian", data: trends.map(t => t.hadir_sebagian || 0), color: "#2dd4bf" },
+      { name: "Hadir Sebagian", data: tapis.map(t => t.hadir_sebagian || 0), color: "#2dd4bf" },
       // BELUM DIINPUT: pertemuan yang presensinya belum masuk TIDAK dihitung
       // Alpha (lihat config/aturan.json). Kalau seri ini tidak digambar, bar
       // tumpuk tidak berjumlah seisi kelas dan grafiknya jadi bohong.
-      { name: "Belum Diinput", data: trends.map(t => t.belum_diinput || 0), color: "#64748b" },
-      { name: "Izin / Sakit / Alpha", data: trends.map(t => (t.sakit || 0) + (t.izin || 0) + (t.alpha || 0)), color: "#f43f5e" }
+      { name: "Belum Diinput", data: tapis.map(t => t.belum_diinput || 0), color: "#64748b" },
+      { name: "Izin / Sakit / Alpha", data: tapis.map(t => (t.sakit || 0) + (t.izin || 0) + (t.alpha || 0)), color: "#f43f5e" }
     ],
     chart: { type: "bar", height: 260, stacked: true, toolbar: { show: false }, background: "transparent" },
     theme: { mode: "dark" },
     plotOptions: { bar: { borderRadius: 6, columnWidth: "40%" } },
     xaxis: {
-      categories: trends.map(t => `P${t.pertemuan}`),
+      categories: tapis.map(t => `P${t.pertemuan}`),
       labels: { style: { colors: "#94a3b8", fontSize: "11px" } },
       axisBorder: { color: "#334155" }
     },
@@ -355,6 +971,7 @@ function renderAttendanceTable() {
   const sessionVal = sessionEl.value;
   const statusVal = statusEl.value;
 
+  const setP = pertemuanDalamBulan();
   let rowCount = 0;
 
   masterData.students.forEach((s) => {
@@ -363,6 +980,7 @@ function renderAttendanceTable() {
     if (searchVal && !(nama.includes(searchVal) || npm.includes(searchVal))) return;
 
     (s.kehadiran.detail || []).forEach((sess) => {
+      if (setP && !setP.has(String(sess.pertemuan))) return; // FILTER BULAN (Level 1)
       if (sessionVal !== "all" && String(sess.pertemuan) !== sessionVal) return;
       if (statusVal !== "all" && sess.status !== statusVal) return;
       rowCount++;
@@ -488,6 +1106,14 @@ function selectStudent(npm) {
     alertBadge.className = palette[ai.alert_color] || palette.emerald;
   }
 
+  // FASE 5: badge sumber mesin (templat v3 dari sinyal nyata; akan berubah
+  // "AI-Gemini" ketika jalur narasi Gemini diaktifkan di Fase 4).
+  const sumberBadge = document.getElementById("mhs-sumber-badge");
+  if (sumberBadge) {
+    const m = ai.mesin || {};
+    sumberBadge.textContent = `mesin: ${m.sumber || "templat_v3"} • ${m.tanda_sinyal || "-"}`;
+  }
+
   // Info at-risk memakai flag yang sama (bukan ditebak ulang di frontend)
   const riskNote = document.getElementById("mhs-risk-note");
   if (riskNote) {
@@ -536,7 +1162,10 @@ function selectStudent(npm) {
   setText("mhs-stat-grade", `Grade: ${ak.grade}`);
   setText("mhs-stat-alpha", `${kh.alpha}x`);
 
-  renderRadarCompetencyChart(ak.kompetensi || {});
+  renderRadarCompetencyChart(ak.kompetensi || {}, ai.radar_sumber || null);
+
+  // FASE 5: tren perkembangan sepanjang kuliah (lintas MK dari tree).
+  muatTrenMahasiswa(student);
 
   // 4 Kuadran Narasi AI
   setText("ai-karakter-spasial", ai.analisis_karakter_spasial || ai.kekuatan || "-");
@@ -553,13 +1182,44 @@ function selectStudent(npm) {
   if (window.lucide) lucide.createIcons();
 }
 
-function renderRadarCompetencyChart(comp) {
-  setText("radar-val-cad", comp.penguasaan_cad ?? "-");
-  setText("radar-val-detail", comp.ketelitian_detail ?? "-");
-  setText("radar-val-disiplin", comp.kedisiplinan_asistensi ?? "-");
-  setText("radar-val-ruang", comp.logika_ruang_struktur ?? "-");
+// FASE 5: label ramah dim radar (untuk legenda & tanda estimasi).
+const _LABEL_DIM_UI = {
+  penguasaan_cad: "Penguasaan CAD",
+  ketelitian_detail: "Detail Gambar",
+  kedisiplinan_asistensi: "Kedisiplinan Studio",
+  logika_ruang_struktur: "Logika Ruang/Struktur",
+  manajemen_waktu: "Manajemen Waktu",
+};
+
+function renderRadarCompetencyChart(comp, sumber) {
+  // FASE 5: label jujur. Dim "estimasi" ditandai * dan dijelaskan di legenda -
+  // tidak ada angka yang dipamerkan sebagai fakta terukur padahal proksi.
+  const labeler = (id, kunci, nama) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const est = sumber && sumber[kunci] === "estimasi";
+    el.textContent = (comp[kunci] ?? "-") + (est ? " *" : "");
+    el.title = est ? `${nama}: ESTIMASI (proksi dari sinyal lain), bukan terukur langsung` : `${nama}: terukur dari data`;
+  };
+  labeler("radar-val-cad", "penguasaan_cad", "Penguasaan CAD");
+  labeler("radar-val-detail", "ketelitian_detail", "Detail Gambar");
+  labeler("radar-val-disiplin", "kedisiplinan_asistensi", "Kedisiplinan Studio");
+  labeler("radar-val-ruang", "logika_ruang_struktur", "Logika Ruang/Struktur");
   // FIX: sumbu ke-5 (Manajemen Waktu) sebelumnya tidak pernah punya nilai di UI
-  setText("radar-val-waktu", comp.manajemen_waktu ?? "-");
+  labeler("radar-val-waktu", "manajemen_waktu", "Manajemen Waktu");
+
+  const legend = document.getElementById("radar-legend");
+  if (legend) {
+    if (sumber) {
+      const est = Object.entries(sumber).filter(([_k, v]) => v === "estimasi")
+        .map(([_k]) => escapeHtml(_LABEL_DIM_UI[_k] || _k));
+      legend.innerHTML = est.length
+        ? `<span class="text-amber-500/90">* estimasi</span>: ${est.join(", ")} • sisanya terukur dari data kinerja`
+        : "Semua dimensi terukur langsung dari data kinerja.";
+    } else {
+      legend.textContent = "";
+    }
+  }
 
   const values = [
     comp.penguasaan_cad ?? 0,
@@ -582,6 +1242,48 @@ function renderRadarCompetencyChart(comp) {
   };
 
   radarCompetencyChart = mountChart(radarCompetencyChart, "#chart-radar-competency", options);
+}
+
+/** FASE 5: kartu tren sepanjang kuliah di tab wali - rollup per semester +
+ * arah tren dari /api/perkembangan (sama dengan chip tab 8, versi lebar). */
+async function muatTrenMahasiswa(student) {
+  const isi = document.getElementById("tren-isi");
+  const hitung = document.getElementById("tren-mk-count");
+  if (!isi) return;
+
+  const perk = await dataPerkembangan();
+  const p = perk ? (perk.mahasiswa || {})[String(student.npm)] : null;
+  if (!hitung) return;
+  if (!p || !p.jumlah_mk) {
+    hitung.textContent = "-";
+    isi.innerHTML = `<p class="text-slate-500 italic">Riwayat lintas MK belum tersedia untuk NPM ini.</p>`;
+    return;
+  }
+
+  hitung.textContent = `${p.jumlah_mk} MK`;
+  const ikon = p.arah_nilai === "naik" ? "↑ naik"
+    : p.arah_nilai === "turun" ? "↓ turun" : "→ stabil";
+  const kelas = p.arah_nilai === "naik"
+    ? "text-emerald-300 border-emerald-500/30"
+    : p.arah_nilai === "turun" ? "text-rose-300 border-rose-500/30"
+    : "text-slate-300 border-slate-600/60";
+
+  const barisSemester = (p.semester || []).map(sem => {
+    const nilai = sem.rata_nilai != null ? `${sem.rata_nilai}` : "-";
+    const keh = sem.rata_kehadiran != null ? `${sem.rata_kehadiran}%` : "-";
+    return `<div class="flex items-center justify-between gap-2 bg-slate-900 rounded-lg px-3 py-2 border border-slate-800">
+      <span class="font-semibold text-slate-200">${escapeHtml(_tampilTahun(sem.tahun_ajar))} ${escapeHtml(sem.semester)}</span>
+      <span class="text-slate-400">${sem.jumlah_mk} MK • rata nilai <span class="text-amber-300 font-bold">${escapeHtml(nilai)}</span> • hadir <span class="text-cyan-300 font-bold">${escapeHtml(keh)}</span></span>
+    </div>`;
+  }).join("");
+
+  isi.innerHTML =
+    `<div class="flex items-center gap-2 mb-2">
+      <span class="px-2 py-0.5 rounded border text-[10px] font-bold ${kelas}">${ikon}${p.delta_nilai_terakhir != null ? ` (${p.delta_nilai_terakhir > 0 ? "+" : ""}${p.delta_nilai_terakhir})` : ""}</span>
+      <span class="text-[10px] text-slate-500">arah terakhir = rata-rata nilai semester terakhir vs sebelumnya (ambang ±5)</span>
+    </div>` +
+    (barisSemester ||
+      `<p class="text-slate-500 italic">Belum ada rollup semester.</p>`);
 }
 
 function renderStudentSessionCards(detailList) {
@@ -858,12 +1560,31 @@ function copyInstagramCaption() {
 // =============================================================================
 // TAB 4: WHATSAPP SIMULATOR
 // =============================================================================
+/** Sumber identitas salam dokumen WA: config identitas (paling segar,
+ *  berubah seketika setelah Simpan di Pengaturan) dengan fallback data master. */
+function _metaIdentitasSalam() {
+  const cfg = (identitasData && identitasData.config) || {};
+  const inst = cfg.institusi || {};
+  const mkAktif = (cfg.mata_kuliah || {})[cfg.mata_kuliah_aktif] || {};
+  const c = (masterData && masterData.course) || {};
+  const prodi = inst.prodi || c.prodi || "Arsitektur";
+  const fakultas = inst.fakultas || c.fakultas || "Fakultas Teknik & Desain";
+  return {
+    prodi,
+    fakultas,
+    instansi: `Program Studi ${prodi}, ${fakultas}`,
+    kaprodi: inst.ketua_prodi || c.ketua_prodi || "-",
+    asisten: mkAktif.asisten_dosen || c.asisten_dosen || "-",
+  };
+}
+
 function renderWhatsAppSimulation(student) {
   setText("wa-recipient-name", `Wali Murid ${student.nama}`);
 
   const courseName = (masterData && masterData.course && masterData.course.nama_mk)
     ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
-  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* untuk periode semester berjalan:`;
+  const m = _metaIdentitasSalam();
+  const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari ${m.instansi}.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* untuk periode semester berjalan:`;
   setText("wa-opening-text", openingText);
 
   setText("wa-card-file-1", `01_rekap_kehadiran_${student.npm}.pdf`);
@@ -875,9 +1596,10 @@ function copyWhatsAppMessage() {
   if (!currentStudent) return;
   const courseName = (masterData && masterData.course && masterData.course.nama_mk)
     ? masterData.course.nama_mk : "Aplikasi Komputer Arsitektur & QS";
+  const m = _metaIdentitasSalam();
   const fullMsg = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\n` +
     `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
-    `Salam hangat dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n` +
+    `Salam hangat dari ${m.instansi}.\n` +
     `Melalui pesan ini, kami menyampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* periode semester berjalan.\n\n` +
     `Bersama pesan ini, kami lampirkan 3 Dokumen Resmi Terverifikasi:\n` +
     `1. 📎 Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi Praktikum)\n` +
@@ -885,9 +1607,9 @@ function copyWhatsAppMessage() {
     `3. 📎 Portofolio Karya & Dokumentasi Studio Arsitektur (Slide Deck Presentasi 16:9 Widescreen)\n\n` +
     `Bapak/Ibu dapat mengunduh dan meninjau berkas PDF terlampir. Terima kasih atas doa, bimbingan, dan cinta kasih yang senantiasa Bapak/Ibu berikan kepada ananda tercinta di rumah.\n\n` +
     `Hormat kami,\n` +
-    `*Ketua Program Studi Arsitektur*\n` +
-    `*Fielda Roza, S.T., M.T.*\n` +
-    `Asisten Dosen: *Adrian Ridhoa, S.T.*`;
+    `*Ketua Program Studi ${m.prodi}*\n` +
+    `*${m.kaprodi}*\n` +
+    `Asisten Dosen: *${m.asisten}*`;
 
   copyToClipboard(fullMsg, "Pesan pembuka resmi & daftar lampiran berhasil disalin!");
 }
@@ -1080,6 +1802,28 @@ function terapkanHeaderIdentitas(data) {
   if (h.judul) setText("hero-judul", h.judul);
   if (h.subjudul) setText("hero-subjudul", h.subjudul);
   if (h.deskripsi) setText("hero-deskripsi", h.deskripsi);
+  // Identitas institusi & pejabat: SATU sumber config/identitas.json.
+  // Tidak ada lagi nama yang dikeras-batu di HTML - menambah/mengganti dosen
+  // pengasuh atau asisten cukup di menu Pengaturan lalu Simpan.
+  const cfg = (data && data.config) || {};
+  const inst = cfg.institusi || {};
+  const mkAktif = (cfg.mata_kuliah || {})[cfg.mata_kuliah_aktif] || {};
+  const prodi = inst.prodi || "";
+  const kombinasi = [
+    inst.universitas || "",
+    prodi ? `Program Studi ${prodi}` : "",
+  ].filter(Boolean).join(" — ");
+  if (kombinasi) setText("header-institusi", kombinasi);
+  if (inst.ketua_prodi) setText("header-kaprodi", inst.ketua_prodi);
+  const asisten = mkAktif.asisten_dosen || "";
+  if (asisten) {
+    setText("header-asisten", asisten);
+    setText("wali-asisten", asisten);
+    setText("wa-asisten-nama", asisten);
+  }
+  if (prodi) setText("wa-kaprodi-prodi", prodi);
+  if (inst.ketua_prodi) setText("wa-kaprodi-nama", inst.ketua_prodi);
+  if (prodi) setText("footer-prodi", `Program Studi ${prodi}`);
 }
 
 function terapkanIdentitasKeForm(data) {
@@ -1285,6 +2029,9 @@ async function regenerasiPaketPdf() {
 let pohonKurikulum = null;    // payload GET /api/kurikulum
 let detailKurikulum = null;   // payload GET /api/kurikulum/detail
 let konteksKurikulum = null;  // {prodi, tahun_ajar, semester, kunci_mk}
+// Drill-down dari tab Rekap: tampilkan detail MK LAIN tanpa memindahkan MK
+// aktif. Hanya untuk membaca/menyunting MK itu; header tetap MK aktif.
+let detailOverrideKonteks = null;
 
 function _opsi(select, nilai, teks, terpilih) {
   const opt = document.createElement("option");
@@ -1393,6 +2140,8 @@ function isiMk() {
 
 /** Perubahan salah satu dropdown: isi ulang yang di hilir, lalu (untuk MK) ganti MK aktif. */
 async function onKonteksBerubah(level) {
+  // Navigasi manual membatalkan drill-down dari tab Rekap.
+  detailOverrideKonteks = null;
   if (!pohonKurikulum) {
     try { await muatKurikulum(); } catch (err) {
       toast(`Tree kurikulum tidak bisa dibaca: ${err.message}`, "error", 8000);
@@ -1423,8 +2172,11 @@ async function onKonteksBerubah(level) {
 }
 
 async function muatDetailKurikulum() {
-  const prodi = _nilai("sel-prodi"), ta = _nilai("sel-tahun");
-  const sem = _nilai("sel-semester"), kunci = _nilai("course-selector");
+  const ctx = detailOverrideKonteks || {
+    prodi: _nilai("sel-prodi"), tahun_ajar: _nilai("sel-tahun"),
+    semester: _nilai("sel-semester"), kunci_mk: _nilai("course-selector"),
+  };
+  const { prodi, tahun_ajar: ta, semester: sem, kunci_mk: kunci } = ctx;
   const statusEl = document.getElementById("kurikulum-status");
   if (!prodi || !ta || !sem || !kunci) return;
   if (statusEl) statusEl.textContent = "Memuat isi tree kurikulum…";
@@ -1436,8 +2188,9 @@ async function muatDetailKurikulum() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
     detailKurikulum = data;
-    konteksKurikulum = { prodi, tahun_ajar: ta, semester: sem, kunci_mk: kunci };
+    konteksKurikulum = ctx;
     renderDetailKurikulum(data);
+    renderOverrideKurikulum(data);
     if (statusEl) statusEl.textContent = "";
   } catch (err) {
     if (statusEl) statusEl.textContent = "";
@@ -1571,6 +2324,32 @@ function isiTopikSisa() {
     : "Tidak ada topik yang kosong.", diisi ? "info" : "success");
 }
 
+function renderOverrideKurikulum(data) {
+  const box = document.getElementById("kur-override");
+  if (!box) return;
+  if (!detailOverrideKonteks) {
+    box.className = "hidden";
+    box.innerHTML = "";
+    return;
+  }
+  const r = (data && data.ringkas) || {};
+  box.className = "rounded-2xl p-4 border border-cyan-700/60 bg-cyan-950/30 text-xs text-cyan-100 flex flex-wrap items-center justify-between gap-2";
+  box.innerHTML = `<span>Menampilkan dari <strong>Rekap Periode</strong>:
+    ${escapeHtml(r.nama_mk || data.kunci_mk)} — MK aktif di dashboard
+    <strong>tidak berubah</strong>. Suntingan di bawah hanya menyentuh MK ini.</span>
+    <button type="button" onclick="kembaliKeMkAktif()"
+      class="touch-target px-2.5 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-100 border border-cyan-500/40 font-semibold">
+      Kembali ke MK aktif
+    </button>`;
+}
+
+function kembaliKeMkAktif() {
+  detailOverrideKonteks = null;
+  muatKurikulum()
+    .then(() => muatDetailKurikulum())
+    .catch(err => toast(`Tree kurikulum tidak bisa dibaca: ${err.message}`, "error", 8000));
+}
+
 function tampilkanPeringatanKurikulum(daftar) {
   const box = document.getElementById("kurikulum-peringatan");
   if (!box) return;
@@ -1640,6 +2419,7 @@ async function simpanKurikulum() {
     }
     toast(data.pesan || "Tersimpan.", "success", 6000);
     tampilkanPeringatanKurikulum(data.peringatan || []);
+    detailOverrideKonteks = null;
     await muatKurikulum();
     await muatDetailKurikulum();
     await loadAcademicData();
@@ -1648,5 +2428,782 @@ async function simpanKurikulum() {
   } finally {
     if (statusEl) statusEl.textContent = "";
     if (window.lucide) lucide.createIcons();
+  }
+}
+
+// =============================================================================
+// TAB 8: REKAP PERIODE (Level 3: satu semester semua MK; Level 4: semua
+// semester semua MK). Semua data dari /api/periode — dihitung dari TREE
+// (scripts/periode.py), bukan master 1 MK. At-risk PER MK (keputusan user).
+// =============================================================================
+let rekapLevel = "semester";
+let rekapTerakhir = null;
+
+function _styleRekapButtons() {
+  const peta = {
+    bulan: "rekap-scope-bulan", mk: "rekap-scope-mk",
+    semester: "rekap-scope-semester", semua: "rekap-scope-semua",
+  };
+  const aktif = "bg-fuchsia-500/20 text-fuchsia-200 border-fuchsia-500/40";
+  const pasif = "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700";
+  Object.entries(peta).forEach(([level, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.className = `touch-target px-3 py-1.5 text-xs font-bold rounded-lg border transition ${rekapLevel === level ? aktif : pasif}`;
+  });
+  const selMhs = document.getElementById("rekap-mhs");
+  if (selMhs) selMhs.classList.toggle("hidden", rekapLevel !== "bulan");
+}
+
+function aktifkanScopeRekap(level) {
+  rekapLevel = level;
+  _styleRekapButtons();
+  muatRekap();
+}
+
+function _isiSelectMahasiswaRekap() {
+  const sel = document.getElementById("rekap-mhs");
+  if (!sel) return "";
+  const daftar = (masterData && masterData.students) || [];
+  const lama = sel.value || (currentStudent && currentStudent.npm) || "";
+  sel.innerHTML = "";
+  daftar.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.npm;
+    opt.textContent = `${s.npm} — ${s.nama}`;
+    opt.selected = String(s.npm) === String(lama);
+    sel.appendChild(opt);
+  });
+  if (!sel.value && daftar.length) sel.value = daftar[0].npm;
+  return sel.value;
+}
+
+const NAMA_BULAN = ["Januari", "Februari", "Maret", "April", "Mei", "Juni",
+  "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+function _kunciBulan(tanggal) {
+  const m = String(tanggal || "").match(/^(\d{4})-(\d{2})/);
+  return m ? `${m[1]}-${m[2]}` : "-";
+}
+
+function _labelBulan(kunci) {
+  if (kunci === "-") return "Tanpa Tanggal";
+  const [tahun, bulan] = kunci.split("-");
+  return `${NAMA_BULAN[Number(bulan) - 1] || bulan} ${tahun}`;
+}
+
+function _ringkasBulan(detail) {
+  const grup = new Map();
+  (detail || []).forEach(d => {
+    const k = _kunciBulan(d.tanggal);
+    if (!grup.has(k)) grup.set(k, []);
+    grup.get(k).push(d);
+  });
+  return [...grup.entries()].sort((a, b) => a[0] === "-" ? 1 : b[0] === "-" ? -1 : a[0].localeCompare(b[0]));
+}
+
+function _kpiRekap({ mk, atRisk, atRiskDesc, kehadiran, kehadiranDesc, nilai, nilaiDesc, mkDesc }) {
+  setText("rekap-kpi-mk", mk ?? "-");
+  setText("rekap-kpi-mk-desc", mkDesc || "-");
+  setText("rekap-kpi-at-risk", atRisk ?? "-");
+  setText("rekap-kpi-at-risk-desc", atRiskDesc || "-");
+  setText("rekap-kpi-kehadiran", kehadiran ?? "-");
+  setText("rekap-kpi-kehadiran-desc", kehadiranDesc || "Rata-rata antar-MK yang bisa dihitung");
+  setText("rekap-kpi-nilai", nilai ?? "-");
+  setText("rekap-kpi-nilai-desc", nilaiDesc || "-");
+}
+
+function _tampilkanRekapTabel(tampil) {
+  const tabel = document.getElementById("rekap-tabel-wrapper");
+  const bulan = document.getElementById("rekap-bulan-view");
+  if (tabel) tabel.classList.toggle("hidden", !tampil);
+  if (bulan) bulan.classList.toggle("hidden", tampil);
+}
+
+function _theadStandar() {
+  const th = document.getElementById("rekap-thead");
+  if (!th) return;
+  th.innerHTML = `<tr>
+    <th class="px-4 py-3">Mata Kuliah</th>
+    <th class="px-4 py-3">Periode</th>
+    <th class="px-4 py-3 text-center">Peserta</th>
+    <th class="px-4 py-3 text-center">Kehadiran</th>
+    <th class="px-4 py-3 text-center">Nilai</th>
+    <th class="px-4 py-3 text-center">At-Risk</th>
+    <th class="px-4 py-3 text-center">Pertemuan</th>
+    <th class="px-4 py-3 text-center">Topik</th>
+    <th class="px-4 py-3 text-center">Bulan</th>
+    <th class="px-4 py-3">Status</th>
+  </tr>`;
+}
+
+function _barisRekap(b) {
+  if (b.rusak) {
+    return `<tr><td colspan="10" class="px-4 py-2.5">
+      <span class="text-rose-300 font-bold">${escapeHtml(b.nama_mk)}</span>
+      <span class="text-rose-400/80"> — berkas tidak lengkap:
+      ${escapeHtml(b.rusak).slice(0, 140)}</span></td></tr>`;
+  }
+  const atRiskBadge = b.jumlah_at_risk > 0
+    ? `<span class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30 font-bold">${b.jumlah_at_risk}</span>`
+    : `<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">0</span>`;
+  const pert = `${b.pertemuan ?? 0}/${b.pertemuan_standar ?? 16}`;
+  const topik = `${b.topik_terisi ?? 0}/${(b.topik_terisi ?? 0) + (b.topik_placeholder ?? 0)}`;
+  const bulan = Object.keys(b.bulan || {}).map(k => k === "-" ? "tanpa tgl" : k).join(", ");
+  return `<tr class="hover:bg-slate-800/40 transition-colors">
+    <td class="px-4 py-2.5">
+      <span class="text-slate-100 font-semibold">${escapeHtml(b.nama_mk)}</span>
+      ${b.kode_mk ? `<span class="text-slate-500"> • ${escapeHtml(b.kode_mk)}</span>` : ""}
+    </td>
+    <td class="px-4 py-2.5 text-slate-400">${_tampilTahun(b.tahun_ajar)} • ${escapeHtml(b.semester)}</td>
+    <td class="px-4 py-2.5 text-center text-slate-200">${b.peserta ?? "-"}</td>
+    <td class="px-4 py-2.5 text-center text-emerald-300 font-bold">${b.kehadiran_rata != null ? `${b.kehadiran_rata}%` : "-"}</td>
+    <td class="px-4 py-2.5 text-center text-amber-300 font-bold">${b.nilai_rata ?? "-"}</td>
+    <td class="px-4 py-2.5 text-center">${atRiskBadge}</td>
+    <td class="px-4 py-2.5 text-center text-slate-300">${pert}</td>
+    <td class="px-4 py-2.5 text-center text-slate-300">${topik}</td>
+    <td class="px-4 py-2.5 text-center text-slate-400 text-[10px]">${escapeHtml(bulan || "-")}</td>
+    <td class="px-4 py-2.5 text-center">
+      <button class="rekap-detail-btn touch-target px-2 py-1 text-[10px] bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded border border-slate-700 transition"
+        data-prodi="${escapeHtml(b.prodi || "")}" data-ta="${escapeHtml(b.tahun_ajar || "")}"
+        data-sem="${escapeHtml(b.semester || "")}" data-kunci="${escapeHtml(b.kunci_mk || "")}">
+        Detail Kurikulum
+      </button>
+    </td>
+  </tr>`;
+}
+
+function _pasangTombolDetail() {
+  const tbody = document.getElementById("rekap-table-body");
+  if (!tbody) return;
+  tbody.querySelectorAll(".rekap-detail-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      rekapLihatMk(btn.dataset.prodi, btn.dataset.ta, btn.dataset.sem, btn.dataset.kunci);
+    });
+  });
+}
+
+function renderRekap(data) {
+  const rk = data.ringkas || {};
+  _kpiRekap({
+    mk: rk.jumlah_mk ?? "-",
+    mkDesc: `${rk.mk_lengkap ?? 0} MK bisa dihitung` + (rk.mk_rusak ? `, ${rk.mk_rusak} berkas rusak` : ""),
+    atRisk: rk.jumlah_at_risk ?? "-",
+    atRiskDesc: rk.jumlah_kejadian_at_risk != null
+      ? `Mahasiswa unik; ${rk.jumlah_kejadian_at_risk} kejadian per MK`
+      : "Mahasiswa unik (union antar-MK)",
+    kehadiran: rk.kehadiran_rata != null ? `${rk.kehadiran_rata}%` : "belum bisa dihitung",
+    nilai: rk.nilai_rata != null ? rk.nilai_rata : "belum bisa dihitung",
+  });
+
+  const tbody = document.getElementById("rekap-table-body");
+  if (!tbody) return;
+  _theadStandar();
+  _tampilkanRekapTabel(true);
+  tbody.innerHTML = "";
+
+  const barisList = [];
+  const levelSemua = rekapLevel === "semua" && data.tahun_ajar;
+
+  if (levelSemua) {
+    Object.entries(data.tahun_ajar).forEach(([ta, semMap]) => {
+      Object.entries(semMap).forEach(([sem, dok]) => {
+        const rkSem = dok.ringkas || {};
+        const trHead = document.createElement("tr");
+        trHead.className = "bg-slate-900/70 text-slate-300 font-bold";
+        trHead.innerHTML = `<td colspan="10" class="px-4 py-2.5">
+          ${_tampilTahun(ta)} • ${escapeHtml(sem)} —
+          <span class="text-slate-400 font-normal">
+            ${rkSem.jumlah_mk ?? 0} MK,
+            at-risk unik ${rkSem.jumlah_at_risk ?? 0},
+            kehadiran ${rkSem.kehadiran_rata ?? "-"},
+            nilai ${rkSem.nilai_rata ?? "-"},
+            topik placeholder ${rkSem.jumlah_topik_placeholder ?? 0}
+          </span></td>`;
+        tbody.appendChild(trHead);
+        barisList.push(...(dok.baris || []));
+      });
+    });
+  } else {
+    barisList.push(...(data.baris || []));
+  }
+
+  if (!barisList.length) {
+    tbody.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-slate-500 italic">
+      Tidak ada mata kuliah di cakupan ini.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = barisList.map(_barisRekap).join("");
+  _pasangTombolDetail();
+  if (window.lucide) lucide.createIcons();
+}
+
+function _renderRekapSatuMk(b) {
+  const rk = {
+    jumlah_mk: 1, mk_lengkap: 1, mk_rusak: 0,
+    jumlah_at_risk: b.jumlah_at_risk ?? 0,
+    jumlah_kejadian_at_risk: b.jumlah_at_risk ?? 0,
+    kehadiran_rata: b.kehadiran_rata, nilai_rata: b.nilai_rata,
+  };
+  renderRekap({ ringkas: rk, baris: [b] });
+  setText("rekap-info",
+    `MK: ${b.nama_mk || b.kunci_mk} • ${_tampilTahun(b.tahun_ajar)} ${b.semester} — ` +
+    `at-risk dihitung untuk MK ini saja.`);
+}
+
+// =============================================================================
+// TAB 8: PANEL POTENSI MAHASISWA PER MK (pilih MK bebas dari tree)
+// =============================================================================
+// Sumber: katalog build data/courses/<kunci>.json via /api/course_data.
+// Katalog memuat satu dokumen master per MK (students + akademik + kehadiran
+// + ai_diagnosis), jadi potensi bisa dilihat untuk MK mana pun - bukan hanya
+// MK aktif di academic_data.json. Katalog lama yang belum dibangun ditolak
+// fail-closed oleh server dengan pesan "jalankan parse_data".
+let potensiMkAktif = null;
+// Cache perkembangan lintas-MK per prodi (payload /api/perkembangan).
+let perkembanganPotensi = {};
+
+function sinkronPotensiMk(kunci) {
+  // Drill-down "Per Semester (1 MK)" ikut mengarahkan panel potensi ke MK itu.
+  const sel = document.getElementById("rekap-potensi-sel");
+  if (!sel || !kunci) return;
+  if (Array.from(sel.options).some(o => o.value === kunci) && sel.value !== kunci) {
+    sel.value = kunci;
+    muatPotensiMk();
+  }
+}
+
+function _isiPilihMkPotensi() {
+  const sel = document.getElementById("rekap-potensi-sel");
+  if (!sel || !pohonKurikulum || !pohonKurikulum.pohon) return false;
+  const lama = sel.value || potensiMkAktif || "";
+  sel.innerHTML = "";
+  let pertama = "";
+  Object.entries(pohonKurikulum.pohon).forEach(([prodi, tahunMap]) => {
+    Object.entries(tahunMap || {}).forEach(([ta, semMap]) => {
+      Object.entries(semMap || {}).forEach(([sem, mkList]) => {
+        if (!Array.isArray(mkList)) return;
+        mkList.forEach(mk => {
+          if (!mk || mk.rusak || !mk.kunci_mk) return;
+          if (!pertama) pertama = mk.kunci_mk;
+          const opt = document.createElement("option");
+          opt.value = mk.kunci_mk;
+          opt.textContent =
+            `${mk.nama_mk || mk.kunci_mk} • ${_tampilTahun(ta)} • ${sem}`;
+          opt.dataset.prodi = prodi;
+          sel.appendChild(opt);
+        });
+      });
+    });
+  });
+  if (!pertama) return false;
+  // Default: MK yang terakhir dilihat, lalu MK aktif di header, lalu pertama.
+  const adaLama = Array.from(sel.options).some(o => o.value === lama);
+  const aktif = _nilai("course-selector");
+  const adaAktif = Array.from(sel.options).some(o => o.value === aktif);
+  sel.value = adaLama ? lama : (adaAktif ? aktif : pertama);
+  return true;
+}
+
+const _PALETE_POTENSI = {
+  rose: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+  amber: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  sky: "bg-sky-500/20 text-sky-300 border-sky-500/30",
+  emerald: "bg-emerald-500/20 text-emerald-300 border-emerald-500/25",
+};
+
+async function muatPotensiMk() {
+  const sel = document.getElementById("rekap-potensi-sel");
+  const grid = document.getElementById("rekap-potensi-grid");
+  const kpi = document.getElementById("rekap-potensi-kpi");
+  if (!sel || !grid || !kpi) return;
+  // Placeholder (1 opsi lepas value='') tidak boleh bikin pengisi lewat.
+  if ((!sel.options.length || !sel.value) && !_isiPilihMkPotensi()) {
+    grid.innerHTML =
+      `<p class="text-xs text-slate-500 italic col-span-full">Tree kurikulum belum terbaca — daftar MK tidak tersedia.</p>`;
+    return;
+  }
+  const kunci = sel.value;
+  if (!kunci) { grid.innerHTML = ""; kpi.innerHTML = ""; return; }
+  potensiMkAktif = kunci;
+
+  grid.innerHTML =
+    `<p class="text-xs text-slate-500 italic col-span-full">Memuat potensi mahasiswa ${escapeHtml(kunci)}…</p>`;
+  kpi.innerHTML = "";
+  try {
+    const res = await fetch(
+      `/api/course_data?course=${encodeURIComponent(kunci)}`, { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+
+    // KPI ringkas dari class_summary katalog (angka yang sama dengan tab 1).
+    const cs = data.class_summary || {};
+    const namaMk = (data.course && (data.course.nama_mk || data.course.nama)) || kunci;
+    kpi.innerHTML =
+      `<span class="font-semibold text-white truncate max-w-xs" title="${escapeHtml(namaMk)}">${escapeHtml(namaMk)}</span>` +
+      `<span>👥 ${cs.total_mahasiswa ?? "-"} mahasiswa</span>` +
+      `<span class="text-rose-300">⚠️ ${cs.total_at_risk ?? 0} at-risk</span>` +
+      `<span class="text-emerald-300">Kehadiran rata ${cs.rata_kehadiran ?? "-"}%</span>` +
+      `<span class="text-amber-300">Nilai rata ${cs.rata_nilai_studio ?? "-"}</span>` +
+      `<span class="text-slate-500">Sumber: katalog build ${escapeHtml(kunci)}</span>`;
+
+    const daftar = (data.students || []).slice().sort((a, b) =>
+      (b.at_risk ? 1 : 0) - (a.at_risk ? 1 : 0) || (a.no || 0) - (b.no || 0));
+    if (!daftar.length) {
+      grid.innerHTML =
+        `<p class="text-xs text-slate-500 italic col-span-full">Katalog ini belum memuat baris mahasiswa.</p>`;
+      return;
+    }
+
+    grid.innerHTML = daftar.map(s => {
+      const ak = s.akademik || {};
+      const kh = s.kehadiran || {};
+      const ai = s.ai_diagnosis || {};
+      const warna = _PALETE_POTENSI[ai.alert_color] || _PALETE_POTENSI.emerald;
+      const karier = (ai.matriks_karier_10 || [])[0] || {};
+      const catatan = ai.catatan_khusus_mahasiswa || ai.kekuatan || "-";
+      return `<div class="p-4 rounded-xl bg-slate-800/70 border border-slate-700/60 flex flex-col gap-2 min-w-0" data-npm="${escapeHtml(s.npm || "")}">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <div class="font-bold text-white text-sm truncate" title="${escapeHtml(s.nama || "")}">${escapeHtml(s.nama || "-")}</div>
+            <div class="text-[10px] text-slate-400 font-mono">NPM ${escapeHtml(s.npm || "-")}</div>
+            <div class="text-[9px] text-slate-500 font-mono" title="Mesin diagnosis: templat_v3 = dihitung dari sinyal nyata (nilai, kehadiran, tren); nanti bisa naik ke AI-Gemini">mesin: ${escapeHtml((ai.mesin && ai.mesin.sumber) || "-")}</div>
+          </div>
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold border flex-shrink-0 ${warna}">${escapeHtml(ai.status_alert || (s.at_risk ? "At-Risk" : "Aman"))}</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2 text-center text-[11px]">
+          <div><div class="text-slate-400">Grade</div><div class="font-bold text-white">${escapeHtml(ak.grade ?? "-")}</div></div>
+          <div><div class="text-slate-400">Kesiapan</div><div class="font-bold text-cyan-300">${escapeHtml(ak.indeks_kesiapan ?? "-")}%</div></div>
+          <div><div class="text-slate-400">Nilai</div><div class="font-bold text-amber-300">${escapeHtml(ak.nilai_rata_rata ?? "-")}</div></div>
+          <div><div class="text-slate-400">Alpha</div><div class="font-bold ${kh.alpha ? "text-rose-300" : "text-slate-300"}">${escapeHtml(kh.alpha ?? 0)}x</div></div>
+        </div>
+        <div class="text-[10px] text-slate-400">
+          Kehadiran <span class="text-slate-200 font-semibold">${escapeHtml(kh.persentase ?? "-")}%</span> slot •
+          Kekuatan <span class="text-emerald-300">${escapeHtml(ai.kekuatan || "-")}</span>
+        </div>
+        ${_chipBulananDetail(kh.detail)}
+        ${karier.profesi
+          ? `<div class="text-[10px] text-slate-400">Karier teratas: <span class="text-cyan-300 font-semibold">${escapeHtml(karier.profesi)}</span>${karier.kecocokan_persen != null ? ` • ${escapeHtml(karier.kecocokan_persen)}%` : ""}</div>`
+          : ""}
+        <p class="text-[10px] text-slate-300 leading-relaxed" title="${escapeHtml(catatan)}">${escapeHtml(String(catatan).slice(0, 180))}${String(catatan).length > 180 ? "…" : ""}</p>
+      </div>`;
+    }).join("");
+
+    // LEVEL 3 (opsional, async): chip perkembangan sepanjang kuliah per npm.
+    _terapkanPerkembangan();
+  } catch (err) {
+    grid.innerHTML =
+      `<div class="text-xs text-rose-300 bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 col-span-full">` +
+      `Potensi MK ${escapeHtml(kunci)} gagal dimuat: ${escapeHtml(err.message)}</div>`;
+    kpi.innerHTML = "";
+  }
+}
+
+/** LEVEL 1 dari potensi: chip perkembangan PER BULAN dalam 1 MK, dari
+ *  kehadiran.detail katalog (tanggal + slot per pertemuan). Pertemuan
+ *  "Belum Diinput" NETRAL - tidak menekan persen (aturan yang sama dengan
+ *  Batch B di scripts/periode.py), pertemuan tanpa tanggal tidak ikut
+ *  bulan yang salah. */
+function _chipBulananDetail(detail) {
+  const grup = {};
+  (detail || []).forEach(d => {
+    const b = bulanDariTanggal(d.tanggal);
+    if (b === GRUP_TANPA_TANGGAL) return;
+    if (d.status === "Belum Diinput" || !d.slot_terisi) return; // netral
+    const g = (grup[b] = grup[b] || { hadir: 0, total: 0, skor: 0, n: 0 });
+    g.total += d.slot_total || 0;
+    g.hadir += d.slot_hadir || 0;
+    if (typeof d.skor === "number") { g.skor += d.skor; g.n += 1; }
+  });
+  const kuncis = Object.keys(grup).sort();
+  if (!kuncis.length) return "";
+  return `<div class="flex flex-wrap gap-1">${kuncis.map(b => {
+    const g = grup[b];
+    const pct = g.total ? Math.round((g.hadir / g.total) * 100) : null;
+    const rata = g.n ? (g.skor / g.n).toFixed(1) : null;
+    const warna = pct == null ? "text-slate-500"
+      : pct >= 85 ? "text-emerald-300 bg-emerald-500/10"
+      : pct >= 75 ? "text-amber-300 bg-amber-500/10"
+      : "text-rose-300 bg-rose-500/10";
+    const tt = `Kehadiran slot ${labelBulan(b)}${rata ? ` • rata skor ${rata}` : ""}`;
+    return `<span class="px-1.5 py-0.5 rounded border border-slate-700/50 text-[10px] font-semibold ${warna}" title="${escapeHtml(tt)}">${escapeHtml(labelBulan(b).split(" ")[0].slice(0, 3))} ${pct ?? "-"}%</span>`;
+  }).join("")}</div>`;
+}
+
+/** Auth data perkembangan lintas-MK per bank prodi (cache per sesi UI).
+ *  Dipakai dekorator tab 8 dan kartu tren tab wali. Gagal -> null (lapis
+ *  lintas-MK opsional, kartu per-MK tetap utuh). */
+async function dataPerkembangan() {
+  const prodi = _nilai("sel-prodi");
+  if (!prodi) return null;
+  if (!perkembanganPotensi[prodi]) {
+    try {
+      const res = await fetch(
+        `/api/perkembangan?prodi=${encodeURIComponent(prodi)}`, { cache: "no-store" });
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || `HTTP ${res.status}`);
+      perkembanganPotensi[prodi] = payload;
+    } catch (_err) {
+      return null; // lapis lintas-MK dilewati, kartu per MK tetap utuh
+    }
+  }
+  return perkembanganPotensi[prodi];
+}
+
+/** LEVEL 3 dari potensi: chip perkembangan SEPANJANG KULIAH per mahasiswa
+ *  (riwayat lintas MK/semester dari /api/perkembangan). Gagal fetch TIDAK
+ *  menutup kartu per MK - lapis ini opsional, jadi didekorasi belakangan. */
+async function _terapkanPerkembangan() {
+  const perk = await dataPerkembangan();
+  if (!perk) return;
+  document.querySelectorAll("#rekap-potensi-grid [data-npm]").forEach(kartu => {
+    if (kartu.querySelector(".potensi-perkembangan")) return; // hindari ganda
+    const html = _chipPerkembangan(perk, kartu.dataset.npm);
+    if (html) kartu.insertAdjacentHTML("beforeend", html);
+  });
+}
+
+function _chipPerkembangan(perk, npm) {
+  const p = (perk && perk.mahasiswa) ? perk.mahasiswa[String(npm)] : null;
+  if (!p || !p.jumlah_mk) return "";
+  const ikon = p.arah_nilai === "naik" ? "↑"
+    : p.arah_nilai === "turun" ? "↓" : "→";
+  const kelas = p.arah_nilai === "naik" ? "text-emerald-300 border-emerald-500/30"
+    : p.arah_nilai === "turun" ? "text-rose-300 border-rose-500/30"
+    : "text-slate-300 border-slate-600/60";
+  const riwayat = (p.riwayat || []).map(r =>
+    `• ${r.tahun_ajar} ${r.semester} — ${r.nama_mk}: nilai ${r.nilai ?? "-"}`
+    + `${r.grade ? ` (${r.grade})` : ""}, kehadiran ${r.kehadiran ?? "-"}%`
+    + `${r.at_risk ? " • AT-RISK" : ""}`).join("\n");
+  const delta = (p.delta_nilai_terakhir != null)
+    ? `${p.delta_nilai_terakhir > 0 ? "+" : ""}${p.delta_nilai_terakhir}` : "";
+  return `<div class="potensi-perkembangan flex items-center gap-1.5 flex-wrap">
+    <span class="px-1.5 py-0.5 rounded border text-[10px] font-bold ${kelas}"
+      title="Sepanjang kuliah (${p.jumlah_mk} MK):&#10;${escapeHtml(riwayat)}">${p.jumlah_mk} MK ${ikon}${delta ? ` (${delta})` : ""}</span>
+    <span class="text-[10px] text-slate-500">sepanjang kuliah</span>
+  </div>`;
+}
+
+async function _muatRekapBulan() {
+  const npm = _isiSelectMahasiswaRekap();
+  const host = document.getElementById("rekap-bulan-cards");
+  if (!host) return;
+  _tampilkanRekapTabel(false);
+  setText("rekap-info", "");
+  if (!npm) {
+    host.innerHTML = `<p class="text-xs text-slate-500 italic">Belum ada mahasiswa untuk ditampilkan.</p>`;
+    return;
+  }
+  const mhs = ((masterData && masterData.students) || []).find(s => String(s.npm) === String(npm));
+  if (!mhs) {
+    host.innerHTML = `<p class="text-xs text-rose-300">Mahasiswa ${escapeHtml(npm)} tidak ada di data master.</p>`;
+    return;
+  }
+  const k = mhs.kehadiran || {};
+  const ak = mhs.akademik || {};
+  const bulan = _ringkasBulan(k.detail);
+  _kpiRekap({
+    mk: 1,
+    mkDesc: (masterData && masterData.mk && (masterData.mk.nama_mk || masterData.mk.nama)) || "MK aktif",
+    atRisk: mhs.at_risk ? 1 : 0,
+    atRiskDesc: mhs.at_risk ? (mhs.alasan_at_risk || []).join(" • ") : "Tidak terdeteksi berisiko",
+    kehadiran: k.persentase != null ? `${k.persentase}%` : "belum bisa dihitung",
+    kehadiranDesc: `${k.slot_hadir ?? 0}/${k.slot_total ?? 0} slot • ${k.pertemuan_penuh ?? 0} pertemuan penuh`,
+    nilai: ak.nilai_rata_rata != null ? ak.nilai_rata_rata : "-",
+    nilaiDesc: ak.grade ? `Grade ${ak.grade}` : "-",
+  });
+  setText("rekap-bulan-judul", `Perjalanan Bulanan — ${mhs.nama}`);
+  setText("rekap-bulan-sub",
+    `NPM ${mhs.npm} • MK aktif • ${bulan.length} kelompok bulan`);
+  host.innerHTML = bulan.map(([kunci, daftar]) => {
+    const penuh = daftar.filter(d => d.status === "Hadir").length;
+    const sebagian = daftar.filter(d => d.status === "Hadir Sebagian").length;
+    const alpha = daftar.filter(d => d.status === "Alpha").length;
+    const sakit = daftar.filter(d => d.status === "Sakit").length;
+    const izin = daftar.filter(d => d.status === "Izin").length;
+    const belum = daftar.filter(d => d.status === "Belum Diinput").length;
+    const skor = daftar.map(d => d.skor).filter(v => typeof v === "number");
+    const rata = skor.length ? (skor.reduce((a, b) => a + b, 0) / skor.length).toFixed(1) : "-";
+    const rincian = daftar.map(d => {
+      const warna = d.status === "Hadir" ? "text-emerald-300"
+        : d.status === "Hadir Sebagian" ? "text-teal-300"
+        : d.status === "Alpha" ? "text-rose-300"
+        : d.status === "Sakit" ? "text-amber-300"
+        : d.status === "Izin" ? "text-sky-300" : "text-slate-400";
+      return `<div class="flex items-start justify-between gap-2 py-1 border-t border-slate-700/40 first:border-0">
+        <span class="text-slate-400">P${escapeHtml(d.pertemuan)} • ${escapeHtml(d.tanggal_display || d.tanggal || "tanpa tanggal")}</span>
+        <span class="${warna} font-semibold text-right">${escapeHtml(d.status)}${typeof d.skor === "number" ? ` • ${d.skor}` : ""}</span>
+      </div>`;
+    }).join("");
+    return `<div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+      <div class="flex items-center justify-between gap-2">
+        <span class="text-sm font-bold text-white">${escapeHtml(_labelBulan(kunci))}</span>
+        <span class="text-[11px] text-slate-400">${daftar.length} pertemuan</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mt-2 text-[11px]">
+        <span class="text-emerald-300">Hadir ${penuh}</span>
+        <span class="text-teal-300">Sebagian ${sebagian}</span>
+        <span class="text-rose-300">Alpha ${alpha}</span>
+        <span class="text-amber-300">Sakit ${sakit}</span>
+        <span class="text-sky-300">Izin ${izin}</span>
+        <span class="text-slate-400">Belum ${belum}</span>
+      </div>
+      <div class="mt-2 text-xs text-slate-300">Rata nilai bulan ini: <strong class="text-amber-300">${rata}</strong></div>
+      <div class="mt-2 text-[11px]">${rincian}</div>
+    </div>`;
+  }).join("");
+  if (window.lucide) lucide.createIcons();
+}
+
+async function muatRekap() {
+  _styleRekapButtons();
+  const statusEl = document.getElementById("rekap-status");
+  if (rekapLevel === "bulan") {
+    if (statusEl) statusEl.textContent = "";
+    await _muatRekapBulan();
+    return;
+  }
+  const prodi = _nilai("sel-prodi");
+  if (!prodi) {
+    if (statusEl) statusEl.textContent = "Konteks menghadap prodi belum ada — pilih prodi di header.";
+    return;
+  }
+
+  const q = new URLSearchParams({ prodi });
+  if (rekapLevel === "semua") {
+    q.set("semua_semester", "1");
+  } else {
+    const ta = _nilai("sel-tahun"), sem = _nilai("sel-semester");
+    if (!ta || !sem) {
+      if (statusEl) statusEl.textContent = "Pilih tahun ajar & semester di header untuk rekap ini.";
+      return;
+    }
+    q.set("tahun_ajar", ta); q.set("semester", sem);
+  }
+
+  if (statusEl) statusEl.textContent = "Menghitung rekap dari tree kurikulum…";
+  try {
+    const res = await fetch(`/api/periode?${q.toString()}`, { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    rekapTerakhir = data;
+    if (rekapLevel === "mk") {
+      const kunci = _nilai("course-selector");
+      const b = (data.baris || []).find(x => x.kunci_mk === kunci);
+      if (!b) throw new Error(`MK ${kunci} tidak ada di semester ini.`);
+      _renderRekapSatuMk(b);
+      sinkronPotensiMk(b.kunci_mk);
+    } else {
+      renderRekap(data);
+      setText("rekap-info", "");
+    }
+    if (statusEl) statusEl.textContent = "";
+  } catch (err) {
+    if (statusEl) statusEl.textContent = "";
+    toast(`Rekap periode tidak bisa dibuat: ${err.message}`, "error", 8000);
+  }
+}
+
+/** Drill-down dari baris rekap -> tab Kurikulum. HANYA membaca detail;
+ *  TIDAK memindahkan MK aktif (tidak memicu switch_course / rebuild). */
+function rekapLihatMk(prodi, tahunAjar, semester, kunciMk) {
+  detailOverrideKonteks = {
+    prodi, tahun_ajar: tahunAjar, semester, kunci_mk: kunciMk,
+  };
+  switchTab("kurikulum", { pertahankanOverride: true });
+}
+
+/* ========================================================================== *
+ * TAB 10: ENGINE - pemeriksa INPUT & OUTPUT (modul terpisah di scripts/)
+ *  - input  : pindai inbox, deteksi duplikat via SHA-256 (engine_input.py)
+ *  - output : audit integritas + lapis kirim kaprodi/wali (engine_output.py)
+ * ========================================================================== */
+
+function _engineUkuran(byte) {
+  if (byte === null || byte === undefined) return "—";
+  if (byte >= 1024 * 1024) return (byte / (1024 * 1024)).toFixed(2) + " MB";
+  if (byte >= 1024) return (byte / 1024).toFixed(1) + " KB";
+  return byte + " B";
+}
+
+async function engineInputPindai() {
+  const isi = document.getElementById("engine-input-isi");
+  const chips = document.getElementById("engine-input-ringkasan");
+  const btn = document.getElementById("btn-engine-input");
+  if (btn) btn.disabled = true;
+  if (isi) isi.innerHTML = '<p class="text-slate-500 italic text-sm">Memindai inbox…</p>';
+  try {
+    const res = await fetch("/api/engine/input", { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    _renderEngineInput(data);
+  } catch (err) {
+    if (isi) isi.innerHTML =
+      `<p class="text-rose-400 text-sm">Pindai gagal: ${escapeHtml(err.message)}</p>`;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function _renderEngineInput(data) {
+  const isi = document.getElementById("engine-input-isi");
+  const chips = document.getElementById("engine-input-ringkasan");
+  const r = data.ringkasan || {};
+  const warnaChip = {
+    duplikat: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+    baru: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+    terdaftar: "bg-slate-500/10 text-slate-300 border-slate-500/30",
+  };
+  if (chips) {
+    chips.classList.remove("hidden");
+    chips.innerHTML = [
+      ["total", r.total], ["baru", r.baru], ["duplikat", r.duplikat],
+      ["terdaftar", r.terdaftar],
+    ].map(([k, v]) =>
+      `<span class="px-2.5 py-1 rounded-full border ${warnaChip[k] || warnaChip.terdaftar}">${k}: <strong>${v ?? 0}</strong></span>`
+    ).join("");
+  }
+  const berkas = data.berkas || [];
+  if (isi) {
+    if (!berkas.length) {
+      isi.innerHTML = '<p class="text-slate-500 italic text-sm">Inbox kosong — tidak ada data masuk.</p>';
+    } else {
+      isi.innerHTML = `<div class="overflow-x-auto"><table class="w-full text-xs">
+        <thead><tr class="text-slate-400 border-b border-slate-800 text-left">
+        <th class="py-2 pr-3">Berkas</th><th class="py-2 pr-3">Ukuran</th>
+        <th class="py-2 pr-3">Status</th><th class="py-2">Detail</th></tr></thead>
+        <tbody>${berkas.map(b => {
+          const badge = b.status === "duplikat"
+            ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
+            : b.status === "baru"
+              ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+              : "bg-slate-600/10 text-slate-400 border-slate-600/30";
+          const detail = b.status === "duplikat"
+            ? (b.kembar_dengan || []).map(k => `<div class="text-amber-200/80 truncate max-w-[26rem]" title="${escapeHtml(k)}">↳ ${escapeHtml(k)}</div>`).join("")
+            : (b.diproses_at ? `<span class="text-emerald-300/80">diproses ${escapeHtml(b.diproses_at)}</span>` : "-");
+          return `<tr class="border-b border-slate-800/50">
+            <td class="py-2 pr-3 font-medium text-slate-200 break-all">${escapeHtml(b.nama)}</td>
+            <td class="py-2 pr-3 text-slate-400 whitespace-nowrap">${_engineUkuran(b.ukuran)}</td>
+            <td class="py-2 pr-3"><span class="px-2 py-0.5 rounded-full border ${badge}">${b.status}</span></td>
+            <td class="py-2">${detail}</td></tr>`;
+        }).join("")}</tbody></table></div>
+        <p class="text-[11px] text-slate-500 mt-2">Dicocokkan lewat SHA-256 (bukan nama berkas). Tandai "sudah diproses" lewat POST /api/engine/input.</p>`;
+    }
+  }
+}
+
+async function engineOutputAudit() {
+  const isi = document.getElementById("engine-output-isi");
+  const btn = document.getElementById("btn-engine-output");
+  if (btn) btn.disabled = true;
+  if (isi) isi.innerHTML = '<p class="text-slate-500 italic text-sm">Mengaudit output…</p>';
+  try {
+    const res = await fetch("/api/engine/output", { cache: "no-store" });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    _renderEngineOutput(data);
+  } catch (err) {
+    if (isi) isi.innerHTML =
+      `<p class="text-rose-400 text-sm">Audit gagal: ${escapeHtml(err.message)}</p>`;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+function _renderEngineOutput(data) {
+  const isi = document.getElementById("engine-output-isi");
+  const r = data.ringkasan || {};
+  const chip = (v, warna, label) =>
+    `<span class="px-2.5 py-1 rounded-full border ${warna}">${label}: <strong>${v ?? 0}</strong></span>`;
+  const chips = [
+    chip(r.utuh, "bg-emerald-500/10 text-emerald-300 border-emerald-500/30", "utuh"),
+    chip(r.rusak, "bg-rose-500/10 text-rose-300 border-rose-500/30", "rusak"),
+    chip(r.hilang, "bg-amber-500/10 text-amber-300 border-amber-500/30", "hilang"),
+    chip(r.belum_terdaftar, "bg-slate-500/10 text-slate-300 border-slate-500/30", "belum terdaftar"),
+    chip(r.salinan_usang, r.salinan_usang
+      ? "bg-orange-500/10 text-orange-300 border-orange-500/30"
+      : "bg-slate-500/10 text-slate-300 border-slate-500/30", "salinan usang"),
+    chip(r.sisa_root, r.sisa_root
+      ? "bg-orange-500/10 text-orange-300 border-orange-500/30"
+      : "bg-slate-500/10 text-slate-300 border-slate-500/30", "sisa root"),
+    chip((data.run_list || []).length, "bg-violet-500/10 text-violet-300 border-violet-500/30", "run"),
+    chip(r.folder_tanpa_manifest, "bg-slate-500/10 text-slate-400 border-slate-500/30", "sisa tanpa manifest"),
+  ].join("");
+  const kirim = [
+    ["Lapis kirim kaprodi", data.kirim_kaprodi_ada],
+    ["Lapis kirim wali", data.kirim_wali_ada],
+  ].map(([l, ok]) =>
+    `<span class="px-2.5 py-1 rounded-full border ${ok
+      ? "bg-lime-500/10 text-lime-300 border-lime-500/30"
+      : "bg-slate-500/10 text-slate-400 border-slate-500/30"}">${l}: ${ok ? "siap" : "belum"}</span>`
+  ).join("");
+
+  const barisReg = (data.berkas || []).slice(0, 40).map(b => {
+    const badge = b.status === "utuh"
+      ? "text-emerald-300" : b.status === "rusak"
+        ? "text-rose-300" : "text-amber-300";
+    return `<tr class="border-b border-slate-800/50">
+      <td class="py-1.5 pr-3 break-all text-slate-300">${escapeHtml(b.path)}</td>
+      <td class="py-1.5 pr-3 text-slate-400 whitespace-nowrap">${_engineUkuran(b.ukuran_disk !== null ? b.ukuran_disk : b.ukuran_tercatat)}</td>
+      <td class="py-1.5 pr-3 font-semibold ${badge}">${b.status}</td>
+      <td class="py-1.5 text-slate-500 whitespace-nowrap">${escapeHtml(b.updated_at || "")}</td></tr>`;
+  }).join("");
+
+  const runRows = (data.run_list || []).map(run =>
+    `<div class="flex items-center gap-2 text-xs">
+      <span class="${run.adalah_terbaru ? "text-lime-300 font-semibold" : "text-slate-400"}">${run.adalah_terbaru ? "★ terbaru" : "run"}</span>
+      <span class="break-all text-slate-400">${escapeHtml(run.path)}</span>
+      <span class="text-slate-500">(${run.ukuran_kb} KB)</span></div>`).join("");
+
+  if (isi) {
+    isi.innerHTML = `
+      <div class="flex flex-wrap gap-2 mb-2">${chips}</div>
+      <div class="flex flex-wrap gap-2 mb-3">${kirim}</div>
+      ${barisReg ? `<div class="overflow-x-auto"><table class="w-full text-xs">
+        <thead><tr class="text-slate-400 border-b border-slate-800 text-left">
+        <th class="py-2 pr-3">Berkas (registry)</th><th class="py-2 pr-3">Ukuran</th>
+        <th class="py-2 pr-3">Status</th><th class="py-2">Dicatat</th></tr></thead>
+        <tbody>${barisReg}</tbody></table></div>` : ""}
+      ${runRows ? `<div class="mt-3 space-y-1">${runRows}</div>` : ""}
+      <p class="text-[11px] text-slate-500 mt-2">Aturan tulis: berkas lama utuh dengan tanda logika/format sama <span class="text-emerald-300">diberikan apa adanya</span>; overwrite hanya bila logika/format maju atau ukuran tak cocok (mode overwrite).</p>`;
+  }
+}
+
+async function engineOutputRapikan() {
+  if (!confirm("Rapikan output? Run lama dipindah ke data/_backup/ (bisa dibuka lagi), lapis kirim kaprodi & wali disiapkan. Lanjut?")) {
+    return;
+  }
+  const isi = document.getElementById("engine-output-isi");
+  const btn = document.getElementById("btn-engine-rapikan");
+  if (btn) {
+    btn.disabled = true;
+    btn.dataset.labelAsli = btn.textContent;
+    btn.textContent = "Memproses…";  // anti dobel-klik saat pindah besar
+  }
+  if (isi) isi.innerHTML =
+    '<p class="text-slate-500 italic text-sm">Memindahkan run lama ke arsip & menyiapkan lapis kirim…</p>';
+  try {
+    const res = await fetch("/api/engine/output", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ aksi: "rapikan", arsipkan_lama: true }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+    const dipindah = (data.dipindah || []);
+    toast(
+      `Rapikan selesai: ${dipindah.length} run lama diarsipkan ` +
+      `(${(data.dipindah_mb || 0).toFixed(1)} MB). Lapis kirim siap.`,
+      "success", 8000);
+    await engineOutputAudit();
+  } catch (err) {
+    if (isi) isi.innerHTML =
+      `<p class="text-rose-400 text-sm">Rapikan gagal: ${escapeHtml(err.message)}</p>`;
+    toast(`Rapikan gagal: ${err.message}`, "error", 8000);
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      if (btn.dataset.labelAsli !== undefined) btn.textContent = btn.dataset.labelAsli;
+    }
   }
 }

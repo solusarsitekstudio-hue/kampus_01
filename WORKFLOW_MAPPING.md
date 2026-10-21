@@ -9,8 +9,11 @@ dan mesin publikasi media sosial.
 > JSON). Sejak **v2.6** kedua berkas mentah itu **tidak dipakai lagi** dan
 > dianggap tidak ada; semuanya berdiri sendiri dari `data/kurikulum/`. Sejak
 > `Commit C` nilai presensi/nilai sintetis juga **berbeda per mata kuliah**.
-> Acuan angka yang berlaku tetap `README.md`; angka di dokumen ini adalah
-> **struktur**, bukan klaim hasil.
+> Tambahan terbaru: **Tab 9 Portofolio Mahasiswa** — laporan 4 lapis lintas SEMUA
+> MK + analisis potensi dari nilai (cluster kanal bidang → dimensi khas estimasi
+> → matriks karier bonus sebidang; `README.md` §12 untuk rinciannya). Acuan angka
+> yang berlaku tetap `README.md`; angka di dokumen ini adalah **struktur**, bukan
+> klaim hasil.
 
 ---
 
@@ -18,6 +21,19 @@ dan mesin publikasi media sosial.
 
 ```mermaid
 flowchart TD
+    subgraph S0["Fase 0: Berkas Mentah (BUKAN sumber kebenaran)"]
+        R0["scripts/impor/cli portal<br/>(browser, LOGIN MANUAL)"]
+        R1["input/inbox/ (xlsx, csv, html, pdf, docx, gambar)"]
+        R0 --> R1
+        R1 --> R2["scripts/impor/: deteksi isi -> baca -> baris kanonik -> validasi"]
+        R2 --> R3["data/_staging/ (usulan_nilai.json / usulan_sesi.json + diff)"]
+        R3 --> R4{"Ditinjau manusia?"}
+        R4 -- "ya" --> R5["backup ke data/_backup/ lalu tulis atomik"]
+        R5 --> A1
+        R4 -- "tidak" --> R6["berhenti - tree tidak disentuh"]
+        R1 -. "arsip asli" .-> R7["input/raw/&lt;stamp&gt;/ + sha256 + meta.json"]
+    end
+
     subgraph S1["Fase 1: Sumber Kebenaran (Tree Kurikulum)"]
         A1["data/kurikulum/&lt;PRODI&gt;/&lt;TAHUN AJAR&gt;/&lt;SEMESTER&gt;/&lt;MK&gt;/"]
         A1 --> B1["mahasiswa.json (per prodi, 35 mhs)"]
@@ -44,20 +60,36 @@ flowchart TD
         G1 --> H1["SPA Controller: public/app.js (aset 100% offline)"]
     end
 
-    subgraph S4["Fase 4: Enam Tab Dashboard"]
-        H1 --> OUT1["Tab 1: Dashboard Kaprodi (KPI, At-Risk, tren P1-P16)"]
+    subgraph S4["Fase 4: Sepuluh Tab Dashboard"]
+        H1 --> OUT1["Tab 1: Dashboard Kaprodi (KPI, At-Risk, filter bulan, tren P1-P16)"]
         H1 --> OUT2["Tab 2: Rapor Wali Murid (radar 5 pilar, 10 karier)"]
         H1 --> OUT3["Tab 3: Portofolio & Video Progres (deck 16:9, video 9:16)"]
         H1 --> OUT4["Tab 4: Simulator WhatsApp (3 lampiran PDF)"]
         H1 --> OUT5["Tab 5: Pengaturan (identitas + cetak ulang 11 PDF)"]
         H1 --> OUT6["Tab 6: Kurikulum (sunting topik/bobot/slot/jenis_mk)"]
+        H1 --> OUT7["Tab 7: Info (dokumentasi public/info.md)"]
+        H1 --> OUT8["Tab 8: Rekap Periode (API /api/periode, Level 3 & 4)"]
+        H1 --> OUT9["Tab 9: Portofolio Mahasiswa (API /api/portofolio, 4 lapis +<br/>analisis potensi dari nilai: kanal bidang - terkuat - dimensi khas)"]
+        H1 --> OUT10["Tab 10: Engine (pindai inbox → duplikat via SHA-256;<br/>audit integritas output + rapikan + lapis kirim)"]
     end
 
     subgraph S5["Fase 5: Keluaran Berkas"]
-        F1 --> I1["scripts/generate_pdfs.py (Chromium/Playwright)"]
+        F1 --> E0["run_masih_sah()? stempel data + FORMAT_V +<br/>integritas run terbaru (manifest data_stamp)"]
+        E0 -- "sah" --> SKIP["SKIP - run duplikat dibatalkan,<br/>berkas lama diberikan (zero Chromium)"]
+        E0 -- "tidak sah / belum ada" --> I1["scripts/generate_pdfs.py (Chromium/Playwright)"]
         F1 --> I2["scripts/video_composer.py (numpy + edge-tts)"]
-        I1 --> J1["output/&lt;MK&gt;/&lt;TIMESTAMP&gt;/ (11 PDF + manifest)"]
+        I1 --> J1["output/&lt;MK&gt;/&lt;TIMESTAMP&gt;/ (11 PDF + manifest +<br/>data_stamp/format_v utk pintu skip)"]
         I1 --> J2["generated_pdfs/ (salinan live preview)"]
+        I1 --> J3["06_portofolio_lengkap_&lt;npm&gt;.pdf (on-demand per mahasiswa,<br/>Tab 9 - semua MK sepanjang kuliah)"]
+        I1 --> J4["engine_output.catat → data/engine/output_registry.json<br/>(ukuran + tanda logika + stempel data + sha tiap PDF)"]
+    end
+
+    subgraph S6["Fase 6: Engine Cek Input & Output (Tab 10)"]
+        K1["input/inbox/ + input/raw/"] --> K2["engine_input.py (RLock)<br/>SHA-256 → baru / terdaftar / duplikat"]
+        K2 --> K3["data/engine/input_registry.json"]
+        K4["output/** + generated_pdfs/**"] --> K5["engine_output.py (RLock)<br/>utuh / rusak / hilang / belum terdaftar<br/>+ salinan_usang + sisa_root + run masih sah"]
+        K5 --> K6["data/engine/output_registry.json"]
+        K5 --> K7["rapikan → brokat root + run lama ke data/_backup/<br/>+ output/kirim/{kaprodi,wali}/manifest.json<br/>(wali = SEMUA mahasiswa tree; pintu masuk mesin kirim)"]
     end
 ```
 
@@ -75,7 +107,7 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 
 ---
 
-### 🏛️ Pemetaan Modul Fungsional (6 Tab + Mesin)
+### 🏛️ Pemetaan Modul Fungsional (10 Tab + Mesin)
 
 #### 1. Tab Dashboard Kaprodi (`kaprodi`)
 * **Tujuan**: visibilitas penuh Kaprodi atas disiplin perkuliahan & nilai satu MK.
@@ -121,13 +153,85 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
   * Validasi **Σ bobot = 100** dan rentang nilai; ditolak (422) **tanpa menulis berkas** kalau tidak lolos.
   * Status `tebakan` vs `dikonfirmasi` tidak bisa naik sendiri — harus lewat suntingan manusia.
 
+#### 7. Tab Info (`info`)
+* **Tujuan**: dokumentasi sistem dibaca dari `public/info.md` (di-cache setelah sukses), dirender tanpa pustaka eksternal.
+
+#### 8. Tab Rekap Periode (`rekap`)
+* **Tujuan**: visibilitas KAPRODI lintas mata kuliah — bukan cuma satu MK.
+* **Fitur**:
+  * **Level 3** (satu semester, semua MK): grid per MK — peserta, kehadiran, nilai rata, At-Risk, pertemuan X/16, topik terisi/placeholder, cakupan bulan.
+  * **Level 4** (semua semester, semua MK): rollup digrup per tahun ajar & semester.
+  * Dihitung dari **tree** oleh `scripts/periode.py` (bukan master 1 MK); At-Risk **per MK**; pertemuan belum diinput **netral**; cache per MK ber-tanda mtime.
+  * Fail-closed: prodi tak dikenal 400, semester tidak ada 404, MK berkas tidak lengkap tampil "rusak" sisa MK tetap jalan.
+  * Tombol "Detail Kurikulum" menyelip konteks tab 6 — **tanpa** memindahkan MK aktif (tidak memicu kompilasi ulang).
+  * Pelengkap di tab 1: dropdown **Bulan** (Level 1, grup "Tanpa Tanggal" terpisah) + badge periode master (Level 2).
+
+#### 9. Tab Portofolio Mahasiswa (`portofolio`)
+* **Tujuan**: laporan **satu mahasiswa lintas semua MK** — bukan cuma MK aktif —
+  dalam 4 lapis (per bulan → per MK → per semester → sepanjang kuliah), plus
+  **analisis potensi yang dibangun dari NILAI**.
+* **Fitur**:
+  * Dropdown 35 mahasiswa → KPI 4 lapis + accordion 6 semester (kartu MK +
+    chip bulanan), 4 tombol unduh PDF (termasuk **PDF 06 Portofolio Lengkap**).
+  * Endpoint `GET /api/portofolio?npm=<NPM>` dari `scripts/portofolio.py`
+    (sumber: katalog build `data/courses/` = SEMUA MK di tree; cache mtime;
+    fail-closed npm kosong 400 / tak dikenal 404 / katalog rusak tidak
+    membatalkan laporan).
+  * **Analisis Potensi**: label potensi & ambang **pinjam satu sumber**
+    `scripts/diagnosis.py` (mesin templat v3, tanpa RNG); radar 5 dim lintas MK
+    dengan sumber jujur (`terukur` hanya kalau semua MK penopang terukur).
+  * **Bidang terkuat (`scripts/bidang.py`)**: cluster 5 kanal (Studio Desain,
+    Teknologi & Komputer, Struktur & Konstruksi, Bangunan-Lingkungan, Humaniora)
+    dari keyword MK; kanal terkuat menjadi pusat analisis (mk tertinggi = kasus
+    utama); **dimensi khas bidang** comot 70% rata nilai kanal + 30% radar
+    terukur dan **seluruhnya dilabel estimasi**.
+  * **Matriks karier sepanjang kuliah**: 10 karier dari radar lintas MK; karier
+    sekanal dapat bonus +4 (clamp cap karier), karier lain tetap tampil.
+
+#### 10. Tab Engine (`engine`)
+* **Tujuan**: pusat pemeriksa **input & output yang dipecah dua** — data tidak
+  diproses dua kali, output tidak ditulis ulang tanpa alasan — dan prasyarat
+  **mesin kirim otomatis** (kaprodi & wali murid) yang datang nanti.
+* **Fitur**:
+  * **Pusat Input** (`scripts/engine_input.py`, `GET/POST /api/engine/input`):
+    pindai `input/inbox/` + bukti arsip `input/raw/`; pencocokan lewat
+    **SHA-256** (bukan nama berkas): `baru` / `terdaftar` / **`duplikat`**
+    (kembaran dilaporkan); tombol tandai "sudah diproses" fail-closed
+    (sha tidak dikenal → 404).
+  * **Pusat Output** (`scripts/engine_output.py`, `GET/POST /api/engine/output`):
+    audit integritas **utuh / rusak / hilang / belum terdaftar** dari registry
+    `data/engine/output_registry.json` + chip **salinan usang** (salinan
+    `generated_pdfs/` beda SHA run terbaru) + chip **sisa root** + status run
+    masih sah; chip lapis kirim.
+  * **Rapikan + Lapis Kirim** (dengan konfirmasi, tombol busy "Memproses…"):
+    brokat berkas di root `output/` + run lama & sisa folder tanpa manifest
+    pindah ke `data/_backup/output_lama_<stamp>/`, **run terbaru selamat**;
+    lapis `output/kirim/{kaprodi,wali}/manifest.json` dibangun dari sumber
+    terverifikasi — wali mencantumkan **SEMUA mahasiswa tree** (yang belum
+    berkas ditandai jujur); pintu masuk mesin kirim otomatis (dikecualikan dari
+    pemindaian run, `/api/runs` aman).
+  * Auto-load tab hanya **pertama kali per sesi** (pindai menulis registry;
+    buka ulang pakai tombol manual).
+  * Aturan tulis yang dijaga engine: berkas lama **utuh & tanda sama →
+    diberikan apa adanya** (`guna_lama`); overwrite bila **tanda maju** —
+    logika/format penyajian (`FORMAT_V` naik) ATAU **stempel data
+    master+katalog berubah** (`data=<stamp>`) — ATAU **ukuran berkas tidak
+    cocok** dengan tercatat (korup/parsial). Generator paket mengecek
+    `run_masih_sah()` dulu: run duplikat dibatalkan sebelum Chromium menyala.
+
 #### Mesin di belakang layar (bukan tab, tapi bagian alur)
 | Modul | Peran |
 | --- | --- |
+| `scripts/engine_input.py` | **Engine pemeriksa INPUT (terpisah dari output)**: pindai `input/inbox/` + arsip `input/raw/`, deteksi data masuk yang pernah diproses via **SHA-256** → baru/terdaftar/duplikat; registry `data/engine/input_registry.json` dilindungi `threading.RLock` (server concurrent); tandai-diproses fail-closed |
+| `scripts/engine_output.py` | **Engine pemeriksa OUTPUT (terpisah dari input)**: putusan tulis `siapkan()` (guna_lama / overwrite_logika / overwrite_integritas / tulis_ulang_pertama), tanda logika memuat **stempel data master+katalog** (`data=<stamp>`) + `FORMAT_V`, `stempel_data()`, `run_masih_sah()` pintu skip cetak paket (manifest run memuat `data_stamp`+`format_v`), pencatatan `catat()`, `audit()` (+ salinan_usang, sisa_root), `rapikan()` (sapu root + arsip run lama + lapis kirim `output/kirim/` dengan SEMUA mahasiswa tree); registry dilindungi RLock |
 | `scripts/kurikulum_tree.py` | Sumber kebenaran path/berkas tree: baca & tulis atomik (LF), index, `validasi_sesi` (16 pertemuan, UTS/UAS, Σ bobot = 100), hitung menit jadwal |
 | `scripts/persona.py` | Persona mahasiswa dari NPM (bukan nomor baris) + RNG **per NPM dan per MK** + pembangkit catatan presensi/nilai sintetis |
 | `scripts/seed_nilai_sintetis.py` | Satu pintu regenerasi `nilai.json`: dry run, backup, tolak berkas non-`sintetis`, lapor SHA |
 | `scripts/kelas_rules.py` | Satu-satunya tempat aturan nilai: bobot, grade, At-Risk, status pertemuan, "Belum Diinput" |
+| `scripts/periode.py` | Agregasi rekap per-periode DARI TREE (`/api/periode`): per MK / per semester / rollup semua; At-Risk per MK, belum-diinput netral, cache ber-tanda mtime |
+| `scripts/diagnosis.py` | **Mesin diagnosis v3 (templat, tanpa RNG)**: klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel, narasi templat v2, matriks 10 karier deterministik + bonus sebidang. Satu sumber ambang/label untuk tab wali, tab 8, tab 9 & PDF |
+| `scripts/portofolio.py` | Agregator portofolio 4 lapis per mahasiswa dari katalog ALL MK (`/api/portofolio`): bulanan netral, rollup semester, analisis potensi dari nilai, cache mtime, fail-closed |
+| `scripts/bidang.py` | Peta 5 kanal bidang MK (keyword kunci/nama), dimensi khas per kanal + trafo estimasi (70% nilai kanal + 30% radar terukur, selalu label estimasi), konstanta bonus karier sebidang — satu sumber untuk tab 9 & PDF 06 |
 | `scripts/aturan.py` | Pembaca + validator `config/aturan.json` (fail-closed kalau rusak) |
 | `scripts/identitas.py` | Pembaca/penulis `config/identitas.json` (backup dulu, tulis atomik) |
 | `scripts/parse_data.py` | Kompilasi master + katalog; **tidak mengarang** nilai — membacanya dari tree |
@@ -136,16 +240,32 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `scripts/video_composer.py` | Merender video 9:16 (numpy + edge-tts) |
 | `scripts/index_kurikulum.py` | Membangun ulang `config/kurikulum.json` dari folder; `--check` untuk mendeteksi drift |
 | `scripts/fetch_vendor.py` | Mengunci aset pihak ketiga ke `public/vendor/` supaya dashboard jalan **offline** |
+| `scripts/impor/cli.py` | Satu pintu perintah: `pindai`, `portal`, `impor`, `tinjau`, `terima`, `modul`, `usul`, `terima-sesi`, `status-ai` |
+| `scripts/impor/portal.py` | Buka browser dengan **login manual**, simpan HTML + screenshot + tabel halaman ke `input/inbox/`; tanpa tabel = hanya arsip, bukan tebakan |
+| `scripts/impor/kanonik.py` + `profil.py` | Normalisasi status/NPM/skor dan pemetaan header dari `config/impor/*.json`; header asing = berhenti, bukan ditebak |
+| `scripts/impor/sumber_tabel.py` + `deteksi.py` | Baca xlsx/csv/html dan kenali jenis berkas dari magic bytes (bukan ekstensi) |
+| `scripts/impor/nilai_impor.py` | Staging + diff + `terapkan()`: backup wajib, tulis atomik, mode `gabung`/`ganti`, idempoten |
+| `scripts/impor/dokumen.py` | Ekstraksi teks PDF/DOCX per halaman/bagian; PDF scan ditandai `ocr_dibutuhkan` |
+| `scripts/impor/ai_engine.py` + `analisis_mk.py` | Panggil engine Gemini rotary milik pengguna (bukan API baru) untuk mengusulkan topik/CPMK; hasil = staging "tebakan" |
 
 ---
 
-### 🧪 Peta Pengujian (12 berkas, tanpa server kecuali yang disebut)
+### 🧪 Peta Pengujian (21 berkas, tanpa server kecuali yang disebut)
 
 | Berkas | Yang dijaga |
 | --- | --- |
+| `tests/test_periode.py` | Agregasi periode dari tree: sinkron angka dengan master, belum-diinput netral (kehadiran `None`), Sakit/Izin ≠ Alpha, rollup pohon konsisten, cache mtime usang sendiri |
+| `tests/test_diagnosis.py` | Mesin v3 deterministik: klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel, 35 narasi unik, matriks karier tanpa RNG, bonus sebidang +4 & clamp cap |
+| `tests/test_portofolio.py` | Portofolio 4 lapis: aturan bulanan netral, fail-closed, determinism + cache, label potensi = `AMBANG` diagnosis.py, cluster kanal bidang (dedup MK kembar), dimensi khas selalu `estimasi`, matriks karier sepanjang kuliah |
+| `tests/test_engine.py` | Engine input & output TERPISAH: duplikat via SHA-256 (isi sama nama beda), tandai-diproses fail-closed, siklus tulis guna_lama → overwrite_logika/integritas/tulis_ulang_pertama (catatan tanpa ukuran), stempel data (master berubah → tanda maju), `run_masih_sah` (sah / stempel maju / format maju / pdf korup), audit salinan_usang, regroup npm, rapikan (run terbaru selamat, brokat root disapu, lapis kirim + wali SEMUA mahasiswa tree |
 | `tests/test_rules_unchanged.py` | Membangun ulang dari data yang sama harus menghasilkan **angka identik** |
 | `tests/test_readme_accuracy.py` | Setiap angka di README harus ada di data (anti angka karangan) |
-| `tests/test_docs_dependensi.py` | Impor kode ↔ `requirements.txt` (tanpa paket mati), nomor port seragam, rute `/api` ↔ `REQUIREMENTS.md`, dan dokumen tidak lagi mengklaim alur v2.5 |
+| `tests/test_docs_dependensi.py` | Impor kode ↔ `requirements.txt` (tanpa paket mati), `openpyxl`/`pypdf`/`python-docx` hanya dari `scripts/impor/` + tesnya, `PyPDF2` dilarang, nomor port seragam, rute `/api` ↔ `REQUIREMENTS.md`, dokumen tidak lagi mengklaim alur v2.5 |
+| `tests/test_impor_kanonik.py` | Alias status portal, Alpha wajib skor 0, NPM float Excel, dan penolakan pertemuan/slot/NPM di luar tree |
+| `tests/test_impor_tabel.py` | CSV/XLSX/HTML → baris sama, staging tidak menulis, backup wajib, mode `gabung`/`ganti`, impor dua kali byte-identik |
+| `tests/test_impor_dokumen.py` | PDF ber-text vs scan (OCR flag), DOCX per heading + tabel, gambar perlu OCR, pemotongan AI tidak kehilangan halaman |
+| `tests/test_impor_portal.py` | Tangkapan portal: HTML + screenshot diarsipkan, tabel diekstrak ke CSV/XLSX, halaman tanpa tabel tidak membuat berkas palsu |
+| `tests/test_impor_analisis.py` | Usulan AI offline: merge tanpa duplikasi, tolak pertemuan kurang / bobot ≠ 100 / halaman asing / placeholder, tulis `sesi.json` hanya setelah lolos |
 | `tests/test_aturan.py` | Ambang At-Risk & grade hidup di config dan benar-benar berpengaruh |
 | `tests/test_belum_diinput.py` | Slot belum terisi ≠ Alpha ≠ nilai 0; bobot dinormalisasi; grade ditahan |
 | `tests/test_seed_per_mk.py` | Nilai sintetis beda per MK, reproducible, persona tidak berpindah, absen tidak mendarat di UTS/UAS |
@@ -162,18 +282,25 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 
 ```text
 E:\WORKSPACE\KAMPUS_01\
-├── config/                       # aturan.json (ambang & grade), identitas.json, kurikulum.json (index)
+├── config/                       # aturan.json (ambang & grade), identitas.json, kurikulum.json (index), impor/ (profil kolom)
 ├── data/
 │   ├── kurikulum/<PRODI>/<TA>/<SEMESTER>/<MK>/{penawaran,sesi,nilai}.json   # SUMBER KEBENARAN
 │   ├── courses/<MK>.json         # katalog hasil kompilasi (artefak, jangan disunting manual)
 │   ├── academic_data.json        # MASTER untuk MK aktif
-│   └── _backup/                  # cadangan otomatis (gitignored)
-├── input/                        # snapshot mentah/olahan per MK (raw/, processed/, progress_mahasiswa/)
-├── output/<MK>/<TIMESTAMP>/      # 11 PDF + manifest.json  (latest_run.json menunjuk yang terbaru)
+│   ├── courses/<MK>.json         # katalog build SEMUA MK (sumber tab 9/portofolio; artefak)
+│   ├── _backup/                  # cadangan otomatis (gitignored)
+│   └── _staging/                 # usulan impor/AI yang belum disetujui (gitignored)
+├── input/                        # snapshot mentah/olahan per MK
+│   ├── inbox/                    # taruh berkas portal di sini (dipindai Engine Input; gitignored)
+│   ├── raw/<MK>/<stamp>/         # arsip asli + sha256 + meta.json (bukti "pernah masuk")
+│   └── processed/, progress_mahasiswa/
+├── output/
+│   ├── kirim/{kaprodi,wali}/manifest.json  # LAPIS KIRIM untuk mesin kirim otomatis (engine)
+│   └── <MK>/<TIMESTAMP>/         # 11 PDF + manifest.json  (latest_run.json menunjuk yang terbaru)
 ├── generated_pdfs/               # salinan PDF untuk pratinjau web
-├── public/                       # index.html, app.js, style.css, vendor/ (aset offline), videos/
-├── scripts/                      # mesin: tree, persona, rules, migrasi, seed, parse, pdf, video
-├── tests/                        # 12 berkas regresi (lihat peta di atas)
+├── public/                       # index.html, app.js, style.css, info.md, vendor/ (aset offline), videos/
+├── scripts/                      # mesin: tree, persona, rules, migrasi, seed, parse, pdf, video, diagnosis, portofolio, bidang, engine_input, engine_output, impor/
+├── tests/                        # 21 berkas regresi (lihat peta di atas)
 ├── server.py                     # server stdlib, port 40404
 ├── README.md                     # acuan utama
 ├── REQUIREMENTS.md               # kebutuhan teknis & prasyarat
@@ -192,8 +319,14 @@ E:\WORKSPACE\KAMPUS_01\
 
 1. **Tree = sumber kebenaran.** `data/courses/` dan `data/academic_data.json` adalah **artefak**; kalau berbeda, tree yang benar.
 2. **Tidak mengarang angka.** Nilai dibaca dari `nilai.json`, bukan digenerate saat kompilasi.
-3. **Belum diinput ≠ Alpha.** Pertemuan yang slotnya belum lengkap keluar dari rata-rata (bobot dinormalisasi) dan grade ditahan "Belum Lengkap"; perilaku lama bisa dipulihkan lewat `config/aturan.json`.
+3. **Belum diinput ≠ Alpha, dan tidak menekan kehadiran.** Pertemuan yang slotnya belum lengkap keluar dari rata-rata (bobot dinormalisasi), keluar dari **penyebut persen kehadiran**, dan grade ditahan "Belum Lengkap"; kehadiran yang belum bisa dihitung sama sekali = netral (`None`, bukan 0%); perilaku lama bisa dipulihkan lewat `config/aturan.json`.
 4. **Fail-closed.** Berkas rusak, bobot ≠ 100, atau berkas non-`sintetis` → berhenti dan lapor, jangan menebak.
 5. **Satu sumber aturan.** Ambang At-Risk, grade, dan bobot hidup di `kelas_rules.py` + `config/aturan.json`, tidak disalin ke berkas lain.
 6. **Identitas tidak di kode.** Nama orang/institusi hanya di `config/identitas.json`.
 7. **Tidak ada angka di dokumen resmi yang diketik manual** — `test_readme_accuracy.py` mengunci itu.
+8. **Berkas mentah tidak boleh langsung ke tree.** Portal/Excel/CSV/PDF harus lewat `scripts/impor` → `data/_staging/` → ditinjau → backup → tulis atomik. `nilai.json` yang bukan `sintetis` dan bukan hasil impor sebelumnya tidak ditimpa tanpa `--paksa` eksplisit.
+9. **Analisis potensi jujur sumbernya.** Ambang & label potensi pinjam satu sumber `scripts/diagnosis.py` (tidak ada salinan ambang); dimensi khas bidang terkuat (`scripts/bidang.py`) **selalu berlabel `estimasi`** — 70% rata nilai kanal + 30% radar terukur, tidak pernah tampil sebagai fakta terukur; kehadiran `None` tidak bisa mengangkat label ke TINGGI.
+10. **Portofolio memakai katalog SEMUA MK, bukan hitungan kedua.** Angka tab 9 & PDF 06 dibaca dari artefak `data/courses/` (hasil build tree yang sama dengan dashboard).
+11. **Data masuk tidak diproses dua kali.** Engine Input (`scripts/engine_input.py`) mencocokkan lewat **SHA-256**, bukan nama berkas; berkas yang isi-nya sudah pernah masuk/diproses dilaporkan **duplikat** dan tidak boleh diserap ulang tanpa keputusan manusia.
+12. **Berkas output lama yang utuh & tanda logika/format sama diberikan apa adanya.** Engine Output (`scripts/engine_output.py`) menulis ulang HANYA bila logika/format penyajian maju (`FORMAT_V` naik) atau ukuran berkas tidak cocok dengan tercatat (korup/parsial).
+13. **Mesin kirim otomatis membaca lapis kirim, bukan menebak di arsip.** `output/kirim/{kaprodi,wali}/manifest.json` berisi referensi dari sumber terverifikasi (run terbaru + registry engine); foldernya dikecualikan dari pemindaian run dan **tidak boleh** diasumsikan sebagai run produksi `<MK>/<TIMESTAMP>/`.

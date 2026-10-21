@@ -1,0 +1,237 @@
+{
+  "peruntukan": "mesin kirim otomatis - Wali Murid (per mahasiswa)",
+  "diperbarui": "2026-10-21 11:05:48",
+  "sumber_run": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05",
+  "stempel_data": "d3450eec8194",
+  "total_mahasiswa": 35,
+  "belumpunya_dokumen": 32,
+  "mahasiswa": {
+    "2510015410001": {
+      "nama": "ALSA DMI YESYA PUTRI",
+      "dokumen": [
+        {
+          "nama": "01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "ukuran": 278664
+        },
+        {
+          "nama": "02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "ukuran": 570584
+        },
+        {
+          "nama": "05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "ukuran": 1359217
+        }
+      ],
+      "catatan": ""
+    },
+    "2510015410002": {
+      "nama": "AULIA PUTRI MAYTISHA",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410003": {
+      "nama": "HAFIZUL FAJRI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410004": {
+      "nama": "MUHAMMAD SATIYA AL FIKRI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410005": {
+      "nama": "LIVIA OKTARI FIRNY",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410006": {
+      "nama": "ZHILLAN SANDY FADRIAN",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410007": {
+      "nama": "ULYA NAFISAH PUTRI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410008": {
+      "nama": "VIOLET MORASAKI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410009": {
+      "nama": "AYU ARISTIN",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410010": {
+      "nama": "M YAZID ZIDANE MULYADI",
+      "dokumen": [
+        {
+          "nama": "01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "ukuran": 266994
+        },
+        {
+          "nama": "02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "ukuran": 570825
+        },
+        {
+          "nama": "05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "ukuran": 1360816
+        }
+      ],
+      "catatan": ""
+    },
+    "2510015410011": {
+      "nama": "ROZI ANDRIAN SURVA",
+      "dokumen": [
+        {
+          "nama": "01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "ukuran": 284755
+        },
+        {
+          "nama": "02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "ukuran": 567704
+        },
+        {
+          "nama": "05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "ukuran": 1360115
+        }
+      ],
+      "catatan": ""
+    },
+    "2510015410013": {
+      "nama": "ZAHRA PUTRI RAMADHANI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410014": {
+      "nama": "NADIA PERMATA HUSINA",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410015": {
+      "nama": "MUHAMMAD FADLAN ZIKRA",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410016": {
+      "nama": "MUHAMMAD HIDAYAT",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410017": {
+      "nama": "ADAM MAULANA",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410018": {
+      "nama": "ILHAM FADIL AZHIM",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410019": {
+      "nama": "DIFLA HAZIRATHUL SYABIRAH",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410020": {
+      "nama": "DAFFA RAMDHAN FADILLAH",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410021": {
+      "nama": "FELISA ANDREINA",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410022": {
+      "nama": "ANANTA DANA FATSYAH",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410023": {
+      "nama": "ASYFA ASRAN",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410024": {
+      "nama": "ARTIKA SARIDEWI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410025": {
+      "nama": "MUHAMMAD GELFIANO HASAN",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410026": {
+      "nama": "SYARIF AL GHIFARI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410027": {
+      "nama": "ADELITA NUGRAINI",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410028": {
+      "nama": "LATIVA NORUL HASANAH",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410029": {
+      "nama": "MUHAMMAD AZIZURROHIM",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410030": {
+      "nama": "MUHAMMAD AFIF",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410031": {
+      "nama": "EURO YUNAN",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410032": {
+      "nama": "ANNISA ARYANTO",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410033": {
+      "nama": "ALVIANDI ARIF",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410034": {
+      "nama": "ROOFI HIDAYAT",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410036": {
+      "nama": "ATIFAH AL AFUWUU",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    },
+    "2510015410038": {
+      "nama": "RAFIQ INTAN HARIY",
+      "dokumen": [],
+      "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+    }
+  },
+  "aturan": [
+    "baca path dari field 'path' (relatif repo)",
+    "npm tanpa dokumen tidak dikirim, hanya ditandai"
+  ]
+}

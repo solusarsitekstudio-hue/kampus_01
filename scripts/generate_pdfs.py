@@ -106,6 +106,25 @@ def sanitize_folder_name(name):
     clean = clean.replace("&", "DAN").strip().replace(" ", "_").upper()
     return clean
 
+
+def _engine_stempel():
+    """Stempel data master+katalog - ditulis di manifest utk Engine Output."""
+    try:
+        from engine_output import stempel_data
+        return stempel_data()
+    except Exception as _e:
+        print(f"[ENGINE] stempel data tidak tersedia: {_e}")
+        return None
+
+
+def _engine_format_v():
+    try:
+        from engine_output import FORMAT_V
+        return FORMAT_V
+    except Exception:
+        return None
+
+
 # Course & Timestamp Hierarchy:
 # output/<NAMA_MATA_KULIAH>/<TIMESTAMP_WAKTU>/
 COURSE_NAME = DATA["course"].get("nama_mk", "APLIKASI_KOMPUTER")
@@ -116,11 +135,11 @@ OUTPUT_ROOT = os.path.join(BASE_DIR, "output")
 COURSE_OUTPUT_ROOT = os.path.join(OUTPUT_ROOT, COURSE_FOLDER)
 TARGET_OUTPUT_DIR = os.path.join(COURSE_OUTPUT_ROOT, TIMESTAMP_STR)
 
-os.makedirs(TARGET_OUTPUT_DIR, exist_ok=True)
-
-# Legacy folder for backward compatibility
+# Folder output DIBUAT MALAS saat build_all_pdfs()/situs tulis benar-benar
+# dipakai - dulu dibuat saat IMPORT sehingga tiap kali server mengimpor modul
+# ini meninggalkan folder timestamp kosong di output/ (sisa 2 folder tanpa
+# manifest ditemukan audit engine).
 LEGACY_DIR = os.path.join(BASE_DIR, "generated_pdfs")
-os.makedirs(LEGACY_DIR, exist_ok=True)
 
 # Helper CSS styles for crisp, beautiful printing
 COMMON_CSS = """
@@ -817,7 +836,7 @@ def render_monthly_attendance_html(student):
           <p><strong>Asisten Dosen / Instruktur Lab</strong></p>
           <div class="space"></div>
           <strong>{DATA['course']['asisten_dosen']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIDN/NIP. {identitas_dokumen()['asisten_nip']}</p>
+          {'<p style="font-size: 9.5px; color: #64748b;">NIDN/NIP. ' + str(identitas_dokumen()['asisten_nip']) + '</p>' if identitas_dokumen()['asisten_nip'] else ''}
         </div>
         
         <div class="sign-box">
@@ -1086,7 +1105,7 @@ def render_final_report_html(student):
           <p style="font-size: 9px;">Asisten Dosen / Instruktur Studio,</p>
           <div class="space" style="height: 24px;"></div>
           <strong style="font-size: 9.5px;">{DATA['course']['asisten_dosen']}</strong>
-          <p style="font-size: 8px; color: #64748b;">NIP. {identitas_dokumen()['asisten_nip']}</p>
+          {'<p style="font-size: 8px; color: #64748b;">NIP. ' + str(identitas_dokumen()['asisten_nip']) + '</p>' if identitas_dokumen()['asisten_nip'] else ''}
         </div>
 
         <div class="sign-box">
@@ -1097,7 +1116,7 @@ def render_final_report_html(student):
             </div>
           </div>
           <strong style="font-size: 9.5px;">{DATA['course']['ketua_prodi']}</strong>
-          <p style="font-size: 8px; color: #64748b;">NIP. {identitas_dokumen()['nip_ketua_prodi']}</p>
+          {'<p style="font-size: 8px; color: #64748b;">NIP. ' + str(identitas_dokumen()['nip_ketua_prodi']) + '</p>' if identitas_dokumen()['nip_ketua_prodi'] else ''}
         </div>
       </div>
 
@@ -1446,7 +1465,7 @@ def render_dosen_curriculum_audit_html():
           <p><strong>{_label_kaprodi()}</strong></p>
           <div class="space"></div>
           <strong>{DATA['course']['ketua_prodi']}</strong>
-          <p style="font-size: 9.5px; color: #64748b;">NIP. {identitas_dokumen()['nip_ketua_prodi']}</p>
+          {'<p style="font-size: 9.5px; color: #64748b;">NIP. ' + str(identitas_dokumen()['nip_ketua_prodi']) + '</p>' if identitas_dokumen()['nip_ketua_prodi'] else ''}
         </div>
       </div>
     </body>
@@ -1459,6 +1478,29 @@ def build_all_pdfs():
     print("[INFO] MEMULAI GENERASI DOKUMEN PDF PROFESIONAL ARSITEKTUR")
     print(f"[INFO] Target Folder : output/{COURSE_FOLDER}/{TIMESTAMP_STR}/")
     print("=" * 65)
+
+    # ENGINE OUTPUT (keputusan user 2026-10-21): berkas lama yang masih SAH
+    # diberikan apa adanya - kalau master/katalog tidak berubah, FORMAT_V
+    # tidak maju, dan seluruh PDF run terbaru utuh, TIDAK membuat run baru
+    # (hanya folder kosong + manifest kembar = sampah run).
+    try:
+        from engine_output import run_masih_sah
+        status_run = run_masih_sah()
+    except Exception as _engine_err:
+        status_run = {"masih_sah": False, "alasan": f"engine tak terbaca: {_engine_err}"}
+    if status_run.get("masih_sah"):
+        # folder timestamp yang dibuat untuk run ini dihapus bila kosong,
+        # supaya tidak jadi sisa folder tanpa manifest.
+        try:
+            os.rmdir(TARGET_OUTPUT_DIR)
+        except OSError:
+            pass
+        print(f"[ENGINE] SKIP - run terbaru masih sah: {status_run['run']}")
+        print(f"[ENGINE] ({status_run['alasan']} ; berkas lama diberikan, "
+              "cetak paket dibatalkan tanpa kerja Chromium)")
+        return os.path.join(BASE_DIR, status_run["run"])
+
+    os.makedirs(TARGET_OUTPUT_DIR, exist_ok=True)
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -1528,6 +1570,9 @@ def build_all_pdfs():
         "timestamp_id": TIMESTAMP_STR,
         "target_directory": TARGET_OUTPUT_DIR,
         "total_files": len(generated_files),
+        # STEMPEL untuk Engine Output: run duplikat tak lola terdeteksi.
+        "data_stamp": _engine_stempel(),
+        "format_v": _engine_format_v(),
         "files": [
             {
                 "filename": fn,
@@ -1550,6 +1595,21 @@ def build_all_pdfs():
     with open(os.path.join(COURSE_OUTPUT_ROOT, "latest_run.json"), "w", encoding="utf-8") as f:
         json.dump(latest_pointer, f, indent=2, ensure_ascii=False)
 
+    # ENGINE OUTPUT: catat seluruh PDF paket run ini ke registry output
+    # (ukuran + tanda logika), supaya mesin pemeriksa output tahu berkas mana
+    # yang masih utuh & mana yang kena overwrite (keputusan user 2026-10-21).
+    try:
+        from engine_output import catat_folder as _engine_catat_folder
+        _tercatat = _engine_catat_folder(TARGET_OUTPUT_DIR, jenis="paket_pdf")
+        _legacy = None
+        if os.path.isdir(LEGACY_DIR):
+            _legacy = _engine_catat_folder(LEGACY_DIR, jenis="paket_pdf")
+        print(f"[ENGINE] Registry output terbarui: {len(_tercatat)} PDF run + "
+              f"{len(_legacy or [])} salinan generated_pdfs.")
+    except Exception as _engine_err:
+        # Engine gagal TIDAK boleh menggagalkan paket PDF yang sudah jadi.
+        print(f"[ENGINE] Pencatatan registry dilewati: {_engine_err}")
+
     print("=" * 65)
     print(f"[SUCCESS] SELURUH PDF BERHASIL DIGENERATE DI STRUKTUR HIERARKI:")
     print(f"          📁 output/{COURSE_FOLDER}/")
@@ -1566,9 +1626,355 @@ def build_all_pdfs():
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from kelas_rules import at_risk_alpha_min, at_risk_kehadiran_min  # noqa: E402
 
-PDF_TYPE_PER_STUDENT = ("monthly", "presensi", "rapor", "final", "deckcraft", "portofolio")
+PDF_TYPE_PER_STUDENT = ("monthly", "presensi", "rapor", "final", "deckcraft",
+                        "portofolio", "portofolio_lengkap", "porto4")
 PDF_TYPE_CLASS_LEVEL = ("gradebook", "kaprodi", "audit", "dosen")
 PDF_TYPE_ALL = PDF_TYPE_PER_STUDENT + PDF_TYPE_CLASS_LEVEL
+
+
+# ============================================================================= #
+# 5. PDF 6: PORTOFOLIO AKADEMIK LENGKAP 4 LAPIS (keputusan user 2026-10-21).     #
+#    Lapis 4 sepanjang kuliah -> lapis 3 per semester -> lapis 2 per MK ->      #
+#    lapis 1 per bulan. Sumber: scripts/portofolio.py (katalog build SEMUA      #
+#    MK) - angka SAMA dengan dashboard, bukan hitungan kedua.                   #
+# ============================================================================= #
+# Label dim radar pinjam SATU SUMBER diagnosis.py (bukan salin-tempel lagi).
+try:
+    import diagnosis as _DIAG
+    _LABEL_DIM_PDF = _DIAG._LABEL_DIM
+except Exception:  # noqa: BLE001 - konstan kosong hanya jika diagnosis tak ada
+    _LABEL_DIM_PDF = {}
+
+
+def render_portofolio_lengkap_html(student, data_porto):
+    """HTML portofolio 4 lapis untuk print Playwright -> PDF per mahasiswa.
+
+    data_porto = hasil portofolio.kumpulan_portofolio(npm). Rangkuman KPI di
+    depan, lalu KRONOLOGIS: per semester (page-break) -> tiap MK (lapis 2) ->
+    baris bulanan MK itu (lapis 1). Tanda tangan = blok standar identitas.
+    """
+    d = identitas_dokumen()
+    gp = data_porto
+
+    def esc(v):
+        return str(v if v is not None else "-")
+
+    # Badge kecil konsisten dengan dokumen lain.
+    def badge_risk(risk):
+        return ("" if not risk
+                else '<span class="badge badge-danger">AT-RISK</span>')
+
+    arah_ikon = {"naik": "↑ Naik", "turun": "↓ Turun", "stabil": "→ Stabil"}
+    arah_txt = arah_ikon.get(gp.get("arah_nilai"), "-")
+
+    # --- ANALISIS POTENSI: radar lintas MK + MK terkuat/terlemah ---------------
+    pot = gp.get("analisis_potensi") or {}
+    radar_rows = "".join(
+        "<tr>"
+        f"<td>{esc(_LABEL_DIM_PDF.get(dim, dim))}</td>"
+        f"<td style='text-align:center;'><strong>{esc(val)}</strong></td>"
+        f"<td style='text-align:center;'>{esc((pot.get('radar_sumber') or {}).get(dim, '-'))}</td>"
+        "</tr>"
+        for dim, val in (pot.get("radar") or {}).items())
+    daftar_kuat = "".join(
+        f"<li>{esc(x['nama_mk'])} — {esc(x['nilai'])} ({esc(x['grade'])})</li>"
+        for x in (pot.get("mk_terkuat") or []))
+    daftar_lemah = "".join(
+        f"<li>{esc(x['nama_mk'])} — {esc(x['nilai'])} ({esc(x['grade'])})</li>"
+        for x in (pot.get("mk_terlemah") or []))
+    distribusi = " • ".join(
+        f"{esc(k)}: {v} MK" for k, v in sorted((pot.get("distribusi") or {}).items())
+    ) or "-"
+    sebaran = pot.get("sebaran") or {}
+    # Bidang terkuat -> dimensi khas (trafo estimasi jujur) + karier sepanjang kuliah.
+    kanal_rows = "".join(
+        "<tr>"
+        f"<td>{esc(k['nama'])}{' ★' if k['kanal'] == pot.get('kanal_terkuat') else ''}</td>"
+        f"<td style='text-align:center;'>{k['jumlah_mk']}</td>"
+        f"<td style='text-align:center;'>{esc(k['rata_nilai'])}</td>"
+        f"<td>{esc((k['mk_teratas'] or {}).get('nama_mk'))} — {esc((k['mk_teratas'] or {}).get('nilai'))}</td>"
+        "</tr>"
+        for k in (pot.get("kanal") or []))
+    khas_rows = "".join(
+        "<tr>"
+        f"<td>{esc(v['label'])}</td>"
+        f"<td style='text-align:center;'><strong>{v['nilai']}</strong></td>"
+        f"<td style='text-align:center;'>estimasi</td>"
+        "</tr>"
+        for v in (pot.get("dimensi_khas") or {}).values())
+    karier_rows = "".join(
+        "<tr>"
+        f"<td>{esc(c['profesi'])}</td>"
+        f"<td style='text-align:center;'>{c['kecocokan_persen']}%</td>"
+        f"<td>{esc(c['kategori_kecocokan'])}</td>"
+        "</tr>"
+        for c in (pot.get("matriks_karier_kuliah") or [])[:5])
+    blok_bidang = ""
+    if kanal_rows or khas_rows:
+        blok_bidang = f"""
+    <p style="margin-top: 10px; font-weight: 700; font-size: 11px;">BIDANG TERKUAT — ANALISIS PUSAT (dimensi menyesuaikan bidang)</p>
+    <table class="tbl" style="margin-top: 4px;">
+      <thead><tr><th>Kanal Bidang</th><th>Jml MK</th><th>Rata Nilai</th><th>Nilai Tertinggi</th></tr></thead>
+      <tbody>{kanal_rows or "<tr><td colspan='4' class='tanpa-data'>-</td></tr>"}</tbody>
+    </table>
+    <table class="tbl" style="margin-top: 8px;">
+      <thead><tr><th>Dimensi Khas Bidang Terkuat</th><th>Skor</th><th>Sumber</th></tr></thead>
+      <tbody>{khas_rows or "<tr><td colspan='3' class='tanpa-data'>Belum cukup data.</td></tr>"}</tbody>
+    </table>
+    <p class="tanpa-data" style="margin-top: 4px;">Dimensi khas = 70% rata nilai MK sebidang + 30% radar terukur — seluruhnya estimasi, tidak pernah tampil sebagai fakta terukur.</p>
+    {(f"<table class='tbl' style='margin-top: 8px;'><thead><tr><th>Arah Karier Sepanjang Kuliah (bonus sebidang)</th><th>Kecocokan</th><th>Kategori</th></tr></thead><tbody>{karier_rows}</tbody></table>" if karier_rows else "")}
+    """
+    blok_potensi = f"""
+    <table class="tbl" style="margin-top: 6px;">
+      <thead><tr><th>Dimensi Kompetensi (rata lintas MK)</th><th>Skor</th><th>Sumber</th></tr></thead>
+      <tbody>{radar_rows or "<tr><td colspan='3' class='tanpa-data'>Belum ada data radar.</td></tr>"}</tbody>
+    </table>
+    {blok_bidang}
+    <table class="tbl" style="margin-top: 8px;">
+      <thead><tr><th style='width:50%'>MK Terkuat (nilai tertinggi)</th>
+                   <th style='width:50%'>MK Terlemah (perlu didahulukan)</th></tr></thead>
+      <tbody>
+        <tr>
+          <td style='vertical-align: top;'><ul style='margin: 2px 0 2px 16px;'>{daftar_kuat or '<span class="tanpa-data">-</span>'}</ul></td>
+          <td style='vertical-align: top;'><ul style='margin: 2px 0 2px 16px;'>{daftar_lemah or '<span class="tanpa-data">-</span>'}</ul></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="pot-reko"><strong>Rekomendasi:</strong> {esc(pot.get('rekomendasi', '-'))}</p>
+    <p class="tanpa-data">Sebaran nilai: tertinggi {esc(sebaran.get('tertinggi'))},
+    terendah {esc(sebaran.get('terendah'))},
+    deviasi antar-MK <strong>{esc(sebaran.get('deviasi'))}</strong>
+    (makin kecil makin konsisten). Distribusi diagnosis per MK: {distribusi}.</p>
+    """
+
+    # --- LAPIS 4: KPI sepanjang kuliah ---------------------------------------
+    kpi = f"""
+    <div class="kpi-grid">
+      <div class="kpi"><span>Total MK Ditempuh</span><strong>{gp['jumlah_mk']}</strong></div>
+      <div class="kpi"><span>Rata Nilai (Semua MK)</span><strong>{esc(gp['rata_nilai'])}</strong></div>
+      <div class="kpi"><span>Rata Kehadiran</span><strong>{esc(gp['rata_kehadiran'])}%</strong></div>
+      <div class="kpi"><span>Total Alpha</span><strong>{gp['total_alpha']} hari</strong></div>
+      <div class="kpi"><span>MK Berstatus At-Risk</span><strong>{gp['jumlah_mk_at_risk']}</strong></div>
+      <div class="kpi"><span>Arah Tren (±5)</span><strong>{arah_txt}{'' if gp['delta_nilai_terakhir'] is None else ' (' + str(gp['delta_nilai_terakhir']) + ')'}</strong></div>
+    </div>
+    """
+
+    # --- LAPIS 3+2+1: kronologis per semester --------------------------------
+    blok_semester = ""
+    for sem in (gp.get("semester") or []):
+        baris_mk = ""
+        for m in sem.get("mk", []):
+            baris_bulan = ""
+            for b in (m.get("bulanan") or []):
+                baris_bulan += (
+                    "<tr>"
+                    f"<td style='text-align:center; font-family:'JetBrains Mono', monospace;'>{esc(b['bulan'])}</td>"
+                    f"<td style='text-align:center;'>{b['pertemuan']}</td>"
+                    f"<td style='text-align:center;'>{esc(b['hadir_persen'])}"
+                    + ("%" if b['hadir_persen'] is not None else "")
+                    + "</td>"
+                    f"<td style='text-align:center;'>{esc(b['rata_skor'])}</td>"
+                    "</tr>"
+                )
+            tabel_bulanan = ""
+            if baris_bulan:
+                tabel_bulanan = ("""
+                  <table class="tbl bulanan">
+                    <thead><tr><th>Bulan</th><th>Pertemuan</th><th>Kehadiran Slot</th><th>Rata Skor</th></tr></thead>
+                    <tbody>""" + baris_bulan + "</tbody></table>")
+            baris_mk += f"""
+            <div class="mk-blok">
+              <div class="mk-head">
+                <strong>{esc(m['nama_mk'])}</strong> {badge_risk(m['at_risk'])}
+                <span class="mk-meta">{esc(m['tahun_ajar'])} {esc(m['semester'])} • {esc(m['sks'])} SKS • {esc(m['kunci_mk'])}</span>
+              </div>
+              <div class="mk-angka">
+                <span>Nilai <strong>{esc(m['nilai'])}</strong> ({esc(m['grade'])})</span>
+                <span>Kehadiran <strong>{esc(m['kehadiran'])}%</strong></span>
+                <span>Alpha <strong>{esc(m['alpha'])} hari</strong></span>
+                <span>Diagnosis: <em>{esc(m['status_alert'])}</em></span>
+              </div>
+              {f"<p class='mk-alasan'>Sebab at-risk: {esc(m['alasan_at_risk'])}</p>" if m['at_risk'] else ''}
+              {tabel_bulanan or "<p class='tanpa-data'>Rekap bulanan belum tersedia (pertemuan belum bertanggal/belum diinput).</p>"}
+            </div>"""
+
+        blok_semester += f"""
+        <div class="semester-blok">
+          <h3 class="sem-head">Semester {esc(sem['tahun_ajar'])} {esc(sem['semester'])}
+            <span class="sem-ringkas">{sem['jumlah_mk']} MK • Rata Nilai {esc(sem['rata_nilai'])} • Kehadiran {esc(sem['rata_kehadiran'])}% • At-Risk {sem['jumlah_at_risk']} MK</span>
+          </h3>
+          {baris_mk or "<p class='tanpa-data'>Belum ada katalog MK di semester ini.</p>"}
+        </div>"""
+
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Portofolio Akademik Lengkap - {esc(student['nama'])}</title>
+      <style>
+        {COMMON_CSS}
+        @page {{ size: A4 portrait; margin: 14mm 13mm; }}
+        .judul-dok {{
+          text-align: center; margin: 6px 0 4px;
+        }}
+        .judul-dok h1 {{ font-size: 18px; font-weight: 900; letter-spacing: 1px; }}
+        .judul-dok p {{ font-size: 10px; color: #64748b; }}
+        .ident-mhs {{
+          display: flex; justify-content: space-between; align-items: center;
+          border: 1.5px solid #0f172a; border-radius: 10px; padding: 10px 14px;
+          margin: 14px 0;
+          background: #f8fafc;
+        }}
+        .kpi-grid {{
+          display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+          margin: 12px 0;
+        }}
+        .kpi {{
+          border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px;
+          background: #f8fafc;
+        }}
+        .kpi span {{ font-size: 9px; color: #64748b; display: block; }}
+        .kpi strong {{ font-size: 15px; font-weight: 800; }}
+        .semester-blok {{ margin-bottom: 18px; }}
+        .sem-head {{
+          background: #0f172a; color: #ffffff; border-radius: 7px;
+          padding: 7px 12px; font-size: 12px; font-weight: 800;
+          margin-bottom: 8px;
+        }}
+        .sem-ringkas {{ display: block; font-size: 8.5px; font-weight: 500; color: #cbd5e1; }}
+        .mk-blok {{
+          border: 1px solid #cbd5e1; border-left: 4px solid #0f172a;
+          border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
+          page-break-inside: avoid;
+        }}
+        .mk-head strong {{ font-size: 11.5px; font-weight: 800; }}
+        .mk-meta {{ display: block; font-size: 9px; color: #64748b; font-family: 'JetBrains Mono', monospace; }}
+        .mk-angka span {{ display: inline-block; margin-right: 14px; font-size: 10px; color: #475569; }}
+        .mk-angka strong {{ color: #0f172a; }}
+        .mk-alasan {{ font-size: 9.5px; color: #b91c1c; margin-top: 4px; }}
+        table.tbl {{
+          width: 100%; border-collapse: collapse; margin-top: 6px;
+          font-size: 9.5px;
+        }}
+        table.tbl th {{
+          background: #f1f5f9; border: 1px solid #e2e8f0; padding: 3px 6px;
+          text-align: center; font-size: 8.5px; text-transform: uppercase;
+          letter-spacing: 0.4px;
+        }}
+        table.tbl td {{ border: 1px solid #e2e8f0; padding: 3px 6px; }}
+        .tanpa-data {{ font-size: 9.5px; color: #94a3b8; font-style: italic; margin-top: 4px; }}
+        .pot-box {{
+          border: 1.5px solid #0f172a; border-radius: 8px; background: #f8fafc;
+          padding: 8px 12px; margin-top: 6px;
+        }}
+        .pot-label {{ font-size: 14px; font-weight: 900; letter-spacing: 0.5px; }}
+        .pot-alasan {{ font-size: 9.5px; color: #475569; margin-top: 2px; }}
+        .pot-reko {{
+          font-size: 10px; color: #0f172a; margin-top: 8px;
+          border-left: 3px solid #0f172a; padding-left: 8px;
+        }}
+        .page-break {{ page-break-before: always; }}
+      </style>
+    </head>
+    <body>
+      <div class="kop-surat">
+        <div class="kop-logo">🏛️</div>
+        <div class="kop-text">
+          <h2>KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI</h2>
+          <h3>{_kop_baris()}</h3>
+          <p>{d['universitas']} • {d['tanggal']}</p>
+        </div>
+        <div style="width: 56px;"></div>
+      </div>
+
+      <div class="judul-dok">
+        <h1>PORTOFOLIO AKADEMIK MAHASISWA</h1>
+        <p>Berbasis Data Aktual Sepanjang Kuliah: Per Bulan → Per MK → Per Semester → Sepanjang Kuliah</p>
+      </div>
+
+      <div class="ident-mhs">
+        <div>
+          <strong style="font-size: 15px; font-weight: 900;">{esc(gp['nama'])}</strong>
+          <p style="font-size: 11px; font-family:'JetBrains Mono', monospace; color:#475569;">NPM {esc(gp['npm'])}</p>
+        </div>
+        <div style="text-align: right; font-size: 10px; color: #475569;">
+          Program Studi {esc(d['prodi'])}<br>
+          Ketua Program Studi: <strong>{esc(d['ketua_prodi'])}</strong>
+        </div>
+      </div>
+
+      <p class="tanpa-data" style="margin-bottom: 2px;">KETERANGAN LAPISAN:</p>
+      <p class="tanpa-data" style="margin-top:0;">
+        Semua angka dihitung dari catatan nilai &amp; kehadiran aktual per SLOT yang diinput
+        di dashboard. Pertemuan "Belum Diinput" bersifat NETRAL dan tidak menekan persen
+        kehadiran; pertemuan tanpa tanggal tidak masuk rekap bulanan. Lapis 1 (bulanan)
+        dan lapis 2 (per MK) ditampilkan di bawah masing-masing semester (lapis 3).
+      </p>
+
+      <h3 style="margin-top: 14px; font-size: 13px; font-weight: 900;">LAPIS 4 - SEPANJANG KULIAH</h3>
+      {kpi}
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Semester</th><th>Jumlah MK</th><th>Rata Nilai</th>
+            <th>Rata Kehadiran</th><th>At-Risk</th>
+          </tr>
+        </thead>
+        <tbody>
+        {"".join(
+            "<tr>"
+            + f"<td>{esc(s['tahun_ajar'])} {esc(s['semester'])}</td>"
+            + f"<td style='text-align:center;'>{s['jumlah_mk']}</td>"
+            + f"<td style='text-align:center;'>{esc(s['rata_nilai'])}</td>"
+            + f"<td style='text-align:center;'>{esc(s['rata_kehadiran'])}%</td>"
+            + f"<td style='text-align:center;'>{s['jumlah_at_risk']}</td>"
+            + "</tr>"
+            for s in (gp.get('semester') or [])
+        )}
+        </tbody>
+      </table>
+
+      <p class="tanpa-data" style="margin-top: 10px;">
+        Halaman selanjutnya memuat ringkasan kronologis seluruh MK: ringkasan MK (lapis 2)
+        dan rekap per bulan MK itu (lapis 1) - persis seperti yang terlihat di dashboard.
+      </p>
+
+      <!-- ANALISIS NILAI -> POTENSI (lintas MK, ambang sama dengan mesin v3) -->
+      <h3 style="margin-top: 14px; font-size: 13px; font-weight: 900;">ANALISIS POTENSI BERDASAR NILAI</h3>
+      <div class="pot-box">
+        <p class="pot-label">{esc((gp.get('analisis_potensi') or {}).get('label', '-'))}</p>
+        <p class="pot-alasan">{esc((gp.get('analisis_potensi') or {}).get('alasan', '-'))}</p>
+      </div>
+      {blok_potensi}
+
+      <div class="page-break"></div>
+      {blok_semester}
+
+      <div class="page-break"></div>
+      <h3 style="font-size: 13px; font-weight: 900;">PENUTUP</h3>
+      <p class="tanpa-data" style="margin-top:6px; margin-bottom: 14px;">
+        Portofolio ini disusun otomatis dari catatan asistensi & penilaian studio.
+        Untuk rekomendasi profesi &amp; diagnosa perkembangan terperinci, lihat dokumen
+        "02_rapor_akhir_semester" dan "05_deckcraft_portofolio" pada paket dokumen
+        resmi program studi.
+      </p>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <div class="sign-box"
+             style="border: 0; text-align: center; min-width: 260px;">
+          <p style="margin-bottom: 2px;">{d['kota']}, {d['tanggal']}</p>
+          <p style="margin-bottom: 2px;">Ketua Program Studi {esc(d['prodi'])},</p>
+          <div style="height: 55px;"></div>
+          <p style="font-weight: 800; margin: 0;">{esc(d['ketua_prodi'])}</p>
+          {"" if not d.get('nip_ketua_prodi') else f"<p style='margin: 0;'>NIP. {esc(d['nip_ketua_prodi'])}</p>"}
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+    return html
 
 
 def generate_pdf_bytes_on_demand(pdf_type, npm=None):
@@ -1647,6 +2053,25 @@ def generate_pdf_bytes_on_demand(pdf_type, npm=None):
                 html = render_deckcraft_slides_html(student, DATA["course"])
                 page.set_content(html)
                 pdf_bytes = page.pdf(format="A4", landscape=True, print_background=True, margin={"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"})
+
+            elif pdf_type in ("portofolio_lengkap", "porto4"):
+                # PORTOFOLIO 4 LAPIS: bukan hanya MK aktif - SEMUA katalog di
+                # tree diiklankan (bulanan -> per MK -> semester -> kumulatif).
+                filename = (
+                    f"06_portofolio_lengkap_{student['npm']}_"
+                    f"{student['nama'].replace(' ', '_')}.pdf")
+                import portofolio as PORTO
+                data_porto = PORTO.kumpulan_portofolio(student["npm"])
+                if data_porto is None:
+                    raise ValueError(
+                        f"NPM {student['npm']} tidak ditemukan di katalog mana "
+                        "pun; portofolio 4 lapis tidak bisa dibuat.")
+                html = render_portofolio_lengkap_html(student, data_porto)
+                page.set_content(html)
+                pdf_bytes = page.pdf(
+                    format="A4", print_background=True,
+                    margin={"top": "12mm", "bottom": "12mm", "left": "11mm",
+                            "right": "11mm"})
 
             elif pdf_type in ("gradebook", "kaprodi"):
                 filename = "03_laporan_penilaian_kaprodi_master_gradebook.pdf"

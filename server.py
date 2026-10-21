@@ -74,6 +74,10 @@ NPM_RE = re.compile(r"^\d{8,14}$")
 
 # Pengaman penulisan data master (dipakai saat /api/switch_course)
 DATA_LOCK = threading.Lock()
+# PERIODE_LOCK: periode membaca tree (bukan DATA_FILE), tapi agregasi berat
+# dan harus single-flight supaya dua request rollup bersamaan tidak
+# mengerjakan pohon ulang dua kali (pola lock konsisten dengan Batch A).
+PERIODE_LOCK = threading.Lock()
 
 # sys.path di-hoist ke module scope (sekali saja, bukan tiap request)
 _SCRIPTS_DIR = os.path.join(BASE_DIR, "scripts")
@@ -204,6 +208,22 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=PUBLIC_DIR, **kwargs)
 
+    # FIX UI-STALE: dulu HTML/JS/CSS disajikan TANPA Cache-Control, jadi browser
+    # memakai cache heuristics dan bisa menampilkan UI LAMA (contoh nyata: tab 8
+    # "Rekap Periode" tidak muncul setelah update). Sekarang halaman selalu
+    # direvalidasi (304 kalau sama), hanya untuk HTML/JS/CSS - video/PDF statis
+    # tidak disentuh supaya byte-range seek tetap lancar.
+    def send_header(self, keyword, value):
+        if str(keyword).lower() == "content-type":
+            self._content_type_terkirim = str(value)
+        super().send_header(keyword, value)
+
+    def end_headers(self):
+        ctype = (getattr(self, "_content_type_terkirim", "") or "").lower()
+        if any(t in ctype for t in ("text/html", "javascript", "text/css")):
+            self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
     # ------------------------------------------------------------------ output
     def _send_bytes(self, status: int, body: bytes, content_type: str, extra=None):
         try:
@@ -243,14 +263,32 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
 
         if path == "/api/data":
             return self._api_data()
+        # FIX TAB 8: sumber potensi mahasiswa per MK (katalog build per MK).
+        if path == "/api/course_data":
+            return self._api_course_data(query)
+        # Potensi LEVEL 3: perkembangan mahasiswa sepanjang kuliah (lintas MK).
+        if path == "/api/perkembangan":
+            return self._api_perkembangan(query)
+        # PORTOFOLIO 4 LAPIS: bulanan -> per MK -> per semester -> sepanjang
+        # kuliah, satu mahasiswa lengkap (keputusan user 2026-10-21).
+        if path == "/api/portofolio":
+            return self._api_portofolio(query)
         if path == "/api/courses":
             return self._api_courses()
         if path == "/api/kurikulum":
             return self._api_kurikulum()
         if path.startswith("/api/kurikulum/detail"):
             return self._api_kurikulum_detail(query)
+        # FIX PERIODE: rekap per-periode (Level 3: satu semester semua MK;
+        # Level 4: semua semester semua MK) dihitung dari TREE, bukan master.
+        if path == "/api/periode":
+            return self._api_periode(query)
         if path == "/api/runs":
             return self._api_runs()
+        if path == "/api/engine/input":
+            return self._api_engine_input()
+        if path == "/api/engine/output":
+            return self._api_engine_output()
         if path == "/api/identitas":
             return self._api_identitas()
         if path.startswith("/api/switch_course"):
@@ -298,6 +336,12 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._api_identitas_regenerasi_pdf()
         if path == "/api/kurikulum/simpan":
             return self._api_kurikulum_simpan()
+        # ENGINE cek input/output (terpisah): tandai masukan diproses /
+        # rapikan output (arsip run lama + lapis kirim).
+        if path == "/api/engine/input":
+            return self._api_engine_input_post()
+        if path == "/api/engine/output":
+            return self._api_engine_output_post()
         return self._send_error_json(404, f"Endpoint POST tidak dikenal: {path}")
 
     # --------------------------------------------------------- API identitas
@@ -486,7 +530,9 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         if not os.path.exists(DATA_FILE):
             return self._send_error_json(404, "Data file not found")
         try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
+            # FIX BUG RACE: baca master di dalam lock supaya tidak menangkap
+            # file sedang ditulis (atomic write + lock = endpoint tidak 500).
+            with DATA_LOCK, open(DATA_FILE, "r", encoding="utf-8") as f:
                 content = f.read().encode("utf-8")
         except OSError as e:
             return self._send_error_json(500, f"Gagal baca data: {_sanitize_error(e)}")
@@ -525,6 +571,114 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                         })
         return self._send_json(200, courses_list)
 
+    def _api_course_data(self, query):
+        """Data master 1 MK dari katalog build (data/courses/<kunci>.json).
+
+        Dipakai panel "Potensi Mahasiswa per MK" di tab Rekap Periode supaya
+        user bisa memilih MK mana pun di tree - bukan hanya MK aktif di
+        academic_data.json. Fail-closed: nama file diverifikasi ada di tree
+        dulu; katalog belum dibangun -> 404 dengan petunjuk menjalankan
+        parse_data, bukan error HTML.
+        """
+        target = (query.get("course", [None])[0] or "").strip()
+        if not target:
+            return self._send_error_json(400, "Parameter 'course' wajib diisi")
+        safe = safe_relative_path(target)
+        if safe is None or safe != target or "/" in safe or "\\" in safe:
+            return self._send_error_json(400, "Course ID tidak valid")
+
+        try:
+            KT = self._modul_kurikulum()
+            tersedia = set()
+            for prodi in KT.daftar_prodi():
+                for ta in KT.daftar_tahun(prodi):
+                    for sem in KT.daftar_semester(prodi, ta):
+                        tersedia.update(KT.daftar_mk(prodi, ta, sem))
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Tree kurikulum tidak bisa dibaca: {0}".format(_sanitize_error(e)))
+        if safe not in tersedia:
+            return self._send_error_json(
+                404, "Course '{0}' tidak ditemukan di tree kurikulum".format(safe))
+
+        course_file = os.path.join(BASE_DIR, "data", "courses",
+                                   "{0}.json".format(safe))
+        if not os.path.exists(course_file):
+            return self._send_error_json(
+                404, "Katalog '{0}' belum dibangun. Jalankan "
+                     "scripts\\parse_data.py, lalu muat ulang panel ini.".format(safe))
+        try:
+            with open(course_file, "rb") as f:
+                content = f.read()
+        except OSError as e:
+            return self._send_error_json(
+                500, "Gagal baca katalog: {0}".format(_sanitize_error(e)))
+        return self._send_bytes(200, content, "application/json; charset=utf-8")
+
+    def _api_perkembangan(self, query):
+        """Potensi LEVEL 3 - perkembangan tiap mahasiswa SEPANJANG KULIAH.
+
+        /api/perkembangan?prodi=ARSITEKTUR
+        Agregasi lintas MK dari katalog build (scripts/periode.py ::
+        perkembangan_mahasiswa): riwayat per MK + rollup per semester +
+        arah tren nilai terakhir vs sebelumnya. Fail-closed: prodi tidak
+        ada -> 400; tree rusak -> 500 dengan pesan, bukan HTML.
+        """
+        KT = self._modul_kurikulum()
+        PT = self._modul_periode()
+        prodi = (query.get("prodi", [None])[0] or "").strip()
+        if not prodi or prodi not in KT.daftar_prodi():
+            return self._send_error_json(
+                400, "Parameter 'prodi' tidak valid atau belum diisi.")
+        try:
+            with PERIODE_LOCK:
+                hasil = PT.perkembangan_mahasiswa(prodi)
+        except KT.KurikulumError as e:
+            return self._send_error_json(400, str(e))
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Gagal menghitung perkembangan mahasiswa: {0}".format(
+                    _sanitize_error(e)))
+        return self._send_json(200, hasil)
+
+    def _api_portofolio(self, query):
+        """PORTOFOLIO MAHASISWA 4 LAPIS (keputusan user 2026-10-21).
+
+        /api/portofolio?npm=2510015410007
+        Agregasi dari katalog build SEMUA MK di tree (scripts/portofolio.py ::
+        kumpulan_portofolio):
+          lapis 1 per bulan  - kehadiran.detail katalog, aturan UI sama;
+          lapis 2 per MK     - nilai/grade/at-risk/archetype diagnosis v3;
+          lapis 3 semester   - rollup jumlah MK + rata nilai + kehadiran;
+          lapis 4 kumulatif  - agregat + arah tren ±5 + jumlah MK at-risk.
+        Fail-closed: npm kosong -> 400; npm tak dikenal -> 404; tree/katalog
+        rusak -> 500 dengan pesan, bukan HTML.
+        """
+        KT = self._modul_kurikulum()
+        PF = self._modul_portofolio()
+        npm = (query.get("npm", [None])[0] or "").strip()
+        if not npm:
+            return self._send_error_json(
+                400, "Parameter 'npm' wajib diisi "
+                     "(contoh: /api/portofolio?npm=2510015410007)")
+        try:
+            with PERIODE_LOCK:
+                hasil = PF.kumpulan_portofolio(npm)
+        except KT.KurikulumError as e:
+            return self._send_error_json(400, str(e))
+        except ValueError as e:
+            return self._send_error_json(400, str(e))
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Gagal menghitung portofolio: {0}".format(
+                    _sanitize_error(e)))
+        if hasil is None:
+            return self._send_error_json(
+                404, "NPM '{0}' tidak ditemukan di katalog mana pun. "
+                     "Jalankan scripts\\parse_data.py jika katalog belum dibangun."
+                     .format(npm))
+        return self._send_json(200, hasil)
+
     def _api_student(self, path: str):
         if not os.path.exists(DATA_FILE):
             return self._send_error_json(404, "Data file not found")
@@ -548,6 +702,18 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         """
         import kurikulum_tree
         return kurikulum_tree
+
+    @staticmethod
+    def _modul_periode():
+        """Import scripts/periode.py saat dipakai (pola sama seperti kurikulum)."""
+        import periode
+        return periode
+
+    @staticmethod
+    def _modul_portofolio():
+        """Import scripts/portofolio.py saat dipakai (pola sama seperti periode)."""
+        import portofolio
+        return portofolio
 
     @staticmethod
     def _modul_aturan():
@@ -590,7 +756,9 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             "pertemuan": len(sesi),
             "pertemuan_standar": AT.pertemuan_total(),
             "slot_total": KT.jumlah_slot(sesi_dok),
-            "bobot_total": sum(int(s.get("bobot") or 0) for s in sesi),
+            # Bobot boleh desimal (mis. 4.2). int() dulu memotong 4.2 -> 4 dan
+            # membuat total tampil 96 padahal 16 pertemuan berjumlah 100.
+            "bobot_total": round(sum(float(s.get("bobot") or 0) for s in sesi), 2),
             "topik_terisi": (sesi_dok or {}).get("topik_terisi", 0),
             "topik_placeholder": (sesi_dok or {}).get("topik_placeholder", 0),
             "jadwal_menit": KT.hitung_menit_jadwal(penawaran.get("jadwal", "")),
@@ -694,6 +862,49 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             "pertemuan_total": AT.pertemuan_total(),
             "pertemuan_ujian": AT.pertemuan_ujian(),
         })
+
+    def _api_periode(self, query):
+        """Rekap per-periode dari TREE (kondisinya dijabarkan, bukan ditebak).
+
+        Level 3 (satu semester semua MK):
+          /api/periode?prodi=&tahun_ajar=&semester=
+        Level 4 (semua semester semua MK):
+          /api/periode?prodi=&semua_semester=1
+
+        Fail-closed: prodi tidak ada -> 404, semester tidak ada -> 404,
+        parameter kurang -> 400. Kosong 'prodi' TIDAK dianggap 'semua prodi'
+        supaya tidak ada laporan diam-diam lintas prodi.
+        """
+        PT = self._modul_periode()
+        KT = self._modul_kurikulum()
+        prodi = (query.get("prodi", [None])[0] or "").strip()
+        ta = (query.get("tahun_ajar", [None])[0] or "").strip()
+        sem = (query.get("semester", [None])[0] or "").strip().upper()
+        semua_semester = str(query.get("semua_semester", ["0"])[0]).lower() in (
+            "1", "true", "yes")
+        if not prodi or prodi not in KT.daftar_prodi():
+            return self._send_error_json(
+                400, "Parameter 'prodi' tidak valid atau belum diisi.")
+
+        try:
+            with PERIODE_LOCK:
+                if semua_semester:
+                    return self._send_json(200, PT.agregat_semua_semester(prodi))
+                if not (ta and sem):
+                    return self._send_error_json(
+                        400, "Parameter 'tahun_ajar' dan 'semester' wajib diisi "
+                             "(atau pakai semua_semester=1).")
+                if (ta not in KT.daftar_tahun(prodi)
+                        or sem not in KT.daftar_semester(prodi, ta)):
+                    return self._send_error_json(
+                        404, "Semester '{0} {1}' tidak ada di tree kurikulum "
+                             "prodi {2}.".format(ta, sem, prodi))
+                return self._send_json(
+                    200, PT.agregat_semester(prodi, ta, sem))
+        except Exception as e:  # noqa: BLE001
+            return self._send_error_json(
+                500, "Gagal menghitung rekap periode: {0}".format(
+                    _sanitize_error(e)))
 
     def _api_kurikulum_simpan(self):
         """Simpan suntingan tab Kurikulum ke TREE, lalu bangun ulang turunannya.
@@ -836,16 +1047,38 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         # --- tulis ke tree, lalu bangun ulang turunannya ---
         path_sesi = KT.path_berkas(prodi, ta, sem, kunci, "sesi.json")
         path_penawaran = KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json")
+        peringatan = []
         try:
             KT.tulis_json(path_sesi, sesi_dok)
             if penawaran_baru != penawaran:
                 KT.tulis_json(path_penawaran, penawaran_baru)
-            KT.bangun_index(aktif=kunci)
         except (OSError, KT.KurikulumError) as e:
             return self._send_error_json(
                 500, "Gagal menulis tree kurikulum: {0}".format(_sanitize_error(e)))
 
-        peringatan = []
+        # FIX BUG INDEX: dulu "KT.bangun_index(aktif=kunci)" dipanggil di sini
+        # tapi hasilnya dibuang - index TIDAK PERNAH ditulis ke
+        # config/kurikulum.json, dan bentuk 'aktif'-nya string kunci sedangkan
+        # index_kurikulum.py & migrasi_kurikulum.py memakai dict
+        # {prodi, tahun_ajar, semester, kunci_mk}. Sekarang index ikut ditulis
+        # dengan bentuk yang sama; gagal menulis index hanya jadi peringatan,
+        # karena sumber kebenaran tetap folder tree.
+        try:
+            try:
+                prodi_a, ta_a, sem_a, kunci_a = self._konteks_aktif()
+            except Exception:  # noqa: BLE001
+                prodi_a = ta_a = sem_a = kunci_a = None
+            pointer = (
+                {"prodi": prodi_a, "tahun_ajar": ta_a,
+                 "semester": sem_a, "kunci_mk": kunci_a}
+                if kunci_a else None
+            )
+            KT.tulis_json(KT.INDEX_PATH, KT.bangun_index(aktif=pointer))
+        except (OSError, KT.KurikulumError) as e:
+            peringatan.append(
+                "Index kurikulum (config/kurikulum.json) gagal diperbarui: {0}. "
+                "Jalankan: python scripts\\index_kurikulum.py".format(
+                    _sanitize_error(e)))
         if slot_berubah:
             peringatan.append(
                 "Jumlah slot absen berubah ({0}). Baris nilai yang sudah ada TIDAK "
@@ -937,7 +1170,8 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         versi_master = None
         if os.path.exists(DATA_FILE):
             try:
-                with open(DATA_FILE, "r", encoding="utf-8") as f:
+                # FIX BUG RACE: baca versi master di dalam lock (lihat _api_data).
+                with DATA_LOCK, open(DATA_FILE, "r", encoding="utf-8") as f:
                     versi_master = (json.load(f).get("metadata") or {}).get("versi")
             except (OSError, json.JSONDecodeError):
                 versi_master = None
@@ -978,12 +1212,18 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
                 "catatan": "Mata kuliah ini sudah aktif; data master tidak diubah.",
             })
 
-        # (d) Pindahkan penunjuk MK aktif, lalu bangun ulang master + katalog.
-        cfg_lama = mod.muat(force=True)
-        cfg_baru = json.loads(json.dumps(cfg_lama))
+        # FIX BUG RACE: blok (b)-(d) menyentuh config/identitas.json TANPA
+        # DATA_LOCK, sedangkan _api_identitas_* menulis file yang sama DI DALAM
+        # lock. Save identitas + ganti MK bersamaan bisa lost-update. Dulu
+        # rollback juga menulis cfg_lama seluruhnya -> menyapu edit identitas
+        # yang masuk di antara dua langkah. Sekarang: pointer saja di-support.
+        with DATA_LOCK:
+            cfg_lama = mod.muat(force=True)
+            cfg_baru = json.loads(json.dumps(cfg_lama))
         cfg_baru["mata_kuliah_aktif"] = safe
         try:
-            mod.simpan(cfg_baru)
+            with DATA_LOCK:
+                mod.simpan(cfg_baru)
         except mod.IdentitasError as e:
             return self._send_error_json(
                 422, "Gagal memindahkan mata kuliah aktif: {0}".format(_sanitize_error(e)))
@@ -991,8 +1231,13 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         ok, log, err = self._jalankan_parse_data(timeout=300)
         if not ok:
             # Kembalikan penunjuk supaya tidak ada keadaan setengah jalan.
+            # HANYA field penunjuk yang dikembalikan: cfg_lama bisa sudah basi
+            # dibanding edit identitas yang masuk saat parse_data berjalan.
             try:
-                mod.simpan(cfg_lama)
+                with DATA_LOCK:
+                    cfg_saat = mod.muat(force=True)
+                    cfg_saat["mata_kuliah_aktif"] = cfg_lama.get("mata_kuliah_aktif")
+                    mod.simpan(cfg_saat)
             except Exception:  # noqa: BLE001
                 pass
             return self._send_json(500, {
@@ -1041,14 +1286,20 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
     def _api_pdf_download(self, query):
         pdf_type = query.get("type", ["rapor"])[0]
         npm = query.get("npm", [None])[0]
-        per_student_types = {"monthly", "presensi", "rapor", "final", "deckcraft", "portofolio"}
-        if pdf_type in per_student_types:
+        try:
+            # SATU SUMBER: daftar tipe per-mahasiswa diambil dari modul PDF
+            # (portofolio 4 lapis ikut otomatis), bukan disalin-tempel di sini.
+            from generate_pdfs import (
+                generate_pdf_bytes_on_demand, PDF_TYPE_PER_STUDENT)
+        except ImportError as e:
+            return self._send_error_json(
+                500, "Modul generate_pdfs tidak bisa dibaca: " + _sanitize_error(e))
+        if pdf_type in PDF_TYPE_PER_STUDENT:
             if npm is None or not NPM_RE.match(str(npm).strip()):
                 return self._send_error_json(
                     400, f"NPM wajib diisi untuk dokumen '{pdf_type}' (contoh: npm=2510015410010)"
                 )
         try:
-            from generate_pdfs import generate_pdf_bytes_on_demand
             pdf_bytes, filename = generate_pdf_bytes_on_demand(pdf_type, npm)
         except ValueError as e:
             # Error yang bisa dipahami user (NPM tidak ketemu, tipe tidak dikenal)
@@ -1072,7 +1323,8 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
         except ImportError as e:
             return self._send_error_json(503, f"Modul video_composer tidak termuat: {_sanitize_error(e)}")
         try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
+            # FIX BUG RACE: baca master di dalam lock (lihat _api_data).
+            with DATA_LOCK, open(DATA_FILE, "r", encoding="utf-8") as f:
                 cdata = json.load(f)
             course_name = cdata.get("course", {}).get("nama_mk") or "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
             imgs, folder = find_student_images(npm, course_name)
@@ -1097,7 +1349,8 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             return self._send_error_json(400, "Parameter NPM tidak valid (harus 8-14 digit)")
         try:
             from video_composer import find_student_images, sanitize_folder_name
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
+            # FIX BUG RACE: baca master di dalam lock (lihat _api_data).
+            with DATA_LOCK, open(DATA_FILE, "r", encoding="utf-8") as f:
                 cdata = json.load(f)
             course_name = cdata.get("course", {}).get("nama_mk") or "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
             imgs, folder = find_student_images(npm, course_name)
@@ -1153,6 +1406,91 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 latest = {}
         return self._send_json(200, {"latest": latest, "runs": runs})
+
+    # --------------------------------------------------------- API engine
+    # Engine cek input & output TERPISAH (keputusan user 2026-10-21):
+    #   scripts/engine_input.py  -> pindai inbox, deteksi duplikat via SHA-256
+    #   scripts/engine_output.py -> audit integritas output + lapis kirim
+    @staticmethod
+    def _modul_engine(nama):
+        """Import modul engine_*.py saat dipakai, bukan di module scope."""
+        import importlib
+        try:
+            return importlib.import_module(nama)
+        except Exception as e:
+            raise ImportError(
+                f"Modul {nama}.py tidak bisa dibaca: {_sanitize_error(e)}")
+
+    def _api_engine_input(self):
+        """GET /api/engine/input - pindai inbox + arsip, deteksi duplikat."""
+        try:
+            eng = self._modul_engine("engine_input")
+            return self._send_json(200, eng.pindai())
+        except ImportError as e:
+            return self._send_error_json(503, str(e))
+        except Exception as e:
+            return self._send_error_json(
+                500, f"Pindai input gagal: {_sanitize_error(e)}")
+
+    def _api_engine_input_post(self):
+        """POST /api/engine/input {"sha": "...", "keterangan": "..."} - tandai
+        satu masukan 'sudah diproses' supaya salinan berikutnya terdeteksi."""
+        try:
+            body = self._baca_body_json()
+        except ValueError as e:
+            return self._send_error_json(400, str(e))
+        sha = str(body.get("sha") or "").strip()
+        if not sha:
+            return self._send_error_json(
+                400, 'Body JSON wajib {"sha": "<hash>", "keterangan": "..."}')
+        try:
+            eng = self._modul_engine("engine_input")
+            hasil, err = eng.tandai_diproses(
+                sha, keterangan=str(body.get("keterangan") or ""))
+            if err:
+                return self._send_error_json(404, err)
+            return self._send_json(200, {"pesan": "masukan ditandai diproses",
+                                         **hasil})
+        except ImportError as e:
+            return self._send_error_json(503, str(e))
+        except Exception as e:
+            return self._send_error_json(
+                500, f"Tandai diproses gagal: {_sanitize_error(e)}")
+
+    def _api_engine_output(self):
+        """GET /api/engine/output - audit integritas seluruh output."""
+        try:
+            eng = self._modul_engine("engine_output")
+            return self._send_json(200, eng.audit())
+        except ImportError as e:
+            return self._send_error_json(503, str(e))
+        except Exception as e:
+            return self._send_error_json(
+                500, f"Audit output gagal: {_sanitize_error(e)}")
+
+    def _api_engine_output_post(self):
+        """POST /api/engine/output {"aksi": "rapikan", "arsipkan_lama": true} -
+        arsip-kan run lama ke data/_backup + siapkan lapis kirim
+        output/kirim/{kaprodi,wali} untuk mesin kirim otomatis."""
+        try:
+            body = self._baca_body_json()
+        except ValueError as e:
+            return self._send_error_json(400, str(e))
+        aksi = str(body.get("aksi") or "").strip()
+        if aksi != "rapikan":
+            return self._send_error_json(
+                400, 'Aksi dikenal saat ini: {"aksi": "rapikan"} '
+                     '(arsip-kan run lama + lapis kirim)')
+        try:
+            eng = self._modul_engine("engine_output")
+            hasil = eng.rapikan(
+                arsipkan_lama=bool(body.get("arsipkan_lama", True)))
+            return self._send_json(200, {"pesan": "rapikan selesai", **hasil})
+        except ImportError as e:
+            return self._send_error_json(503, str(e))
+        except Exception as e:
+            return self._send_error_json(
+                500, f"Rapikan output gagal: {_sanitize_error(e)}")
 
     # ------------------------------------------------------------ static files
     def _serve_output(self, raw_rel: str):

@@ -1,10 +1,10 @@
 {
   "versi": 1,
   "catatan": "INDEX TURUNAN - jangan diedit dengan tangan. Sumber kebenaran adalah folder data/kurikulum/. Bangun ulang: python scripts\\index_kurikulum.py",
-  "dibangun_pada": "2026-10-19T15:36:50+07:00",
+  "dibangun_pada": "2026-10-21T11:03:06+07:00",
   "aktif": {
     "prodi": "ARSITEKTUR",
-    "tahun_ajar": "2025/2026",
+    "tahun_ajar": "2025-2026",
     "semester": "GENAP",
     "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
   },
@@ -13,7 +13,255 @@
       "nama": "Arsitektur",
       "jumlah_mahasiswa": 35,
       "tahun_ajar": {
+        "2024/2025": {
+          "GANJIL": {
+            "mata_kuliah": [
+              {
+                "kunci_mk": "ARS101",
+                "kode_mk": "ARS101",
+                "nama_mk": "Dasar-Dasar Desain Arsitektur",
+                "sks": 3,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS102",
+                "kode_mk": "ARS102",
+                "nama_mk": "Gambar Teknik Arsitektur",
+                "sks": 2,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS103",
+                "kode_mk": "ARS103",
+                "nama_mk": "Matematika Teknik",
+                "sks": 3,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS104",
+                "kode_mk": "ARS104",
+                "nama_mk": "Fisika Bangunan 1",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS105",
+                "kode_mk": "ARS105",
+                "nama_mk": "Sejarah Arsitektur Barat",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS106",
+                "kode_mk": "ARS106",
+                "nama_mk": "Pengantar Lingkungan Binaan",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              }
+            ]
+          },
+          "GENAP": {
+            "mata_kuliah": [
+              {
+                "kunci_mk": "ARS107",
+                "kode_mk": "ARS107",
+                "nama_mk": "Studio Perancangan Arsitektur 1",
+                "sks": 4,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS108",
+                "kode_mk": "ARS108",
+                "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+                "sks": 2,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS109",
+                "kode_mk": "ARS109",
+                "nama_mk": "Struktur & Konstruksi Bangunan 1",
+                "sks": 3,
+                "jenis_mk": "teori_studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS110",
+                "kode_mk": "ARS110",
+                "nama_mk": "Fisika Bangunan 2",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS111",
+                "kode_mk": "ARS111",
+                "nama_mk": "Sejarah Arsitektur Nusantara",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS112",
+                "kode_mk": "ARS112",
+                "nama_mk": "Teknologi Material Bangunan",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              }
+            ]
+          }
+        },
         "2025/2026": {
+          "GANJIL": {
+            "mata_kuliah": [
+              {
+                "kunci_mk": "ARS201",
+                "kode_mk": "ARS201",
+                "nama_mk": "Studio Perancangan Arsitektur 2",
+                "sks": 4,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS202",
+                "kode_mk": "ARS202",
+                "nama_mk": "Struktur & Konstruksi Bangunan 2",
+                "sks": 3,
+                "jenis_mk": "teori_studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS203",
+                "kode_mk": "ARS203",
+                "nama_mk": "Sistem Utilitas Bangunan",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS204",
+                "kode_mk": "ARS204",
+                "nama_mk": "Arsitektur Tropis & Berkelanjutan",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS205",
+                "kode_mk": "ARS205",
+                "nama_mk": "Perencanaan Tata Ruang & Lanskap",
+                "sks": 2,
+                "jenis_mk": "teori_studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS206",
+                "kode_mk": "ARS206",
+                "nama_mk": "Metodologi Penelitian Arsitektur",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              }
+            ]
+          },
           "GENAP": {
             "mata_kuliah": [
               {
@@ -52,6 +300,133 @@
                 "jumlah_pertemuan": 16,
                 "jumlah_slot": 32,
                 "total_bobot": 100,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              }
+            ]
+          }
+        },
+        "2026/2027": {
+          "GANJIL": {
+            "mata_kuliah": [
+              {
+                "kunci_mk": "ARS301",
+                "kode_mk": "ARS301",
+                "nama_mk": "Studio Perancangan Arsitektur 4",
+                "sks": 4,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS302",
+                "kode_mk": "ARS302",
+                "nama_mk": "Struktur & Konstruksi Bangunan 4",
+                "sks": 3,
+                "jenis_mk": "teori_studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS303",
+                "kode_mk": "ARS303",
+                "nama_mk": "Perancangan Interior & Furnitur",
+                "sks": 2,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS304",
+                "kode_mk": "ARS304",
+                "nama_mk": "Arsitektur Digital & BIM",
+                "sks": 2,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS305",
+                "kode_mk": "ARS305",
+                "nama_mk": "Hukum & Etika Profesi Arsitek",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS306",
+                "kode_mk": "ARS306",
+                "nama_mk": "Ekonomi & Feasibilitas Proyek",
+                "sks": 2,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              }
+            ]
+          },
+          "GENAP": {
+            "mata_kuliah": [
+              {
+                "kunci_mk": "ARS307",
+                "kode_mk": "ARS307",
+                "nama_mk": "Studio Perancangan Arsitektur 5 (TA)",
+                "sks": 6,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS308",
+                "kode_mk": "ARS308",
+                "nama_mk": "Tugas Akhir / Skripsi",
+                "sks": 4,
+                "jenis_mk": "teori",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 16,
+                "total_bobot": 100.0,
+                "jumlah_peserta": 35,
+                "lengkap": true
+              },
+              {
+                "kunci_mk": "ARS309",
+                "kode_mk": "ARS309",
+                "nama_mk": "Praktik Profesi / Magang",
+                "sks": 3,
+                "jenis_mk": "studio",
+                "semester_kurikulum": null,
+                "jumlah_pertemuan": 16,
+                "jumlah_slot": 32,
+                "total_bobot": 100.0,
                 "jumlah_peserta": 35,
                 "lengkap": true
               }

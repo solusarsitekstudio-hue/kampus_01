@@ -8,7 +8,7 @@
 > sintetis juga **berbeda per mata kuliah** (dulu ketiga MK berisi angka yang sama).
 
 > 📄 Dokumen pendamping (sudah diperbarui mengikuti alur v2.6):
-> [`WORKFLOW_MAPPING.md`](WORKFLOW_MAPPING.md) — peta alur data & 6 tab dashboard;
+> [`WORKFLOW_MAPPING.md`](WORKFLOW_MAPPING.md) — peta alur data & 9 tab dashboard;
 > [`REQUIREMENTS.md`](REQUIREMENTS.md) — dependensi, port, endpoint API, prasyarat.
 
 ---
@@ -310,6 +310,163 @@ dilihat. Semua yang belum terverifikasi punya penanda di data/config-nya sendiri
 > diverifikasi** siapa pun, dan sudah diganti kalimat jujur tentang keterlaksanaan
 > pertemuan. Sistem ini tidak berhak menyatakan status akreditasi.
 
+### 11. Rekap Periode Lintas MK — Tab 8 (sejak Tahap G)
+
+Satu MK = master flat, tapi kaprodi menanyakan **"keadaan seluruh semester ini,
+di semua mata kuliah, bagaimana?"**. Jawabannya ada di tab **8. Rekap Periode** +
+filter baru di tab 1, semuanya menghitung **dari tree** (bukan dari master):
+
+| Level | Isi | Sumber |
+| --- | --- | --- |
+| **1. Per bulan** (satu MK) | Dropdown **Bulan** di Dashboard Kaprodi: tren P1–P16 & tabel presensi hanya pertemuan dalam bulan itu; pertemuan **tanpa tanggal** masuk grup **"Tanpa Tanggal"** terpisah, bukan ikut bulan salah | tanggal ISO di `sesi.json` |
+| **2. Per semester** (satu MK) | Badge periode eksplisit "TA · SEMESTER · MK" dari metadata master — angka tidak bisa salah dibaca untuk periode lain | `metadata` master |
+| **3. Per semester, semua MK** | Grid semua MK satu (prodi, TA, semester): peserta, kehadiran, nilai, At-Risk, pertemuan X/16, topik terisi/placeholder, cakupan bulan | `GET /api/periode` → `scripts/periode.py` |
+| **4. Semua semester, semua MK** | Rollup yang sama, digrup per tahun ajar & semester; tombol "Detail Kurikulum" per MK menuju tab 6 **tanpa** memindahkan MK aktif (tidak memicu kompilasi ulang) | `GET /api/periode?semua_semester=1` |
+
+Aturan di dalamnya (teruji `tests/test_periode.py`):
+
+* **Netral terhadap "Belum Diinput"** — pertemuan yang presensinya belum lengkap
+  tidak menekan persen kehadiran; kehadiran yang belum bisa dihitung tampil
+  `None`/"-", bukan 0% (lanjutan Tahap G-2, satu sumber `kelas_rules.py`).
+* **At-Risk per MK** — setiap baris MK menghitung sendiri dengan aturan
+  `config/aturan.json`; rollup menjumlahkan hasil per MK.
+* **Cache cerdas** — rekap per MK disimpan dengan tanda mtime berkasnya, jadi
+  cache usang sendiri begitu sesi/nilai/penawaran disunting; tidak ada tombol
+  "hilangkan cache".
+* **Fail-closed** — prodi tak dikenal → 400, semester tidak ada → 404, berkas MK
+  tidak lengkap → baris "rusak" dengan pesannya, MK lain tetap tampil.
+
+---
+
+### 12. Portofolio Mahasiswa 4 Lapis — Tab 9 + Analisis Potensi dari Nilai
+
+Laporan **satu mahasiswa, lintas seluruh MK** di tree (bukan hanya MK aktif),
+empat lapis: **per bulan → per MK → per semester → sepanjang kuliah**. Sumbernya
+satu modul: `scripts/portofolio.py` (`GET /api/portofolio?npm=<NPM>`), dibangun
+dari **katalog build** `data/courses/*.json` — jadi angkanya sama dengan dashboard,
+bukan hitungan kedua.
+
+Aturan di dalamnya (teruji `tests/test_portofolio.py`):
+
+* **Lapis 1 bulanan netral** — pertemuan **"Belum Diinput"**/slot kosong tidak
+  menekan persen; grup **"Tanpa Tanggal"** keluar dari grup bulan (aturan sama
+  dengan chip bulanan dashboard).
+* **Fail-closed** — npm kosong → 400, npm tidak dikenal → 404, katalog MK rusak →
+  laporan tetap jalan dengan baris "gagal + alasan".
+* **Cache ber-tanda mtime** — cache usang sendiri saat katalog dibangun ulang.
+* **Deterministik** — dokumen identik setiap dibaca ulang selama berkas tidak
+  berubah.
+
+#### Analisis Potensi dari NILAI (bukan hanya absen)
+
+Blok `analisis_potensi` di laporan yang sama. Semua ambang/label **pinjam satu
+sumber** `scripts/diagnosis.py` (mesin templat v3) — tidak ada salinan ambang:
+
+| Komponen | Sumber & aturan |
+| --- | --- |
+| Label potensi | `AMBANG` diagnosis.py (85/90 → POTENSI TINGGI, dst.) + imbuhan arah tren `MENANJAK/MENURUN` |
+| Radar kompetensi 5 dim | rata lintas MK dari mesin v3; sumber jujur: **"terukur" hanya kalau SEMUA MK penopangnya terukur**, selain itu `estimasi` |
+| MK terkuat/terlemah & sebaran | angka nilai sah; deviasi ≥ 3 MK (konsistensi) |
+| Distribusi archetype | dari mesin v3 (star/high/normal/…) |
+
+#### Bidang terkuat → dimensi menyesuaikan (`scripts/bidang.py`)
+
+Analisis potensi **berpusat di bidang tempat mahasiswa paling bersinar**, bukan
+rata-rata buta semua MK:
+
+1. **Cluster kanal** — MK dikelompokkan ke 5 kanal bidang (Studio Desain &
+   Perancangan, Teknologi & Komputer, Struktur & Konstruksi, Bangunan-Lingkungan
+   & Sains, Humaniora-Profesi & Manajemen) lewat keyword kunci/nama MK.
+   MK kembar antar-tahun di-dedup per nama supaya tidak menimbang ganda.
+2. **Kanal terkuat** = rata nilai tertinggi; MK tertingginya jadi "kasus utama"
+   di alasan & narasi.
+3. **Dimensi khas bidang** — 3 dim khusus per kanal (mis. kanal Teknologi →
+   *Presisi CAD & Dokumentasi*, *Manajemen Layer & Standar*, *Perhitungan Volume
+   QS*), dihitung dengan trafo: **70% rata nilai kanal + 30% radar terukur**.
+   **Seluruhnya berlabel `estimasi`** — tidak pernah tampil sebagai fakta terukur.
+4. **Matriks karier sepanjang kuliah** — 10 karier dihitung ulang dari radar
+   lintas MK; karier **sekanal** mendapat bonus **+4 kecocokan** (tetap dibatasi
+   cap karier), karier kanal lain tetap tampil. Bonus ini hidup di
+   `diagnosis.matriks_karier(..., bidang_terkuat=...)` — tanpa parameter, hasil
+   identik seperti sebelumnya.
+
+Di dashboard: panel **🎯 Analisis Pusat: Bidang Terkuat** di Tab 9 (chip per
+kanal + bar dim khas + 3 karier teratas). Di PDF:
+`/api/pdf/download?type=portofolio_lengkap&npm=<NPM>` → berkas
+`06_portofolio_lengkap_<npm>_<nama>.pdf`, memuat KPI 4 lapis + blok "ANALISIS
+POTENSI BERDASAR NILAI" + bidang terkuat; cetaknya on-demand Playwright,
+**bukan** bagian paket arsip 11 PDF.
+
+---
+
+### 13. Engine Cek Input & Output — Tab 10 (keputusan user 2026-10-21)
+
+Dua modul **terpisah** yang menjaga data tidak diproses dua kali dan output tidak
+ditulis ulang tanpa alasan — prasyarat mesin kirim otomatis (kaprodi & wali
+murid): `scripts/engine_input.py` + `scripts/engine_output.py`, registry di
+`data/engine/*.json`. Uji: `tests/test_engine.py`.
+
+#### Engine Input (data masuk tidak dobel)
+
+`GET /api/engine/input` memindai `input/inbox/` dan mencocokkan **SHA-256**
+(bukan nama berkas) dengan registry + arsip `input/raw/`:
+
+* `baru` — belum pernah terlihat; `terdaftar` — masih di tempat yang sama;
+  **`duplikat`** — isi sama dengan berkas yang pernah masuk/diproses,
+  kembarannya dilaporkan.
+* `POST /api/engine/input {"sha": ..., "keterangan": ...}` — tandai masukan
+  "sudah diproses"; awalan sha 16 hex cukup. Sha tidak dikenal → 404
+  (fail-closed).
+
+#### Engine Output (berkas lama diberikan; overwrite hanya kalau wajib)
+
+Siklus tulis setiap output (hook paket PDF di `generate_pdfs.py`):
+
+1. `siapkan()` memutuskan sebelum menulis: **`tulis_baru`** / **`guna_lama`**
+   (berkas lama utuh & tanda sama → **diberikan apa adanya, tidak ditulis
+   ulang**) / **`overwrite_logika`** (tanda maju: update logika/format
+   (`FORMAT_V`) atau **stempel data master+katalog berubah** — tanda kini
+   memuat `data=<stamp>`, perubahan nilai tidak bisa lolos sebagai "berkas
+   lama") / **`overwrite_integritas`** (ukuran disk tidak cocok dengan
+   tercatat → berkas korup/parsial) / `tulis_ulang_pertama` (registry baru
+   atau catatan tanpa ukuran — tidak langsung dianggap utuh).
+2. `catat()` mencatat ukuran + SHA-256 + tanda logika setelah menulis; registry
+   `data/engine/output_registry.json`. Registry & seluruh aksi engine dilindungi
+   lock (`threading.RLock`) — server concurrent tidak lost-update.
+3. `audit()` → status tiap berkas: **utuh / rusak / hilang / belum terdaftar**
+   + hitung run & sisa folder tanpa manifest + **`salinan_usang`**
+   (salinan `generated_pdfs/` SHA-nya beda / tidak ada di run terbaru) +
+   **`sisa_root`** (brokat berkas lepas di root `output/`, seharusnya kosong)
+   + status **run masih sah**.
+
+Pintu skip cetak paket: `build_all_pdfs()` memanggil `run_masih_sah()` dulu —
+kalau stempel data + `FORMAT_V` sama dan seluruh PDF run terbaru utuh
+(manifest run memuat `data_stamp` + `format_v`), **run duplikat dibatalkan
+sebelum Chromium menyala** (berkas lama diberikan); folder timestamp kosong
+ikut dibersihkan. Membuat folder output juga **malas** (tidak lagi dibuat saat
+`import generate_pdfs` — sumber folder kosong bermunculan).
+
+#### Rapikan & lapis kirim siap mesin kirim
+
+`POST /api/engine/output {"aksi": "rapikan", "arsipkan_lama": true}` —
+dipicu juga dari tombol **Rapikan + Lapis Kirim** di Tab 10:
+
+* Run lama & sisa folder tanpa manifest dipindah ke `data/_backup/output_lama_<stamp>/`
+  (bisa dibuka lagi); **run terbaru (pointer `latest_run.json`) selamat**.
+* **Berkas brokat di root `output/`** (bukan folder run, bukan `latest_run.json`)
+  ikut disapu ke arsip yang sama — root hanya boleh berisi folder tertib +
+  pointer.
+* Lapis **`output/kirim/kaprodi/manifest.json`** + **`output/kirim/wali/manifest.json`**
+  dibangun dari sumber terverifikasi: run terbaru + registry + **daftar SEMUA
+  mahasiswa dari tree `data/kurikulum/<prodi>/mahasiswa.json`** (mahasiswa yang
+  belum punya PDF tetap tercantum dengan catatan jujur "belum ada berkas" —
+  mesin kirim nanti membaca manifest ini, bukan menebak di arsip). Mereka
+  dikecualikan dari pemindaian run (`/api/runs` aman).
+
+Di dashboard **Tab 10. Engine**: Pusat Input (tombol Pindai, chip
+total/baru/duplikat, tabel status) dan Pusat Output (chip utuh/rusak/hilang,
+tombol Audit, tombol Rapikan dengan konfirmasi).
+
 ---
 
 ## 📊 Angka Ril Demo Saat Ini (versi `2.6-KURIKULUM-BERTINGKAT`)
@@ -470,6 +627,53 @@ Aturan yang **dijaga sistem** (akan menolak/mengoreksi sendiri):
 * Jumlah bobot seluruh pertemuan wajib **tepat 100**; dashboard menolak simpan
   kalau tidak (HTTP 422) dan menyebut total yang salah.
 
+### 📦 Pintu Masuk Berkas Mentah (subsistem impor)
+
+Berkas dari portal/kampus **bukan** sumber kebenaran. Alurnya selalu dua
+langkah dan tidak ada jalur pintas dari berkas mentah ke tree:
+
+```
+input/inbox/ -> deteksi -> baca tabel -> baris kanonik -> validasi
+             -> data/_staging/<waktu>_impor_nilai_*/usulan_nilai.json
+             -> ditinjau manusia -> data/_backup/ -> nilai.json
+```
+
+Perintahnya:
+
+```cmd
+python -m scripts.impor.cli pindai
+python -m scripts.impor.cli portal --url "https://portal.kampus/..." --halaman 2
+python -m scripts.impor.cli impor --folder input/inbox
+python -m scripts.impor.cli tinjau data/_staging/<folder>
+python -m scripts.impor.cli terima data/_staging/<folder> --mode gabung
+python -m scripts.impor.cli modul "input/inbox/RPS.pdf"
+python -m scripts.impor.cli usul "input/inbox/RPS.pdf"
+python -m scripts.impor.cli terima-sesi data/_staging/<folder>
+```
+
+Aturan pengaman:
+
+* `portal` membuka browser dengan **login manual**: sandi tidak pernah
+  disimpan/dibaca skrip. Yang diambil hanya HTML + tabel + screenshot halaman
+  yang sedang dilihat, lalu masuk ke `input/inbox/` sebagai bahan impor biasa.
+* Format dikenali dari isi (magic bytes), bukan dari ekstensi. `.xls`/`.doc`
+  lama ditolak dengan pesan jelas, bukan ditebak isinya.
+* Header kolom dipetakan lewat `config/impor/*.json`. Kalau tidak ada yang
+  cocok, proses **berhenti** - tidak ada kolom yang ditebak posisinya.
+* Satu baris jelek (slot di luar sesi, Alpha berskor bukan 0, NPM tidak ada di
+  `mahasiswa.json`) membatalkan seluruh penulisan, dan pesannya menyebut
+  berkas + nomor baris.
+* `terima` dan `terima-sesi` selalu membackup `nilai.json`/`sesi.json` ke
+  `data/_backup/` dan menulis lewat berkas sementara + `os.replace`.
+* `nilai.json` yang sudah **bukan sintetis** dan bukan hasil impor sebelumnya
+  (mis. sudah diverifikasi dosen) **ditolak** tanpa `--paksa`, supaya impor
+  tidak menghapus pekerjaan manusia secara tidak sengaja.
+* Mode `gabung` (bawaan) mempertahankan baris yang tidak ikut diimpor; mode
+  `ganti` mengganti seluruh isi. Impor dua kali tidak menggandakan baris.
+* PDF hasil scan tanpa text layer ditandai `ocr_dibutuhkan`, bukan diisi
+  karangan. Analisis AI (`usul`) hanya menghasilkan staging berstatus
+  "tebakan" dan wajib ditinjau sebelum masuk `sesi.json`.
+
 ---
 
 ## ⚡ Cara Menjalankan Aplikasi
@@ -522,9 +726,19 @@ python tests\test_migrasi_non_destruktif.py
 python tests\test_seed_per_mk.py
 python tests\test_kurikulum_tree.py
 python tests\test_identitas.py
+python tests\test_diagnosis.py
+python tests\test_portofolio.py
+python tests\test_engine.py
 
 python tests\test_identitas.py
 python tests\test_docs_dependensi.py
+
+REM subsistem impor (tidak perlu server, tidak memanggil jaringan):
+python tests\test_impor_kanonik.py
+python tests\test_impor_tabel.py
+python tests\test_impor_dokumen.py
+python tests\test_impor_portal.py
+python tests\test_impor_analisis.py
 
 REM dengan server aktif (run_server.bat dulu):
 python tests\test_server_http.py
@@ -541,11 +755,19 @@ python tests\test_kurikulum_api.py
 | `test_migrasi_non_destruktif.py` | **`migrasi_kurikulum.py --force` tidak menghapus hasil edit**: bobot/slot/topik bertahan, `jenis_mk`/`semester_kurikulum` yang dikonfirmasi tidak dikembalikan ke tebakan, `nilai.json` byte-identik. Tree disunting sungguhan lalu dipulihkan byte-per-byte |
 | `test_seed_per_mk.py` | **Nilai sintetis beda per mata kuliah**: `konteks=""` masih = angka lama (`42 + npm`), konteks MK membuat deret berbeda tapi deterministic, persona tidak ikut berpindah, dua MK yang dulu kembar kini beda, tiga `nilai.json` di tree bisa dibangkitkan ulang persis, profil at-risk utuh, dan script seed **tidak menulis** tanpa `--force` |
 | `test_kurikulum_tree.py` | Tree kurikulum konsisten **anti-drift**: indeks `config/kurikulum.json` == hasil pindai ulang folder |
-| `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
+| `test_identitas.py` | Config identitas sinkron dengan data, **tidak ada nama yang masih di-hardcode di kode**, jumlah MK = 30, kode MK katalog == config, `simpan()` menolak config rusak, dan template PDF benar-benar mengisi nama (tanpa placeholder bocor). Blok terakhirnya menguji endpoint dan berjalan otomatis kalau servernya hidup. |
+| `test_diagnosis.py` | **Mesin diagnosis v3** (templat, tanpa RNG): klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel sumber, matriks 10 karier deterministik (profil sama → peringkat sama; bonus sebidang +4 & clamp cap), narasi templat v2 unik per profil |
+| `test_portofolio.py` | **Portofolio 4 lapis per mahasiswa dari katalog semua MK**: aturan bulanan netral ("Belum Diinput" & grup "Tanpa Tanggal"), fail-closed (npm kosong/ tak dikenal/rusak), determinism + cache mtime, label potensi dari `AMBANG` diagnosis.py, radar dengan sumber jujur, cluster kanal bidang (dedup MK kembar), dimensi khas selalu `estimasi`, matriks karier sepanjang kuliah terurut + bonus sebidang |
+| `test_engine.py` | **Engine cek input & output (terpisah)**: duplikat data masuk via SHA-256 (isi sama nama beda → duplikat + kembaran dilaporkan), tandai-diproses fail-closed, siklus tulis `guna_lama` → `overwrite_logika` / `overwrite_integritas` → `tulis_baru`, audit utuh/hilang, regroup npm dari nama berkas, dan **run terbaru selamat** saat rapikan + lapis kirim dibangun |
 | `test_server_http.py` | HTTP/1.1, byte-range video (206/416), path traversal, guard server ganda |
 | `test_catalog_guard.py` | Ganti mata kuliah tidak bisa memundurkan data master (termasuk 409 untuk katalog versi lama) |
 | `test_kurikulum_api.py` | API tree kurikulum: fail-closed 404/400, bobot ≠ 100 ditolak **tanpa** menulis berkas, suntingan masuk ke tree **dan** katalog, dan status "tebakan vs dikonfirmasi" tidak bisa naik sendiri |
-| `test_docs_dependensi.py` | Dokumen & dependensi tidak boleh basi: setiap impor pihak ketiga ada di `requirements.txt` (dan sebaliknya, tidak ada paket mati seperti `openpyxl`/`pypdf`), nomor port seragam di kode+kedua dokumen, setiap rute `/api/...` tercantum di `REQUIREMENTS.md`, dan tidak ada lagi klaim alur v2.5 (penyebut sesi lama maupun aset dari CDN) |
+| `test_docs_dependensi.py` | Dokumen & dependensi tidak boleh basi: setiap impor pihak ketiga ada di `requirements.txt` (dan sebaliknya, tidak ada paket mati), `openpyxl`/`pypdf`/`python-docx` hanya boleh diimpor dari `scripts/impor/` + tesnya dan `PyPDF2` dilarang, nomor port seragam di kode+kedua dokumen, setiap rute `/api/...` tercantum di `REQUIREMENTS.md`, dan tidak ada lagi klaim alur v2.5 (penyebut sesi lama maupun aset dari CDN) |
+| `test_impor_kanonik.py` | Baris impor dinormalkan **fail-closed**: alias status portal (`H/A/HS/S/I`) jadi kosakata resmi, Alpha wajib skor 0, NPM float Excel tetap string, dan pertemuan/slot/NPM di luar tree ditolak dengan pesan spesifik |
+| `test_impor_tabel.py` | CSV, XLSX, dan tabel HTML menghasilkan baris yang sama; staging tidak menyentuh tree; `terima` membackup dulu; mode `gabung` mempertahankan baris lain; impor dua kali **byte-identik**; header asing dan baris ganda bertentangan berhenti, bukan ditebak |
+| `test_impor_dokumen.py` | PDF ber-text layer dibaca per halaman; PDF scan ditandai **perlu OCR** tanpa mengarang teks; DOCX dibaca per heading + tabel; gambar ditandai perlu OCR; pemotongan untuk AI tidak kehilangan halaman |
+| `test_impor_portal.py` | Hasil tangkapan portal disimpan sebagai HTML + screenshot; tabelnya diekstrak ke CSV/XLSX dan bisa dibaca ulang; halaman tanpa tabel tidak menghasilkan berkas palsu, hanya catatan untuk manusia/AI |
+| `test_impor_analisis.py` | Usulan AI (offline, tanpa jaringan) digabung tanpa duplikasi, ditolak kalau pertemuan kurang / bobot ≠ 100 / halaman di luar dokumen / topik placeholder, dan hanya menulis `sesi.json` setelah lolos validasi + backup |
 
 ---
 
@@ -553,10 +775,10 @@ python tests\test_kurikulum_api.py
 Untuk kemudahan demonstrasi di depan Kaprodi, gunakan tombol demo cepat di pojok kanan atas:
 1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**:
    * Profil mahasiswa unggul (Kompeten Unggul), Kehadiran 100% (16/16 pertemuan), Grade A (95.3).
-   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (96.1%), Architectural Designer (94.1%), dan DED Specialist (91.7%).
+   * Contoh ideal untuk meninjau pemetaan profesi BIM Modeler (92.2%), DED Specialist (86.6%), dan Architectural Designer (50.6%) — mesin diagnosis v3: kecocokan dihitung dari profil kompetensi terukur, tanpa RNG.
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**:
    * Profil mahasiswa yang membutuhkan pendampingan (3x Alpha + 1x Sakit + 1x Izin, Kehadiran 62.5% — 9 pertemuan penuh + 2 pertemuan hadir sebagian dari 16), **Grade C (60.7)**.
-   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada talenta imajinasi spasialnya — Site Architect (73.7%), kategori **Sedang**. Angka ini dulu diketik manual sebagai 87% dan sekarang dihitung dari data — bukti bahwa angka yang bagus belum tentu angka yang benar.
+   * Menunjukkan bagaimana sistem **menjaga martabat mahasiswa di depan orang tua**: tidak ada label ranking terbawah (#35), melainkan difokuskan pada potensi yang masih terbuka — Site Architect (57.0%) — kategori **Rendah**, disertai saran pengembangan spesifik. Angka ini dulu diketik manual sebagai 87% dan sekarang dihitung dari data — bukti bahwa angka yang bagus belum tentu angka yang benar.
 3. ✨ **Alsa Dmi Yesya Putri (NPM 2510015410001)**:
    * Profil mahasiswa kreatif konsisten, Kehadiran 93.8% (izin delegasi lomba arsitektur), Grade A (91.0).
 
@@ -615,6 +837,22 @@ Sistem dilengkapi endpoint **Dynamic On-Demand PDF Generation** (`/api/pdf/downl
     pernah diverifikasi siapa pun; perangkat lunak tidak berhak menyatakannya. Badge
     "Terakreditasi IAI" pada PDF 1A (dokumen yang dikirim ke orang tua) juga dibuang.
 
+### 4. PDF 06: Portofolio Lengkap 4 Lapis Mahasiswa (per mahasiswa, on-demand)
+* **PDF 06: Portofolio Lengkap 4 Lapis** (`06_portofolio_lengkap_<npm>_<nama>.pdf`)
+  via `/api/pdf/download?type=portofolio_lengkap&npm=<NPM>` — tombol unduh di
+  **Tab 9. Portofolio Mahasiswa**.
+* Sumber angka `scripts/portofolio.py` dari **seluruh katalog** `data/courses/`
+  (semua MK sepanjang kuliah), bukan hanya MK aktif: KPI sepanjang kuliah,
+  rollup per semester, tabel per MK, chip kehadiran per bulan (aturan netral
+  "Belum Diinput" sama dengan dashboard).
+* Blok **"ANALISIS POTENSI BERDASAR NILAI"**: label potensi + radar 5 dim
+  (sumber terukur/estimasi jujur), **analisis pusat bidang terkuat**
+  (`scripts/bidang.py`: kanal cluster → dimensi khas estimasi → tabel karier
+  bonus sebidang), MK terkuat/terlemah, sebaran & distribusi archetype.
+* Cetak on-demand Playwright — **tidak** ikut "Cetak Ulang Paket PDF" (paket
+  arsip tetap 11 berkas), supaya mahasiswa mana pun bisa langsung diunduh
+  tanpa mencetak ulang seluruh kelas.
+
 ---
 
 ## 🏛️ Penyesuaian Dinamis Multi-Mata Kuliah (Any Course Adaptability)
@@ -633,10 +871,13 @@ tree**, bukan daftar yang ditulis tangan di HTML.
 * **Mengubah isi MK** (topik, bobot, jumlah slot absen, jenis MK, semester
   kurikulum) lewat tab **6. Kurikulum** di dashboard — langsung tertulis ke tree
   dan data master + katalog dibangun ulang.
-* **Katalog yang tersedia sekarang** (PRODI `Arsitektur`, TA `2025/2026`, GENAP):
-  1. `APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS` (AutoCAD, Layer IAI, dan Estimasi Volume QS).
-  2. `STUDIO_PERANCANGAN_ARSITEKTUR_2` (Desain Rumah Tinggal, Analisis Tapak & Maket Studi).
-  3. `STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1` (Pondasi Dangkal, Kolom Beton & Kuda-kuda Kayu).
+* **Katalog yang tersedia sekarang**: seluruh **30 MK kurikulum Arsitektur** di
+  tree — TA 2024/2025 (12 MK, `ARS101`–`ARS112`), TA 2025/2026 (9 MK: `ARS201`–
+  `ARS206` + tiga kunci MK aktif lama `APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS`,
+  `STUDIO_PERANCANGAN_ARSITEKTUR_2`, `STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1`),
+  dan TA 2026/2027 (9 MK, `ARS301`–`ARS309`). Tab **9. Portofolio Mahasiswa**
+  membaca seluruh 30 MK ini untuk analisis lintas-kuliah per mahasiswa
+  (cluster kanal bidang di `scripts/bidang.py`).
 * **CLI Parameter**: `python scripts\process_input.py --course "<NAMA_MK>"` masih
   tersedia untuk membangun katalog satu MK dari tree.
 
@@ -666,13 +907,18 @@ e:\WORKSPACE\KAMPUS_01\
 │   │
 │   ├── academic_data.json                       <-- [ARTEFAK] master; dibaca dashboard & PDF
 │   ├── courses/<MK>.json                        <-- [ARTEFAK] katalog per MK
-│   └── _backup/                                 <-- cadangan otomatis sebelum menulis
+│   ├── engine/                                  <-- [ARTEFAK] registry engine input & output
+│   └── _backup/                                 <-- cadangan + arsip run lama (rapikan)
 │
-├── input/                                       <-- ARSIP LAMA (tidak lagi jadi sumber data)
-│   └── raw|processed/                           <-- kerangka lama untuk Excel/PDF mentah
+├── input/
+│   ├── inbox/                                   <-- data masuk baru (dipindai Engine Input)
+│   └── raw/                                     <-- arsip mentah per MK & stamp (bukti "pernah masuk")
 │
 ├── output/                                      <-- DIREKTORI OUTPUT
 │   ├── latest_run.json                          <-- Pointer global sesi generate terakhir
+│   ├── kirim/
+│   │   ├── kaprodi/manifest.json                <-- Lapis kirim (mesin kirim otomatis baca ini)
+│   │   └── wali/manifest.json                   <-- Referensi per npm dari sumber terverifikasi
 │   └── <NAMA_MATA_KULIAH>/
 │       ├── latest_run.json
 │       └── <TIMESTAMP_WAKTU_DIBIKIN>/           <-- Seluruh PDF resmi siap kirim
@@ -687,7 +933,7 @@ e:\WORKSPACE\KAMPUS_01\
 ├── process_input.bat                            <-- Bangun katalog / sinkron dari tree
 ├── run_server.bat                               <-- Menjalankan Server (Port 40404)
 ├── stop_server.bat                              <-- Mematikan Server Bersih
-├── WORKFLOW_MAPPING.md                          <-- Peta alur data & 6 tab dashboard
+├── WORKFLOW_MAPPING.md                          <-- Peta alur data & tab dashboard
 └── REQUIREMENTS.md                              <-- Dependensi, port, endpoint, prasyarat
 ```
 
@@ -778,6 +1024,12 @@ kenyataannya.
 | **F-2** | **`migrasi_kurikulum.py --force` tidak lagi menimpa hasil edit dashboard.** Dulu bobot direset ke template, `jenis_mk`/`semester_kurikulum` dikembalikan ke tebakan mesin, dan `nilai.json` ditimpa. Sekarang struktur dibangun ulang tetapi topik, bobot, jumlah slot, jenis_mk/semester_kurikulum yang **dikonfirmasi**, dan `nilai.json` dipertahankan. Efek sampingnya: `cetak_biru_mk.json` yang tadinya masih menulis "tebakan-awal" kini ikut sinkron ke `dikonfirmasi-dashboard` | Tidak |
 | **F-3** | **Nilai sintetis tidak lagi kembar antar mata kuliah.** Benih RNG dapat bumbu kunci MK (`crc32`), jadi tiga MK berisi catatan yang berbeda — sebelumnya 1120 baris identik untuk tiga mata kuliah. Letak absen juga ikut bergeser per MK (jumlah alpha/izin/sakit tetap, jadi profil at-risk tidak rusak) dan absen **tidak pernah ditaruh di pertemuan UTS/UAS** (bobot 20 & 24 — satu undian yang sial bisa menjatuhkan grade C ke D dan membuat cerita demo goyah). Persona/arketipe sengaja **tidak** ikut berpindah. Ditambah satu pintu regenerasi resmi: `scripts/seed_nilai_sintetis.py` (dry run tanpa `--force`, backup otomatis ke `data/_backup/`, menolak menimpa berkas yang tidak bertanda `"sintetis": true`) | **Ya** (sudah diregenerasi: kehadiran 85.4 → 85.8%, nilai 79.0 → 77.7, at-risk 6 → 5) |
 | **F-4** | **Dokumen & dependensi dibereskan.** `WORKFLOW_MAPPING.md` ditulis ulang mengikuti alur v2.6 (tree kurikulum, 6 tab, diagram Fase 1–5, peta 12 tes, struktur folder riil); `REQUIREMENTS.md` ditulis ulang (port & endpoint yang benar-benar ada, dependensi, prasyarat, tabel perintah). `openpyxl` dan `pypdf` **dihapus** dari `requirements.txt` (tidak ada impor di kode sejak v2.6) dan teks `setup.bat` ikut disesuaikan. Supaya tidak bisa basi lagi, ditambahkan **`tests/test_docs_dependensi.py`**: impor kode ↔ `requirements.txt` (tanpa paket mati), nomor port seragam, tiap rute `/api/...` wajib tercantum di `REQUIREMENTS.md`, dan dokumen dilarang mengklaim alur v2.5 (penyebut sesi lama, aset dari CDN) | Tidak (tidak menyentuh angka) |
+| **G-1** | **Bug logika & race dicegat (Batch A).** KPI At-Risk kelas tidak lagi salah hitung begitu salah satu ambang dihapus dari `config/aturan.json` (dulu `nilai or 0` membuat "Alpha ≥ 0" selalu benar); master ditulis **atomik** lewat `atomic_write_json`; seluruh pembaca `DATA_FILE` di server dijaga `DATA_LOCK` (tidak ada lagi 500 sesaat saat kompilasi); `ganti MK + simpan identitas` bersamaan tidak lagi saling menimpa (rollback hanya mengembalikan penunjuk, bukan seluruh berkas); `hitung_nilai_terbobot` tidak lagi crash (`TypeError`) saat ada bobot `null` campuran; `KT.bangun_index` yang dulu hanya dibangun di memori kini ditulis ke `config/kurikulum.json` dengan bentuk `aktif` yang konsisten (dict konteks) | Tidak (angka data lengkap tetap) |
+| **G-2** | **Aturan netral "Belum Diinput" meluas ke kehadiran (Batch B).** Pertemuan yang presensinya belum lengkap kini juga keluar dari **penyebut persen kehadiran** — dulu mahasiswa bisa tercatat "Kehadiran < 75%" hanya karena dosen belum memasukkan presensi. Kalau kehadiran tidak bisa dihitung sama sekali, nilainya `None` (netral), bukan 0% yang menuduh. WA ke wali murid ikut memakai angka yang sama | Tidak (dibuktikan `test_belum_diinput`: data lengkap → nol angka bergeser) |
+| **G-3** | **Tab 8 "Rekap Periode" — laporan 4 level dari tree.** Level 1: filter **per bulan** di Dashboard Kaprodi (grup "Tanpa Tanggal" terpisah, bukan ikut bulan salah); badge periode eksplisit dari metadata master; Level 3+4: endpoint `GET /api/periode` (`tahun_ajar=&semester=` per semester semua MK; `semua_semester=1` rollup semua semester-semua MK) lewat modul `scripts/periode.py` — agregasi dari **tree** (bukan master 1 MK), At-Risk dihitung **per MK**, cache per MK ber-tanda mtime (usang sendiri saat berkas berubah), fail-closed (prodi salah 400, semester tak ada 404). Tab rekap menyediakan grup per semester + tombol "Detail Kurikulum" yang **tidak memicu** kompilasi ulang. HTML/JS/CSS server kini menjawab `Cache-Control: no-cache` supaya browser tidak menampilkan UI lama | Tidak (angka rekap teruji identik dengan master) |
+| **G-4** | **Diagnosis v3 + Tab 9 "Portofolio Mahasiswa" + analisis potensi dari nilai.** Mesin diagnosis dibangun ulang jadi **templat tanpa RNG** (`scripts/diagnosis.py`): sinyal nyata dari nilai/kinerja, radar 5 dim berlabel sumber terukur/estimasi, 35 narasi unik, matriks 10 karier deterministik, tanpa kontradiksi at-risk vs label. Baru: Tab 9 portofolio **4 lapis lintas SEMUA katalog MK** (`scripts/portofolio.py`, `GET /api/portofolio`, fail-closed, cache mtime) + **analisis potensi berpusat bidang terkuat** (`scripts/bidang.py`: 5 kanal, dedup MK kembar, dimensi khas = 70% nilai kanal + 30% radar terukur **selalu estimasi**; matriks karier sepanjang kuliah dengan bonus sebidang +4 clamp cap) + **PDF 06 Portofolio Lengkap** on-demand (`type=portofolio_lengkap`, bukan anggota paket arsip 11 PDF). Detail aturan di bagian 12 di atas | Tidak untuk angka mat semua sistem (fitur baru membaca angka yang sudah ada) |
+
+| **G-5** | **Engine cek input & output (terpisah) — Tab 10 + lapis kirim.** Data masuk tidak diproses dua kali (`scripts/engine_input.py`: pindai `input/inbox/` via **SHA-256**, status baru/terdaftar/duplikat + kembaran dilaporkan, tandai-diproses fail-closed, lock RLock) dan output tidak ditulis ulang tanpa alasan (`scripts/engine_output.py`: `siapkan()` → **guna_lama** diberikan apa adanya, overwrite bila tanda maju — `FORMAT_V` ATAU **stempel data master+katalog** `data=<stamp>` — atau ukuran tak cocok; catatan tanpa ukuran = `tulis_ulang_pertama`, bukan dianggap utuh; registry `data/engine/output_registry.json` ber-lock; audit utuh/rusak/hilang/belum-terdaftar + `salinan_usang` (salinan `generated_pdfs/` beda SHA run terbaru) + `sisa_root` + `run_masih_sah()` yang membatalkan cetak paket duplikat sebelum Chromium menyala). **Rapikan** menyapu brokat root `output/`, mengarsipkan run lama + sisa folder tanpa manifest ke `data/_backup/` (run terbaru selamat) dan menyiapkan lapis kirim `output/kirim/{kaprodi,wali}/manifest.json` — wali memuat **SEMUA mahasiswa tree**, yang belum berkas ditandai jujur. Teruji `tests/test_engine.py` | Tidak (membaca/producer metadata saja, angka data tidak disentuh) |
 
 ### Sisa utang (belum dikerjakan)
 
@@ -791,10 +1043,12 @@ kenyataannya.
 3. **Topik sebagian MK masih placeholder.** Dari tree sekarang: 6 pertemuan
    terisi, 10 masih `(belum diisi - menunggu RPS)`. Isinya menunggu RPS resmi
    dari dosen pengampu; jangan dikarang.
-4. **`output/` menyimpan puluhan direktori run lama** (riwayat cetak PDF). Belum
-   ada kebijakan retensi, jadi repo terus membesar setiap kali paket PDF dicetak.
-   Yang terbaru selalu ditunjuk `output/latest_run.json`; direktori lama boleh
-   dihapus manual kalau tidak diperlukan sebagai arsip.
+4. **`output/` run lama kini punya kebijakan retensi** lewat Engine Output —
+   tombol **Rapikan** (Tab 10) mengarsipkan run lama & sisa folder tanpa
+   manifest ke `data/_backup/output_lama_<stamp>/` dan melindungi run terbaru.
+   Yang dikerjakan manual: pengiriman otomatis dokumen ke kaprodi & wali murid
+   (lapis `output/kirim/` beserta manifestnya sudah disiapkan sebagai pintu
+   masuknya).
 5. **`sanitize_folder_name` masih ada salinan yang lebih longgar** di
    `generate_pdfs.py` (~baris 104) dan `video_composer.py` (~baris 43). Versi
    ketat sudah ada di `scripts/kurikulum_tree.py`, tetapi dua salinan itu belum
@@ -806,6 +1060,14 @@ kenyataannya.
    `generate_pdfs.py` (`KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI` dan
    baris Gedung/Lab/Telp). Itu bukan identitas prodi, jadi sengaja belum dipindahkan
    ke config; ubah di situ bila perlu.
+8. **Narasi AI Gemini untuk Portofolio belum dieksekusi.** Analisis potensi
+   memakai templat v3 (`diagnosis.py`); jalur AI (panggil engine Gemini rotary,
+   cache per NPM, fallback tetap templat kalau gagal) sudah direncanakan tetapi
+   belum dipasang.
+9. **`tests/test_migrasi_non_destruktif.py` masih 2 kasus gagal (drift data).**
+   Validasi migrasi menolak sesi dengan total bobot ≠ 100 dan indeks turunan
+   belum memuat `jenis_mk` — modul migrasi/tree tidak berubah, sumber data
+   30 MK yang berubah. Perlu penelusuran tersendiri.
 
 > Status data demo: `versi 2.6-KURIKULUM-BERTINGKAT` (stempel build terakhir ada di
 > `data/academic_data.json` → `metadata.build_id`).

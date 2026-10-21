@@ -9,6 +9,21 @@ __pycache__/
 scratch/
 data/_backup/
 
+# Registry runtime engine input & output + sandbox test engine
+data/engine/
+data/engine_test_*/
+
+# Cache tool eksternal & artefak debug lepas
+.freebuff/
+debug_*.json
+
+# Subsistem impor: berkas asli & sesi portal bersifat sensitif/lokal
+input/inbox/*
+!input/inbox/.gitkeep
+input/raw/
+input/.session/
+data/_staging/
+
 # Artefak debug Playwright MCP (snapshot/console), bukan bagian aplikasi
 .playwright-mcp/
 
