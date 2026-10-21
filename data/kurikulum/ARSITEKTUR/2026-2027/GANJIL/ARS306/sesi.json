@@ -1,0 +1,265 @@
+{
+  "versi": 1,
+  "kunci_mk": "ARS306",
+  "catatan": "16 pertemuan standar. UTS ke-8, UAS ke-16. Bobot total = 100.",
+  "topik_terisi": 6,
+  "topik_placeholder": 10,
+  "sesi": [
+    {
+      "pertemuan": 1,
+      "tipe": "teori",
+      "tanggal": "2026-08-15",
+      "tanggal_display": "15 August 2026",
+      "topik": "Pertemuan 1: Ekonomi & Feasibilitas Proyek - Materi Minggu 1",
+      "deskripsi": "Materi pembelajaran pertemuan ke-1 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 2,
+      "tipe": "studio",
+      "tanggal": "2026-08-22",
+      "tanggal_display": "22 August 2026",
+      "topik": "Pertemuan 2: Ekonomi & Feasibilitas Proyek - Materi Minggu 2",
+      "deskripsi": "Materi pembelajaran pertemuan ke-2 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 3,
+      "tipe": "teori",
+      "tanggal": "2026-08-29",
+      "tanggal_display": "29 August 2026",
+      "topik": "Pertemuan 3: Ekonomi & Feasibilitas Proyek - Materi Minggu 3",
+      "deskripsi": "Materi pembelajaran pertemuan ke-3 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 4,
+      "tipe": "studio",
+      "tanggal": "2026-09-05",
+      "tanggal_display": "05 September 2026",
+      "topik": "Pertemuan 4: Ekonomi & Feasibilitas Proyek - Materi Minggu 4",
+      "deskripsi": "Materi pembelajaran pertemuan ke-4 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 5,
+      "tipe": "teori",
+      "tanggal": "2026-09-12",
+      "tanggal_display": "12 September 2026",
+      "topik": "Pertemuan 5: Ekonomi & Feasibilitas Proyek - Materi Minggu 5",
+      "deskripsi": "Materi pembelajaran pertemuan ke-5 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 6,
+      "tipe": "studio",
+      "tanggal": "2026-09-19",
+      "tanggal_display": "19 September 2026",
+      "topik": "Pertemuan 6: Ekonomi & Feasibilitas Proyek - Materi Minggu 6",
+      "deskripsi": "Materi pembelajaran pertemuan ke-6 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 7,
+      "tipe": "teori",
+      "tanggal": "2026-09-26",
+      "tanggal_display": "26 September 2026",
+      "topik": "Pertemuan 7: Ekonomi & Feasibilitas Proyek - Materi Minggu 7",
+      "deskripsi": "Materi pembelajaran pertemuan ke-7 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 8,
+      "tipe": "uts",
+      "tanggal": "2026-10-03",
+      "tanggal_display": "03 October 2026",
+      "topik": "Ujian Tengah Semester",
+      "deskripsi": "Evaluasi tengah semester.",
+      "bobot": 15.8,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 9,
+      "tipe": "teori",
+      "tanggal": "2026-10-10",
+      "tanggal_display": "10 October 2026",
+      "topik": "Pertemuan 9: Ekonomi & Feasibilitas Proyek - Materi Minggu 9",
+      "deskripsi": "Materi pembelajaran pertemuan ke-9 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 10,
+      "tipe": "studio",
+      "tanggal": "2026-10-17",
+      "tanggal_display": "17 October 2026",
+      "topik": "Pertemuan 10: Ekonomi & Feasibilitas Proyek - Materi Minggu 10",
+      "deskripsi": "Materi pembelajaran pertemuan ke-10 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 11,
+      "tipe": "teori",
+      "tanggal": "2026-10-24",
+      "tanggal_display": "24 October 2026",
+      "topik": "Pertemuan 11: Ekonomi & Feasibilitas Proyek - Materi Minggu 11",
+      "deskripsi": "Materi pembelajaran pertemuan ke-11 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 12,
+      "tipe": "studio",
+      "tanggal": "2026-10-31",
+      "tanggal_display": "31 October 2026",
+      "topik": "Pertemuan 12: Ekonomi & Feasibilitas Proyek - Materi Minggu 12",
+      "deskripsi": "Materi pembelajaran pertemuan ke-12 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 13,
+      "tipe": "teori",
+      "tanggal": "2026-11-07",
+      "tanggal_display": "07 November 2026",
+      "topik": "Pertemuan 13: Ekonomi & Feasibilitas Proyek - Materi Minggu 13",
+      "deskripsi": "Materi pembelajaran pertemuan ke-13 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 14,
+      "tipe": "studio",
+      "tanggal": "2026-11-14",
+      "tanggal_display": "14 November 2026",
+      "topik": "Pertemuan 14: Ekonomi & Feasibilitas Proyek - Materi Minggu 14",
+      "deskripsi": "Materi pembelajaran pertemuan ke-14 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 15,
+      "tipe": "teori",
+      "tanggal": "2026-11-21",
+      "tanggal_display": "21 November 2026",
+      "topik": "Pertemuan 15: Ekonomi & Feasibilitas Proyek - Materi Minggu 15",
+      "deskripsi": "Materi pembelajaran pertemuan ke-15 untuk mata kuliah Ekonomi & Feasibilitas Proyek.",
+      "bobot": 4.2,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    },
+    {
+      "pertemuan": 16,
+      "tipe": "uas",
+      "tanggal": "2026-11-28",
+      "tanggal_display": "28 November 2026",
+      "topik": "Ujian Akhir Semester",
+      "deskripsi": "Evaluasi akhir semester.",
+      "bobot": 25.4,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        }
+      ]
+    }
+  ]
+}

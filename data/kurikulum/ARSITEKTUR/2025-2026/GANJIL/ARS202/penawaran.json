@@ -1,0 +1,15 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS202",
+  "nama_mk": "Struktur & Konstruksi Bangunan 2",
+  "sks": 3,
+  "kelas": "ARS202 A (Ruang Kuliah)",
+  "semester": "Ganjil 2025/2026",
+  "jadwal": "Selasa, 13:00 - 15:30 WIB",
+  "dosen_pengasuh": [
+    "Duddy Fajriansyah, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "teori_studio"
+}

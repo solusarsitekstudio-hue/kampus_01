@@ -1,0 +1,15 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS203",
+  "nama_mk": "Sistem Utilitas Bangunan",
+  "sks": 2,
+  "kelas": "ARS203 A (Ruang Kuliah)",
+  "semester": "Ganjil 2025/2026",
+  "jadwal": "Selasa, 13:00 - 15:30 WIB",
+  "dosen_pengasuh": [
+    "Aprilia Yunita, S.T., M.T."
+  ],
+  "asisten_dosen": "-",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "teori"
+}

@@ -1,0 +1,20 @@
+{
+  "nama": "modul_rps_v1",
+  "keterangan": "CONTOH. Penanda yang dicari saat membaca modul/RPS. Dipakai sebagai petunjuk prompt AI, bukan pembatas kaku.",
+  "penanda": {
+    "identitas": ["Mata Kuliah", "Kode MK", "SKS", "Semester"],
+    "cpl": ["CPL", "Capaian Pembelajaran Lulusan"],
+    "cpmk": ["CPMK", "Capaian Pembelajaran Mata Kuliah"],
+    "sub_cpmk": ["Sub-CPMK", "Sub CPMK"],
+    "pertemuan": ["Pertemuan", "Minggu Ke", "TM"],
+    "materi": ["Materi Pembelajaran", "Bahan Kajian", "Pokok Bahasan"],
+    "metode": ["Metode Pembelajaran", "Bentuk Pembelajaran"],
+    "bobot": ["Bobot", "Persentase", "Kriteria Penilaian"],
+    "referensi": ["Referensi", "Pustaka", "Daftar Pustaka"]
+  },
+  "konteks": {
+    "prodi": "ARSITEKTUR",
+    "tahun_ajar": "2025/2026",
+    "semester": "GENAP"
+  }
+}

@@ -62,7 +62,9 @@ def at_risk_reasons(alpha: int, persentase: float) -> list:
         tipe, nilai = a.get("tipe"), float(a.get("nilai", 0))
         if tipe == "alpha_min" and alpha >= nilai:
             reasons.append("Alpha {0:g}x".format(alpha))
-        elif tipe == "kehadiran_min" and persentase < nilai:
+        elif tipe == "kehadiran_min" and persentase is not None and persentase < nilai:
+            # persentase None = kehadiran belum bisa dihitung (semua pertemuan
+            # belum diinput) - netral, tidak menuduh mahasiswa 0%.
             reasons.append("Kehadiran {0}%".format(persentase))
     return reasons
 
@@ -109,6 +111,49 @@ def pertemuan_memenuhi_ambang(slot_hadir: int, slot_total: int) -> bool:
     if not slot_total:
         return False
     return (slot_hadir / slot_total) >= AT.min_slot_ratio_hadir()
+
+
+def slot_dianggap_hadir(status) -> bool:
+    """True bila satu BARIS slot menandakan mahasiswa benar-benar hadir.
+
+    "Hadir Sebagian" adalah status per slot yang sah (mis. portal mencatat
+    mahasiswa masuk separuh sesi). Dulu fungsi agregasi hanya menghitung
+    status == "Hadir", sehingga pertemuan yang SEMUA slotnya "Hadir Sebagian"
+    jatuh ke bucket Alpha - mahasiswa yang hadir dan punya nilai tetap dicap
+    Alpha, alpha ikut membengkak, dan At-Risk bisa salah tuduh.
+
+    Satu sumber aturan ini dipakai parse_data.py dan periode.py.
+    """
+    return str(status or "").strip() in ("Hadir", "Hadir Sebagian")
+
+
+def status_pertemuan_dari_status(status_isi, slot_total: int) -> str:
+    """Bucket satu pertemuan dari daftar status slot (vocabulary resmi).
+
+    Aturan:
+      * semua slot "Hadir"                  -> "Hadir"
+      * ada slot hadir (termasuk sebagian)  -> "Hadir Sebagian"
+      * tidak ada yang hadir, ada Sakit      -> "Sakit"
+      * tidak ada yang hadir, ada Izin       -> "Izin"
+      * selain itu                           -> "Alpha"
+
+    "Hadir Sebagian" TIDAK boleh jatuh menjadi Alpha hanya karena tidak ada
+    slot yang berstatus persis "Hadir".
+    """
+    if not slot_total:
+        return "-"
+    status = [str(s or "").strip() for s in (status_isi or [])]
+    jumlah_hadir = sum(1 for s in status if slot_dianggap_hadir(s))
+    jumlah_penuh = sum(1 for s in status if s == "Hadir")
+    if jumlah_penuh >= slot_total:
+        return "Hadir"
+    if jumlah_hadir > 0:
+        return "Hadir Sebagian"
+    if "Sakit" in status:
+        return "Sakit"
+    if "Izin" in status:
+        return "Izin"
+    return "Alpha"
 
 
 def pertemuan_belum_diinput(slot_terisi: int, slot_total: int) -> bool:
@@ -175,14 +220,22 @@ def hitung_nilai_terbobot(session_scores, bobot_sesi):
     ]
     if not pasangan:
         return 0.0
-    bobot_pakai = [b for _, b in pasangan]
     nilai_pakai = [s for s, _ in pasangan]
 
-    total_bobot = sum(b for b in bobot_pakai if isinstance(b, (int, float)))
-    if not ada_filter or total_bobot <= 0:
+    # FIX BUG CRASH: dulu total_bobot hanya menjumlah bobot numeric, tapi jalur
+    # terbobot tetap mengiterasi SEMUA pasangan -> s * None = TypeError, dan satu
+    # "bobot: null" hasil suntingan manual menumbangkan seluruh pipeline
+    # compile (bukan hanya MK itu). Sekarang entri bobot non-numeric di-skip
+    # (sama seperti sesi None), dengan fallback rata-rata sederhana.
+    pasangan_bobot = [
+        (s, b) for s, b in pasangan
+        if isinstance(b, (int, float)) and not isinstance(b, bool)
+    ]
+    total_bobot = sum(b for _, b in pasangan_bobot)
+    if not pasangan_bobot or total_bobot <= 0:
         return round(sum(nilai_pakai) / len(nilai_pakai), 1)
     return round(
-        sum(s * b for s, b in pasangan) / total_bobot, 1
+        sum(s * b for s, b in pasangan_bobot) / total_bobot, 1
     )
 
 

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>SIAK-KAPRODI — Proposal Sistem 2026</title>
+<link rel="stylesheet" href="file:///E:/WORKSPACE/KAMPUS_01/public/vendor/fonts.css">
+<style>
+  :root{
+    --bg:#05070B;
+    --bg2:#080D16;
+    --panel:rgba(255,255,255,.028);
+    --panel2:rgba(255,255,255,.045);
+    --gold:#C9A25A;
+    --gold2:#F1DBA9;
+    --line:rgba(201,162,90,.22);
+    --line2:rgba(255,255,255,.07);
+    --text:#EEF3FA;
+    --mut:#93A4BA;
+    --mut2:#6C7C92;
+    --cyan:#8FD3E6;
+    --rose:#DE8E7D;
+    --sans:'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+    --mono:'JetBrains Mono', ui-monospace, Consolas, monospace;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{background:#000;}
+  body{font-family:var(--sans);color:var(--text);-webkit-font-smoothing:antialiased;}
+
+  .slide{
+    position:relative;
+    width:1280px;height:720px;
+    overflow:hidden;
+    background:
+      radial-gradient(900px 520px at 78% -10%, rgba(201,162,90,.085), transparent 62%),
+      radial-gradient(700px 500px at 6% 108%, rgba(143,211,230,.055), transparent 60%),
+      linear-gradient(160deg,#070B13 0%, #05070B 55%, #04060A 100%);
+    page-break-after:always;
+    display:flex;flex-direction:column;
+    padding:44px 60px 34px;
+  }
+  .slide:last-child{page-break-after:auto;}
+
+  /* fine blueprint grid + vignette */
+  .grid{position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(201,162,90,.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,162,90,.045) 1px, transparent 1px);
+    background-size:64px 64px;
+    mask-image:radial-gradient(120% 100% at 50% 40%, #000 35%, transparent 88%);
+  }
+  .grid.fine{background-size:16px 16px;background-image:
+      linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);}
+  .vignette{position:absolute;inset:0;pointer-events:none;
+    box-shadow:inset 0 0 180px 40px rgba(0,0,0,.55);}
+  .edge{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);}
+  .edge.top{top:22px;} .edge.bot{bottom:22px;}
+
+  /* running header / footer */
+  .run{display:flex;justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.26em;color:var(--mut2);
+    text-transform:uppercase;z-index:3;}
+  .run .dotline{flex:1;height:1px;background:var(--line2);margin:0 18px;}
+  .foot{position:absolute;left:60px;right:60px;bottom:26px;display:flex;
+    justify-content:space-between;align-items:center;
+    font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--mut2);
+    text-transform:uppercase;z-index:3;}
+  .foot b{color:var(--gold);font-weight:500;}
+
+  /* type */
+  .kicker{display:flex;align-items:center;gap:12px;font-family:var(--mono);
+    font-size:10px;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;}
+  .kicker::before{content:'';width:34px;height:1px;background:var(--gold);opacity:.8;}
+  h1{font-size:88px;line-height:.98;letter-spacing:-.048em;font-weight:800;white-space:nowrap;}
+  h2{font-size:46px;line-height:1.08;letter-spacing:-.032em;font-weight:800;max-width:900px;}
+  h2 em{font-style:normal;color:var(--gold2);}
+  .lede{font-size:15px;line-height:1.65;color:var(--mut);max-width:58ch;font-weight:400;}
+  .goldtxt{background:linear-gradient(100deg,#8E6A2E 0%, #F4E0B4 38%, #C9A25A 70%, #F4E0B4 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+
+  /* cover */
+  .cover-main{flex:1;display:grid;grid-template-columns:1.18fr .82fr;gap:20px;align-items:center;z-index:2;}
+  .mark{width:46px;height:46px;border:1px solid var(--gold);display:flex;align-items:center;
+    justify-content:center;font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--gold2);
+    position:relative;}
+  .mark::after{content:'';position:absolute;inset:4px;border:1px solid rgba(201,162,90,.25);}
+  .brandrow{display:flex;align-items:center;gap:16px;margin-bottom:34px;}
+  .brandrow .who{font-family:var(--mono);font-size:9px;letter-spacing:.3em;color:var(--mut2);text-transform:uppercase;line-height:1.9;}
+  .cover h1{margin:2px 0 14px;}
+  .cover .sub{font-size:25px;font-weight:300;letter-spacing:.01em;color:#DCE6F3;}
+  .cover .sub span{color:var(--gold2);}
+  .cover .desc{margin-top:22px;font-size:13.5px;line-height:1.7;color:var(--mut);max-width:48ch;}
+  .meta{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:26px;margin-top:38px;padding-top:20px;
+    border-top:1px solid var(--line2);}
+  .meta .lab{font-family:var(--mono);font-size:8.5px;letter-spacing:.24em;color:var(--mut2);text-transform:uppercase;margin-bottom:7px;}
+  .meta .val{font-size:12.5px;line-height:1.5;color:#D7E0EC;font-weight:500;}
+  .meta .val small{display:block;color:var(--mut2);font-weight:400;font-size:10.5px;margin-top:3px;letter-spacing:.04em;}
+
+  .iso{position:relative;height:100%;display:flex;align-items:center;justify-content:center;}
+  .iso svg{width:100%;height:auto;overflow:visible;}
+  .iso .cap{position:absolute;bottom:26px;right:2px;font-family:var(--mono);font-size:7.5px;
+    letter-spacing:.22em;color:var(--mut2);text-transform:uppercase;}
+
+  /* generic content */
+  .body{flex:1;display:flex;flex-direction:column;justify-content:center;z-index:2;padding-top:8px;}
+  .head{margin-bottom:26px;}
+  .head h2{margin-top:14px;}
+  .head .sub{margin-top:12px;font-size:13px;color:var(--mut);line-height:1.6;max-width:74ch;}
+
+  /* slide 2 cards */
+  .prob{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+  .pcard{border:1px solid var(--line2);background:linear-gradient(170deg,rgba(255,255,255,.04),rgba(255,255,255,.012));
+    padding:22px 20px 20px;position:relative;min-height:196px;}
+  .pcard::before{content:'';position:absolute;left:0;top:0;width:100%;height:1px;
+    background:linear-gradient(90deg,var(--gold),transparent 70%);opacity:.55;}
+  .pcard .no{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--gold);margin-bottom:14px;}
+  .pcard h3{font-size:15.5px;font-weight:700;letter-spacing:-.01em;margin-bottom:9px;line-height:1.35;}
+  .pcard p{font-size:11.5px;line-height:1.65;color:var(--mut);}
+  .pcard .stat{position:absolute;left:20px;bottom:18px;font-family:var(--mono);font-size:10px;color:var(--mut2);letter-spacing:.06em;}
+  .pcard .stat b{color:var(--rose);font-weight:600;}
+  .pcard .ghost{position:absolute;right:14px;bottom:2px;font-family:var(--mono);font-size:58px;font-weight:600;
+    letter-spacing:-.05em;color:rgba(255,255,255,.035);line-height:1;}
+
+  .impact{margin-top:18px;border:1px solid var(--line);background:rgba(201,162,90,.035);
+    display:grid;grid-template-columns:auto 1fr 1fr 1fr;align-items:center;gap:0;padding:14px 18px;}
+  .impact .lab{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;padding-right:22px;}
+  .impact .it{font-size:11.5px;color:#C9D4E2;padding:0 18px;border-left:1px solid var(--line2);line-height:1.45;}
+  .impact .it b{display:block;font-size:11.5px;color:#EEF3FA;font-weight:600;margin-bottom:2px;}
+
+  /* slide 3 flow + mockup */
+  .platform{display:grid;grid-template-columns:.9fr 1.1fr;gap:36px;align-items:start;}
+  .s3 .body{justify-content:flex-start;padding-top:14px;}
+  .s3 .head{margin-bottom:14px;}
+  .flow{display:flex;flex-direction:column;gap:0;}
+  .frow{display:grid;grid-template-columns:86px 1fr;gap:14px;align-items:start;position:relative;padding:14px 0;}
+  .frow + .frow{border-top:1px dashed rgba(255,255,255,.07);}
+  .frow .tag{font-family:var(--mono);font-size:8.5px;letter-spacing:.2em;color:var(--mut2);text-transform:uppercase;padding-top:4px;}
+  .frow .tag b{display:block;color:var(--gold);font-weight:500;font-size:9px;margin-bottom:4px;}
+  .frow h3{font-size:14px;font-weight:700;margin-bottom:5px;letter-spacing:-.01em;}
+  .frow p{font-size:11px;line-height:1.6;color:var(--mut);}
+  .pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .pill{font-family:var(--mono);font-size:9px;letter-spacing:.04em;color:#C9D4E2;
+    border:1px solid var(--line2);padding:3px 8px;background:rgba(255,255,255,.02);}
+  .pill.gold{border-color:var(--line);color:var(--gold2);}
+
+  .browser{border:1px solid var(--line);background:#0A0F18;box-shadow:0 30px 60px -30px rgba(0,0,0,.9);}
+  .browser .bar{display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid var(--line2);}
+  .browser .d{width:6px;height:6px;border-radius:50%;background:#2B3646;}
+  .browser .d.g{background:var(--gold);opacity:.75;}
+  .browser .url{margin-left:8px;font-family:var(--mono);font-size:8.5px;color:var(--mut2);letter-spacing:.06em;}
+  .browser img{display:block;width:100%;height:300px;object-fit:cover;object-position:top center;filter:saturate(.92) contrast(1.02);}
+  .browser .cap{display:flex;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--line2);
+    font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--mut2);text-transform:uppercase;}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);margin-top:20px;border:1px solid var(--line2);}
+  .kpi{background:#070B12;padding:14px 16px;}
+  .kpi .n{font-family:var(--mono);font-size:26px;font-weight:600;letter-spacing:-.02em;color:var(--gold2);line-height:1;}
+  .kpi .n small{font-size:13px;color:var(--gold);margin-left:2px;}
+  .kpi .l{font-family:var(--mono);font-size:8px;letter-spacing:.2em;color:var(--mut2);text-transform:uppercase;margin-top:7px;}
+
+  /* slide 4 portfolio */
+  .porto{display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center;}
+  .paperwrap{position:relative;height:392px;}
+  .paper{position:absolute;left:0;top:6px;width:470px;transform:rotate(-2.2deg);
+    border:1px solid rgba(201,162,90,.35);box-shadow:0 40px 70px -34px #000, 0 0 0 6px #0A0E16, 0 0 0 7px rgba(255,255,255,.06);
+    background:#04060B;}
+  .paper img{display:block;width:100%;height:auto;}
+  .paper .tag{position:absolute;left:10px;bottom:-24px;font-family:var(--mono);font-size:8px;
+    letter-spacing:.18em;color:var(--mut2);text-transform:uppercase;}
+  .phone{position:absolute;right:10px;bottom:8px;width:116px;height:236px;border:1px solid rgba(201,162,90,.4);
+    border-radius:18px;padding:5px;background:linear-gradient(160deg,#111826,#05080E);
+    box-shadow:0 30px 50px -25px #000;}
+  .phone .screen{width:100%;height:100%;border-radius:13px;overflow:hidden;position:relative;background:#000;}
+  .phone .screen img{width:100%;height:100%;object-fit:cover;}
+  .phone .notch{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:34px;height:5px;border-radius:3px;background:#0B1220;}
+  .badge-float{position:absolute;left:2px;top:-19px;font-family:var(--mono);font-size:8px;letter-spacing:.2em;
+    color:var(--gold);text-transform:uppercase;}
+
+  .intel{display:flex;flex-direction:column;gap:14px;}
+  .intel .row{display:grid;grid-template-columns:168px 1fr;gap:20px;align-items:center;}
+  .radar svg{width:100%;height:auto;}
+  .careers{border-left:1px solid var(--line2);padding-left:18px;}
+  .careers .l{font-family:var(--mono);font-size:8px;letter-spacing:.22em;color:var(--mut2);text-transform:uppercase;margin-bottom:10px;}
+  .cbar{margin-bottom:9px;}
+  .cbar .t{display:flex;justify-content:space-between;font-size:10.5px;color:#CBD6E4;margin-bottom:4px;}
+  .cbar .t span{font-family:var(--mono);font-size:9px;color:var(--gold2);}
+  .cbar .b{height:3px;background:rgba(255,255,255,.07);}
+  .cbar .b i{display:block;height:3px;background:linear-gradient(90deg,rgba(201,162,90,.35),var(--gold2));}
+  .note{margin-top:14px;font-family:var(--mono);font-size:8.5px;letter-spacing:.06em;color:var(--mut2);line-height:1.7;}
+
+  /* slide 5 phases */
+  .phases{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;position:relative;}
+  .phase{border:1px solid var(--line2);background:linear-gradient(170deg,rgba(255,255,255,.035),rgba(255,255,255,.01));
+    padding:20px 18px 16px;min-height:206px;position:relative;display:flex;flex-direction:column;}
+  .phase.hot{border-color:rgba(201,162,90,.55);background:linear-gradient(170deg,rgba(201,162,90,.10),rgba(201,162,90,.02));}
+  .phase .ph{font-family:var(--mono);font-size:8.5px;letter-spacing:.22em;color:var(--mut2);text-transform:uppercase;display:flex;justify-content:space-between;}
+  .phase .ph b{color:var(--gold);font-weight:500;}
+  .phase h3{font-size:14.5px;font-weight:700;margin:12px 0 7px;line-height:1.3;}
+  .phase p{font-size:10.5px;line-height:1.6;color:var(--mut);}
+  .phase .chips{margin-top:auto;padding-top:14px;display:flex;flex-wrap:wrap;gap:5px;}
+  .phase .chips span{font-family:var(--mono);font-size:8px;letter-spacing:.08em;color:var(--mut);
+    border:1px solid var(--line2);padding:2px 6px;text-transform:lowercase;}
+  .phase.hot .chips span{border-color:rgba(201,162,90,.28);color:var(--gold2);}
+  .phase .ghost{position:absolute;right:14px;bottom:2px;font-family:var(--mono);font-size:56px;font-weight:600;
+    letter-spacing:-.05em;color:rgba(255,255,255,.04);line-height:1;}
+
+  .bottomrow{display:grid;grid-template-columns:1.28fr .72fr;gap:24px;margin-top:20px;align-items:center;}
+  .ask{border:1px solid var(--line);background:rgba(201,162,90,.045);padding:18px 20px;}
+  .ask .l{font-family:var(--mono);font-size:8.5px;letter-spacing:.24em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;}
+  .ask p{font-size:12px;line-height:1.65;color:#D9E2EF;}
+  .ask p b{color:var(--gold2);font-weight:600;}
+  .ask .metrics{display:flex;gap:16px;margin-top:12px;}
+  .ask .metrics div{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;color:var(--mut);text-transform:uppercase;}
+  .ask .metrics div b{display:block;color:var(--gold2);font-size:11px;letter-spacing:.06em;margin-bottom:2px;}
+
+  .fly svg{width:100%;height:auto;}
+
+  /* slide 5 (baru) - continuum/timeline/insight */
+  .continuum{flex:1;display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:start;}
+  .timeline{position:relative;padding-left:8px;}
+  .tline{position:absolute;left:11px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),var(--line2) 60%,transparent);}
+  .tsteps{display:flex;flex-direction:column;gap:32px;position:relative;z-index:1;}
+  .tstep{display:grid;grid-template-columns:28px 1fr;gap:16px;align-items:start;}
+  .tdot{width:24px;height:24px;border-radius:50%;background:#0A0E16;border:2px solid var(--line2);box-shadow:0 0 0 4px #05070B;flex-shrink:0;margin-top:4px;position:relative;z-index:2;transition:all .3s;}
+  .tdot.active{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px #05070B,0 0 16px rgba(201,162,90,.4);}
+  .tdot::after{content:attr(data-sem);position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:7px;font-weight:700;color:var(--mut2);}
+  .tdot.active::after{color:#0A0E16;}
+  .tcard{border:1px solid var(--line2);background:linear-gradient(170deg,rgba(255,255,255,.035),rgba(255,255,255,.01));padding:16px 18px 14px;position:relative;}
+  .tcard.hot{border-color:rgba(201,162,90,.45);background:linear-gradient(170deg,rgba(201,162,90,.08),rgba(201,162,90,.015));}
+  .tlab{font-family:var(--mono);font-size:8px;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .badge{font-family:var(--mono);font-size:6.5px;letter-spacing:.1em;color:#0A0E16;background:var(--gold2);padding:2px 6px;border-radius:3px;text-transform:uppercase;font-weight:700;}
+  .tcard h4{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.3;}
+  .tcard p{font-size:10.5px;line-height:1.6;color:var(--mut);}
+  .tmeta{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line2);}
+  .tmeta .pill{font-family:var(--mono);font-size:7.5px;letter-spacing:.06em;color:var(--mut);border:1px solid var(--line2);padding:2px 6px;text-transform:lowercase;}
+  .tmeta .pill.gold{border-color:rgba(201,162,90,.28);color:var(--gold2);}
+
+  .insight{display:flex;flex-direction:column;gap:18px;}
+  .insight-head .kicker{margin-bottom:8px;}
+  .insight-head h3{font-size:28px;line-height:1.15;letter-spacing:-.02em;font-weight:800;}
+  .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .icard{border:1px solid var(--line2);background:linear-gradient(170deg,rgba(255,255,255,.035),rgba(255,255,255,.01));padding:14px 16px;display:flex;gap:14px;}
+  .icard:hover{border-color:rgba(201,162,90,.4);}
+  .ino{font-family:var(--mono);font-size:28px;font-weight:700;color:rgba(201,162,90,.35);line-height:1;flex-shrink:0;margin-top:2px;}
+  .icontent{flex:1;min-width:0;}
+  .icontent h4{font-size:12px;font-weight:700;margin-bottom:4px;color:var(--gold2);}
+  .icontent p{font-size:9.5px;line-height:1.55;color:var(--mut);}
+
+  @page{size:13.333in 7.5in;margin:0;}
+  @media print{body{background:#000;} .slide{margin:0;}}
+</style>
+</head>
+<body>
+
+<!-- ================= SLIDE 1 ================= -->
+<section class="slide cover">
+  <div class="grid"></div><div class="grid fine"></div><div class="vignette"></div>
+  <div class="edge top"></div><div class="edge bot"></div>
+
+  <div class="run"><span>Proposal Sistem · 2026</span><span class="dotline"></span><span>Arsitektur · Teknik &amp; Desain</span></div>
+
+  <div class="cover-main">
+    <div>
+      <div class="brandrow">
+        <div class="mark">SK</div>
+        <div class="who">Program Studi Arsitektur<br>Fakultas Teknik &amp; Desain</div>
+      </div>
+
+      <div class="kicker" style="margin-bottom:18px;">Academic Intelligence Suite</div>
+      <h1><span class="goldtxt">SIAK</span>—KAPRODI</h1>
+      <div class="sub">Satu data perkuliahan. <span>Tujuh dashboard.</span> Sebelas dokumen resmi.</div>
+      <p class="desc">Platform yang mengubah presensi dan nilai menjadi rekap Kaprodi, rapor wali murid,
+        portofolio tiap mahasiswa, dan paket dokumen siap tanda tangan — dihitung, bukan diketik ulang.</p>
+
+      <div class="meta">
+        <div><div class="lab">Disusun Untuk</div><div class="val">Program Studi Arsitektur<small>Fakultas Teknik &amp; Desain</small></div></div>
+        <div><div class="lab">Ketua Program Studi</div><div class="val">Fielda Roza, S.T., M.T.<small>NIP 19820415 200812 2 003</small></div></div>
+        <div><div class="lab">Penyusun</div><div class="val">Adrian Ridhoa, S.T.<small>Asisten Dosen · Lab LIKDA</small></div></div>
+      </div>
+    </div>
+
+    <div class="iso">
+      <svg viewBox="0 0 620 580" role="img" aria-label="Ilustrasi aksonometri tiga lantai">
+        <defs>
+          <linearGradient id="plate" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#C9A25A" stop-opacity=".16"/>
+            <stop offset="1" stop-color="#C9A25A" stop-opacity=".02"/>
+          </linearGradient>
+          <linearGradient id="plate2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8FD3E6" stop-opacity=".12"/>
+            <stop offset="1" stop-color="#8FD3E6" stop-opacity=".015"/>
+          </linearGradient>
+          <linearGradient id="dim" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#C9A25A" stop-opacity=".9"/>
+            <stop offset="1" stop-color="#C9A25A" stop-opacity=".15"/>
+          </linearGradient>
+        </defs>
+
+        <!-- ground projection grid -->
+        <g opacity=".28" stroke="#8FA3BC" stroke-width=".6">
+          <path d="M70 500 L410 610 M150 470 L490 580 M230 440 L570 550" opacity=".35"/>
+          <path d="M110 610 L450 500 M190 580 L530 470 M270 550 L610 440" opacity=".35"/>
+        </g>
+
+        <!-- top plate (roof) -->
+        <polygon points="310,120 500,190 310,260 120,190" fill="url(#plate2)" stroke="#8FD3E6" stroke-opacity=".55" stroke-width="1.1"/>
+        <polygon points="310,120 500,190 310,260 120,190" fill="none" stroke="#F1DBA9" stroke-opacity=".18" stroke-width="3"/>
+
+        <!-- columns between plates -->
+        <g stroke="#C9A25A" stroke-opacity=".5" stroke-width="1">
+          <line x1="120" y1="190" x2="120" y2="300"/>
+          <line x1="500" y1="190" x2="500" y2="300"/>
+          <line x1="310" y1="260" x2="310" y2="370"/>
+        </g>
+
+        <!-- middle plate -->
+        <polygon points="310,230 500,300 310,370 120,300" fill="url(#plate)" stroke="#C9A25A" stroke-opacity=".7" stroke-width="1.1"/>
+
+        <!-- columns -->
+        <g stroke="#C9A25A" stroke-opacity=".45" stroke-width="1">
+          <line x1="120" y1="300" x2="120" y2="410"/>
+          <line x1="500" y1="300" x2="500" y2="410"/>
+          <line x1="310" y1="370" x2="310" y2="480"/>
+        </g>
+
+        <!-- base plate -->
+        <polygon points="310,340 500,410 310,480 120,410" fill="url(#plate)" stroke="#C9A25A" stroke-opacity=".85" stroke-width="1.2"/>
+        <polygon points="310,340 500,410 310,480 120,410" fill="none" stroke="#F1DBA9" stroke-opacity=".22" stroke-width="3"/>
+
+        <!-- inner partitions on base -->
+        <g stroke="#8FD3E6" stroke-opacity=".35" stroke-width=".8">
+          <path d="M215 375 L405 445 M215 445 L405 375"/>
+          <path d="M260 358 L260 428 M360 393 L360 463"/>
+        </g>
+
+        <!-- core -->
+        <g stroke="#F1DBA9" stroke-opacity=".5" stroke-width="1">
+          <line x1="310" y1="120" x2="310" y2="340"/>
+          <line x1="310" y1="260" x2="310" y2="480" stroke-dasharray="3 4" stroke-opacity=".3"/>
+        </g>
+
+        <!-- dimension line -->
+        <g stroke="url(#dim)" stroke-width="1">
+          <line x1="556" y1="120" x2="556" y2="480"/>
+          <line x1="548" y1="120" x2="564" y2="120"/>
+          <line x1="548" y1="480" x2="564" y2="480"/>
+        </g>
+        <text x="572" y="304" font-family="JetBrains Mono, monospace" font-size="9" fill="#93A4BA" letter-spacing="1">12.00 m</text>
+
+        <!-- labels -->
+        <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#93A4BA" letter-spacing="1.4">
+          <text x="86" y="150">ROOF DECK</text>
+          <text x="86" y="262">LANTAI 03</text>
+          <text x="86" y="372">LANTAI 02</text>
+          <text x="86" y="452">LANTAI 01</text>
+        </g>
+
+        <!-- north arrow -->
+        <g transform="translate(470,78)">
+          <circle r="15" fill="none" stroke="#C9A25A" stroke-opacity=".45"/>
+          <path d="M0 -9 L4 6 L0 3 L-4 6 Z" fill="#F1DBA9" fill-opacity=".8"/>
+          <text x="0" y="-22" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="8" fill="#93A4BA">N</text>
+        </g>
+
+        <!-- registration marks -->
+        <g stroke="#C9A25A" stroke-opacity=".35">
+          <path d="M60 60 h14 M60 60 v14 M560 60 h-14 M560 60 v14 M60 540 h14 M60 540 v-14"/>
+        </g>
+      </svg>
+      <div class="cap">Axonometric · 3 level · skala ilustratif</div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Padang · Oktober 2026</span><span>Dokumen internal · <b>01 / 05</b></span></div>
+</section>
+
+<!-- ================= SLIDE 2 ================= -->
+<section class="slide">
+  <div class="grid"></div><div class="vignette"></div>
+  <div class="edge top"></div>
+
+  <div class="run"><span>SIAK-KAPRODI</span><span class="dotline"></span><span>01 — Masalah</span></div>
+
+  <div class="body">
+    <div class="head">
+      <div class="kicker">01 — Masalah</div>
+      <h2>Data perkuliahan sudah ada.<br>Yang belum ada: <em>sistem yang membuatnya bekerja.</em></h2>
+    </div>
+
+    <div class="prob">
+      <div class="pcard">
+        <div class="no">01</div>
+        <h3>Rekap tersebar di banyak berkas</h3>
+        <p>Presensi di Excel, nilai di PDF, catatan di WhatsApp. Setiap versi bisa berbeda, dan yang mana yang resmi tidak pernah jelas.</p>
+        <div class="stat"><b>3</b> format · <b>0</b> sumber tunggal</div>
+        <div class="ghost">01</div>
+      </div>
+      <div class="pcard">
+        <div class="no">02</div>
+        <h3>Ribuan sel diisi dengan tangan</h3>
+        <p>16 pertemuan, 35 mahasiswa, tiga mata kuliah. Satu salah klik menggulung seluruh perhitungan nilai akhir.</p>
+        <div class="stat"><b>560</b> sel presensi per MK / semester</div>
+        <div class="ghost">02</div>
+      </div>
+      <div class="pcard">
+        <div class="no">03</div>
+        <h3>Wali murid tahu di akhir semester</h3>
+        <p>Orang tua baru menerima kabar setelah nilai dikunci. Tidak ada momen untuk mendampingi saat masih bisa dibantu.</p>
+        <div class="stat">Umpan balik: <b>1×</b> per semester</div>
+        <div class="ghost">03</div>
+      </div>
+    </div>
+
+    <div class="impact">
+      <div class="lab">Biaya<br>sebenarnya</div>
+      <div class="it"><b>Waktu dosen</b>habis di rekap, bukan di pembinaan</div>
+      <div class="it"><b>Keputusan terlambat</b>mahasiswa At-Risk baru terlihat di akhir</div>
+      <div class="it"><b>Kepercayaan wali</b>turun karena informasi datang tanpa konteks</div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Prodi Arsitektur · F. Teknik &amp; Desain</span><span><b>02 / 05</b></span></div>
+</section>
+
+<!-- ================= SLIDE 3 ================= -->
+<section class="slide s3">
+  <div class="grid"></div><div class="vignette"></div>
+  <div class="edge top"></div>
+
+  <div class="run"><span>SIAK-KAPRODI</span><span class="dotline"></span><span>02 — Platform</span></div>
+
+  <div class="body">
+    <div class="head" style="margin-bottom:18px;">
+      <div class="kicker">02 — Platform</div>
+      <h2>Satu sumber kebenaran.<br><em>Sebelas dokumen turun dari sana.</em></h2>
+    </div>
+
+    <div class="platform">
+      <div class="flow">
+        <div class="frow">
+          <div class="tag"><b>Sumber</b>ditulis<br>manusia</div>
+          <div>
+            <h3>Tree kurikulum per prodi</h3>
+            <p>Setiap mata kuliah punya penawaran, 16 sesi, dan nilai per slot. Satu tempat, satu kebenaran.</p>
+            <div class="pills"><span class="pill">penawaran.json</span><span class="pill">sesi.json</span><span class="pill">nilai.json</span></div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="tag"><b>Mesin</b>dihitung</div>
+          <div>
+            <h3>Validasi &amp; perhitungan</h3>
+            <p>Σ bobot wajib 100, Alpha = 0, kehadiran per slot, deteksi At-Risk. Gagal validasi = berhenti, bukan menebak.</p>
+            <div class="pills"><span class="pill gold">fail-closed</span><span class="pill">tanpa ranking</span><span class="pill">dapat diaudit</span></div>
+          </div>
+        </div>
+        <div class="frow">
+          <div class="tag"><b>Keluaran</b>otomatis</div>
+          <div>
+            <h3>Tujuh tab &amp; sebelas dokumen</h3>
+            <p>Rekap Kaprodi, rapor wali, portofolio, video 9:16, sampai paket PDF siap cetak.</p>
+            <div class="pills"><span class="pill">7 tab</span><span class="pill">11 PDF</span><span class="pill">deck 16:9</span><span class="pill">video 9:16</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="browser">
+          <div class="bar"><span class="d g"></span><span class="d"></span><span class="d"></span>
+            <span class="url">127.0.0.1:40404 — Dashboard Kaprodi</span></div>
+          <img src="../assets/shot-dashboard.png" alt="Dashboard Kaprodi">
+          <div class="cap"><span>Rekap kelas · 16 pertemuan</span><span>Offline</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="n">16</div><div class="l">Pertemuan / MK</div></div>
+      <div class="kpi"><div class="n">35</div><div class="l">Mahasiswa aktif</div></div>
+      <div class="kpi"><div class="n">11</div><div class="l">Dokumen resmi</div></div>
+      <div class="kpi"><div class="n">0<small>%</small></div><div class="l">Internet dibutuhkan</div></div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Prodi Arsitektur · F. Teknik &amp; Desain</span><span><b>03 / 05</b></span></div>
+</section>
+
+<!-- ================= SLIDE 4 ================= -->
+<section class="slide">
+  <div class="grid"></div><div class="vignette"></div>
+  <div class="edge top"></div>
+
+  <div class="run"><span>SIAK-KAPRODI</span><span class="dotline"></span><span>03 — Portofolio &amp; Potensi</span></div>
+
+  <div class="body">
+    <div class="head" style="margin-bottom:16px;">
+      <div class="kicker">03 — Portofolio &amp; Potensi</div>
+      <h2>Setiap mahasiswa pulang dengan portofolio,<br><em>bukan hanya sebaris nilai.</em></h2>
+    </div>
+
+    <div class="porto">
+      <div class="paperwrap">
+        <div class="paper">
+          <img src="../assets/deck-slide-1.png" alt="Contoh deck portofolio mahasiswa">
+          <div class="tag">Output nyata · DeckCraft 4 slide · PDF siap lampir</div>
+        </div>
+        <div class="phone">
+          <div class="screen">
+            <img src="../assets/video-frame.png" alt="Cuplikan video portofolio 9:16">
+            <div class="notch"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="intel">
+        <div class="row">
+          <div class="radar">
+            <svg viewBox="0 0 220 200" role="img" aria-label="Radar lima pilar kompetensi">
+              <!-- rings -->
+              <g fill="none" stroke="#8FA3BC" stroke-opacity=".18">
+                <polygon points="110,26 178,76 152,158 68,158 42,76"/>
+                <polygon points="110,52 156,86 139,141 81,141 64,86"/>
+                <polygon points="110,78 134,96 126,124 94,124 86,96"/>
+              </g>
+              <g stroke="#8FA3BC" stroke-opacity=".22">
+                <line x1="110" y1="100" x2="110" y2="26"/>
+                <line x1="110" y1="100" x2="178" y2="76"/>
+                <line x1="110" y1="100" x2="152" y2="158"/>
+                <line x1="110" y1="100" x2="68" y2="158"/>
+                <line x1="110" y1="100" x2="42" y2="76"/>
+              </g>
+              <!-- data -->
+              <polygon points="110,40 170,79 145,146 76,150 52,82"
+                fill="#C9A25A" fill-opacity=".22" stroke="#F1DBA9" stroke-width="1.4"/>
+              <g fill="#F1DBA9">
+                <circle cx="110" cy="40" r="2.4"/><circle cx="170" cy="79" r="2.4"/>
+                <circle cx="145" cy="146" r="2.4"/><circle cx="76" cy="150" r="2.4"/>
+                <circle cx="52" cy="82" r="2.4"/>
+              </g>
+              <g font-family="JetBrains Mono, monospace" font-size="6.4" fill="#93A4BA" letter-spacing=".6">
+                <text x="110" y="16" text-anchor="middle">CAD</text>
+                <text x="186" y="74" text-anchor="start">DETAIL</text>
+                <text x="156" y="172" text-anchor="middle">RUANG</text>
+                <text x="64" y="172" text-anchor="middle">DISIPLIN</text>
+                <text x="34" y="74" text-anchor="end">WAKTU</text>
+              </g>
+            </svg>
+          </div>
+          <div class="careers">
+            <div class="l">Pemetaan 10 karier</div>
+            <div class="cbar"><div class="t">Architectural Designer <span>96%</span></div><div class="b"><i style="width:96%"></i></div></div>
+            <div class="cbar"><div class="t">BIM / CAD Modeler <span>92%</span></div><div class="b"><i style="width:92%"></i></div></div>
+            <div class="cbar"><div class="t">Quantity Surveyor <span>87%</span></div><div class="b"><i style="width:87%"></i></div></div>
+            <div class="cbar"><div class="t">3D Visualizer <span>81%</span></div><div class="b"><i style="width:81%"></i></div></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span class="pill gold">radar 5 pilar</span>
+          <span class="pill gold">10 rekomendasi profesi</span>
+          <span class="pill gold">narasi pendampingan wali</span>
+          <span class="pill">tanpa peringkat</span>
+        </div>
+
+        <div class="note">Analisis potensi bersifat indikatif — dihitung dari data akademik, bukan tes psikometri.<br>
+          Angka pada ilustrasi memakai data demo MK Aplikasi Komputer Arsitektur &amp; QS.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Prodi Arsitektur · F. Teknik &amp; Desain</span><span><b>Prodi Arsitektur · F. Teknik & Desain</span><span><b>04 / 06</b></span></div>
+</section>
+
+<!-- ================= SLIDE 5 (BARU) ================= -->
+<section class="slide">
+  <div class="grid"></div><div class="vignette"></div>
+  <div class="edge top"></div>
+
+  <div class="run"><span>SIAK-KAPRODI</span><span class="dotline"></span><span>05 — Analisis Berkelanjutan</span></div>
+
+  <div class="body">
+    <div class="head" style="margin-bottom:18px;">
+      <div class="kicker">05 — Analisis Berkelanjutan</div>
+      <h2>Bukan sekadar akhir semester.<br><em>Setiap semester, sistem belajar bersama mahasiswa.</em></h2>
+    </div>
+
+    <div class="continuum">
+      <!-- Timeline -->
+      <div class="timeline">
+        <div class="tline"></div>
+        <div class="tsteps">
+          <div class="tstep" data-sem="1">
+            <div class="tdot"></div>
+            <div class="tcard">
+              <div class="tlab">SEMESTER 1</div>
+              <h4>Baseline & Fondasi</h4>
+              <p>Profil masuk: kehadiran, nilai dasar, gaya belajar. Radar 5 pilar pertama kali terbentuk.</p>
+              <div class="tmeta"><span class="pill">input dosen</span><span class="pill">presensi</span><span class="pill">nilai awal</span></div>
+            </div>
+          </div>
+          <div class="tstep" data-sem="2">
+            <div class="tdot active"></div>
+            <div class="tcard hot">
+              <div class="tlab">SEMESTER 2 <span class="badge">AKTIF</span></div>
+              <h4>Pola & Arah</h4>
+              <p>Perbandingan semester 1 vs 2: naik/turun, konsisten, lonjak. Career matrix mulai menyemat.</p>
+              <div class="tmeta"><span class="pill gold">delta radar</span><span class="pill gold">tren karier</span><span class="pill">intervensi</span></div>
+            </div>
+          </div>
+          <div class="tstep" data-sem="3">
+            <div class="tdot"></div>
+            <div class="tcard">
+              <div class="tlab">SEMESTER 3</div>
+              <h4>Spesialisasi</h4>
+              <p>Kekuatan terbukti → rekomendasi studio lanjutan, magang, sayembara. Portfolio kaya.</p>
+              <div class="tmeta"><span class="pill">studio</span><span class="pill">magang</span><span class="pill">portofolio</span></div>
+            </div>
+          </div>
+          <div class="tstep" data-sem="4">
+            <div class="tdot"></div>
+            <div class="tcard">
+              <div class="tlab">SEMESTER 4</div>
+              <h4>Kesiapan Lulus</h4>
+              <p>Indeks kesiapan profesi final, CV generator, rekomendasi dosen, alumni tracking.</p>
+              <div class="tmeta"><span class="pill">cv gen</span><span class="pill">rekomendasi</span><span class="pill">alumni</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight Panel -->
+      <div class="insight">
+        <div class="insight-head">
+          <div class="kicker">Keunggulan sistem</div>
+          <h3>Memori panjang,<br>bukan snapshot sekali pakai.</h3>
+        </div>
+        <div class="insight-grid">
+          <div class="icard">
+            <div class="ino">01</div>
+            <div class="icontent">
+              <h4>Akumulasi lintas semester</h4>
+              <p>Data tidak dihapus tiap semester. Tree kurikulum bertingkat menyimpan riwayat lengkap per mahasiswa.</p>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ino">02</div>
+            <div class="icontent">
+              <h4>Delta radar otomatis</h4>
+              <p>Perubahan 5 pilar (CAD, Detail, Ruang, Disiplin, Waktu) dihitung tiap semester → visual naik/turun.</p>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ino">03</div>
+            <div class="icontent">
+              <h4>Karier matrix evolusi</h4>
+              <p>10 profesi tidak statis. Persentase bergeser mengikuti bukti kompetensi terbaru, bukan kesan awal.</p>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ino">04</div>
+            <div class="icontent">
+              <h4>Early warning berkelanjutan</h4>
+              <p>At-Risk tidak hanya semester ini. Pola alpha berulang, kehadiran menurun 2 semester berturut → flag dini.</p>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ino">05</div>
+            <div class="icontent">
+              <h4>Narasi pertumbuhan untuk wali</h4>
+              <p>Rapor bukan "nilai semester ini" tapi "perjalanan 4 semester". Wali lihat anak tumbuh, bukan hanya angka.</p>
+            </div>
+          </div>
+          <div class="icard">
+            <div class="ino">06</div>
+            <div class="icontent">
+              <h4>Bahan akreditasi & tracer study</h4>
+              <p>Riwayat lengkap per mahasiswa = bukti capaian CPMK lintas semester. Siap audit BAN-PT / LAM Teknik.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Prodi Arsitektur · F. Teknik & Desain</span><span><b>05 / 06</b></span></div>
+</section>
+
+<!-- ================= SLIDE 6 (DULU SLIDE 5) ================= -->
+<section class="slide">
+  <div class="grid"></div><div class="vignette"></div>
+  <div class="edge top"></div>
+
+  <div class="run"><span>SIAK-KAPRODI</span><span class="dotline"></span><span>06 — Otomasi & Skala</span></div>ttom:16px;">
+      <div class="kicker">04 — Otomasi &amp; Skala</div>
+      <h2>Dari rekap manual ke <em>kabar yang datang sendiri.</em></h2>
+    </div>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="ph"><b>FASE 1</b><span>AKTIF</span></div>
+        <h3>Rekap &amp; dokumen</h3>
+        <p>Dashboard 7 tab, 11 PDF resmi, rapor wali, deck portofolio, dan video 9:16 — semua dari satu tree data.</p>
+        <div class="chips"><span>7 tab</span><span>11 pdf</span><span>deck 16:9</span><span>video 9:16</span></div>
+        <div class="ghost">01</div>
+      </div>
+      <div class="phase hot">
+        <div class="ph"><b>FASE 2</b><span>ROADMAP</span></div>
+        <h3>Telegram &amp; WhatsApp otomatis</h3>
+        <p>Gateway pesan terjadwal: rekap mingguan ke Kaprodi, kabar progres ke wali, pengingat At-Risk — tanpa salin-tempel.</p>
+        <div class="chips"><span>telegram</span><span>whatsapp</span><span>jadwal</span><span>template</span></div>
+      </div>
+      <div class="phase">
+        <div class="ph"><b>FASE 3</b><span>SKALA</span></div>
+        <h3>Replikasi lintas prodi</h3>
+        <p>Satu instance per prodi, template kurikulum sendiri, SSO kampus, dan arsip siap audit akreditasi.</p>
+        <div class="chips"><span>multi-prodi</span><span>sso</span><span>audit</span></div>
+      </div>
+    </div>
+
+    <div class="bottomrow">
+      <div class="ask">
+        <div class="l">Yang kami ajukan</div>
+        <p><b>Pilot satu semester, satu prodi, tiga mata kuliah.</b> Evaluasi pada empat indikator sebelum direplikasi ke prodi lain.</p>
+        <div class="metrics">
+          <div><b>01</b>Waktu rekap</div>
+          <div><b>02</b>Kelengkapan data</div>
+          <div><b>03</b>Respons wali</div>
+          <div><b>04</b>Keterlibatan mahasiswa</div>
+        </div>
+      </div>
+
+      <div class="fly">
+        <svg viewBox="0 0 300 200" role="img" aria-label="Siklus soft marketing">
+          <circle cx="150" cy="100" r="62" fill="none" stroke="#C9A25A" stroke-opacity=".25" stroke-dasharray="3 5"/>
+          <g stroke="#C9A25A" stroke-opacity=".55" fill="none">
+            <path d="M150 38 A62 62 0 0 1 203 131" marker-end="url(#ar)"/>
+          </g>
+          <defs>
+            <marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" fill="#C9A25A" fill-opacity=".7"/>
+            </marker>
+          </defs>
+          <g font-family="JetBrains Mono, monospace" font-size="7.4" fill="#C9D4E2" text-anchor="middle" letter-spacing=".8">
+            <text x="150" y="30">RAPOR &amp; PORTOFOLIO</text>
+            <text x="232" y="92">WALI MEMBAGIKAN</text>
+            <text x="150" y="182">PRODI TERLIHAT</text>
+            <text x="66" y="92">CALON MAHASISWA</text>
+          </g>
+          <g fill="#F1DBA9">
+            <circle cx="150" cy="38" r="3"/><circle cx="203" cy="131" r="3"/>
+            <circle cx="150" cy="162" r="3"/><circle cx="97" cy="131" r="3"/>
+          </g>
+          <text x="150" y="98" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="12" font-weight="800" fill="#EEF3FA">SOFT</text>
+          <text x="150" y="113" text-anchor="middle" font-family="Plus Jakarta Sans, sans-serif" font-size="12" font-weight="800" fill="#C9A25A">MARKETING</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot"><span>Prodi Arsitektur · F. Teknik &amp; Desain</span><span><b>05 / 05</b></span></div>
+</section>
+
+</body>
+</html>

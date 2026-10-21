@@ -1,0 +1,16 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS107",
+  "nama_mk": "Studio Perancangan Arsitektur 1",
+  "sks": 4,
+  "kelas": "ARS107 A (Lab LIKDA)",
+  "semester": "Genap 2024/2025",
+  "jadwal": "Rabu, 10:10 - 15:50 WIB",
+  "dosen_pengasuh": [
+    "Ir. Nasril Sikumbang, M.T.",
+    "Fielda Roza, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "studio"
+}

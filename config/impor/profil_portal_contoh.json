@@ -1,0 +1,30 @@
+{
+  "nama": "portal_v1",
+  "keterangan": "CONTOH. Ubah bagian 'kolom' dan 'status' saja saat format portal asli diketahui. Tidak perlu menyentuh kode.",
+  "deteksi": {
+    "kolom_wajib": ["npm", "pertemuan", "status"],
+    "kunci_sumber": ["nilai", "presensi", "kehadiran"]
+  },
+  "kolom": {
+    "NPM": "npm",
+    "Nama Mahasiswa": "nama",
+    "Pertemuan Ke": "pertemuan",
+    "Slot": "slot",
+    "Status Kehadiran": "status",
+    "Nilai": "skor",
+    "Alasan": "alasan"
+  },
+  "status": {
+    "H": "Hadir",
+    "HS": "Hadir Sebagian",
+    "S": "Sakit",
+    "I": "Izin",
+    "A": "Alpha",
+    "-": "Alpha"
+  },
+  "konteks": {
+    "prodi": "ARSITEKTUR",
+    "tahun_ajar": "2025/2026",
+    "semester": "GENAP"
+  }
+}

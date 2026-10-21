@@ -1,0 +1,15 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS304",
+  "nama_mk": "Arsitektur Digital & BIM",
+  "sks": 2,
+  "kelas": "ARS304 A (Lab LIKDA)",
+  "semester": "Ganjil 2026/2027",
+  "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+  "dosen_pengasuh": [
+    "Duddy Fajriansyah, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "studio"
+}

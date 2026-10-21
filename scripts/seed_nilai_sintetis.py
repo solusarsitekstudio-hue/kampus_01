@@ -124,6 +124,13 @@ def main(argv=None):
     parser.add_argument("--tahun-ajar", default="", help="Batasi ke satu tahun ajar (mis. 2025-2026).")
     parser.add_argument("--semester", default="", help="Batasi ke satu semester (GANJIL/GENAP).")
     parser.add_argument("--kunci", default="", help="Batasi ke satu kunci mata kuliah.")
+    parser.add_argument(
+        "--adopsi-sintetis", action="store_true",
+        help="(SEKALI PAKAI) Anggap nilai.json tanpa penanda sintetis:true sebagai "
+             "nilai sintetis lama dan timpa dengan hasil baru. Hanya untuk data demo "
+             "yang sudah diketahui sintetis; data portal asli JANGAN dipakai dengan "
+             "flag ini.",
+    )
     args = parser.parse_args(argv)
 
     target = _daftar_target(args.prodi, args.tahun_ajar, args.semester, args.kunci)
@@ -154,7 +161,7 @@ def main(argv=None):
                 gagal.append((kunci, "nilai.json rusak: {0}".format(exc)))
                 print("{0:<40} {1:>6} {2:>13} {3:>13}  RUSAK".format(kunci[:40], "-", "-", "-"))
                 continue
-            if lama_mentah.get("sintetis") is not True:
+            if lama_mentah.get("sintetis") is not True and not args.adopsi_sintetis:
                 gagal.append((kunci, "TIDAK bertanda sintetis:true (mungkin data portal asli) - tidak disentuh"))
                 print("{0:<40} {1:>6} {2:>13} {3:>13}  DILEWATI".format(
                     kunci[:40], "-", _sha_berkas(path_nilai), "-"))

@@ -44,6 +44,8 @@ from kelas_rules import (  # noqa: E402
     persentase_kehadiran,
     pertemuan_belum_diinput,
     pertemuan_memenuhi_ambang,
+    slot_dianggap_hadir,
+    status_pertemuan_dari_status,
     validasi_bobot,
     teks_grade,
 )
@@ -56,6 +58,8 @@ import identitas as IDENT  # noqa: E402
 # Tree kurikulum bertingkat + persona/RNG per NPM.
 import kurikulum_tree as KT  # noqa: E402
 import persona as PS  # noqa: E402
+# Mesin diagnosis v3: sinyal nyata -> klasi radar/karier/narasi (tanpa RNG).
+import diagnosis as DIAG  # noqa: E402
 
 
 # =============================================================================
@@ -158,7 +162,8 @@ def ringkas_kehadiran(baris_slot, sessions):
         slot_total = len(s.get("slot_absen") or [])
         baris = per_pertemuan.get(p, [])
         slot_terisi = len(baris)
-        slot_hadir = sum(1 for b in baris if b.get("status") == "Hadir")
+        # "Hadir Sebagian" pada slot tetap dihitung hadir (lihat kelas_rules).
+        slot_hadir = sum(1 for b in baris if slot_dianggap_hadir(b.get("status")))
         belum = pakai_belum_diinput and pertemuan_belum_diinput(slot_terisi, slot_total)
 
         if belum:
@@ -167,27 +172,27 @@ def ringkas_kehadiran(baris_slot, sessions):
             skor = None
         else:
             skor = (
-                round(sum(b.get("skor", 0) for b in baris) / slot_total, 1)
+                round(sum((b.get("skor") if b.get("skor") is not None else 0) for b in baris) / slot_total, 1)
                 if slot_total else 0.0
             )
-            if slot_total and slot_hadir >= slot_total:
-                bucket = "Hadir"
-            elif slot_hadir <= 0:
-                status_isi = [b.get("status") for b in baris]
-                if "Sakit" in status_isi:
-                    bucket = "Sakit"
-                elif "Izin" in status_isi:
-                    bucket = "Izin"
-                else:
-                    bucket = "Alpha"
-            else:
-                bucket = "Hadir Sebagian"
+            bucket = status_pertemuan_dari_status(
+                [b.get("status") for b in baris], slot_total
+            )
 
         hitung[bucket] += 1
-        if pertemuan_memenuhi_ambang(slot_hadir, slot_total):
-            pertemuan_ambang += 1
-        slot_hadir_total += slot_hadir
-        slot_total_semua += slot_total
+        if belum:
+            # FIX BELUM-DIINPUT-KEHADIRAN (Batch B): pertemuan yang datanya
+            # belum masuk TIDAK boleh menekan persen kehadiran - dulu
+            # slot_totalnya tetap masuk penyebut, jadi mahasiswa bisa tercatat
+            # "Kehadiran < 75%" hanya karena dosen belum menginput presensi.
+            # Konsisten dengan nilai/grade yang ditahan: pertemuan ini netral
+            # (keluar dari penyebut, keluar dari hitungan pertemuan_ambang).
+            pass
+        else:
+            if pertemuan_memenuhi_ambang(slot_hadir, slot_total):
+                pertemuan_ambang += 1
+            slot_hadir_total += slot_hadir
+            slot_total_semua += slot_total
 
         alasan = "-"
         if bucket in ("Sakit", "Izin"):
@@ -220,130 +225,14 @@ def ringkas_kehadiran(baris_slot, sessions):
 # (FIX TAHAP C-4) supaya hanya ada satu definisi di seluruh sistem.
 
 
-def generate_10_career_matrix(nama, avg_score, competency, archetype, rng):
-    """10 matriks karier. `rng` WAJIB dari persona.rng_untuk(npm) supaya
-    angka seorang mahasiswa tidak bergeser karena mahasiswa lain berubah."""
-    base_score = avg_score
-    cad_val = competency["penguasaan_cad"]
-    det_val = competency["ketelitian_detail"]
-    str_val = competency["logika_ruang_struktur"]
-
-    careers = [
-        {
-            "id": 1,
-            "profesi": "Architectural Designer (Arsitek Perancang Pratama)",
-            "bidang_industri": "Biro Konsultan Perencana Arsitektur & Desain",
-            "kecocokan_persen": min(98, round(base_score * 0.98 + rng.uniform(0.5, 2.5), 1)),
-            "kategori_kecocokan": "Sangat Tinggi",
-            "analisis_potensi": f"Ananda {nama} memiliki kepekaan proporsi spasial dan kemampuan memadukan fungsi denah dengan estetika tampak yang sangat harmonis.",
-            "keterampilan_kunci": "Konsep Tata Ruang, Denah Fungsi, Sketsa Arsitektur, AutoCAD 2D",
-            "saran_pengembangan": "Aktif mengikuti sayembara arsitektur mahasiswa dan eksplorasi gubahan massa kontemporer."
-        },
-        {
-            "id": 2,
-            "profesi": "BIM Modeler & Coordinator (Building Information Modeling)",
-            "bidang_industri": "Kontraktor EPC Multinasional / Konsultan Rekayasa Digital",
-            "kecocokan_persen": min(99, round(cad_val * 0.99 + rng.uniform(0.5, 1.8), 1)),
-            "kategori_kecocokan": "Sangat Tinggi",
-            "analisis_potensi": "Kerapian manajemen layer dan kedisiplinan koordinasi gambar digital menjadi modal emas dalam adopsi teknologi BIM 3D/4D industri konstruksi modern.",
-            "keterampilan_kunci": "Manajemen Layer Standar IAI, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
-            "saran_pengembangan": "Mulai mempelajari dasar Revit Architecture dan integrasi clash detection antar disiplin struktur."
-        },
-        {
-            "id": 3,
-            "profesi": "Quantity Surveyor (QS) & Cost Estimator Bangunan",
-            "bidang_industri": "BUMN Karya / Developer Properti Skala Besar",
-            "kecocokan_persen": min(96, round(det_val * 0.96 + rng.uniform(0.5, 2.5), 1)),
-            "kategori_kecocokan": "Tinggi",
-            "analisis_potensi": "Kemampuan membaca dimensi gambar dan mengekstraksi volume pekerjaan galian serta beton secara teliti sangat dicari di bidang estimasi anggaran proyek.",
-            "keterampilan_kunci": "Kalkulasi Volume Galian/Pondasi, Penyusunan BQ, Analisis Satuan Harga (AHSP)",
-            "saran_pengembangan": "Perdalam rumus rekapitulasi volume otomatis menggunakan spreadsheet dan integrasi data CAD."
-        },
-        {
-            "id": 4,
-            "profesi": "Detail Engineering Drawing (DED) Specialist",
-            "bidang_industri": "Konsultan Perancangan Teknis & Rekayasa Gambar Kerja",
-            "kecocokan_persen": min(97, round(det_val * 0.97 + rng.uniform(0.5, 2.5), 1)),
-            "kategori_kecocokan": "Sangat Tinggi",
-            "analisis_potensi": "Karakter gambar yang teliti dalam menampilkan garis potongan dan detail pondasi batu kali membuktikan ananda siap memproduksi dokumen tender konstruksi resmi.",
-            "keterampilan_kunci": "Potongan Vertikal Bangunan, Detail Sambungan Pondasi, Standar Notasi PUPR",
-            "saran_pengembangan": "Pelajari standar etiket lembar kerja konsultan dan variasi detail sambungan struktur baja/kayu."
-        },
-        {
-            "id": 5,
-            "profesi": "Interior Architect & Space Planner",
-            "bidang_industri": "Studio Interior Arsitektur & Desain Hunian Komersial",
-            "kecocokan_persen": min(95, round(base_score * 0.94 + rng.uniform(1.0, 3.5), 1)),
-            "kategori_kecocokan": "Tinggi",
-            "analisis_potensi": "Sentuhan detail pada denah hunian dan pemahaman ergonomi sirkulasi manusia menjadikan ananda berpeluang besar unggul di sektor desain interior.",
-            "keterampilan_kunci": "Sirkulasi Mikro, Ergonomi Ruang Tamu/Kamar, Detail Kusen & Pintu, Material Finishing",
-            "saran_pengembangan": "Eksplorasi katalog material lokal, tekstur finishing dinding, dan pencahayaan aksen ruang dalam."
-        },
-        {
-            "id": 6,
-            "profesi": "3D Architectural Visualizer & CG Artist",
-            "bidang_industri": "Creative Architectural Media & Studio Rendering Internasional",
-            "kecocokan_persen": min(95, round(cad_val * 0.93 + rng.uniform(1.0, 3.5), 1)),
-            "kategori_kecocokan": "Tinggi",
-            "analisis_potensi": "Daya bayang visual bentuk bangunan ananda sangat kuat, memungkinkan transformasi gambar kerja 2D menjadi visualisasi 3D fotorealistik yang memukau klien.",
-            "keterampilan_kunci": "Pemodelan 3D Isometrik/Aksonometrik, Komposisi Kamera, Pencahayaan Alami, Visual Storytelling",
-            "saran_pengembangan": "Tingkatkan portofolio visual dengan software render real-time (Enscape/Twinmotion/Lumion)."
-        },
-        {
-            "id": 7,
-            "profesi": "Site Architect & Pengawas Lapangan Konstruksi",
-            "bidang_industri": "Kontraktor Pelaksana Bangunan / Manajemen Konstruksi (MK)",
-            "kecocokan_persen": min(94, round(str_val * 0.94 + rng.uniform(0.5, 2.5), 1)),
-            "kategori_kecocokan": "Tinggi",
-            "analisis_potensi": "Pemahaman yang solid mengenai sistem kolom praktis dan elevasi muka tanah memudahkan ananda mengawasi kesesuaian fisik lapangan dengan dokumen gambar kerja.",
-            "keterampilan_kunci": "Verifikasi Gambar As-Built, Pengawasan Mutu Beton, Deteksi Kesalahan Elevasi Lapangan",
-            "saran_pengembangan": "Ikuti magang lapangan di proyek konstruksi bertingkat untuk mengasah ketegasan supervisi."
-        },
-        {
-            "id": 8,
-            "profesi": "Landscape Architect Assistant",
-            "bidang_industri": "Studio Arsitektur Lansekap & Perencanaan Wilayah",
-            "kecocokan_persen": min(92, round(base_score * 0.90 + rng.uniform(0.5, 3.0), 1)),
-            "kategori_kecocokan": "Sesuai",
-            "analisis_potensi": "Kepekaan terhadap kontur tapak dan transisi ruang luar (teras) ke ruang dalam mendukung perancangan lansekap tapak berkelanjutan.",
-            "keterampilan_kunci": "Tata Hijau, Analisis Orientasi Matahari & Angin, Drainase Tapak, Desain Hardscape",
-            "saran_pengembangan": "Pelajari jenis tanaman tropis arsitektural dan sistem perkerasan ramah serapan air tanah."
-        },
-        {
-            "id": 9,
-            "profesi": "Green Building & Sustainable Design Specialist",
-            "bidang_industri": "Konsultan Bangunan Hijau & Sertifikasi Efisiensi Energi",
-            "kecocokan_persen": min(93, round(str_val * 0.92 + rng.uniform(0.5, 2.8), 1)),
-            "kategori_kecocokan": "Sesuai",
-            "analisis_potensi": "Penerapan ventilasi silang pada denah dan perlindungan bukaan dinding menunjukkan intuisi desain pasif hemat energi yang sangat dibutuhkan industri saat ini.",
-            "keterampilan_kunci": "Desain Pasif Tropis, Pencahayaan Alami Optimal, Shading Fasad, Efisiensi Energi",
-            "saran_pengembangan": "Pahami pedoman Greenship GBCI dan simulasi komputasi aliran udara dalam bangunan."
-        },
-        {
-            "id": 10,
-            "profesi": "Project Planner & Kontraktor Mandiri (Design & Build)",
-            "bidang_industri": "Wirausaha Kreatif Sektor Jasa Rancang Bangun",
-            "kecocokan_persen": min(95, round(base_score * 0.92 + rng.uniform(1.0, 3.5), 1)),
-            "kategori_kecocokan": "Tinggi",
-            "analisis_potensi": "Penguasaan paket lengkap dari gambar arsitektur, potongan struktur, hingga perhitungan volume biaya memberikan modal independen untuk mendirikan biro sendiri.",
-            "keterampilan_kunci": "Penguasaan End-to-End Desain ke Konstruksi, Komunikasi Klien, Negosiasi Anggaran, Manajemen Tim",
-            "saran_pengembangan": "Bangun jejaring dengan rekan sipil/mekanikal dan kumpulkan portofolio proyek riil sejak masa kuliah."
-        }
-    ]
-
-    # FIX TAHAP B: kategori dihitung dari skor, bukan diketik manual per baris.
-    for c in careers:
-        c["kategori_kecocokan"] = kategori_kecocokan_dari_skor(c["kecocokan_persen"])
-
-    return careers
-
 # =============================================================================
-# PERSONA / ARCHETYPE - dipindah ke scripts/persona.py (TAHAP E)
+# PERSONA / MATRIKS KARIER - DIPINDAH KE scripts/diagnosis.py (MESIN V3)
 # =============================================================================
-# Dulu blok ini ada DI SINI dan memakai `idx % 7` sebagai cadangan, sehingga
-# menambah satu baris membuat mahasiswa lain berubah persona. Sekarang persona
-# MURNI dari NPM, dan RNG-nya juga per NPM. Satu sumber: scripts/persona.py.
-tentukan_archetype = PS.tentukan_archetype
+# Dulu di sini ada generate_10_career_matrix() berbasis RNG per NPM dan alias
+# persona NPM (PS.tentukan_archetype). Keputusan user 2026-10-21: diagnosis
+# 100% dari SINYAL NYATA, jadi mesin klasi/radar/matriks/narasi tinggal SATU:
+# scripts/diagnosis.py - dipanggil di generate_student_profiles. persona.py
+# tetap ada khusus untuk generator nilai sintetis + tests/test_seed_per_mk.py.
 
 
 # =============================================================================
@@ -396,16 +285,11 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         npm = str(s["npm"])
         nama = s["nama"]
 
-        # Persona MURNI dari NPM (persona.py) + RNG per NPM PER MATA KULIAH.
-        # `konteks` = kunci MK: matriks karier & diagnosis ikut berpindah saat
-        # dashboard pindah MK, tapi tetap deterministic (tidak bergantung urutan
-        # baris mahasiswa).
-        konteks = str(ctx.get("kunci_mk") or "")
-        archetype = PS.tentukan_archetype(idx, npm, konteks)
-        rng = PS.rng_untuk(npm, konteks)
-
-        # Kehadiran + nilai dibaca dari catatan per SLOT di tree kurikulum,
-        # bukan dikarang di sini. Rincian per pertemuan tetap yang ditampilkan.
+        # MESIN DIAGNOSIS V3 (keputusan user 2026-10-21): klasifikasi, radar,
+        # matriks karier, dan narasi 100% dari SINYAL NYATA mahasiswa ini
+        # (nilai terbobot, kehadiran slot, alpha, konsistensi skor). Persona
+        # NPM (persona.py) SENGGAJA TIDAK dipakai di jalur diagnosis - dia
+        # tetap dipakai generator nilai sintetis saja. Deterministik & tanpa RNG.
         baris_slot = nilai_per_npm.get(npm, [])
         (attendance_list, hitung_status, pertemuan_ambang,
          slot_hadir_total, slot_total_semua) = ringkas_kehadiran(baris_slot, sessions)
@@ -431,8 +315,6 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         avg_score = hitung_nilai_terbobot(session_scores, bobot_sesi)
         cakupan = cakupan_bobot(session_scores, bobot_sesi)
         data_lengkap = total_belum_diinput == 0
-        at_risk_reasons_list = at_risk_reasons(total_alpha, attendance_pct)
-        student_is_at_risk = bool(at_risk_reasons_list)
 
         # Grade Assignment & Competency Status (No Ranking, focusing on growth)
         # FIX TAHAP C-4: ambang batas grade diambil dari kelas_rules.py, bukan
@@ -442,143 +324,33 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             grade, pengali_kesiapan = grade_dari_skor(avg_score, attendance_pct)
         else:
             grade, pengali_kesiapan = GRADE_BELUM_LENGKAP, 1.0
+        # FIX BELUM-DIINPUT-KEHADIRAN: kehadiran yang belum ada datanya sama
+        # sekali (slot_total_semua == 0) -> kirim None ke at-risk supaya tidak
+        # tercatat "Kehadiran 0%" (menuduh) padahal datanya memang belum masuk.
+        pct_untuk_at_risk = attendance_pct if slot_total_semua else None
+        at_risk_reasons_list = at_risk_reasons(total_alpha, pct_untuk_at_risk)
+        student_is_at_risk = bool(at_risk_reasons_list)
         predikat, status_kompetensi, kesiapan_profesi = teks_grade(grade)
         indeks_kesiapan = round(avg_score * pengali_kesiapan, 1)
 
-        # Competency Radar Scores (Scale 1-100)
-        if archetype == "star":
-            competency = {
-                "penguasaan_cad": 96,
-                "ketelitian_detail": 94,
-                "kedisiplinan_asistensi": 98,
-                "logika_ruang_struktur": 92,
-                "manajemen_waktu": 95
-            }
-            karakter_spasial = (
-                f"Ananda {nama} memperlihatkan bakat arsitektur yang sangat cemerlang dengan kepekaan rasa ruang "
-                f"(spatial sensibility) yang luar biasa tajam. Penarikan garis-garis dinding, penataan kolom struktural, "
-                f"hingga pembagian hierarki ruang privat dan publik dikerjakan dengan presisi tinggi dan pemahaman fungsi yang matang. "
-                f"Di laboratorium LIKDA, ananda tidak sekadar menyelesaikan tugas instruksional dosen, melainkan aktif mengeksplorasi "
-                f"gubahan denah yang estetis dan memiliki nilai keterbangunan nyata (constructibility). Etos kerja mandirinya di depan workstation "
-                f"sangat tekun, rapi dalam penamaan layer CAD, dan selalu menjadi rujukan positif bagi rekan-rekan sekelasnya."
-            )
-            potensi_kedepan = (
-                f"Dengan fondasi gambar kerja digital yang sudah sedemikian matang di semester ini, ananda memiliki peluang besar untuk "
-                f"menjadi asisten studio perancangan, delegasi sayembara desain arsitektur tingkat nasional, serta sangat siap melompat "
-                f"ke teknologi permodelan Building Information Modeling (BIM/Revit). Ke depan, ananda diproyeksikan mampu memimpin tim "
-                f"studio perancangan dan menghasilkan karya tugas akhir bertaraf sayembara internasional."
-            )
-            catatan_mahasiswa = (
-                f"Pertahankan konsistensi kualitas penarikan garis yang sudah sangat baik ini. Tantangan selanjutnya bagi ananda adalah "
-                f"melatih kecepatan plotting sheet dan berani bereksperimen dengan material-material struktur ramah lingkungan (green building). "
-                f"Jangan ragu untuk mulai mendokumentasikan setiap karya gambar kerja ke dalam platform portofolio digital profesional sejak dini."
-            )
-            panduan_wali = (
-                f"Bapak/Ibu wali murid patut sangat bangga dan bersyukur atas dedikasi serta bakat alami yang dimiliki ananda. "
-                f"Di rumah, mohon senantiasa didukung suasana belajar yang kondusif, penyediaan perangkat laptop dengan kartu grafis (GPU) "
-                f"yang memadai untuk rendering, serta mengingatkan ananda untuk menjaga keseimbangan antara jam asistensi studio dan istirahat fisik. "
-                f"Dukungan doa dan kehangatan keluarga adalah energi terbesar bagi ananda untuk terus berprestasi gemilang."
-            )
-            status_alert = "PRESTASI OPTIMAL"
-            alert_color = "emerald"
-
-        elif archetype == "at_risk":
-            competency = {
-                "penguasaan_cad": 72,
-                "ketelitian_detail": 70,
-                "kedisiplinan_asistensi": 58,
-                "logika_ruang_struktur": 76,
-                "manajemen_waktu": 60
-            }
-            karakter_spasial = (
-                f"Ananda {nama} sesungguhnya memiliki daya imajinasi spasial yang sangat kaya dan orisinalitas ide konsep bentuk yang berani "
-                f"di atas rata-rata. Ketika duduk di studio dan fokus menggambar, ananda mampu melahirkan denah dengan alur sirkulasi yang unik "
-                f"dan pemahaman logika ruang yang intuitif. Hal ini menandakan bahwa ananda memiliki potensi bakat arsitek perancang yang sesungguhnya. "
-                f"Tantangan yang dihadapi ananda bukan pada keterbatasan kecerdasan rancang bangun, melainkan pada stabilitas ritme kehadiran "
-                f"dan kontinuitas jam asistensi meja mingguan di Lab LIKDA."
-            )
-            potensi_kedepan = (
-                f"Potensi ananda diproyeksikan akan melonjak drastis jika ritme kehadiran dan disiplin waktu studio berhasil distabilkan. "
-                f"Daya rancang bentuknya yang berani merupakan modal berharga untuk mata kuliah Studio Perancangan Arsitektur tematik, "
-                f"perancangan interior ruang publik, serta konsep lansekap. Ananda memiliki peluang menjadi arsitek konseptor yang visioner "
-                f"apabila dibarengi dengan kebiasaan asistensi terjadwal."
-            )
-            catatan_mahasiswa = (
-                f"Bakat kreatif dan imajinasi ruang ananda sudah sangat kuat, namun karya arsitektur membutuhkan ketekunan untuk diselesaikan tuntas. "
-                f"Fokus utama yang harus diperbaiki adalah disiplin kehadiran kuliah dan keberanian untuk segera menanyakan kendala teknis gambar "
-                f"kepada dosen atau asisten. Jangan menunda perbaikan asistensi meja, karena keteraturan adalah kunci utama kelulusan sarjana arsitektur."
-            )
-            panduan_wali = (
-                f"Bapak/Ibu wali murid terkasih, ananda memiliki bakat dan jiwa seni arsitektur yang sangat luar biasa, dan kami di kampus sangat "
-                f"menghargai potensi tersebut. Yang ananda butuhkan saat ini adalah pendampingan lembut dari rumah mengenai rutinitas waktu bangun pagi, "
-                f"keberangkatan kuliah, dan manajemen istirahat malam agar kondisi fisik tetap prima saat jam praktikum. Kami mengajak Bapak/Ibu berkolaborasi "
-                f"erat bersama tim prodi mendampingi ananda agar bakat cemerlangnya mekar maksimal dan lulus tepat waktu dengan predikat membanggakan."
-            )
-            status_alert = "POTENSI BESAR BUTUH PENDAMPINGAN"
-            alert_color = "amber"
-
-        elif archetype == "high":
-            competency = {
-                "penguasaan_cad": 90,
-                "ketelitian_detail": 92,
-                "kedisiplinan_asistensi": 88,
-                "logika_ruang_struktur": 89,
-                "manajemen_waktu": 87
-            }
-            karakter_spasial = (
-                f"Ananda {nama} menunjukkan karakter pembelajaran arsitektur yang sangat matang, konsisten, dan penuh rasa tanggung jawab. "
-                f"Kemampuannya dalam mengolah denah presisi dan menyinkronkannya dengan detail potongan pondasi batu kali memperlihatkan "
-                f"ketelitian teknis yang patut diacungi jempol. Ananda juga sangat aktif dalam sesi asistensi meja, cepat menangkap masukan koreksi dosen, "
-                f"dan mampu mengaplikasikannya ke dalam gambar CAD dengan standar notasi Ikatan Arsitek Indonesia (IAI) yang rapi dan mudah dibaca."
-            )
-            potensi_kedepan = (
-                f"Konsistensi etos kerja yang dimiliki ananda merupakan modal emas untuk berkembang menjadi koordinator teknis proyek (DED Specialist) "
-                f"atau perancang arsitektur madya. Ke depan, ananda siap diterjunkan ke dalam proyek-proyek perancangan bangunan publik multi-lantai "
-                f"dan sangat potensial meraih nilai cumlaude di bidang keahlian rekayasa teknologi bangunan."
-            )
-            catatan_mahasiswa = (
-                f"Pertahankan kedisiplinan dan kerapian asistensi yang sudah menjadi ciri khas ananda. Untuk tahap berikutnya, ananda dapat "
-                f"meningkatkan kecepatan estimasi volume pekerjaan (Quantity Surveying) dan mulai mempelajari integrasi detail arsitektur ke software 3D visualisasi."
-            )
-            panduan_wali = (
-                f"Kami mengucapkan terima kasih yang mendalam kepada Bapak/Ibu wali murid atas bimbingan dan doa yang senantiasa tercurah. "
-                f"Kestabilan dan ketekunan ananda di kampus mencerminkan pola asuh rumah yang sangat suportif. Mohon terus dampingi ananda dengan "
-                f"apresiasi moral, dan dukung ananda untuk mulai merintis jejaring profesional arsitektur."
-            )
-            status_alert = "PRESTASI SANGAT BAIK"
-            alert_color = "sky"
-
-        else:
-            base_cad = rng.randint(76, 88)
-            competency = {
-                "penguasaan_cad": base_cad,
-                "ketelitian_detail": rng.randint(75, 87),
-                "kedisiplinan_asistensi": rng.randint(76, 90),
-                "logika_ruang_struktur": rng.randint(74, 88),
-                "manajemen_waktu": rng.randint(72, 86)
-            }
-            karakter_spasial = (
-                f"Ananda {nama} memperlihatkan etos kerja studio yang positif, aktif berdiskusi di laboratorium LIKDA, dan menunjukkan "
-                f"ketertarikan yang nyata dalam mendalami software gambar kerja arsitektur. Penguasaan perintah-perintah dasar CAD dan pembuatan "
-                f"garis dinding serta notasi kolom telah diselesaikan dengan capaian yang memenuhi standar mutu kurikulum sarjana arsitektur."
-            )
-            potensi_kedepan = (
-                f"Ananda berada pada lintasan pertumbuhan kompetensi yang sehat dan stabil. Apabila dilanjutkan dengan latihan pemodelan 3D mandiri "
-                f"dan pemahaman konstruksi yang lebih dalam, ananda siap menghadapi studio perancangan arsitektur tingkat lanjut dengan rasa percaya diri tinggi."
-            )
-            catatan_mahasiswa = (
-                f"Tingkatkan ketelitian pada kalibrasi ketebalan garis (lineweights) dan standarisasi arsiran material (hatching). Biasakan diri "
-                f"menyelesaikan revisi gambar sebelum batas akhir asistensi agar proses belajar lebih santai dan tidak menumpuk di akhir semester."
-            )
-            panduan_wali = (
-                f"Dukungan dan apresiasi dari orang tua di rumah sangat berperan dalam menumbuhkan kepercayaan diri ananda. Mohon terus disemangati "
-                f"untuk meluangkan waktu latihan studio mandiri di rumah dan menjaga kesehatan jasmani selama menempuh semester perkuliahan arsitektur."
-            )
-            status_alert = "KOMPETENSI STABIL & BERKEMBANG"
-            alert_color = "blue"
-
-        # Generate Customized 10 Real Career Matrix
-        career_matrix = generate_10_career_matrix(nama, avg_score, competency, archetype, rng)
+        # MESIN DIAGNOSIS V3 (keputusan user 2026-10-21): klasi, radar, narasi,
+        # dan matriks karier 100% dari SINYAL NYATA - nilai terbobot, kehadiran
+        # slot, alpha, konsistensi skor sekian pertemuan. Persona NPM TIDAK
+        # dipakai lagi di jalur ini (tetap dipakai generator nilai sintetis di
+        # persona.py). At-risk TETAP satu aturan kelas_rules di atas -> tidak
+        # ada lagi label yang kontradiksi dengan badge AT-RISK. Deterministik:
+        # tanpa RNG; sinyal sama -> hasil sama (tanda_sinyal di meta).
+        (archetype, competency, ai_diagnosis, diag_meta) = DIAG.hasil(
+            nama=nama,
+            nilai=avg_score,
+            kehadiran=(attendance_pct if slot_total_semua else None),
+            alpha=total_alpha,
+            skor_sesi=session_scores,
+            data_lengkap=data_lengkap,
+            cakupan_bobot=cakupan,
+            nama_mk=_nama_mk,
+        )
+        career_matrix = ai_diagnosis["matriks_karier_10"]
 
         # Video Storyboard for Student Showcase (Focus on pride, progress, and motivating parents)
         video_storyboard = {
@@ -627,7 +399,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             f"â€¢ Status Kompetensi: *{status_kompetensi}*\n"
             f"â€¢ Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
             f"ðŸ’¡ *Catatan Dosen Pengasuh:*\n"
-            f"\"{karakter_spasial[:140]}...\"\n\n"
+            f"\"{ai_diagnosis['analisis_karakter_spasial'][:140]}...\"\n\n"
             f"ðŸ“ *Lampiran Berkas Resmi Terlampir:*\n"
             f"1. ðŸ“Ž Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n"
             f"2. ðŸ“Ž Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n"
@@ -684,16 +456,11 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
                 "kompetensi": competency,
                 "skor_sesi": session_scores
             },
-            "ai_diagnosis": {
-                "analisis_karakter_spasial": karakter_spasial,
-                "potensi_kedepan": potensi_kedepan,
-                "catatan_khusus_mahasiswa": catatan_mahasiswa,
-                "panduan_wali_murid": panduan_wali,
-                "kekuatan": karakter_spasial[:180] + "...",
-                "status_alert": status_alert,
-                "alert_color": alert_color,
-                "matriks_karier_10": career_matrix
-            },
+            # MESIN DIAGNOSIS V3: satu paket dari sinyal nyata (radar terukur
+            # + narasi dinamis + matriks karier deterministik). Skema kunci
+            # lama tetap utuh; tambahan (radar_sumber, mesin) tidak merusak
+            # konsumen lama karena konsumen hanya membaca kunci yang ia tahu.
+            "ai_diagnosis": ai_diagnosis,
             "marketing": {
                 "video": video_storyboard,
                 "wa_text": wa_message
@@ -710,11 +477,23 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
     # Dulu di sini pakai "alpha>=2 atau nilai<70" sehingga KPI menulis 1 orang
     # padahal 9 mahasiswa lain juga berisiko.
     at_risk_list = [s for s in student_records if s["at_risk"]]
-    at_risk_alpha = [s for s in student_records
-                     if s["kehadiran"]["alpha"] >= (at_risk_alpha_min() or 0)]
+    # FIX BUG KPI: dulu "(nilai() or 0)" membuat ambang yang TIDAK dipakai
+    # (nilai None) berubah jadi 0 -> kondisi "alpha >= 0" SELALU true; umpan
+    # baliknya asimetris: "persentase < 0" tidak pernah true. Dua KPI ini jadi
+    # salah arah begitu salah satu tipe aturan dihapus dari config/aturan.json.
+    # Sekarang: peraturan mati -> KPI-nya juga mati (sama dengan at_risk_reasons).
+    _aktif = ATURAN.at_risk_aktif()
+    _ambang_alpha = at_risk_alpha_min()
+    _ambang_hadir = at_risk_kehadiran_min()
+    at_risk_alpha = [
+        s for s in student_records
+        if _aktif and _ambang_alpha is not None
+        and s["kehadiran"]["alpha"] >= _ambang_alpha
+    ]
     at_risk_kehadiran = [
         s for s in student_records
-        if s["kehadiran"]["persentase"] < (at_risk_kehadiran_min() or 0)
+        if _aktif and _ambang_hadir is not None
+        and s["kehadiran"]["persentase"] < _ambang_hadir
     ]
     
     # Grade distribution
@@ -987,10 +766,23 @@ def main():
     print("Mengompilasi dataset akademik (10 matriks karier per mahasiswa)...")
     dataset = bangun_dataset()
 
+    # DEBUG: Check at_risk values before dump
+    students = dataset.get("students", [])
+    if students:
+        print(f"DEBUG: Before dump, first student at_risk = {repr(students[0].get('at_risk'))}")
+
     # newline="\n" WAJIB: json.dump di Windows default-nya menulis CRLF, sehingga
     # academic_data.json berubah byte-nya setiap regenerate walau isinya sama.
-    with open(OUTPUT_JSON, "w", encoding="utf-8", newline="\n") as f:
-        json.dump(dataset, f, indent=2, ensure_ascii=False)
+    # FIX BUG RACE: dulu open(path,"w") truncate dulu baru dump - endpoint baca
+    # bersamaan bisa menangkap file terpotong (JSONDecodeError -> 500 sesaat).
+    # Sekarang tulis .tmp lalu os.replace() atomik, pola sama dengan TAHAP A.
+    try:
+        from process_input import atomic_write_json
+        atomic_write_json(OUTPUT_JSON, dataset)
+    except ImportError:
+        # Fallback jarang dipakai: proses_input tidak ada di sys.path.
+        with open(OUTPUT_JSON, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(dataset, f, indent=2, ensure_ascii=False)
 
     print("Dataset berhasil disimpan ke: {0}".format(OUTPUT_JSON))
     print("Ringkasan Kelas:")

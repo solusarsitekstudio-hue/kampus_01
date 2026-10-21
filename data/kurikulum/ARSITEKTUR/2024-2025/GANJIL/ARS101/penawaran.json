@@ -1,0 +1,15 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS101",
+  "nama_mk": "Dasar-Dasar Desain Arsitektur",
+  "sks": 3,
+  "kelas": "ARS101 A (Lab LIKDA)",
+  "semester": "Ganjil 2024/2025",
+  "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+  "dosen_pengasuh": [
+    "Ir. Nasril Sikumbang, M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "studio"
+}

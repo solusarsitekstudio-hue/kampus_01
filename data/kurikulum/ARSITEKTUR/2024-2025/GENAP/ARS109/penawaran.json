@@ -1,0 +1,15 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS109",
+  "nama_mk": "Struktur & Konstruksi Bangunan 1",
+  "sks": 3,
+  "kelas": "ARS109 A (Ruang Kuliah)",
+  "semester": "Genap 2024/2025",
+  "jadwal": "Kamis, 08:00 - 10:30 WIB",
+  "dosen_pengasuh": [
+    "Duddy Fajriansyah, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "teori_studio"
+}

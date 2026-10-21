@@ -13,6 +13,13 @@
 # WAJIB - mencetak 11 PDF resmi lewat Chromium (scripts/generate_pdfs.py).
 playwright>=1.40.0
 
+# SUBSISTEM IMPOR (scripts/impor/) - membaca berkas mentah dari portal/kampus.
+# Ini BUKAN sumber kebenaran: hasilnya tetap harus masuk tree lewat staging +
+# persetujuan (lihat data/_staging/). Jangan menghapus selama fitur impor ada.
+openpyxl>=3.1.0
+pypdf>=4.0.0
+python-docx>=1.1.0
+
 # OPSIONAL - hanya untuk video 9:16 (numpy) dan narasi suara (edge-tts, butuh internet).
 numpy>=1.26.0
 edge-tts>=6.1.9

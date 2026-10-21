@@ -45,7 +45,7 @@ def atomic_write_json(path, payload):
     mati di tengah json.dump, academic_data.json jadi 0 byte dan SEMUA endpoint
     server mati total. Sekarang file lama utuh sampai file baru siap 100%.
 
-    newline="\\n" WAJIB: tanpa itu, json.dump di Windows menulis CRLF, sehingga
+    newline="\n" WAJIB: tanpa itu, json.dump di Windows menulis CRLF, sehingga
     academic_data.json berubah byte-nya (LF -> CRLF) setiap kali server menulis -
     walau isinya sama persis. Akibatnya "data tidak tersentuh" jadi sulit
     dibuktikan. Repo menetapkan LF untuk *.json di .gitattributes."""
@@ -94,41 +94,38 @@ from kurikulum_tree import (  # noqa: E402
 )
 import kurikulum_tree as KT  # noqa: E402
 
+
 # =============================================================================
 # KATALOG MATA KULIAH = HASIL KOMPILASI DARI TREE KURIKULUM
 # =============================================================================
 # TAHAP E: SESI_BAWAAN + template katalog + deepcopy master sudah DIBUANG.
-#
-# Dulu sesi (topik, tanggal, bobot) disimpan sebagai literal di file INI dan
-# juga di dalam template katalog, lalu master disalin-dalam untuk "membuat"
-# dataset mata kuliah lain. Akibatnya satu mata kuliah punya DUA kebenaran, dan
-# dashboard pernah menampilkan topik AutoCAD sambil mengaku sedang membuka
-# Struktur (bug Tahap B). Sekarang sumbernya satu: tree kurikulum, dan katalog
-# hanyalah HASIL KOMPILASI - dibangun oleh fungsi yang SAMA dengan yang
-# menulis master (parse_data.bangun_dataset).
+# Katalog sekarang HANYA hasil kompilasi tree kurikulum + identitas.json.
+# Tidak ada lagi file "sesi_bawaan.json" atau template JSON manual.
+# =============================================================================
+
 def daftar_kursus():
-    """Daftar mata kuliah yang benar-benar ada di tree kurikulum."""
-    hasil = []
-    for prodi in KT.daftar_prodi():
-        for ta in KT.daftar_tahun(prodi):
-            for sem in KT.daftar_semester(prodi, ta):
-                for kunci in KT.daftar_mk(prodi, ta, sem):
-                    try:
-                        penawaran = KT.baca_json(
-                            KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json"))
-                    except KT.KurikulumError:
-                        continue
-                    hasil.append({
-                        "kunci_mk": kunci,
-                        "nama_mk": penawaran.get("nama_mk", kunci),
-                        "kode_mk": penawaran.get("kode_mk", ""),
-                        "sks": penawaran.get("sks"),
-                        "jenis_mk": penawaran.get("jenis_mk", ""),
-                        "prodi": penawaran.get("prodi", prodi),
-                        "tahun_ajar": ta,
+    """Daftar semua MK dari tree kurikulum (bukan dari config/identitas.json)."""
+    daftar = []
+    prodi_dir = os.path.join(KT.KURIKULUM_DIR, "ARSITEKTUR")
+    if not os.path.isdir(prodi_dir):
+        return daftar
+    for ta in sorted(os.listdir(prodi_dir)):
+        ta_path = os.path.join(prodi_dir, ta)
+        if not os.path.isdir(ta_path):
+            continue
+        for sem in sorted(os.listdir(ta_path)):
+            sem_path = os.path.join(ta_path, sem)
+            if not os.path.isdir(sem_path):
+                continue
+            for mk in sorted(os.listdir(sem_path)):
+                mk_path = os.path.join(sem_path, mk)
+                if os.path.isdir(mk_path) and os.path.exists(os.path.join(mk_path, "penawaran.json")):
+                    daftar.append({
+                        "kunci_mk": mk,
+                        "tahun_ajar": ta.replace("-", "/"),
                         "semester": sem,
                     })
-    return hasil
+    return daftar
 
 
 def load_or_create_course_dataset(course_folder_name, force_reload=True):
@@ -144,7 +141,7 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
             "Pilihan yang tersedia:\n".format(course_folder_name)
             + "\n".join("  - {0}".format(k) for k in sorted(tersedia))
             + "\n\nLihat juga: config/kurikulum.json (bangun ulang dengan "
-              "python scripts\\index_kurikulum.py)"
+            "python scripts\\index_kurikulum.py)"
         )
 
     # Import di dalam fungsi: parse_data mengimpor process_input (untuk
@@ -166,6 +163,7 @@ def load_or_create_course_dataset(course_folder_name, force_reload=True):
     if lama != dataset:
         atomic_write_json(course_path, dataset)
     return dataset
+
 
 def process_raw_input(course_name, timestamp_str=None):
     course_folder = course_folder_key(course_name)
@@ -215,19 +213,16 @@ def process_raw_input(course_name, timestamp_str=None):
     atomic_write_json(os.path.join(PROCESSED_DIR, "latest_input.json"), latest_input_pointer)
     atomic_write_json(
         os.path.join(PROCESSED_DIR, course_folder, "latest_input.json"), latest_input_pointer)
-
-    # 5. Set as current active dataset in data/academic_data.json
-    # FIX TAHAP A: backup dulu + atomic write. Tidak ada lagi file 0-byte.
-    active_master_path = os.path.join(DATA_DIR, "academic_data.json")
-    bak = backup_file(active_master_path)
-    atomic_write_json(active_master_path, dataset)
-    if bak:
-        print(f"[BACKUP] Salinan aman dataset sebelumnya: {os.path.relpath(bak, BASE_DIR)}")
-
+    
+    # NOTE: JANGAN timpa data/academic_data.json di sini.
+    # Master academic_data.json hanya diperbarui saat user eksplisit ganti MK aktif via dashboard.
+    # Katalog sinkronisasi HANYA memperbarui data/courses/*.json
+    
     print(f"[OK] Data berhasil diproses dan disimpan di: {processed_target_dir}")
-    print(f"[OK] Master aktif diperbarui ke: {dataset['course']['nama_mk']}")
+    print(f"[OK] Katalog diperbarui untuk: {dataset['course']['nama_mk']}")
     print("=" * 65)
     return dataset, course_folder, timestamp_str
+
 
 # =============================================================================
 # FIX TAHAP C-5 - SINKRONISASI KATALOG MATA KULIAH
@@ -238,7 +233,7 @@ def sinkronkan_katalog(verbose=True):
     Katalog adalah artefak build. Kalau tertinggal satu versi, sekali "ganti
     mata kuliah" akan mengembalikan seluruh sistem ke aturan lama - ini BUKAN
     teori: katalog MK aktif pernah tertinggal di 2.0 sementara master 2.5, lalu
-    satu kali ganti MK membuat At-Risk melompat 10 -> 1 dan nilai 80.6 -> 82.5
+    sekali ganti MK membuat At-Risk melompat 10 -> 1 dan nilai 80.6 -> 82.5
     tanpa satu pun pesan error.
 
     TAHAP E: cara amannya membangun ULANG dari tree, bukan menyalin master -

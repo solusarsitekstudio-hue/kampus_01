@@ -30,7 +30,7 @@ if errorlevel 1 (
 )
 
 echo.
-echo [1/3] Menginstall dependensi Python (playwright + numpy + edge-tts)...
+echo [1/3] Menginstall dependensi Python (playwright + impor + video opsional)...
 %PY% -m pip install -r requirements.txt
 if errorlevel 1 (
     echo [ERROR] Gagal install dependensi Python.

@@ -1,0 +1,16 @@
+{
+  "versi": 1,
+  "kode_mk": "ARS201",
+  "nama_mk": "Studio Perancangan Arsitektur 2",
+  "sks": 4,
+  "kelas": "ARS201 A (Lab LIKDA)",
+  "semester": "Ganjil 2025/2026",
+  "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+  "dosen_pengasuh": [
+    "Ir. Nasril Sikumbang, M.T.",
+    "Fielda Roza, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "asisten_nip": "2026.0412.01",
+  "jenis_mk": "studio"
+}

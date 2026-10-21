@@ -1,0 +1,329 @@
+{
+  "versi": 1,
+  "kunci_mk": "ARS309",
+  "catatan": "16 pertemuan standar. UTS ke-8, UAS ke-16. Bobot total = 100.",
+  "topik_terisi": 6,
+  "topik_placeholder": 10,
+  "sesi": [
+    {
+      "pertemuan": 1,
+      "tipe": "teori",
+      "tanggal": "2027-01-15",
+      "tanggal_display": "15 January 2027",
+      "topik": "Pertemuan 1: Praktik Profesi / Magang - Materi Minggu 1",
+      "deskripsi": "Materi pembelajaran pertemuan ke-1 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 2,
+      "tipe": "studio",
+      "tanggal": "2027-01-22",
+      "tanggal_display": "22 January 2027",
+      "topik": "Pertemuan 2: Praktik Profesi / Magang - Materi Minggu 2",
+      "deskripsi": "Materi pembelajaran pertemuan ke-2 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 3,
+      "tipe": "teori",
+      "tanggal": "2027-01-29",
+      "tanggal_display": "29 January 2027",
+      "topik": "Pertemuan 3: Praktik Profesi / Magang - Materi Minggu 3",
+      "deskripsi": "Materi pembelajaran pertemuan ke-3 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 4,
+      "tipe": "studio",
+      "tanggal": "2027-02-05",
+      "tanggal_display": "05 February 2027",
+      "topik": "Pertemuan 4: Praktik Profesi / Magang - Materi Minggu 4",
+      "deskripsi": "Materi pembelajaran pertemuan ke-4 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 5,
+      "tipe": "teori",
+      "tanggal": "2027-02-12",
+      "tanggal_display": "12 February 2027",
+      "topik": "Pertemuan 5: Praktik Profesi / Magang - Materi Minggu 5",
+      "deskripsi": "Materi pembelajaran pertemuan ke-5 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 6,
+      "tipe": "studio",
+      "tanggal": "2027-02-19",
+      "tanggal_display": "19 February 2027",
+      "topik": "Pertemuan 6: Praktik Profesi / Magang - Materi Minggu 6",
+      "deskripsi": "Materi pembelajaran pertemuan ke-6 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": true,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 7,
+      "tipe": "teori",
+      "tanggal": "2027-02-26",
+      "tanggal_display": "26 February 2027",
+      "topik": "Pertemuan 7: Praktik Profesi / Magang - Materi Minggu 7",
+      "deskripsi": "Materi pembelajaran pertemuan ke-7 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 8,
+      "tipe": "uts",
+      "tanggal": "2027-03-05",
+      "tanggal_display": "05 March 2027",
+      "topik": "Ujian Tengah Semester",
+      "deskripsi": "Evaluasi tengah semester.",
+      "bobot": 19.6,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 9,
+      "tipe": "teori",
+      "tanggal": "2027-03-12",
+      "tanggal_display": "12 March 2027",
+      "topik": "Pertemuan 9: Praktik Profesi / Magang - Materi Minggu 9",
+      "deskripsi": "Materi pembelajaran pertemuan ke-9 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 10,
+      "tipe": "studio",
+      "tanggal": "2027-03-19",
+      "tanggal_display": "19 March 2027",
+      "topik": "Pertemuan 10: Praktik Profesi / Magang - Materi Minggu 10",
+      "deskripsi": "Materi pembelajaran pertemuan ke-10 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 11,
+      "tipe": "teori",
+      "tanggal": "2027-03-26",
+      "tanggal_display": "26 March 2027",
+      "topik": "Pertemuan 11: Praktik Profesi / Magang - Materi Minggu 11",
+      "deskripsi": "Materi pembelajaran pertemuan ke-11 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 12,
+      "tipe": "studio",
+      "tanggal": "2027-04-02",
+      "tanggal_display": "02 April 2027",
+      "topik": "Pertemuan 12: Praktik Profesi / Magang - Materi Minggu 12",
+      "deskripsi": "Materi pembelajaran pertemuan ke-12 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 13,
+      "tipe": "teori",
+      "tanggal": "2027-04-09",
+      "tanggal_display": "09 April 2027",
+      "topik": "Pertemuan 13: Praktik Profesi / Magang - Materi Minggu 13",
+      "deskripsi": "Materi pembelajaran pertemuan ke-13 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 14,
+      "tipe": "studio",
+      "tanggal": "2027-04-16",
+      "tanggal_display": "16 April 2027",
+      "topik": "Pertemuan 14: Praktik Profesi / Magang - Materi Minggu 14",
+      "deskripsi": "Materi pembelajaran pertemuan ke-14 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 15,
+      "tipe": "teori",
+      "tanggal": "2027-04-23",
+      "tanggal_display": "23 April 2027",
+      "topik": "Pertemuan 15: Praktik Profesi / Magang - Materi Minggu 15",
+      "deskripsi": "Materi pembelajaran pertemuan ke-15 untuk mata kuliah Praktik Profesi / Magang.",
+      "bobot": 3.9,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    },
+    {
+      "pertemuan": 16,
+      "tipe": "uas",
+      "tanggal": "2027-04-30",
+      "tanggal_display": "30 April 2027",
+      "topik": "Ujian Akhir Semester",
+      "deskripsi": "Evaluasi akhir semester.",
+      "bobot": 25.8,
+      "topik_terverifikasi": false,
+      "slot_absen": [
+        {
+          "slot": 1,
+          "label": "Absen 1"
+        },
+        {
+          "slot": 2,
+          "label": "Absen 2"
+        }
+      ]
+    }
+  ]
+}

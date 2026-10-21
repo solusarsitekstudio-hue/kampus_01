@@ -80,7 +80,7 @@ try:
 except Exception as exc:  # pragma: no cover
     check("config ada & parsable", False, f"{type(exc).__name__}: {exc}")
     masalah = ["config tidak terbaca"]
-check("jumlah mata kuliah = 3", len(ID.daftar_mk()) == 3, len(ID.daftar_mk()))
+check("jumlah mata kuliah = 30", len(ID.daftar_mk()) == 30, len(ID.daftar_mk()))
 check("mata kuliah aktif dikenal", ID.mk_aktif() in ID.daftar_mk(), ID.mk_aktif())
 
 # ---------------------------------------------------------------------------
@@ -101,13 +101,28 @@ import kurikulum_tree as KT  # noqa: E402
 import aturan as AT  # noqa: E402
 
 kursus = P.daftar_kursus()
-check("tree memuat 3 MK", len(kursus) == 3, len(kursus))
+check("tree memuat 30 MK", len(kursus) == 30, len(kursus))
+kode_tree = {}
+for prodi in KT.daftar_prodi():
+    for ta in KT.daftar_tahun(prodi):
+        for sem in KT.daftar_semester(prodi, ta):
+            for kunci in KT.daftar_mk(prodi, ta, sem):
+                pen = KT.baca_json(
+                    KT.path_berkas(prodi, ta, sem, kunci, "penawaran.json"))
+                kode_tree[kunci] = pen.get("kode_mk") or ""
 check("setiap MK punya kunci & kode MK",
-      all(k.get("kunci_mk") and k.get("kode_mk") for k in kursus), "")
-kode_kursus = sorted(k["kode_mk"] for k in kursus)
+      all(k.get("kunci_mk") for k in kursus) and all(kode_tree.values()), "")
+# kode numerik MK sumber kebenarannya data/courses (tree memakai kode kampus ARS*).
+kode_katalog = []
+for f in sorted(os.listdir(os.path.join(HERE, "data", "courses"))):
+    if f.endswith(".json"):
+        kat = json.load(open(os.path.join(HERE, "data", "courses", f),
+                             encoding="utf-8"))
+        kode_katalog.append((kat.get("course") or {}).get("kode_mk") or "")
 kode_config = sorted(v["kode_mk"] for v in ID.daftar_mk().values())
-check("kode MK di tree == kode di config", kode_kursus == kode_config,
-      f"{kode_kursus} vs {kode_config}")
+check("kode MK katalog == kode di config",
+      sorted(k for k in kode_katalog if k) == kode_config,
+      f"katalog {len([k for k in kode_katalog if k])} vs config {len(kode_config)}")
 
 # Setiap MK di tree harus punya {pertemuan_total} pertemuan (bukan 6 yang dulu).
 salah_sesi = []
@@ -123,8 +138,8 @@ for prodi in KT.daftar_prodi():
                     salah_sesi.append(f"{kunci}={n}")
 check("tiap MK punya {0} pertemuan".format(AT.pertemuan_total()),
       not salah_sesi, f"salah: {salah_sesi}")
-check("total pertemuan = 3 x {0}".format(AT.pertemuan_total()),
-      total_sesi == 3 * AT.pertemuan_total(), total_sesi)
+check("total pertemuan = 30 x {0}".format(AT.pertemuan_total()),
+      total_sesi == 30 * AT.pertemuan_total(), total_sesi)
 
 # ---------------------------------------------------------------------------
 print("\n[4] Tidak ada identitas yang masih di-hardcode di kode")
