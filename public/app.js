@@ -439,7 +439,7 @@ function _portoKpi(d) {
   return [
     kartu("Total MK Ditempuh", String(d.jumlah_mk)),
     kartu("MK At-Risk", `${d.jumlah_mk_at_risk}`),
-    kartu("Rata Nilai (30 MK)", d.rata_nilai != null ? String(d.rata_nilai) : "-"),
+    kartu(`Rata Nilai (${d.jumlah_mk} MK)`, d.rata_nilai != null ? String(d.rata_nilai) : "-"),
     kartu("Rata Kehadiran", d.rata_kehadiran != null ? `${d.rata_kehadiran}%` : "-"),
     kartu("Total Alpha", `${d.total_alpha} hari`),
     `<div class="bg-[#0f172a] rounded-xl p-3 border ${arah[1]} shadow">
@@ -1587,9 +1587,10 @@ function renderWhatsAppSimulation(student) {
   const openingText = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\nKepada Yth. Bapak/Ibu Wali Murid dari *${student.nama}*,\n\nSalam hangat dan salam sejahtera dari ${m.instansi}.\n\nBerikut kami sampaikan Surat Resmi Perkembangan Akademik, Portofolio Pembelajaran, dan Pemetaan 10 Karier Masa Depan ananda pada mata kuliah *${courseName}* untuk periode semester berjalan:`;
   setText("wa-opening-text", openingText);
 
-  setText("wa-card-file-1", `01_rekap_kehadiran_${student.npm}.pdf`);
-  setText("wa-card-file-2", `02_rapor_akhir_kompetensi_${student.npm}.pdf`);
-  setText("wa-card-file-3", `05_deckcraft_portofolio_${student.npm}.pdf`);
+  const namaMhs = String(student.nama || "").replace(/\s+/g, "_");
+  setText("wa-card-file-1", `01_rekap_kehadiran_bulanan_${student.npm}_${namaMhs}.pdf`);
+  setText("wa-card-file-2", `02_rapor_akhir_semester_${student.npm}_${namaMhs}.pdf`);
+  setText("wa-card-file-3", `05_deckcraft_portofolio_arsitektur_${student.npm}_${namaMhs}.pdf`);
 }
 
 function copyWhatsAppMessage() {
@@ -1645,10 +1646,20 @@ function legacyCopy(text, successMessage) {
 
 function openWhatsAppDirect() {
   if (!currentStudent) return;
+  // Satu sumber salam/instansi: _metaIdentitasSalam (config identitas), sama
+  // dengan pesan yang disalin di Tab 4 - bukan tanda tangan hardcode lama.
+  const m = _metaIdentitasSalam();
+  const courseName = (masterData && masterData.course && masterData.course.nama_mk)
+    ? masterData.course.nama_mk : "-";
   const fullMsg = `Assalamu’alaikum Warahmatullahi Wabarakatuh.\n` +
     `Kepada Yth. Bapak/Ibu Wali Murid dari *${currentStudent.nama}*,\n\n` +
-    `Berikut kami sampaikan berkas Laporan Hasil Belajar & Portofolio Arsitektur ananda dalam 3 lampiran dokumen PDF resmi terverifikasi. Terima kasih atas bimbingan dan dukungan Bapak/Ibu di rumah.\n\n` +
-    `Hormat kami,\nProgram Studi Arsitektur`;
+    `Salam hangat dari ${m.instansi}.\n` +
+    `Lampiran pengembangan akademik ananda pada mata kuliah *${courseName}* ` +
+    `kami sampaikan dalam 3 dokumen PDF resmi terverifikasi.\n\n` +
+    `Hormat kami,\n` +
+    `*Ketua Program Studi ${m.prodi}*\n` +
+    `*${m.kaprodi}*\n` +
+    `Asisten Dosen: *${m.asisten}*`;
   window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(fullMsg)}`, "_blank", "noopener");
 }
 
@@ -2005,7 +2016,11 @@ async function terapkanKeDokumen() {
   );
   if (!lanjut) return;
   const hasil = await kirimIdentitas("/api/identitas/terapkan", undefined, "Menerapkan ke dokumen…");
-  if (hasil) await loadAcademicData();
+  if (hasil) {
+    // Master + katalog diregenerasi -> cache perkembangan lintas-MK basi.
+    perkembanganPotensi = {};
+    await loadAcademicData();
+  }
 }
 
 async function regenerasiPaketPdf() {
@@ -2420,6 +2435,9 @@ async function simpanKurikulum() {
     toast(data.pesan || "Tersimpan.", "success", 6000);
     tampilkanPeringatanKurikulum(data.peringatan || []);
     detailOverrideKonteks = null;
+    // Katalog dibangun ulang -> cache perkembangan lintas-MK (chip "sepanjang
+    // kuliah" tab 8 & kartu tren tab wali) basi; jangan sampai data lama tampil.
+    perkembanganPotensi = {};
     await muatKurikulum();
     await muatDetailKurikulum();
     await loadAcademicData();
@@ -2904,7 +2922,10 @@ async function _muatRekapBulan() {
   const bulan = _ringkasBulan(k.detail);
   _kpiRekap({
     mk: 1,
-    mkDesc: (masterData && masterData.mk && (masterData.mk.nama_mk || masterData.mk.nama)) || "MK aktif",
+    // Sumber nama MK = course di master (masterData.mk tidak pernah ada di
+    // payload; dulu selalu jatuh ke fallback teks generik "MK aktif").
+    mkDesc: ((masterData && masterData.course &&
+      (masterData.course.nama_mk || masterData.course.nama)) || "MK aktif"),
     atRisk: mhs.at_risk ? 1 : 0,
     atRiskDesc: mhs.at_risk ? (mhs.alasan_at_risk || []).join(" • ") : "Tidak terdeteksi berisiko",
     kehadiran: k.persentase != null ? `${k.persentase}%` : "belum bisa dihitung",
