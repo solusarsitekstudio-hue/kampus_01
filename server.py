@@ -1119,16 +1119,22 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
 
         Sengaja proses terpisah, bukan import: server tidak boleh memegang state
         lama, dan log aslinya bisa dilaporkan apa adanya.
+
+        TANGGA A (keputusan user 2026-10-21): DATA_LOCK TIDAK lagi disekap
+        selama kompilasi berjalan - dulu 12 detik kompilasi membuat SEMUA
+        endpoint lain beku (pembaca master, kehadiran, grafik). Pembaca kini
+        terus menyajikan master lama yang konsisten sampai versi baru siap;
+        penulisan master & identitas KEDUANYA atomik (tmp + os.replace), jadi
+        tidak ada jalur yang bisa memotong pembaca di tengah berkas.
         """
         skrip = os.path.join(_SCRIPTS_DIR, "parse_data.py")
         if not os.path.exists(skrip):
             return False, "", "scripts/parse_data.py tidak ditemukan."
         try:
-            with DATA_LOCK:
-                hasil = subprocess.run(
-                    [sys.executable, skrip], cwd=BASE_DIR, capture_output=True,
-                    text=True, encoding="utf-8", errors="replace", timeout=timeout,
-                )
+            hasil = subprocess.run(
+                [sys.executable, skrip], cwd=BASE_DIR, capture_output=True,
+                text=True, encoding="utf-8", errors="replace", timeout=timeout,
+            )
         except subprocess.TimeoutExpired:
             return False, "", "Pembangunan ulang data melebihi {0} detik.".format(timeout)
         except OSError as e:

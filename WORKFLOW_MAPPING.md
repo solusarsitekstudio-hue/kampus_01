@@ -234,7 +234,7 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `scripts/bidang.py` | Peta 5 kanal bidang MK (keyword kunci/nama), dimensi khas per kanal + trafo estimasi (70% nilai kanal + 30% radar terukur, selalu label estimasi), konstanta bonus karier sebidang — satu sumber untuk tab 9 & PDF 06 |
 | `scripts/aturan.py` | Pembaca + validator `config/aturan.json` (fail-closed kalau rusak) |
 | `scripts/identitas.py` | Pembaca/penulis `config/identitas.json` (backup dulu, tulis atomik) |
-| `scripts/parse_data.py` | Kompilasi master + katalog; **tidak mengarang** nilai — membacanya dari tree |
+| `scripts/parse_data.py` | Kompilator master v2.6 dari tree; **stempel per-MK (Tangga B)**: `stempel_kompilasi()` = sha1 sumber yang menentukan isi master MK itu (tree MK + mahasiswa prodi + aturan + kurikulum + identitas minus penunjuk aktif); stempel sama + snapshot ada → master = **salinan bit-identik** `data/master_mk/<KUNCI>.json` tanpa kompilasi 12 s; `--compile-ulang` memaksa penuh |
 | `scripts/process_input.py` | Menyimpan snapshot olahan per MK ke `input/processed/` |
 | `scripts/generate_pdfs.py` | Merender 11 PDF resmi lewat Chromium (Playwright) |
 | `scripts/video_composer.py` | Merender video 9:16 (numpy + edge-tts) |
@@ -250,7 +250,7 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 
 ---
 
-### 🧪 Peta Pengujian (21 berkas, tanpa server kecuali yang disebut)
+### 🧪 Peta Pengujian (22 berkas, tanpa server kecuali yang disebut)
 
 | Berkas | Yang dijaga |
 | --- | --- |
@@ -258,6 +258,7 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `tests/test_diagnosis.py` | Mesin v3 deterministik: klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel, 35 narasi unik, matriks karier tanpa RNG, bonus sebidang +4 & clamp cap |
 | `tests/test_portofolio.py` | Portofolio 4 lapis: aturan bulanan netral, fail-closed, determinism + cache, label potensi = `AMBANG` diagnosis.py, cluster kanal bidang (dedup MK kembar), dimensi khas selalu `estimasi`, matriks karier sepanjang kuliah |
 | `tests/test_engine.py` | Engine input & output TERPISAH: duplikat via SHA-256 (isi sama nama beda), tandai-diproses fail-closed, siklus tulis guna_lama → overwrite_logika/integritas/tulis_ulang_pertama (catatan tanpa ukuran), stempel data (master berubah → tanda maju), `run_masih_sah` (sah / stempel maju / format maju / pdf korup), audit salinan_usang, regroup npm, rapikan (run terbaru selamat, brokat root disapu, lapis kirim + wali SEMUA mahasiswa tree |
+| `tests/test_parse_stempel.py` | Tangga A+B: stempel kompilasi deterministik & beda antar MK, registry fail-closed, jalur segar = salinan snapshot < 5 s (bukan 12 s), `--compile-ulang` penuh + stempel sinkron kembali |
 | `tests/test_rules_unchanged.py` | Membangun ulang dari data yang sama harus menghasilkan **angka identik** |
 | `tests/test_readme_accuracy.py` | Setiap angka di README harus ada di data (anti angka karangan) |
 | `tests/test_docs_dependensi.py` | Impor kode ↔ `requirements.txt` (tanpa paket mati), `openpyxl`/`pypdf`/`python-docx` hanya dari `scripts/impor/` + tesnya, `PyPDF2` dilarang, nomor port seragam, rute `/api` ↔ `REQUIREMENTS.md`, dokumen tidak lagi mengklaim alur v2.5 |
@@ -288,6 +289,7 @@ E:\WORKSPACE\KAMPUS_01\
 │   ├── courses/<MK>.json         # katalog hasil kompilasi (artefak, jangan disunting manual)
 │   ├── academic_data.json        # MASTER untuk MK aktif
 │   ├── courses/<MK>.json         # katalog build SEMUA MK (sumber tab 9/portofolio; artefak)
+│   ├── master_mk/<KUNCI>.json    # snapshot per-MK + master_stamps.json (cache runtime Tangga B; gitignored)
 │   ├── _backup/                  # cadangan otomatis (gitignored)
 │   └── _staging/                 # usulan impor/AI yang belum disetujui (gitignored)
 ├── input/                        # snapshot mentah/olahan per MK
@@ -300,7 +302,7 @@ E:\WORKSPACE\KAMPUS_01\
 ├── generated_pdfs/               # salinan PDF untuk pratinjau web
 ├── public/                       # index.html, app.js, style.css, info.md, vendor/ (aset offline), videos/
 ├── scripts/                      # mesin: tree, persona, rules, migrasi, seed, parse, pdf, video, diagnosis, portofolio, bidang, engine_input, engine_output, impor/
-├── tests/                        # 21 berkas regresi (lihat peta di atas)
+├── tests/                        # 22 berkas regresi (lihat peta di atas)
 ├── server.py                     # server stdlib, port 40404
 ├── README.md                     # acuan utama
 ├── REQUIREMENTS.md               # kebutuhan teknis & prasyarat

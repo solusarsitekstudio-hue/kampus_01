@@ -13,6 +13,10 @@ data/_backup/
 data/engine/
 data/engine_test_*/
 
+# Snapshot & stempel kompilasi per-MK (cache runtime Tangga B)
+data/master_mk/
+data/master_stamps.json
+
 # Cache tool eksternal & artefak debug lepas
 .freebuff/
 debug_*.json

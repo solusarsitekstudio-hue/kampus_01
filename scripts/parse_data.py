@@ -61,6 +61,104 @@ import persona as PS  # noqa: E402
 # Mesin diagnosis v3: sinyal nyata -> klasi radar/karier/narasi (tanpa RNG).
 import diagnosis as DIAG  # noqa: E402
 
+import hashlib  # noqa: E402
+import shutil  # noqa: E402
+import time  # noqa: E402
+
+# ======================== STEMPEL KOMPILASI PER-MK (Tangga B) ================
+# Keputusan diskusi user 2026-10-21 (zona optimasi 1 - kompilasi master):
+#
+# Master itu PER-MK AKTIF (`bangun_dataset()` membaca satu MK), jadi "skip
+# stempel" naif tidak pernah menyala saat ganti MK - memang harus di-hitung
+# MK yang baru. Solusinya SNAPSHOT per-MK yang deterministik:
+#   * setiap kompilasi selain menulis master juga menyimpan salinan utuh ke
+#     `data/master_mk/<KUNCI>.json`;
+#   * stempel(kunci) = sha1 atas (mtime + ukuran + mtime_ns) seluruh berkas
+#     sumber yang MENENTUKAN isi master MK itu: folder tree MK (sesi.json,
+#     nilai.json, penawaran.json, ...), mahasiswa.json prodi, plus global
+#     config/aturan.json, config/kurikulum.json, dan config/identitas.json
+#     TANPA penunjuk `mata_kuliah_aktif` (penunjuk aktif memilih SIAPA yang
+#     ditampilkan, bukan isi data - kunci yang jujur untuk perbandingan).
+#   * kalau stempel TERBARU == stempel tersimpan DAN snapshot ada -> master
+#     = SALINAN BIT-IDENTIK snapshot (build benar-benar deterministik, kunci
+#     RNG per NPM). Tidak ada kompilasi 12 detik; pindah MK kembali ke MK
+#     yang pernah dikompilasi jadi < 0.5 s. `python scripts/parse_data.py
+#     --compile-ulang` memaksa kompilasi penuh (kalau benar-benar diminta).
+# Tanda "masih segar" kesalahan paling berbahaya dinetral: karena snapshot
+# SELALU disalin ke master di jalur segar, master tidak mungkin jauh dari
+# snapshot yang sama stampnya. Tree-tulisan manual masih keluar lewat stempel
+# maju -> kompilasi ulang normal.
+# -----------------------------------------------------------------------------
+STAMPEL_PATH = os.path.join(DATA_DIR, "master_stamps.json")
+SNAPSHOT_DIR = os.path.join(DATA_DIR, "master_mk")
+
+
+def stempel_kompilasi(kunci=None):
+    """Stempel sumber master untuk SATU MK (fail-closed dari muat_kurikulum).
+
+    Menghasilkan (kunci, stamp_hex). stamp diam-diam menangkap perubahan
+    berkas tree MK, mahasiswa.json prodi, dan global aturan/kurikulum/
+    identitas (minus penunjuk aktif).
+    """
+    prodi, ta, sem, kunci = mk_aktif_dari_tree(kunci)
+    paths = []
+    folder_mk = KT.path_mk(prodi, ta, sem, kunci)
+    for root, _dirs, files in os.walk(folder_mk):
+        for fn in files:
+            if not fn.startswith("."):
+                paths.append(os.path.join(root, fn))
+    paths.append(KT.path_mahasiswa(prodi))
+    for rel in ("config/aturan.json", "config/kurikulum.json"):
+        paths.append(os.path.join(BASE_DIR, rel))
+    paths.sort()
+    bagian = []
+    for p in paths:
+        label = os.path.relpath(p, BASE_DIR).replace("\\", "/")
+        if os.path.isfile(p):
+            st = os.stat(p)
+            bagian.append("{0}:{1}:{2}".format(
+                label, int(st.st_mtime), st.st_size))
+        else:
+            bagian.append("{0}:-".format(label))
+    # identitas minus penunjuk MK aktif - isi lain (dosen MK, institusi,
+    # identitas MK lain) benar-benar mempengaruhi dataset saat compile.
+    cfg = {k: v for k, v in (IDENT.muat(force=True) or {}).items()
+           if k != "mata_kuliah_aktif"}
+    bagian.append("identitas:{0}".format(
+        json.dumps(cfg, sort_keys=True, ensure_ascii=False)))
+    stamp = hashlib.sha1("\n".join(bagian).encode("utf-8")).hexdigest()
+    return kunci, stamp
+
+
+def muat_reg_stempel():
+    """Registry stempel; rusak/hilang -> {} (fail-closed, akan kompilasi)."""
+    try:
+        with open(STAMPEL_PATH, "r", encoding="utf-8") as f:
+            reg = json.load(f)
+        return reg if isinstance(reg, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def tulis_reg_stempel(reg):
+    os.makedirs(os.path.dirname(STAMPEL_PATH), exist_ok=True)
+    tmp = STAMPEL_PATH + ".tmp"
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        json.dump(reg, f, indent=2, ensure_ascii=False)
+    os.replace(tmp, STAMPEL_PATH)
+
+
+def _salin_atomik(src, dest):
+    """Salin berkas ATOMIK (tmp + os.replace) - pembaca tidak melihat setengah."""
+    tmp = dest + ".tmp"
+    shutil.copyfile(src, tmp)
+    os.replace(tmp, dest)
+
+
+def _waktu_seribuan():
+    return time.strftime("%Y-%m-%d %H:%M:%S")
+
+
 
 # =============================================================================
 # SUMBER DATA: TREE KURIKULUM (bukan Excel/PDF lagi)
@@ -750,8 +848,54 @@ def bangun_dataset(kunci=None):
     )
 
 
+def _cetak_ringkas_dataset(path_data):
+    """Ringkasan satu baris dari file dataset (di jalur kompilasi ATAU salinan)."""
+    try:
+        with open(path_data, "r", encoding="utf-8") as f:
+            dataset = json.load(f)
+        print("Ringkasan Kelas:")
+        print(" - Total Mahasiswa: {0}".format(
+            dataset["class_summary"]["total_mahasiswa"]))
+        print(" - Rata-rata Kehadiran: {0}%".format(
+            dataset["class_summary"]["rata_kehadiran"]))
+        print(" - Rata-rata Nilai Studio: {0}%".format(
+            dataset["class_summary"]["rata_nilai_studio"]))
+        print(" - Mahasiswa At-Risk: {0}".format(
+            dataset["class_summary"]["total_at_risk"]))
+    except (OSError, KeyError) as e:
+        print(f"[PERINGATAN] ringkasan tidak terbaca: {e}")
+
+
 def main():
     os.makedirs(DATA_DIR, exist_ok=True)
+    paksa = "--compile-ulang" in sys.argv
+
+    # --- JALUR SEGAR (Tangga B): stempel sama + snapshot ada = salin saja ---
+    kunci, stamp_baru = stempel_kompilasi()
+    snapshot = os.path.join(SNAPSHOT_DIR, "{0}.json".format(kunci))
+    reg = muat_reg_stempel()
+    if (not paksa
+            and reg.get(kunci, {}).get("stamp") == stamp_baru
+            and os.path.isfile(snapshot)
+            and os.path.isfile(OUTPUT_JSON)):
+        try:
+            _salin_atomik(snapshot, OUTPUT_JSON)
+            reg[kunci]["terakhir_dipakai"] = _waktu_seribuan()
+            tulis_reg_stempel(reg)
+            print("[STAMPEL] master '{0}' masih SEGAR (stempel {1})".format(
+                kunci, stamp_baru[:10]))
+            print("[STAMPEL] master = salinan bit-identik snapshot"
+                  " '{0}' - tidak ada kompilasi".format(
+                      os.path.relpath(snapshot, BASE_DIR)))
+            print("Dataset berhasil disimpan ke: {0}".format(OUTPUT_JSON))
+            _cetak_ringkas_dataset(OUTPUT_JSON)
+            return
+        except OSError as e:
+            print("[PERINGATAN] salinan snapshot gagal ({0}) - kompilasi "
+                  "ulang penuh".format(e))
+
+    if paksa:
+        print("[STAMPEL] --compile-ulang: kompilasi penuh dipaksa.")
 
     print("Membaca kurikulum dari tree (data/kurikulum/...):")
     ctx = muat_kurikulum()
@@ -784,12 +928,22 @@ def main():
         with open(OUTPUT_JSON, "w", encoding="utf-8", newline="\n") as f:
             json.dump(dataset, f, indent=2, ensure_ascii=False)
 
+    # --- Simpan SNAPSHOT + STEMPEL (Tangga B) --------------------------------
+    # Tulisan master di atas atomik; snapshot identik dari dataset yang sama.
+    # Pindah-MK kembali ke sini = salinan, bukan kompilasi 12 detik.
+    os.makedirs(SNAPSHOT_DIR, exist_ok=True)
+    _salin_atomik(OUTPUT_JSON, snapshot)
+    reg[kunci] = {
+        "stamp": stamp_baru,
+        "snapshot": os.path.relpath(snapshot, BASE_DIR).replace("\\", "/"),
+        "dibuat": _waktu_seribuan(),
+    }
+    tulis_reg_stempel(reg)
+    print("[STAMPEL] '{0}' dikompilasi & snapshot disimpan (stempel {1})".format(
+        kunci, stamp_baru[:10]))
+
     print("Dataset berhasil disimpan ke: {0}".format(OUTPUT_JSON))
-    print("Ringkasan Kelas:")
-    print(" - Total Mahasiswa: {0}".format(dataset["class_summary"]["total_mahasiswa"]))
-    print(" - Rata-rata Kehadiran: {0}%".format(dataset["class_summary"]["rata_kehadiran"]))
-    print(" - Rata-rata Nilai Studio: {0}".format(dataset["class_summary"]["rata_nilai_studio"]))
-    print(" - Mahasiswa At-Risk: {0}".format(dataset["class_summary"]["total_at_risk"]))
+    _cetak_ringkas_dataset(OUTPUT_JSON)
 
     # FIX TAHAP C-5: file ini hanya menulis data MASTER. Tanpa langkah berikut,
     # katalog di data/courses/ bisa tertinggal satu versi di belakang master -

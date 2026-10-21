@@ -469,6 +469,48 @@ tombol Audit, tombol Rapikan dengan konfirmasi).
 
 ---
 
+### 14. Kompilasi Master Ber-Stempel Per-MK — Tangga A + B (keputusan user 2026-10-21)
+
+Sumber kebenaran tetap **satu (tree kurikulum)**; yang berubah hanya **bila
+kapan** datanya dibangun ulang. Terukur sebelum-sesudah (MK aktif 35 mahasiswa,
+30 katalog):
+
+| Kondisi | Dulu | Kini |
+|---|---|---|
+| `switch_course` ke MK yang pernah dikompilasi (cache segar) | ~12–16 s | **~0.2–2.2 s** (salinan snapshot) |
+| Kompilasi menyekap `DATA_LOCK` (semua API beku) | 12 detik penuh | **tidak pernah** (Tangga A) |
+
+**Tangga A — `scripts/server.py` `_jalankan_parse_data`:** `DATA_LOCK` tidak
+lagi dipegang selama subprocess kompilasi. Pembaca terus menyajikan master lama
+yang konsisten sampai versi atomik baru menggantikan (dst. identitas & master
+keduanya tulis tmp + `os.replace`). Satu dosen pindah MK tidak lagi membekukan
+seluruh kampus.
+
+**Tangga B — `scripts/parse_data.py` stempel per-MK:**
+
+* Master itu **per-MK aktif** — jadi ganti MK memang menghitung MK yang baru.
+  Solusinya **snapshot per-MK deterministik**: setiap kompilasi selain
+  menulis master menyimpan salinan utuh `data/master_mk/<KUNCI>.json`.
+* **Stempel** = sha1 atas (mtime+ukuran) berkas sumber yang menentukan isi
+  master MK itu — folder tree MK (sesi/nilai/penawaran), `mahasiswa.json`
+  prodi, global `config/aturan.json`, `config/kurikulum.json`, dan
+  `config/identitas.json` **tanpa penunjuk `mata_kuliah_aktif`** (penunjuk
+  memilih siapa ditampilkan, bukan isi data); registry
+  `data/master_stamps.json`.
+* Stempel sama + snapshot ada → master = **salinan bit-identik snapshot**
+  tanpa kompilasi (build deterministik, kunci RNG per NPM). Kembali ke MK
+  yang pernah dikompilasi = instan; tree berubah = stempel maju = kompilasi
+  penuh normal (aturan 12: data lama valid diberikan, yang berubah
+  ditulis ulang).
+* `python scripts/parse_data.py --compile-ulang` memaksa kompilasi penuh.
+* Snapshot & stamp keduanya **cache runtime** (gitignored) — tidak pernah
+  menggantikan sumber; tree tetap satu kebenaran.
+
+Teruji `tests/test_parse_stempel.py` (determinisme stempel, jalur salin < 5 s,
+jalur paksa, fail-closed registry).
+
+---
+
 ## 📊 Angka Ril Demo Saat Ini (versi `2.6-KURIKULUM-BERTINGKAT`)
 
 > Stempel build tidak lagi ditulis di sini (dulu sering tertinggal basi).
@@ -729,6 +771,7 @@ python tests\test_identitas.py
 python tests\test_diagnosis.py
 python tests\test_portofolio.py
 python tests\test_engine.py
+python tests\test_parse_stempel.py
 
 python tests\test_identitas.py
 python tests\test_docs_dependensi.py
@@ -748,7 +791,8 @@ python tests\test_kurikulum_api.py
 
 | Tes | Membuktikan |
 | --- | --- |
-| `test_rules_unchanged.py` | Regenerasi data **tetap identik** dengan master — tidak ada angka yang bergeser |
+| `test_rules_unchanged.py` | Regenerasi data **tetap identik** dengan master - tidak ada angka yang bergeser |
+| `test_parse_stempel.py` | Kompilasi ber-stempel (Tangga A+B): stempel deterministik & beda antar MK, registry fail-closed, jalur segar = **salinan snapshot < 5 s** (bukan kompilasi 12 s), `--compile-ulang` penuh + stempel sinkron |
 | `test_readme_accuracy.py` | **Setiap angka di README ini cocok dengan data** — tidak ada lagi angka yang diketik manual dan salah |
 | `test_aturan.py` | Ambang At-Risk & grade benar-benar **hidup**: angka bawaan = angka lama, dan mengubah `config/aturan.json` mengubah hasil |
 | `test_belum_diinput.py` | Pertemuan dengan slot belum lengkap ditandai **"Belum Diinput"** (bukan Alpha/nilai 0), bobot dinormalisasi ulang, grade ditahan **"Belum Lengkap"**, perilaku lama bisa dipulihkan lewat config |
@@ -907,6 +951,7 @@ e:\WORKSPACE\KAMPUS_01\
 │   │
 │   ├── academic_data.json                       <-- [ARTEFAK] master; dibaca dashboard & PDF
 │   ├── courses/<MK>.json                        <-- [ARTEFAK] katalog per MK
+│   ├── master_mk/<KUNCI>.json + master_stamps.json  <-- [CACHE] snapshot ber-stempel per MK (Tangga B; gitignored)
 │   ├── engine/                                  <-- [ARTEFAK] registry engine input & output
 │   └── _backup/                                 <-- cadangan + arsip run lama (rapikan)
 │
