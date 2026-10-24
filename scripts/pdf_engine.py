@@ -580,6 +580,8 @@ def build_deckcraft_payload(npm_or_student):
         "identitas": d,
         "student": student,
         "akademik": akademik,
+        "ai": student.get("ai_diagnosis", {}),
+        "kehadiran": student.get("kehadiran", {}),
         "quad_radars": quad_radars
     }
 
