@@ -1,0 +1,523 @@
+{
+  "no": 1,
+  "npm": "2410015410001",
+  "nama": "FAJAR ADITYA PRATAMA",
+  "angkatan": 2024,
+  "archetype": "star",
+  "at_risk": false,
+  "alasan_at_risk": [],
+  "kehadiran": {
+    "pertemuan_penuh": 16,
+    "hadir_sebagian": 0,
+    "sakit": 0,
+    "izin": 0,
+    "alpha": 0,
+    "belum_diinput": 0,
+    "pertemuan_ambang_terpenuhi": 16,
+    "total_pertemuan": 16,
+    "slot_hadir": 32,
+    "slot_total": 32,
+    "persentase": 100.0,
+    "basis_persen": "slot",
+    "min_slot_ratio_hadir": 0.5,
+    "data_lengkap": true,
+    "cakupan_bobot": 100.0,
+    "slot_belum_diisi": "belum_diinput",
+    "detail": [
+      {
+        "pertemuan": 1,
+        "tanggal": "2026-06-03",
+        "tanggal_display": "03 Juni 2026",
+        "topik": "Pengenalan AutoCAD & Gambar Denah Dasar",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 94.0
+      },
+      {
+        "pertemuan": 2,
+        "tanggal": "2026-06-10",
+        "tanggal_display": "10 Juni 2026",
+        "topik": "Medium Drawing: Kolom, Dinding & Dimensi",
+        "tipe": "studio",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 93.0
+      },
+      {
+        "pertemuan": 3,
+        "tanggal": "2026-06-24",
+        "tanggal_display": "24 Juni 2026",
+        "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 94.0
+      },
+      {
+        "pertemuan": 4,
+        "tanggal": "2026-07-01",
+        "tanggal_display": "01 Juli 2026",
+        "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi",
+        "tipe": "studio",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 95.0
+      },
+      {
+        "pertemuan": 5,
+        "tanggal": "2026-07-08",
+        "tanggal_display": "08 Juli 2026",
+        "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 94.0
+      },
+      {
+        "pertemuan": 6,
+        "tanggal": "2026-07-15",
+        "tanggal_display": "15 Juli 2026",
+        "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
+        "tipe": "studio",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 95.0
+      },
+      {
+        "pertemuan": 7,
+        "tanggal": "2026-07-22",
+        "tanggal_display": "22 Juli 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 94.0
+      },
+      {
+        "pertemuan": 8,
+        "tanggal": "2026-07-29",
+        "tanggal_display": "29 Juli 2026",
+        "topik": "Ujian Tengah Semester",
+        "tipe": "uts",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 97.0
+      },
+      {
+        "pertemuan": 9,
+        "tanggal": "2026-08-05",
+        "tanggal_display": "05 Agustus 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 97.0
+      },
+      {
+        "pertemuan": 10,
+        "tanggal": "2026-08-12",
+        "tanggal_display": "12 Agustus 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "studio",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 92.0
+      },
+      {
+        "pertemuan": 11,
+        "tanggal": "2026-08-19",
+        "tanggal_display": "19 Agustus 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 92.0
+      },
+      {
+        "pertemuan": 12,
+        "tanggal": "2026-08-26",
+        "tanggal_display": "26 Agustus 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "studio",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 94.0
+      },
+      {
+        "pertemuan": 13,
+        "tanggal": "2026-09-02",
+        "tanggal_display": "02 September 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 92.0
+      },
+      {
+        "pertemuan": 14,
+        "tanggal": "2026-09-09",
+        "tanggal_display": "09 September 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "studio",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 93.0
+      },
+      {
+        "pertemuan": 15,
+        "tanggal": "2026-09-16",
+        "tanggal_display": "16 September 2026",
+        "topik": "(belum diisi - menunggu RPS)",
+        "tipe": "teori",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 96.0
+      },
+      {
+        "pertemuan": 16,
+        "tanggal": "2026-09-23",
+        "tanggal_display": "23 September 2026",
+        "topik": "Ujian Akhir Semester",
+        "tipe": "uas",
+        "slot_total": 2,
+        "slot_terisi": 2,
+        "slot_hadir": 2,
+        "status": "Hadir",
+        "alasan": "-",
+        "skor": 94.0
+      }
+    ]
+  },
+  "akademik": {
+    "nilai_rata_rata": 94.6,
+    "nilai_rata_sederhana": 94.1,
+    "data_lengkap": true,
+    "cakupan_bobot": 100.0,
+    "bobot_diperiksa": [
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      20,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      24
+    ],
+    "grade": "A",
+    "predikat": "Sangat Memuaskan / Kompeten Unggul",
+    "status_kompetensi": "Kompeten Unggul (Standar Rancang Bangun & Industri Kreatif)",
+    "kesiapan_profesi": "Sangat Siap & Siap Magang di Konsultan Arsitektur",
+    "indeks_kesiapan": 92.7,
+    "kompetensi": {
+      "penguasaan_cad": 95,
+      "ketelitian_detail": 83,
+      "kedisiplinan_asistensi": 100,
+      "logika_ruang_struktur": 97,
+      "manajemen_waktu": 97
+    },
+    "skor_sesi": [
+      94.0,
+      93.0,
+      94.0,
+      95.0,
+      94.0,
+      95.0,
+      94.0,
+      97.0,
+      97.0,
+      92.0,
+      92.0,
+      94.0,
+      92.0,
+      93.0,
+      96.0,
+      94.0
+    ]
+  },
+  "ai_diagnosis": {
+    "analisis_karakter_spasial": "Ananda FAJAR ADITYA PRATAMA menunjukkan penguasaan lingkungan CAD yang cemerlang pada mata kuliah Aplikasi Komputer Arsitektur & QS (94.6 nilai terbobot) dengan kehadiran studio 100% slot dan stabilitas hasil belajarnya terjaga (deviasi skor 1.5). Daya tangkap konsep denah hingga detail tampak dikerjakan dengan presisi, dan kedisiplinan asistensi (skor 100) menjadi penanda terkuat profil kompetensinya.",
+    "potensi_kedepan": "Fondasi gambar kerja digital yang matang pada mata kuliah Aplikasi Komputer Arsitektur & QS membuka peluang menjadi asisten studio perancangan, delegasi sayembara desain arsitektur tingkat nasional, dan melompat ke teknologi BIM/Revit. Diproyeksikan mampu memimpin tim studio dan menghasilkan karya akhir bertaraf sayembara.",
+    "catatan_khusus_mahasiswa": "Prioritas latihan: tingkatkan ketelitian detail gambar hingga minimal 93 pada radar berikutnya, lalu jaga kehadiran di atas 90%. Dokumentasikan setiap karya gambar kerja ke portofolio digital profesional sejak dini.",
+    "panduan_wali_murid": "Bapak/Ibu diberi rangkuman angka terpenting: kehadiran 100%, 0 hari alpha, dan nilai terbobot 94.6. Di rumah, dukung suasana belajar yang kondusif dan pastikan perangkat kerja digital memadai; setiap kemajuan kecil layak diapresiasi agar motivasi terjaga. Doa dan kehangatan keluarga adalah energi terbesar bagi ananda.",
+    "kekuatan": "Ananda FAJAR ADITYA PRATAMA menunjukkan penguasaan lingkungan CAD yang cemerlang pada mata kuliah Aplikasi Komputer Arsitektur & QS (94.6 nilai terbobot) dengan kehadiran studio 10...",
+    "status_alert": "PRESTASI OPTIMAL",
+    "alert_color": "emerald",
+    "matriks_karier_10": [
+      {
+        "id": 7,
+        "profesi": "Site Architect & Pengawas Lapangan Konstruksi",
+        "bidang_industri": "Kontraktor Pelaksana Bangunan / Manajemen Konstruaksi (MK)",
+        "kecocokan_persen": 94,
+        "kategori_kecocokan": "Tinggi",
+        "analisis_potensi": "Pemahaman sistem kolom praktis dan elevasi muka tanah memudahkan verifikasi kesesuaian fisik lapangan dengan dokumen gambar kerja.",
+        "keterampilan_kunci": "Verifikasi Gambar As-Built, Pengawasan Mutu Beton, Deteksi Kesalahan Elevasi Lapangan",
+        "saran_pengembangan": "Ikuti magang lapangan di proyek konstruksi bertingkat untuk mengasah ketegasan supervisi."
+      },
+      {
+        "id": 2,
+        "profesi": "BIM Modeler & Coordinator (Building Information Modeling)",
+        "bidang_industri": "Kontraktor EPC Multinasional / Konsultan Rekayasa Digital",
+        "kecocokan_persen": 93.0,
+        "kategori_kecocokan": "Tinggi",
+        "analisis_potensi": "Kerapian manajemen layer dan kedisiplinan koordinasi gambar digital menjadi modal kuat dalam adopsi teknologi BIM 3D/4D industri konstruksi modern.",
+        "keterampilan_kunci": "Manajemen Layer Standar Industri, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
+        "saran_pengembangan": "Mulai mempelajari dasar Revit Architecture dan integrasi clash detection antar disiplin struktur."
+      },
+      {
+        "id": 4,
+        "profesi": "Detail Engineering Drawing (DED) Specialist",
+        "bidang_industri": "Konsultan Perancangan Teknis & Rekayasa Gambar Kerja",
+        "kecocokan_persen": 88.2,
+        "kategori_kecocokan": "Tinggi",
+        "analisis_potensi": "Karakter gambar yang teliti menampilkan garis potongan dan detail pondasi membuktikan kesiapan memproduksi dokumen tender konstruksi resmi.",
+        "keterampilan_kunci": "Potongan Vertikal Bangunan, Detail Sambungan Pondasi, Standar Notasi PUPR",
+        "saran_pengembangan": "Pelajari standar etiket lembar kerja konsultan dan variasi detail sambungan struktur baja/kayu."
+      },
+      {
+        "id": 6,
+        "profesi": "3D Architectural Visualizer & CG Artist",
+        "bidang_industri": "Creative Architectural Media & Studio Rendering Internasional",
+        "kecocokan_persen": 71.7,
+        "kategori_kecocokan": "Sedang",
+        "analisis_potensi": "Daya bayang visual bentuk bangunan yang kuat memungkinkan transformasi gambar kerja 2D menjadi visualisasi 3D fotorealistik yang memukau klien.",
+        "keterampilan_kunci": "Pemodelan 3D Isometrik/Aksonometrik, Komposisi Kamera, Pencahayaan Alami, Visual Storytelling",
+        "saran_pengembangan": "Tingkatkan portofolio visual dengan software render real-time (Enscape/Twinmotion/Lumion)."
+      },
+      {
+        "id": 3,
+        "profesi": "Quantity Surveyor (QS) & Cost Estimator Bangunan",
+        "bidang_industri": "BUMN Karya / Developer Properti Skala Besar",
+        "kecocokan_persen": 64.7,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Kemampuan membaca dimensi gambar dan mengekstraksi volume pekerjaan secara teliti sangat dicari di bidang estimasi anggaran proyek.",
+        "keterampilan_kunci": "Kalkulasi Volume Galian/Pondasi, Penyusunan BQ, Analisis Satuan Harga (AHSP)",
+        "saran_pengembangan": "Perdalam rumus rekapitulasi volume otomatis menggunakan spreadsheet dan integrasi data CAD."
+      },
+      {
+        "id": 9,
+        "profesi": "Green Building & Sustainable Design Specialist",
+        "bidang_industri": "Konsultan Bangunan Hijau & Sertifikasi Efisiensi Energi",
+        "kecocokan_persen": 64.4,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Penerapan ventilasi silang pada denah dan perlindungan bukaan dinding menunjukkan intuisi desain pasif hemat energi yang dibutuhkan industri saat ini.",
+        "keterampilan_kunci": "Desain Pasif Tropis, Pencahayaan Alami Optimal, Shading Fasad, Efisiensi Energi",
+        "saran_pengembangan": "Pahami pedoman Greenship GBCI dan simulasi komputasi aliran udara dalam bangunan."
+      },
+      {
+        "id": 10,
+        "profesi": "Project Planner & Kontraktor Mandiri (Design & Build)",
+        "bidang_industri": "Wirausaha Kreatif Sektor Jasa Rancang Bangun",
+        "kecocokan_persen": 62.6,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Penguasaan paket lengkap dari gambar arsitektur, potongan struktur, hingga perhitungan volume biaya memberikan modal independen untuk mendirikan biro sendiri.",
+        "keterampilan_kunci": "Penguasaan End-to-End Desain ke Konstruksi, Komunikasi Klien, Negosiasi Anggaran, Manajemen Tim",
+        "saran_pengembangan": "Bangun jejaring dengan rekan sipil/mekanikal dan kumpulkan portofolio proyek riil sejak masa kuliah."
+      },
+      {
+        "id": 8,
+        "profesi": "Landscape Architect Assistant",
+        "bidang_industri": "Studio Arsitektur Lansekap & Perencanaan Wilayah",
+        "kecocokan_persen": 58.6,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Kepekaan terhadap kontur tapak dan transisi ruang luar ke ruang dalam mendukung perancangan lansekap tapak berkelanjutan.",
+        "keterampilan_kunci": "Tata Hijau, Analisis Orientasi Matahari & Angin, Drainase Tapak, Desain Hardscape",
+        "saran_pengembangan": "Pelajari jenis tanaman tropis arsitektural dan sistem perkerasan ramah serapan air tanah."
+      },
+      {
+        "id": 1,
+        "profesi": "Architectural Designer (Arsitek Perancang Pratama)",
+        "bidang_industri": "Biro Konsultan Perencana Arsitektur & Desain",
+        "kecocokan_persen": 50.8,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA memiliki kepekaan proporsi spasial dan kemampuan memadukan fungsi denah dengan estetika tampak yang harmonis.",
+        "keterampilan_kunci": "Konsep Tata Ruang, Denah Fungsi, Sketsa Arsitektur, AutoCAD 2D",
+        "saran_pengembangan": "Aktif mengikuti sayembara arsitektur mahasiswa dan eksplorasi gubahan massa kontemporer."
+      },
+      {
+        "id": 5,
+        "profesi": "Interior Architect & Space Planner",
+        "bidang_industri": "Studio Interior Arsitektur & Desain Hunian Komersial",
+        "kecocokan_persen": 50.1,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Sentuhan detail pada denah hunian dan pemahaman ergonomi sirkulasi manusia menjadi modal unggul di sektor desain interior.",
+        "keterampilan_kunci": "Sirkulasi Mikro, Ergonomi Ruang Tamu/Kamar, Detail Kusen & Pintu, Material Finishing",
+        "saran_pengembangan": "Eksplorasi katalog material lokal, tekstur finishing dinding, dan pencahayaan aksen ruang dalam."
+      }
+    ],
+    "radar_sumber": {
+      "penguasaan_cad": "terukur",
+      "ketelitian_detail": "terukur",
+      "kedisiplinan_asistensi": "terukur",
+      "logika_ruang_struktur": "estimasi",
+      "manajemen_waktu": "terukur"
+    },
+    "mesin": {
+      "sumber": "templat_v3",
+      "tanda_sinyal": "9817bb3cd27f",
+      "archetype": "star"
+    }
+  },
+  "radars": {
+    "softskill": {
+      "key": "softskill",
+      "label": "Karakter & Softskill Studio",
+      "deskripsi": "Watak profesional: daya tahan revisi, artikulasi visual, pemecahan masalah, ketelitian, dan kecepatan belajar.",
+      "dimensi": [
+        "Daya Tahan Revisi",
+        "Artikulasi Visual",
+        "Problem Solving",
+        "Ketelitian Eksekusi",
+        "Kecepatan Adaptasi"
+      ],
+      "nilai": [
+        97,
+        95,
+        94,
+        94,
+        98
+      ]
+    },
+    "modul_mk": {
+      "key": "modul_mk",
+      "label": "Capaian Modul Mata Kuliah Ini",
+      "deskripsi": "Penguasaan 5 modul praktikum RPS: dihitung langsung dari sinergi nilai tugas sesi + kehadiran slot.",
+      "dimensi": [
+        "Tata Ruang & Denah",
+        "Standar & Hierarki Garis",
+        "Konstruksi & Struktur",
+        "Kemasan & Layout Sheet",
+        "Akurasi Dimensi & Volume"
+      ],
+      "nilai": [
+        94,
+        94,
+        94,
+        96,
+        94
+      ]
+    },
+    "semester": {
+      "key": "semester",
+      "label": "Holistik 1 Semester Lintas MK",
+      "deskripsi": "Keseimbangan kompetensi arsitektur sepanjang semester berjalan: desain, struktur, komputasi, sains, dan konteks humaniora.",
+      "dimensi": [
+        "Studio Desain",
+        "Rekayasa Struktur",
+        "Komputasi Digital",
+        "Sains Lingkungan",
+        "Wawasan Humaniora"
+      ],
+      "nilai": [
+        94,
+        94,
+        95,
+        94,
+        98
+      ]
+    },
+    "potensi_cr": {
+      "key": "potensi_cr",
+      "label": "Potensi Pasar & Masa Depan (Otak-CR)",
+      "deskripsi": "Daya saing ekonomi & industri modern: kesiapan komersial, pitching, adopsi AI, realitas lapangan, dan kewirausahaan.",
+      "dimensi": [
+        "Insting Komersial",
+        "Pitching & Storytelling",
+        "Adopsi AI & Spasial Baru",
+        "Pragmatisme Lapangan",
+        "Wirausaha Mandiri"
+      ],
+      "nilai": [
+        94,
+        96,
+        96,
+        96,
+        96
+      ]
+    }
+  },
+  "marketing": {
+    "video": {
+      "durasi_detik": 32,
+      "format": "9:16 Vertikal (Reels / Shorts / WhatsApp Story)",
+      "bgm_mood": "Inspiratif, Modern Upbeat Acoustic Architecture",
+      "voiceover_script": "Dedikasi luar biasa di studio arsitektur! Inilah ananda Fajar Aditya Pratama, yang berhasil menuntaskan seluruh modul perancangan gambar kerja presisi dengan capaian predikat unggul A. Karya nyata ini menjadi bukti kesiapan ananda melangkah sebagai calon arsitek masa depan kebanggaan keluarga dan almamater!",
+      "scenes": [
+        {
+          "detik": "00:00 - 00:06",
+          "visual": "Foto Mahasiswa & Gelar Sertifikasi Kompetensi Studio 2026",
+          "teks": "Karya Unggulan Ananda FAJAR"
+        },
+        {
+          "detik": "00:06 - 00:16",
+          "visual": "Zoom-in aktivitas gambar di layar AutoCAD Lab LIKDA",
+          "teks": "Presisi Gambar Kerja & Detail Struktur"
+        },
+        {
+          "detik": "00:16 - 00:25",
+          "visual": "Karya layout lembar kerja etiket cetak PDF standar A3",
+          "teks": "Portofolio Standar Profesional Industri"
+        },
+        {
+          "detik": "00:25 - 00:32",
+          "visual": "Logo Resmi Prodi Arsitektur & Pesan Apresiasi Orang Tua",
+          "teks": "Kebanggaan Almamater & Apresiasi Orang Tua"
+        }
+      ]
+    },
+    "wa_text": "Assalamu'alaikum Warahmatullahi Wabarakatuh.\n\nKepada Yth. Bapak/Ibu Wali Murid dari *FAJAR ADITYA PRATAMA*,\n\nSalam hangat dan salam takzim dari Program Studi Arsitektur, Fakultas Teknik & Desain.\n\nMelalui pesan resmi ini, kami menyampaikan Laporan Perkembangan Akademik, Portofolio Gambar Kerja, dan Analisis Pemetaan Potensi Karier ananda pada mata kuliah *Aplikasi Komputer Arsitektur & QS*:\n\n📊 *Ringkasan Capaian Kompetensi:*\n• Kehadiran Studio: *100.0%* (16/16 Sesi Terlaksana)\n• Nilai Akhir Studio: *94.6* (Predikat: *A* - Sangat Memuaskan / Kompeten Unggul)\n• Status Kompetensi: *Kompeten Unggul (Standar Rancang Bangun & Industri Kreatif)*\n• Kesiapan Industri: *Sangat Siap & Siap Magang di Konsultan Arsitektur* (Indeks: *92.7/100*)\n\n💡 *Catatan Dosen Pengasuh:*\n\"Ananda FAJAR ADITYA PRATAMA menunjukkan penguasaan lingkungan CAD yang cemerlang pada mata kuliah Aplikasi Komputer Arsitektur & QS (94.6 ni...\"\n\n🎯 *Rekomendasi Pendampingan:*\nBapak/Ibu patut berbangga atas pencapaian ananda yang menunjukkan konsistensi luar biasa sepanjang semester ini. Kami siap mendukung pengembangan karya ananda menuju panggung sayembara dan magang profesional.\n\n📎 *Lampiran Berkas Resmi Terlampir:*\n1. Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n2. Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n3. Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\nBapak/Ibu dapat meninjau berkas dokumen terlampir. Terima kasih tak terhingga atas doa, bimbingan, dan cinta kasih Bapak/Ibu yang senantiasa mendampingi ananda di rumah.\n\nHormat kami,\n*Ketua Program Studi Arsitektur*\n*Dr. Al Busyra Fuadi, S.T., M.Sc.*\nAsisten Dosen: *Adrian Ridhoa, S.T.*"
+  }
+}

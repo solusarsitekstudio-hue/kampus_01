@@ -1,0 +1,445 @@
+{
+  "config": {
+    "versi": 1,
+    "catatan": "SATU-SATUNYA tempat mengatur nama: mata kuliah, dosen pengasuh, asisten, ketua prodi, dan institusi. Dibaca oleh scripts/identitas.py lalu dipakai parse_data.py, process_input.py, generate_pdfs.py, video_composer.py, dan dilayani ke dashboard lewat GET /api/identitas. Daftar sesi/topik/bobot per mata kuliah TIDAK di sini - itu tetap di scripts. Ubah nilai di sini, jangan di kode. Setelah mengubah, jalankan: python tests\\test_identitas.py",
+    "institusi": {
+      "universitas": "Universitas Bung Hatta",
+      "fakultas": "Teknik & Desain",
+      "prodi": "Arsitektur",
+      "ketua_prodi": "Dr. Al Busyra Fuadi, S.T., M.Sc.",
+      "nip_ketua_prodi": "",
+      "kota": "Padang"
+    },
+    "dokumen": {
+      "tanggal_tanda_tangan": "18 Oktober 2026"
+    },
+    "keamanan": {
+      "pin_kaprodi": "404040",
+      "catatan": "PIN 6 digit untuk proteksi akses mutasi data (POST) saat server dibuka via Cloudflare Tunnel atau publik."
+    },
+    "dashboard": {
+      "judul": "Rekap Monitoring Perkuliahan",
+      "subjudul": "Executive Academic Suite — Prodi {prodi}",
+      "deskripsi": "Pemantauan terpusat dosen, mahasiswa, capaian pembelajaran, dan analisis."
+    },
+    "mata_kuliah_aktif": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+    "mata_kuliah": {
+      "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": {
+        "kode_mk": "5412522233",
+        "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+        "sks": 2,
+        "kelas": "TEKZA (Lab LIKDA)",
+        "semester": "Genap 2025/2026",
+        "jadwal": "Rabu, 10:10 - 15:50 WIB",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T.",
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "STUDIO_PERANCANGAN_ARSITEKTUR_2": {
+        "kode_mk": "5412522404",
+        "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+        "sks": 4,
+        "kelas": "Studio Desain 2 (Gedung Arsitektur Lt. 3)",
+        "semester": "Genap 2025/2026",
+        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+        "dosen_pengasuh": [
+          "Ir. Nasril Sikumbang, M.T.",
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": {
+        "kode_mk": "5412522302",
+        "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+        "sks": 3,
+        "kelas": "Ruang Kuliah B.204",
+        "semester": "Genap 2025/2026",
+        "jadwal": "Selasa, 13:00 - 16:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS101": {
+        "kode_mk": "5412511101",
+        "nama_mk": "Dasar-Dasar Desain Arsitektur",
+        "sks": 3,
+        "kelas": "ARS101 A (Studio Desain 1)",
+        "semester": "Ganjil 2024/2025",
+        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+        "dosen_pengasuh": [
+          "Ir. Nasril Sikumbang, M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS102": {
+        "kode_mk": "5412511102",
+        "nama_mk": "Gambar Teknik Arsitektur",
+        "sks": 2,
+        "kelas": "ARS102 A (Lab LIKDA)",
+        "semester": "Ganjil 2024/2025",
+        "jadwal": "Rabu, 10:10 - 15:50 WIB",
+        "dosen_pengasuh": [
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS103": {
+        "kode_mk": "5412511103",
+        "nama_mk": "Matematika Teknik",
+        "sks": 3,
+        "kelas": "ARS103 A (Ruang Kuliah B.101)",
+        "semester": "Ganjil 2024/2025",
+        "jadwal": "Selasa, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Dr. Eng. Hendra Wijaya, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS104": {
+        "kode_mk": "5412511104",
+        "nama_mk": "Fisika Bangunan 1",
+        "sks": 2,
+        "kelas": "ARS104 A (Ruang Kuliah B.102)",
+        "semester": "Ganjil 2024/2025",
+        "jadwal": "Kamis, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS105": {
+        "kode_mk": "5412511105",
+        "nama_mk": "Sejarah Arsitektur Barat",
+        "sks": 2,
+        "kelas": "ARS105 A (Ruang Kuliah B.103)",
+        "semester": "Ganjil 2024/2025",
+        "jadwal": "Jumat, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Dr. Rina Marlia, S.S., M.Hum."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS106": {
+        "kode_mk": "5412511106",
+        "nama_mk": "Pengantar Lingkungan Binaan",
+        "sks": 2,
+        "kelas": "ARS106 A (Ruang Kuliah B.104)",
+        "semester": "Ganjil 2024/2025",
+        "jadwal": "Senin, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS107": {
+        "kode_mk": "5412512101",
+        "nama_mk": "Studio Perancangan Arsitektur 1",
+        "sks": 4,
+        "kelas": "ARS107 A (Studio Desain 1)",
+        "semester": "Genap 2024/2025",
+        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+        "dosen_pengasuh": [
+          "Ir. Nasril Sikumbang, M.T.",
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS108": {
+        "kode_mk": "5412512102",
+        "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+        "sks": 2,
+        "kelas": "ARS108 A (Lab LIKDA)",
+        "semester": "Genap 2024/2025",
+        "jadwal": "Rabu, 10:10 - 15:50 WIB",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T.",
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS109": {
+        "kode_mk": "5412512103",
+        "nama_mk": "Struktur & Konstruksi Bangunan 1",
+        "sks": 3,
+        "kelas": "ARS109 A (Ruang Kuliah B.201)",
+        "semester": "Genap 2024/2025",
+        "jadwal": "Selasa, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS110": {
+        "kode_mk": "5412512104",
+        "nama_mk": "Fisika Bangunan 2",
+        "sks": 2,
+        "kelas": "ARS110 A (Ruang Kuliah B.202)",
+        "semester": "Genap 2024/2025",
+        "jadwal": "Kamis, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS111": {
+        "kode_mk": "5412512105",
+        "nama_mk": "Sejarah Arsitektur Nusantara",
+        "sks": 2,
+        "kelas": "ARS111 A (Ruang Kuliah B.203)",
+        "semester": "Genap 2024/2025",
+        "jadwal": "Jumat, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Dr. Rina Marlia, S.S., M.Hum."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS112": {
+        "kode_mk": "5412512106",
+        "nama_mk": "Teknologi Material Bangunan",
+        "sks": 2,
+        "kelas": "ARS112 A (Ruang Kuliah B.204)",
+        "semester": "Genap 2024/2025",
+        "jadwal": "Senin, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS201": {
+        "kode_mk": "5412521101",
+        "nama_mk": "Studio Perancangan Arsitektur 2",
+        "sks": 4,
+        "kelas": "ARS201 A (Studio Desain 2)",
+        "semester": "Ganjil 2025/2026",
+        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+        "dosen_pengasuh": [
+          "Ir. Nasril Sikumbang, M.T.",
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS202": {
+        "kode_mk": "5412521102",
+        "nama_mk": "Struktur & Konstruksi Bangunan 2",
+        "sks": 3,
+        "kelas": "ARS202 A (Ruang Kuliah B.301)",
+        "semester": "Ganjil 2025/2026",
+        "jadwal": "Selasa, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS203": {
+        "kode_mk": "5412521103",
+        "nama_mk": "Sistem Utilitas Bangunan",
+        "sks": 2,
+        "kelas": "ARS203 A (Ruang Kuliah B.302)",
+        "semester": "Ganjil 2025/2026",
+        "jadwal": "Kamis, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS204": {
+        "kode_mk": "5412521104",
+        "nama_mk": "Arsitektur Tropis & Berkelanjutan",
+        "sks": 2,
+        "kelas": "ARS204 A (Ruang Kuliah B.303)",
+        "semester": "Ganjil 2025/2026",
+        "jadwal": "Jumat, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS205": {
+        "kode_mk": "5412521105",
+        "nama_mk": "Perencanaan Tata Ruang & Lanskap",
+        "sks": 2,
+        "kelas": "ARS205 A (Ruang Kuliah B.304)",
+        "semester": "Ganjil 2025/2026",
+        "jadwal": "Senin, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS206": {
+        "kode_mk": "5412521106",
+        "nama_mk": "Metodologi Penelitian Arsitektur",
+        "sks": 2,
+        "kelas": "ARS206 A (Ruang Kuliah B.305)",
+        "semester": "Ganjil 2025/2026",
+        "jadwal": "Kamis, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Dr. Rina Marlia, S.S., M.Hum."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS301": {
+        "kode_mk": "5412531101",
+        "nama_mk": "Studio Perancangan Arsitektur 4",
+        "sks": 4,
+        "kelas": "ARS301 A (Studio Desain 4)",
+        "semester": "Ganjil 2026/2027",
+        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+        "dosen_pengasuh": [
+          "Ir. Nasril Sikumbang, M.T.",
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS302": {
+        "kode_mk": "5412531102",
+        "nama_mk": "Struktur & Konstruksi Bangunan 4",
+        "sks": 3,
+        "kelas": "ARS302 A (Ruang Kuliah B.401)",
+        "semester": "Ganjil 2026/2027",
+        "jadwal": "Selasa, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS303": {
+        "kode_mk": "5412531103",
+        "nama_mk": "Perancangan Interior & Furnitur",
+        "sks": 2,
+        "kelas": "ARS303 A (Lab LIKDA)",
+        "semester": "Ganjil 2026/2027",
+        "jadwal": "Rabu, 10:10 - 15:50 WIB",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS304": {
+        "kode_mk": "5412531104",
+        "nama_mk": "Arsitektur Digital & BIM",
+        "sks": 2,
+        "kelas": "ARS304 A (Lab LIKDA)",
+        "semester": "Ganjil 2026/2027",
+        "jadwal": "Kamis, 10:10 - 15:50 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS305": {
+        "kode_mk": "5412531105",
+        "nama_mk": "Hukum & Etika Profesi Arsitek",
+        "sks": 2,
+        "kelas": "ARS305 A (Ruang Kuliah B.402)",
+        "semester": "Ganjil 2026/2027",
+        "jadwal": "Jumat, 08:00 - 10:30 WIB",
+        "dosen_pengasuh": [
+          "Dr. Rina Marlia, S.S., M.Hum."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS306": {
+        "kode_mk": "5412531106",
+        "nama_mk": "Ekonomi & Feasibilitas Proyek",
+        "sks": 2,
+        "kelas": "ARS306 A (Ruang Kuliah B.403)",
+        "semester": "Ganjil 2026/2027",
+        "jadwal": "Senin, 13:00 - 15:30 WIB",
+        "dosen_pengasuh": [
+          "Duddy Fajriansyah, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS307": {
+        "kode_mk": "5412532101",
+        "nama_mk": "Studio Perancangan Arsitektur 5 (TA)",
+        "sks": 6,
+        "kelas": "ARS307 A (Studio Desain 5)",
+        "semester": "Genap 2026/2027",
+        "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+        "dosen_pengasuh": [
+          "Ir. Nasril Sikumbang, M.T.",
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "Adrian Ridhoa, S.T.",
+        "asisten_nip": "2026.0412.01"
+      },
+      "ARS308": {
+        "kode_mk": "5412532102",
+        "nama_mk": "Tugas Akhir / Skripsi",
+        "sks": 4,
+        "kelas": "ARS308 A (Ruang Kuliah B.501)",
+        "semester": "Genap 2026/2027",
+        "jadwal": "Selasa, 13:00 - 16:30 WIB",
+        "dosen_pengasuh": [
+          "Fielda Roza, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      },
+      "ARS309": {
+        "kode_mk": "5412532103",
+        "nama_mk": "Praktik Profesi / Magang",
+        "sks": 3,
+        "kelas": "ARS309 A (Industri Mitra)",
+        "semester": "Genap 2026/2027",
+        "jadwal": "Sesuai jadwal industri",
+        "dosen_pengasuh": [
+          "Aprilia Yunita, S.T., M.T."
+        ],
+        "asisten_dosen": "-",
+        "asisten_nip": ""
+      }
+    },
+    "keuangan": {
+      "spp_per_semester": 6500000,
+      "sisa_semester_standar": 6
+    }
+  },
+  "header": {
+    "judul": "Rekap Monitoring Perkuliahan",
+    "subjudul": "Executive Academic Suite — Prodi Arsitektur",
+    "deskripsi": "Pemantauan terpusat dosen, mahasiswa, capaian pembelajaran, dan analisis."
+  },
+  "kop": {
+    "prodi": "ARSITEKTUR",
+    "fakultas": "TEKNIK & DESAIN",
+    "universitas": "UNIVERSITAS BUNG HATTA",
+    "baris_prodi_fakultas": "PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN"
+  },
+  "mk_aktif": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+  "tanggal_tanda_tangan": "18 Oktober 2026",
+  "jalur": "config/identitas.json",
+  "perlu_diterapkan": []
+}

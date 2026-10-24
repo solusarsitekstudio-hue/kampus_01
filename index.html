@@ -1,0 +1,2590 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>SIAK-KAPRODI | Intelijen Akademik Arsitektur</title>
+  
+  <!-- FIX TAHAP C-1: SELURUH ASET DIKUNCI LOKAL -> dashboard jalan OFFLINE.
+       Dulu 4 sumber internet (Tailwind, ApexCharts, Lucide, Google Fonts).
+       WiFi ngadat = layar putih total. Sekarang tidak ada request keluar.
+         - vendor/fonts.css        : Plus Jakarta Sans + JetBrains Mono (10 woff2)
+         - vendor/tailwind.css     : Tailwind statis 30 KB (dibangun, bukan JIT)
+         - vendor/apexcharts.min.js
+         - vendor/lucide.min.js
+       Aset dibuat oleh scripts/fetch_vendor.py + scripts/build_tailwind.bat.
+       Rincian versi & hash: vendor/VENDOR.md -->
+  <link rel="stylesheet" href="vendor/fonts.css">
+  <link rel="stylesheet" href="vendor/tailwind.css">
+  <script src="vendor/apexcharts.min.js"></script>
+  <script src="vendor/lucide.min.js"></script>
+
+  <!-- Custom Stylesheet (dimuat SETELAH Tailwind supaya bisa menimpanya) -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- FIX TAHAP C-1: cek aset LOKAL, bukan cek internet.
+       Tailwind sekarang berupa file CSS statis, jadi tidak ada variabel global
+       `tailwind` yang bisa diperiksa. Yang benar-benar perlu dipastikan adalah
+       apakah CSS-nya BETUL-BETUL terpasang - jadi kita uji satu class Tailwind
+       pada elemen probe, bukan sekadar percaya bahwa <link> sudah ditulis. -->
+  <script>
+    window.addEventListener("load", function () {
+      var missing = [];
+      if (typeof ApexCharts === "undefined") missing.push("ApexCharts (vendor/apexcharts.min.js)");
+      if (typeof lucide === "undefined") missing.push("Lucide Icons (vendor/lucide.min.js)");
+
+      // Uji nyata: `hidden` harus jadi display:none. Kalau tidak, tailwind.css
+      // tidak termuat atau belum dibangun.
+      var probe = document.createElement("div");
+      probe.className = "hidden";
+      probe.style.position = "absolute";
+      document.body.appendChild(probe);
+      var twOk = window.getComputedStyle(probe).display === "none";
+      document.body.removeChild(probe);
+      if (!twOk) missing.push("Tailwind CSS (vendor/tailwind.css)");
+
+      var box = document.getElementById("cdn-warning");
+      if (missing.length > 0) {
+        box.classList.remove("hidden");
+        document.getElementById("cdn-warning-text").innerText =
+          "Berkas aset lokal tidak termuat: " + missing.join(", ") +
+          ". Jalankan scripts/fetch_vendor.py dan scripts/build_tailwind.bat, lalu muat ulang halaman.";
+      } else {
+        box.classList.add("hidden");
+      }
+    });
+  </script>
+</head>
+<body class="bg-[#0b0f19] text-slate-100 font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- TOP NAVIGATION HEADER -->
+  <header class="sticky top-0 z-50 bg-[#0f172a]/95 border-b border-slate-800/80 px-3 lg:px-8 py-2.5 safe-top transition-all">
+    <div class="w-full max-w-[1850px] mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+      
+      <!-- MAIN ROW: HAMBURGER, LOGO, TITLE & QUICK ACTIONS -->
+      <div class="flex items-center justify-between w-full lg:w-auto gap-2">
+        <div class="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+          <!-- MOBILE MENU TOGGLE (UI-NAV-02) -->
+          <button id="btn-mobile-menu-toggle" onclick="toggleMobileSidebar()" type="button" aria-label="Buka Menu Navigasi" class="lg:hidden p-2 rounded-xl bg-slate-800/90 border border-slate-700/80 text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition active:scale-95 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          
+          <!-- LOGO CYBER-CAD KONOHA CORET (AMBER GOLD OBSIDIAN) -->
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-slate-900 to-slate-950 p-1 border border-amber-500/40 flex items-center justify-center shadow-lg shadow-amber-500/10 shrink-0 group" id="app-campus-logo" title="SIAK-KAPRODI Special Edition: Konoha Coret">
+            <svg viewBox="0 0 100 100" class="w-6 h-6 sm:w-7 sm:h-7 text-amber-400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="44" stroke="#fbbf24" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <circle cx="50" cy="50" r="38" stroke="#fbbf24" stroke-opacity="0.1" stroke-width="1"/>
+              <!-- Konoha Leaf Spiral Path -->
+              <path d="M 50 32 C 62 32, 70 40, 70 50 C 70 61, 60 70, 48 70 C 37 70, 30 61, 30 50 C 30 42, 36 36, 44 36 C 50 36, 54 40, 54 46 C 54 50, 50 54, 46 54 C 43 54, 41 52, 41 49" stroke="#fbbf24" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Leaf Tip (Upper Right) -->
+              <path d="M 68 38 L 78 28 L 65 30 Z" fill="#fbbf24" stroke="#fbbf24" stroke-width="1.5" stroke-linejoin="round"/>
+              <!-- Leaf Stem (Bottom Left) -->
+              <path d="M 33 65 L 24 75 L 36 71 Z" fill="#fbbf24" stroke="#fbbf24" stroke-width="1" stroke-linejoin="round"/>
+              <!-- The Nukenin Slash (Akatsuki Rogue Cutline) -->
+              <line x1="16" y1="50" x2="84" y2="50" stroke="#fef08a" stroke-width="4" stroke-linecap="round"/>
+              <line x1="14" y1="50" x2="86" y2="50" stroke="#fbbf24" stroke-width="1.5" stroke-opacity="0.8"/>
+            </svg>
+          </div>
+
+          <!-- BRAND & TITLE -->
+          <div class="min-w-0 flex-1 overflow-hidden">
+            <div class="flex items-center gap-1.5 flex-nowrap overflow-hidden">
+              <h1 class="text-xs sm:text-sm lg:text-base font-bold tracking-tight text-white flex items-center gap-1.5 shrink-0">
+                SIAK-KAPRODI <span class="hidden sm:inline-block text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-mono font-medium border border-amber-500/30">v2.6 NUKENIN</span>
+              </h1>
+              <span class="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20 shrink-0">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE
+              </span>
+            </div>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 truncate">
+              <span id="header-institusi" class="text-slate-400">Univ Bung Hatta</span> &bull; <span id="current-course-title" class="text-slate-200 font-semibold">-</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- MOBILE QUICK ACTIONS: FILTER TOGGLE & KUNCI SESI -->
+        <div class="flex items-center gap-1.5 lg:hidden shrink-0">
+          <button id="btn-mobile-filter-toggle" onclick="toggleMobileFilterBar()" type="button" aria-label="Toggle Filter Konteks" class="px-2 py-1.5 rounded-lg bg-slate-800/90 border border-slate-700/80 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-700 transition active:scale-95 cursor-pointer shadow-sm shrink-0">
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span class="text-[11px]">Filter</span>
+          </button>
+          <button onclick="kunciSesiDashboard()" title="Kunci Dashboard (Gatekeeper)" class="p-2 rounded-lg bg-slate-800/90 border border-slate-700 text-slate-300 hover:text-rose-400 transition cursor-pointer shrink-0">
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- CONTEXT FILTERS (COLLAPSIBLE ON MOBILE, WIDESCREEN ON DESKTOP) -->
+      <div id="header-context-container" class="hidden lg:flex items-center flex-wrap gap-2 text-xs text-slate-300 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-800">
+        <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex items-center gap-2 flex-wrap w-full lg:w-auto">
+          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+          <span class="text-slate-400 font-medium">Konteks:</span>
+          <select id="sel-prodi" onchange="onKonteksBerubah('prodi')" title="Program studi"
+            class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+          <select id="sel-tahun" onchange="onKonteksBerubah('tahun')" title="Tahun ajar"
+            class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+          <select id="sel-semester" onchange="onKonteksBerubah('semester')" title="Semester"
+            class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+          <select id="sel-angkatan" onchange="onKonteksBerubah('angkatan')" title="Filter Angkatan"
+            class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer">
+            <option value="SEMUA">Semua Angkatan</option>
+            <option value="2026">Angkatan 2026</option>
+            <option value="2025">Angkatan 2025</option>
+            <option value="2024">Angkatan 2024</option>
+            <option value="SENIOR">🚨 Senior Kritis (Sem 9+)</option>
+          </select>
+          <select id="course-selector" onchange="onKonteksBerubah('mk')" title="Mata kuliah"
+            class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[22rem]"></select>
+        </div>
+        <div class="hidden xl:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+          <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Kaprodi: <strong class="text-white" id="header-kaprodi">-</strong></span>
+        </div>
+        <div class="hidden xl:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
+          <i data-lucide="shield" class="w-3.5 h-3.5 text-sky-400"></i>
+          <span>Asisten: <strong class="text-white" id="header-asisten">-</strong></span>
+        </div>
+        <button id="btn-lock-session" onclick="kunciSesiDashboard()" title="Kunci Dashboard (Gatekeeper)" class="hidden lg:flex px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500/50 text-slate-300 hover:text-rose-400 text-xs font-semibold items-center gap-1.5 transition shadow-sm cursor-pointer">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span>Kunci Sesi</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- BODY SHELL: LEFT SIDEBAR + MAIN CONTENT VIEWPORT -->
+  <div class="flex-1 flex w-full min-h-[calc(100vh-69px)] relative">
+    
+    <!-- LEFT SIDEBAR NAVIGATION (14 TABS IN 4 CATEGORIES) -->
+    <!-- BACKDROP FOR MOBILE DRAWER (UI-NAV-03) -->
+    <div id="sidebar-backdrop" onclick="closeMobileSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden transition-opacity" aria-hidden="true"></div>
+
+    <!-- LEFT SIDEBAR NAVIGATION (14 TABS IN 4 CATEGORIES) -->
+    <aside id="sidebar-nav" class="w-64 xl:w-72 shrink-0 bg-[#070d1e] border-r border-slate-800/80 p-3.5 flex flex-col justify-between sticky top-[69px] h-[calc(100vh-69px)] overflow-y-auto scrollbar-none z-40">
+      
+      <!-- MOBILE DRAWER HEADER & CLOSE BUTTON -->
+      <div id="mobile-sidebar-header" class="lg:hidden flex items-center justify-between pb-3 mb-2 border-b border-slate-800/80">
+        <div class="flex items-center gap-2 text-xs font-bold text-white">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+          <span>Navigasi SIAK-KAPRODI</span>
+        </div>
+        <button id="btn-mobile-close-sidebar" onclick="closeMobileSidebar()" type="button" aria-label="Tutup Menu" class="p-1.5 rounded-lg bg-slate-800 text-slate-400 hover:text-white transition cursor-pointer">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <nav id="nav-tabs" class="space-y-4">
+        
+        <!-- GROUP 1: AKADEMIK & MAHASISWA -->
+        <div>
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-cyan-400/80 px-2.5 mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="graduation-cap" class="w-3.5 h-3.5 text-cyan-400"></i> Akademik &amp; Perkuliahan
+          </div>
+          <div class="space-y-1" id="nav-group-akademik">
+            <button onclick="switchTab('kaprodi')" id="tab-btn-kaprodi" class="tab-btn active-tab touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all text-left">
+              <i data-lucide="layout-dashboard" class="w-4 h-4 text-amber-400 shrink-0"></i>
+              <span>1. Dashboard Kaprodi</span>
+            </button>
+            <button onclick="switchTab('wali')" id="tab-btn-wali" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="users" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+              <span>2. Portal Wali Murid</span>
+            </button>
+            <button onclick="switchTab('kurikulum')" id="tab-btn-kurikulum" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="book-marked" class="w-4 h-4 text-violet-400 shrink-0"></i>
+              <span>3. Pohon Kurikulum &amp; RPS</span>
+            </button>
+            <button onclick="switchTab('dosen')" id="tab-btn-dosen" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="user-check" class="w-4 h-4 text-indigo-400 shrink-0"></i>
+              <span>4. Audit Kinerja Dosen</span>
+            </button>
+            <button onclick="switchTab('rekap')" id="tab-btn-rekap" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="clipboard-list" class="w-4 h-4 text-fuchsia-400 shrink-0"></i>
+              <span>5. Evaluasi &amp; Rekap Silabus</span>
+            </button>
+            <button onclick="switchTab('portofolio')" id="tab-btn-portofolio" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="award" class="w-4 h-4 text-lime-400 shrink-0"></i>
+              <span>6. Portofolio 4 Lapis</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- GROUP 2: EKSEKUTIF & ANALITIK -->
+        <div>
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-purple-400/80 px-2.5 mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-purple-400"></i> Eksekutif &amp; Analitik
+          </div>
+          <div class="space-y-1" id="nav-group-eksekutif">
+            <button onclick="switchTab('yayasan')" id="tab-btn-yayasan" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="landmark" class="w-4 h-4 text-purple-400 shrink-0"></i>
+              <span>7. Cockpit Yayasan &amp; Investor</span>
+            </button>
+            <button onclick="switchTab('pertumbuhan')" id="tab-btn-pertumbuhan" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+              <span>8. Pertumbuhan PMB &amp; 30 MK</span>
+            </button>
+            <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="bar-chart-3" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+              <span>9. Observatorium Grafik</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- GROUP 3: KOMUNIKASI & PUBLIKASI -->
+        <div>
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400/80 px-2.5 mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="share-2" class="w-3.5 h-3.5 text-emerald-400"></i> Komunikasi &amp; Publikasi
+          </div>
+          <div class="space-y-1" id="nav-group-komunikasi">
+            <button onclick="switchTab('marketing')" id="tab-btn-marketing" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="megaphone" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+              <span>10. Showcase Marketing &amp; Sosmed</span>
+            </button>
+            <button onclick="switchTab('whatsapp')" id="tab-btn-whatsapp" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="message-square" class="w-4 h-4 text-green-400 shrink-0"></i>
+              <span>11. WhatsApp Broadcast Simulator</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- GROUP 4: SISTEM & MESIN DATA -->
+        <div>
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400/80 px-2.5 mb-1.5 flex items-center gap-1.5">
+            <i data-lucide="cpu" class="w-3.5 h-3.5 text-amber-400"></i> Sistem &amp; Mesin Data
+          </div>
+          <div class="space-y-1" id="nav-group-sistem">
+            <button onclick="switchTab('pengaturan')" id="tab-btn-pengaturan" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="settings" class="w-4 h-4 text-slate-400 shrink-0"></i>
+              <span>12. Pengaturan Identitas</span>
+            </button>
+            <button onclick="switchTab('info')" id="tab-btn-info" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="info" class="w-4 h-4 text-sky-400 shrink-0"></i>
+              <span>13. Panduan &amp; SOP Kaprodi</span>
+            </button>
+            <button onclick="switchTab('engine')" id="tab-btn-engine" class="tab-btn touch-target w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all text-left">
+              <i data-lucide="cpu" class="w-4 h-4 text-amber-400 shrink-0"></i>
+              <span>14. Engine Diagnostics</span>
+            </button>
+          </div>
+        </div>
+
+      </nav>
+
+      <!-- SIDEBAR FOOTER: QUICK ARCHETYPES & SYSTEM STATUS -->
+      <div class="pt-3 border-t border-slate-800/80 space-y-2.5">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-2.5">
+          <div class="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+            <i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> Demo Cepat Mahasiswa
+          </div>
+          <div class="grid grid-cols-1 gap-1.5 text-xs">
+            <button onclick="selectQuickStudent('2510015410010')" class="touch-target px-2.5 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 rounded-lg border border-amber-500/30 font-medium transition text-left flex items-center justify-between">
+              <span>🌟 Yazid</span>
+              <span class="text-[10px] font-mono opacity-70">Top Star</span>
+            </button>
+            <button onclick="selectQuickStudent('2510015410011')" class="touch-target px-2.5 py-1.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-lg border border-rose-500/30 font-medium transition text-left flex items-center justify-between">
+              <span>⚠️ Rozi</span>
+              <span class="text-[10px] font-mono opacity-70">At-Risk</span>
+            </button>
+            <button onclick="selectQuickStudent('2510015410001')" class="touch-target px-2.5 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 rounded-lg border border-sky-500/30 font-medium transition text-left flex items-center justify-between">
+              <span>✨ Alsa</span>
+              <span class="text-[10px] font-mono opacity-70">Konsisten</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- HOTKEY SHORTCUTS (UI-HK-01 - 04) -->
+        <div class="grid grid-cols-2 gap-1 text-[11px]">
+          <button id="btn-quick-at-risk" onclick="bukaModalAtRisk()" class="touch-target px-2 py-1.5 bg-rose-950/40 hover:bg-rose-900/50 border border-rose-800/40 text-rose-300 rounded-lg font-medium transition flex items-center gap-1 truncate" title="Buka modal drilldown mhs at-risk">
+            <i data-lucide="alert-triangle" class="w-3 h-3 text-rose-400 shrink-0"></i>
+            <span>At-Risk</span>
+          </button>
+          <button id="btn-quick-gradebook" onclick="downloadKaprodiGradebook()" class="touch-target px-2 py-1.5 bg-amber-950/40 hover:bg-amber-900/50 border border-amber-800/40 text-amber-300 rounded-lg font-medium transition flex items-center gap-1 truncate" title="Unduh PDF Gradebook Master">
+            <i data-lucide="file-text" class="w-3 h-3 text-amber-400 shrink-0"></i>
+            <span>Gradebook</span>
+          </button>
+          <button id="btn-quick-audit-dosen" onclick="switchTab('dosen')" class="touch-target px-2 py-1.5 bg-indigo-950/40 hover:bg-indigo-900/50 border border-indigo-800/40 text-indigo-300 rounded-lg font-medium transition flex items-center gap-1 truncate" title="Lompat ke Tab 4 Audit Kinerja Dosen">
+            <i data-lucide="user-check" class="w-3 h-3 text-indigo-400 shrink-0"></i>
+            <span>Audit Dosen</span>
+          </button>
+          <button id="btn-quick-observatorium" onclick="switchTab('analytics')" class="touch-target px-2 py-1.5 bg-cyan-950/40 hover:bg-cyan-900/50 border border-cyan-800/40 text-cyan-300 rounded-lg font-medium transition flex items-center gap-1 truncate" title="Lompat ke Tab 9 Observatorium Grafik">
+            <i data-lucide="bar-chart-3" class="w-3 h-3 text-cyan-400 shrink-0"></i>
+            <span>Grafik Mutu</span>
+          </button>
+        </div>
+
+        <div class="px-1 flex items-center justify-between text-[11px] font-mono text-slate-500">
+          <span class="flex items-center gap-1.5 text-emerald-400">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> PORT 40404
+          </span>
+          <span>v2.6 Enterprise</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN VIEWPORT CONTAINER (WIDE WORKSPACE) -->
+    <main id="app-main" class="flex-1 min-w-0 px-4 lg:px-8 py-6 space-y-8 safe-bottom overflow-x-hidden">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: EXECUTIVE DASHBOARD KAPRODI -->
+    <!-- ========================================================================= -->
+    <section id="section-kaprodi" class="tab-section block space-y-6">
+      
+      <!-- Top Overview Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-12 -top-12 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <i data-lucide="compass" class="w-4 h-4"></i> <span id="hero-judul">Rekap Monitoring Perkuliahan</span>
+            </div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight" id="hero-subjudul">Executive Academic Suite — Prodi Arsitektur</h2>
+            <p class="text-sm text-slate-300 mt-1 max-w-2xl" id="hero-deskripsi">
+              Pemantauan terpusat dosen, mahasiswa, capaian pembelajaran, dan analisis.
+            </p>
+            <!-- LEVEL 2: badge periode eksplisit (dari master, bukan diketik),
+                 supaya angka dashboard tidak bisa salah dibaca untuk semester lain -->
+            <p class="text-[11px] text-slate-400 mt-2 flex items-center gap-1.5" id="kaprodi-periode-badge" title="Konteks periode dari data master">
+              <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-sky-400"></i> Memuat periode…
+            </p>
+          </div>
+          <div class="flex items-center flex-wrap gap-2.5">
+            <button id="btn-unduh-gradebook" onclick="downloadKaprodiGradebook()" class="touch-target px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/40 flex items-center gap-2 transition shadow-lg">
+              <i data-lucide="sheet" class="w-4 h-4 text-emerald-400"></i> PDF Gradebook <span id="hero-jml-mhs">–</span> Mhs (Landscape)
+            </button>
+            <button id="btn-unduh-audit-dosen" onclick="downloadDosenAuditPDF()" class="touch-target px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-purple-300 text-xs font-bold rounded-xl border border-purple-500/40 flex items-center gap-2 transition shadow-lg">
+              <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i> PDF Audit Dosen & Modul RPS
+            </button>
+            <button id="btn-export-json" onclick="exportDataJSON()" class="touch-target px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
+              <i data-lucide="download" class="w-4 h-4"></i> Export JSON
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI CARDS - REPOSISI (keputusan user 2026-10-21): nilai & kompetensi
+             jadi muka; kehadiran diturunkan ke bagian "Konteks Presensi" di bawah -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Rata-rata Nilai Studio</span>
+              <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="award" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-amber-300 mt-2" id="kpi-nilai">-</div>
+            <div class="text-[11px] text-slate-400 mt-1">Predikat kelas: <strong id="kpi-predikat-desc">-</strong></div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Indeks Kesiapan Kelas</span>
+              <span class="p-2 rounded-lg bg-cyan-500/10 text-cyan-400"><i data-lucide="gauge" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-cyan-300 mt-2" id="kpi-kesiapan">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="kpi-kesiapan-desc">Rata indeks kesiapan seluruh mahasiswa aktif</div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Kompetensi Kelas</span>
+              <span class="p-2 rounded-lg bg-violet-500/10 text-violet-400"><i data-lucide="radar" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-violet-300 mt-2" id="kpi-komp">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="kpi-komp-desc">Rata 5 dim kompetensi lintas mahasiswa</div>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-rose-500/30 bg-rose-500/5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-rose-300 font-medium">Perlu Pendampingan</span>
+              <span class="p-2 rounded-lg bg-rose-500/20 text-rose-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-rose-400 mt-2" id="kpi-at-risk">-</div>
+            <div class="text-[11px] text-rose-300/80 mt-1" id="kpi-at-risk-desc">Alpha &#8805; 2x atau kehadiran &lt; 75%</div>
+            <button id="btn-kpi-at-risk-shortcut" onclick="bukaModalAtRisk()" class="mt-2.5 touch-target w-full px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer" title="Buka modal drilldown at-risk">
+              <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+              <span>Drilldown At-Risk</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- OUTPUT DIRECTORY & RUN HIERARCHY BADGE -->
+        <div class="mt-4 pt-4 border-t border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2.5">
+            <span class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <i data-lucide="folder-tree" class="w-4 h-4"></i>
+            </span>
+            <div>
+              <span class="text-slate-400 font-medium">Manajemen Arsip Folder Output:</span>
+              <span id="output-folder-display" class="font-mono text-emerald-300 font-bold ml-1">output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/[WAKTU_DIBIKIN]/</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="output-timestamp-badge" class="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700 font-mono text-[11px] flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="output-timestamp-text">Sesi Aktif: Terverifikasi</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHARTS ROW - REPOSISI: tren NILAI kelas jadi bintang; radar kelas +
+           distribusi grade di kolom kanan; kehadiran pindah ke Konteks Presensi -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Tren Nilai Kelas per Pertemuan (baru - rata skor slot lintas mahasiswa) -->
+        <div class="lg:col-span-2 bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-amber-400"></i> Tren Nilai Kelas per Pertemuan
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">Rata-rata skor praktikum lintas mahasiswa - ikut filter bulan di Konteks Presensi</p>
+            </div>
+            <span id="chart-nilai-count" class="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">— Pertemuan</span>
+          </div>
+          <div id="chart-nilai-trend" class="min-h-[260px]"></div>
+        </div>
+
+        <!-- Kolom kanan: radar kompetensi kelas + distribusi grade -->
+        <div class="flex flex-col gap-6">
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="radar" class="w-4 h-4 text-violet-400"></i> Radar Kompetensi Kelas
+              </h3>
+              <span id="radar-kelas-count" class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">— Mhs</span>
+            </div>
+            <div id="chart-radar-kelas" class="min-h-[210px]"></div>
+            <p class="text-[10px] text-slate-500 mt-1" id="radar-kelas-legend">Rata 5 dim lintas mahasiswa MK aktif.</p>
+          </div>
+
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg flex flex-col justify-between flex-1">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <i data-lucide="pie-chart" class="w-4 h-4 text-amber-400"></i> Distribusi Nilai Studio
+                  </h3>
+                  <p class="text-xs text-slate-400 mt-0.5">Sebaran grade evaluasi tugas AutoCAD</p>
+                </div>
+              </div>
+              <div id="chart-grade-dist" class="min-h-[220px]"></div>
+            </div>
+
+            <!-- Alert summary box -->
+            <div class="mt-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-slate-300">
+              <span class="text-amber-400 font-bold flex items-center gap-1.5 mb-1">
+                <i data-lucide="info" class="w-3.5 h-3.5"></i> Catatan Evaluasi Kaprodi:
+              </span>
+              <span id="kaprodi-note">Memuat ringkasan capaian kelas...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PETA MK RAWAN: 5 MK rata nilai terendah lintas semester (dari /api/periode
+           semua_semester). Klik Detail = drill-down kurikulum TANPA pindah MK aktif -->
+      <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+        <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="map-pinned" class="w-4 h-4 text-rose-400"></i> Peta MK Rawan (Rata Nilai Terendah Lintas Semester)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Prioritas pendampingan prodi - dihitung dari tree kurikulum, bukan satu MK</p>
+          </div>
+          <span id="mk-rawan-status" class="text-[11px] text-slate-500">Memuat peta MK…</span>
+        </div>
+        <div id="mk-rawan-list" class="grid grid-cols-1 lg:grid-cols-2 gap-2"></div>
+      </div>
+
+      <!-- KONTEKS PRESESI: ditenggelamkan (keputusan reposisi 2026-10-21) -
+           kaprodi tetap punya akses data presensi, tapi bukan lagi muka dashboard -->
+      <details id="konteks-presensi" class="group bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg overflow-hidden" ontoggle="onPresensiToggle(event)">
+        <summary class="flex items-center justify-between p-5 cursor-pointer select-none hover:bg-slate-900/40 transition">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="clipboard-check" class="w-4 h-4 text-emerald-400"></i> Konteks Presensi — Rekap Kehadiran &amp; Riwayat Ketidakhadiran
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Detail presensi &amp; tren kehadiran; angka kelayakan ujian &#8805; 75%</p>
+          </div>
+          <span class="flex items-center gap-3 text-xs">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-mono">
+              Kehadiran <span id="kpi-kehadiran">-</span>
+            </span>
+            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-500 group-open:rotate-180 transition-transform"></i>
+          </span>
+        </summary>
+        <div class="px-5 pb-5 pt-1 border-t border-slate-800/60">
+          <!-- ROW CHART KEHADIRAN (dari muka lama; ikut filter bulan) -->
+          <div class="rounded-xl p-4 border border-slate-800 mb-4">
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Tren Kehadiran &amp; Partisipasi per Pertemuan
+                </h4>
+                <p class="text-xs text-slate-400 mt-0.5">Pemantauan volume mahasiswa hadir vs berhalangan di Lab LIKDA</p>
+              </div>
+              <span id="chart-trend-count" class="text-[11px] font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">— Pertemuan</span>
+            </div>
+            <div id="chart-attendance-trend" class="min-h-[260px]"></div>
+          </div>
+
+          <!-- TABEL PRES + FILTERS -->
+          <div class="overflow-x-auto max-h-[480px] overflow-y-auto rounded-xl border border-slate-800">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono tracking-wider sticky top-0 border-b border-slate-800 z-10">
+                <tr>
+                  <th class="px-4 py-3">No</th>
+                  <th class="px-4 py-3">NPM</th>
+                  <th class="px-4 py-3">Nama Mahasiswa</th>
+                  <th class="px-4 py-3">Pertemuan &amp; Tanggal</th>
+                  <th class="px-4 py-3">Topik Pembelajaran</th>
+                  <th class="px-4 py-3">Status</th>
+                  <th class="px-4 py-3">Alasan Ketidakhadiran</th>
+                  <th class="px-4 py-3 text-center">Akumulasi Alpha</th>
+                  <th class="px-4 py-3 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="attendance-table-body" class="divide-y divide-slate-800/60 font-medium">
+                <!-- Rendered via app.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-3 flex items-center flex-wrap gap-2.5">
+            <div class="relative">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"></i>
+              <input type="text" id="table-search" placeholder="Cari nama / NPM..." oninput="filterTable()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition w-44">
+            </div>
+            <select id="filter-bulan" onchange="onBulanBerubah()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
+              <option value="all">Semua Bulan</option>
+            </select>
+            <select id="filter-session" onchange="filterTable()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
+              <option value="all">Semua Sesi</option>
+            </select>
+            <select id="filter-status" onchange="filterTable()" class="touch-target bg-slate-900 border border-slate-700/80 rounded-xl px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-amber-500 transition">
+              <option value="all">Semua Status</option>
+              <option value="Hadir">Hadir (penuh)</option>
+              <option value="Hadir Sebagian">Hadir Sebagian</option>
+              <option value="Belum Diinput">Belum Diinput</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Izin">Izin</option>
+              <option value="Alpha">Alpha</option>
+            </select>
+          </div>
+        </div>
+      </details>
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: PORTAL RAPOR WALI MURID (INDIVIDUAL VIEW) -->
+    <!-- ========================================================================= -->
+    <section id="section-wali" class="tab-section hidden space-y-6">
+      
+      <!-- Student Selector & Mode Header -->
+      <div class="bg-slate-900/90 rounded-2xl p-5 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="eye" class="w-4 h-4"></i> Tampilan Wali Murid (Orang Tua)
+          </span>
+          <h2 class="text-xl font-bold text-white mt-1">Rapor Perkembangan & Kecerdasan Belajar Mahasiswa</h2>
+          <p class="text-xs text-slate-400">Laporan bulanan komprehensif siap cetak atau dikirim via tautan privat ke orang tua</p>
+        </div>
+
+        <div class="flex items-center flex-wrap gap-2.5">
+          <div class="flex items-center gap-2">
+            <label for="student-dropdown" class="text-xs text-slate-300 font-medium whitespace-nowrap">Pilih Mahasiswa:</label>
+            <select id="student-dropdown" onchange="onStudentSelect(this.value)" class="touch-target bg-slate-800 border border-amber-500/50 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500 transition min-w-[260px]">
+              <!-- Populated via app.js -->
+            </select>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="btn-unduh-monthly" onclick="downloadCurrentStudentMonthlyPDF()" class="touch-target px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/40 rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-lg">
+              <i data-lucide="file-text" class="w-4 h-4 text-sky-400"></i> Unduh PDF 1: Kehadiran Bulanan
+            </button>
+            <button id="btn-unduh-rapor" onclick="downloadCurrentStudentFinalPDF()" class="touch-target px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 rounded-xl text-xs font-extrabold shadow-lg shadow-amber-500/20 flex items-center gap-1.5 transition">
+              <i data-lucide="award" class="w-4 h-4"></i> Unduh PDF 2: Rapor Capaian & Karier
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDENT DETAIL PROFILE HERO -->
+      <div class="bg-gradient-to-br from-slate-900 via-slate-800/90 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl relative overflow-hidden">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="flex items-center gap-5">
+            <!-- Avatar Frame -->
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-1 shadow-xl flex-shrink-0">
+              <div class="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center text-3xl font-black text-amber-400 font-mono" id="mhs-avatar">
+                -
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-2.5 flex-wrap">
+                <h3 class="text-2xl font-black text-white tracking-tight" id="mhs-nama">Memuat data...</h3>
+                <span id="mhs-alert-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700/40 text-slate-400 border border-slate-600/40">
+                  -
+                </span>
+                <span id="mhs-sumber-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700" title="Mesin diagnosis yang menghasil kartu ini (templat v3 dari sinyal nyata; nanti bisa jadi AI-Gemini)">
+                  mesin: -
+                </span>
+                <span id="mhs-ranking-pill" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-700/40 text-slate-400 border border-slate-600/40 font-mono">
+                  -
+                </span>
+              </div>
+              <div class="flex items-center gap-4 text-xs text-slate-400 mt-1.5 flex-wrap font-mono">
+                <span>NPM: <strong class="text-slate-200" id="mhs-npm">2510015410010</strong></span>
+                <span>•</span>
+                <span>Prodi: <strong class="text-slate-200">Arsitektur (S1)</strong></span>
+                <span>•</span>
+                <span>Dosen Asisten: <strong class="text-slate-200" id="wali-asisten">-</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stats Pills -->
+          <div class="flex items-center flex-wrap gap-3">
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-cyan-500/50 text-center">
+              <div class="text-[11px] text-cyan-300 font-medium">Status Kompetensi</div>
+              <div class="text-base font-black text-cyan-400 mt-0.5" id="mhs-stat-kompetensi">Kompeten Unggul</div>
+              <div class="text-[10px] text-slate-400" id="mhs-stat-kesiapan">Kesiapan: 96%</div>
+            </div>
+
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
+              <div class="text-[11px] text-slate-400 font-medium">Kehadiran</div>
+              <div class="text-xl font-bold text-emerald-400 mt-0.5" id="mhs-stat-kehadiran">100%</div>
+              <div class="text-[10px] text-slate-400" id="mhs-stat-absen-desc">— / — Pertemuan</div>
+            </div>
+
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
+              <div class="text-[11px] text-slate-400 font-medium">Nilai Rata-rata</div>
+              <div class="text-xl font-bold text-amber-400 mt-0.5" id="mhs-stat-nilai">95.2</div>
+              <div class="text-[10px] text-amber-300" id="mhs-stat-grade">Grade: A</div>
+            </div>
+
+            <div class="bg-slate-800/80 px-4 py-3 rounded-xl border border-slate-700 text-center">
+              <div class="text-[11px] text-slate-400 font-medium">Akumulasi Alpha</div>
+              <div class="text-xl font-bold text-slate-200 mt-0.5" id="mhs-stat-alpha">0x</div>
+              <div class="text-[10px] text-emerald-400" id="mhs-risk-note">-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RADAR CHART & EVALUATION GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Radar Competency Chart (5 Cols) -->
+        <div class="lg:col-span-5 bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2" id="radar-layer-title">
+                <i data-lucide="radar" class="w-4 h-4 text-amber-400"></i> Radar Kompetensi Arsitektural
+              </h4>
+              <span class="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20" id="radar-engine-tag">Engine: Karakter &amp; Softskill</span>
+            </div>
+            <p class="text-xs text-slate-400 mb-2" id="radar-layer-desc">5 pilar keahlian: Software CAD, Detail Gambar, Kedisiplinan, Logika Struktur, &amp; Manajemen Waktu.</p>
+            
+            <!-- 4-LAYER THEME SWITCHER BUTTONS (UI-TAB2-03 - 05) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 p-1 bg-slate-900/80 rounded-xl border border-slate-800 my-2">
+              <button type="button" id="btn-radar-softskill" onclick="switchRadarLayer('softskill')" class="touch-target px-2 py-1.5 text-[11px] rounded-lg transition-all text-center flex items-center justify-center gap-1 border bg-amber-500/20 text-amber-300 border-amber-500/40 font-semibold shadow-sm cursor-pointer">
+                <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Softskill
+              </button>
+              <button type="button" id="btn-radar-modul_mk" onclick="switchRadarLayer('modul_mk')" class="touch-target px-2 py-1.5 text-[11px] rounded-lg transition-all text-center flex items-center justify-center gap-1 border text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border-transparent font-medium cursor-pointer">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Modul RPS
+              </button>
+              <button type="button" id="btn-radar-semester" onclick="switchRadarLayer('semester')" class="touch-target px-2 py-1.5 text-[11px] rounded-lg transition-all text-center flex items-center justify-center gap-1 border text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border-transparent font-medium cursor-pointer">
+                <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Semester
+              </button>
+              <button type="button" id="btn-radar-potensi_cr" onclick="switchRadarLayer('potensi_cr')" class="touch-target px-2 py-1.5 text-[11px] rounded-lg transition-all text-center flex items-center justify-center gap-1 border text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border-transparent font-medium cursor-pointer">
+                <span class="w-1.5 h-1.5 rounded-full bg-purple-400"></span> Potensi CR
+              </button>
+            </div>
+
+            <div id="chart-radar-competency" class="min-h-[290px]"></div>
+          </div>
+
+          <div id="radar-breakdown-grid" class="grid grid-cols-2 gap-2 text-xs pt-3 border-t border-slate-800 mt-2 font-mono">
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Penguasaan CAD:</span> <strong class="text-amber-400" id="radar-val-cad">96</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Detail Gambar:</span> <strong class="text-amber-400" id="radar-val-detail">94</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Kedisiplinan:</span> <strong class="text-amber-400" id="radar-val-disiplin">98</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Logika Struktur:</span> <strong class="text-amber-400" id="radar-val-ruang">-</strong>
+            </div>
+            <div class="bg-slate-900 p-2 rounded-lg text-slate-300 flex justify-between">
+              <span>Manajemen Waktu:</span> <strong class="text-amber-400" id="radar-val-waktu">-</strong>
+            </div>
+          </div>
+          <!-- FASE 5: label jujur sumber radar - dim "estimasi" ditandai, bukan
+               dipamerkan sebagai fakta terukur. Diisi oleh renderRadarCompetencyChart. -->
+          <div id="radar-legend" class="text-[10px] text-slate-500 mt-2 font-sans"></div>
+        </div>
+
+        <!-- AI DIAGNOSTICS & SESSION LOGS (7 Cols) -->
+        <div class="lg:col-span-7 space-y-5">
+
+          <!-- FASE 5: tren perkembangan sepanjang kuliah (lintas MK dari tree) -->
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-cyan-500/30 shadow-lg">
+            <div class="flex items-center justify-between mb-2">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="trending-up" class="w-4 h-4 text-cyan-400"></i> Perkembangan Sepanjang Kuliah
+              </h4>
+              <span class="text-[11px] text-slate-400 font-mono" id="tren-mk-count">-</span>
+            </div>
+            <p class="text-xs text-slate-500 mb-3">Riwayat semua MK di tree kurikulum - rollup per semester + arah tren. Sumber: /api/perkembangan.</p>
+            <div id="tren-isi" class="space-y-2 text-xs text-slate-300">
+              <p class="text-slate-500 italic">Pilih mahasiswa untuk melihat perkembangannya.</p>
+            </div>
+          </div>
+
+          <!-- AI SWOT Intelligent Card -->
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-amber-500/30 shadow-lg relative overflow-hidden">
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
+                  <i data-lucide="bot" class="w-4 h-4"></i>
+                </span>
+                <h4 class="text-sm font-bold text-white">Analisis AI: Diagnosis & Rekomendasi Personal</h4>
+              </div>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono border border-amber-500/20">
+                Gemini Academic Engine
+              </span>
+            </div>
+
+            <div class="space-y-3.5 text-xs">
+              <!-- 1. Karakter Spasial & Etos Studio -->
+              <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25">
+                <div class="font-bold text-emerald-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="compass" class="w-4 h-4"></i> 1. Karakter Spasial & Etos Kerja Studio:
+                </div>
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-karakter-spasial">
+                  Memuat narasi analisis mendalam mengenai pemahaman ruang, kedisiplinan asistensi meja, dan kualitas penarikan garis arsitektur...
+                </p>
+              </div>
+
+              <!-- 2. Proyeksi Potensi Kedepan -->
+              <div class="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/25">
+                <div class="font-bold text-cyan-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="trending-up" class="w-4 h-4"></i> 2. Proyeksi Potensi Perkembangan Kedepan:
+                </div>
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-potensi-kedepan">
+                  Memuat proyeksi arah akselerasi kompetensi di semester atas, sayembara desain, dan pemodelan BIM tingkat lanjut...
+                </p>
+              </div>
+
+              <!-- 3. Hal yang Mesti Ditingkatkan Mahasiswa -->
+              <div class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25">
+                <div class="font-bold text-amber-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="target" class="w-4 h-4"></i> 3. Catatan Khusus Penguatan Mahasiswa:
+                </div>
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-catatan-mahasiswa">
+                  Catatan konstruktif langsung bagi ananda untuk memperdalam teknik detail struktur dan efisiensi workflow...
+                </p>
+              </div>
+
+              <!-- 4. Panduan Khusus Wali Murid di Rumah -->
+              <div class="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/25">
+                <div class="font-bold text-sky-400 flex items-center gap-1.5 mb-1.5 text-xs uppercase tracking-wide">
+                  <i data-lucide="heart-handshake" class="w-4 h-4"></i> 4. Panduan Pendampingan Khusus Wali Murid di Rumah:
+                </div>
+                <p class="text-slate-200 leading-relaxed text-justify" id="ai-panduan-wali">
+                  Saran praktis bagi orang tua dalam mendukung perangkat kerja, menjaga kebugaran, dan memberikan apresiasi moral...
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Breakdown Table -->
+          <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
+              <i data-lucide="list-ordered" class="w-4 h-4 text-sky-400"></i> Rincian Nilai &amp; Evaluasi per Pertemuan
+            </h4>
+            <div class="space-y-2" id="student-session-cards">
+              <!-- Rendered via app.js -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- MATRIKS 10 PELUANG KARIER RIIL MASA DEPAN (FULL WIDTH) -->
+      <div class="bg-[#0f172a] rounded-2xl p-6 border border-cyan-500/30 shadow-xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div>
+            <div class="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+              <i data-lucide="briefcase" class="w-4 h-4"></i> Pemetaan Potensi Karier Industri & Profesi Masa Depan
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1">
+              Matriks 10 Rekomendasi Profesi Riil Berdasarkan Talenta Mahasiswa
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Dianalisis secara komprehensif berdasarkan perpaduan kompetensi CAD, detail konstruksi, logika struktur, dan pemahaman volume QS.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-mono text-xs font-bold">
+              10 Profesi Terakreditasi IAI & PUPR
+            </span>
+          </div>
+        </div>
+
+        <!-- Career Matrix Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-900/90 text-slate-400 uppercase font-mono text-[11px] border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-3 w-12 text-center">No</th>
+                <th class="py-3 px-4">Profesi Riil & Sektor Industri</th>
+                <th class="py-3 px-4 w-44">Tingkat Kecocokan</th>
+                <th class="py-3 px-4">Keterampilan Kunci</th>
+                <th class="py-3 px-4">Analisis Potensi & Langkah Pengembangan</th>
+              </tr>
+            </thead>
+            <tbody id="career-matrix-rows" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Dynamically populated via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: PORTOFOLIO DECKCRAFT & VIDEO 9:16 -->
+    <!-- ========================================================================= -->
+    <section id="section-marketing" class="tab-section hidden space-y-6">
+      
+      <!-- Top Strategy Explainer -->
+      <div class="bg-gradient-to-r from-amber-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-amber-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="presentation" class="w-4 h-4"></i> DeckCraft Presentation Engine
+          </span>
+          <h2 class="text-xl font-bold text-white mt-1">Slide Deck Portofolio Arsitektur 16:9 Widescreen (Format PDF Siap Lampir)</h2>
+          <p class="text-xs text-slate-300 mt-1 max-w-2xl">
+            Dokumen <strong>PDF Slide Deck Presentasi 4 Halaman</strong> beresolusi tinggi. Dilengkapi mockup video vertikal 9:16 untuk media sosial!
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="downloadCurrentStudentDeckcraftPDF()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-amber-500/20 flex items-center gap-2 transition">
+            <i data-lucide="file-down" class="w-4 h-4"></i> Unduh DeckCraft PDF (16:9)
+          </button>
+        </div>
+      </div>
+
+      <!-- MAIN SHOWCASE GRID: DECKCRAFT SLIDES (LEFT) + VIDEO 9:16 (RIGHT) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        <!-- LEFT: 4-SLIDE DECKCRAFT PRESENTER (7 COLS) -->
+        <div class="lg:col-span-7 bg-[#0f172a] rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i data-lucide="monitor" class="w-4 h-4 text-cyan-400"></i> DeckCraft Presentation Suite (16:9 Widescreen)
+              </h3>
+              <p class="text-xs text-slate-400">Slide presentasi portofolio interaktif & sertifikasi kurikulum IAI</p>
+            </div>
+            <!-- Action Buttons -->
+            <div class="flex items-center flex-wrap gap-2">
+              <button id="btn-marketing-live-deck" onclick="openLiveDeckcraft()" class="px-2.5 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-bold flex items-center gap-1.5 transition">
+                <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i> Fullscreen Interaktif
+              </button>
+              <button onclick="downloadCurrentStudentDeckcraftPDF()" class="px-2.5 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 transition">
+                <i data-lucide="file-down" class="w-3.5 h-3.5"></i> Unduh PDF 16:9
+              </button>
+            </div>
+          </div>
+
+          <!--
+            FIX TAHAP A: Carousel 4-slide interaktif DIHAPUS.
+            Alasannya: app.js membaca student.marketing.carousel, tapi key itu
+            TIDAK PERNAH ADA di academic_data.json (hanya ada video & wa_text).
+            Akibatnya tombol prev/next dan 4 thumbnail mati total - diklik tidak
+            terjadi apa-apa, stage diam-diam menampilkan teks placeholder.
+            Sekarang isi slide yang sesungguhnya ditampilkan lewat DeckCraft:
+            tekan "Fullscreen Interaktif" atau "Unduh PDF 16:9".
+          -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-amber-400 font-mono font-bold">SLIDE 1</div>
+              <div class="text-xs font-bold text-white">Cover Progres & Identitas</div>
+              <div class="text-[11px] text-slate-400" id="deck-slide-1">Ringkasan mahasiswa</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-cyan-400 font-mono font-bold">SLIDE 2</div>
+              <div class="text-xs font-bold text-white">Matriks Layer CAD & Lineweight</div>
+              <div class="text-[11px] text-slate-400">Standar gambar kerja IAI</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-cyan-400 font-mono font-bold">SLIDE 3</div>
+              <div class="text-xs font-bold text-white">Karya Denah Arsitektur 1:100</div>
+              <div class="text-[11px] text-slate-400">Notasi ruang & dimensi</div>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-1.5">
+              <div class="text-[10px] text-emerald-400 font-mono font-bold">SLIDE 4</div>
+              <div class="text-xs font-bold text-white">Sertifikasi Kompetensi Studio</div>
+              <div class="text-[11px] text-slate-400" id="deck-slide-4">Berstempel emas Kaprodi</div>
+            </div>
+          </div>
+
+          <div class="flex items-start gap-2.5 p-3 rounded-xl bg-sky-500/10 border border-sky-500/25 text-[11px] text-slate-300">
+            <i data-lucide="info" class="w-4 h-4 text-sky-400 flex-shrink-0 mt-px"></i>
+            <span>Ingin melihat isi slide lengkap? Tekan <strong class="text-white">Fullscreen Interaktif</strong> (presentasi HTML 16:9) atau <strong class="text-white">Unduh PDF 16:9</strong> (siap dilampirkan ke wali murid). Keduanya memakai data mahasiswa yang sedang dipilih.</span>
+          </div>
+
+          <!-- OpenCraft MCP Link Banner -->
+          <div class="p-3.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between gap-3 text-xs text-slate-300">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="p-1.5 rounded-lg bg-sky-500/20 text-sky-400 flex-shrink-0"><i data-lucide="cpu" class="w-4 h-4"></i></span>
+              <span class="truncate">Engine DeckCraft: <strong class="text-white">deckcraft_builder.py</strong></span>
+            </div>
+            <button onclick="downloadCurrentStudentDeckcraftPDF()" class="text-[11px] font-bold text-amber-400 hover:text-amber-300 flex items-center gap-1 transition flex-shrink-0">
+              <span>Unduh File PDF</span> <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- RIGHT: VERTICAL VIDEO 9:16 PLAYER (5 COLS) -->
+        <div class="lg:col-span-5 bg-[#0f172a] rounded-2xl p-6 border border-slate-800 shadow-xl space-y-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="video" class="w-4 h-4 text-emerald-400"></i> Video Portofolio Vertikal (9:16 Full HD)
+            </h3>
+            <p class="text-xs text-slate-400">Video 30 detik MP4 vertikal dengan narasi AI Bu Gadis & foto karya riil</p>
+          </div>
+
+          <!-- ASSET FOLDER DETECTION & CONTROL -->
+          <div class="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2.5">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+                <i data-lucide="folder-git-2" class="w-3.5 h-3.5"></i> <span>Aset Foto Karya Mahasiswa</span>
+              </span>
+              <span id="detected-photo-count" class="text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+                0 Foto Terdeteksi
+              </span>
+            </div>
+            
+            <div class="text-[10.5px] text-slate-400 font-mono truncate" id="detected-photo-folder">
+              input/progress_mahasiswa/...
+            </div>
+
+            <!-- Image Filename Chips Container -->
+            <div id="detected-photo-chips" class="flex flex-wrap gap-1 max-h-16 overflow-y-auto">
+              <!-- Dynamically populated -->
+            </div>
+
+            <div class="flex items-center gap-2 pt-1 border-t border-slate-800">
+              <button id="btn-marketing-open-folder" onclick="openStudentProgressFolder()" class="touch-target flex-1 py-2 px-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-bold rounded-lg border border-slate-700 flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="folder-open" class="w-3.5 h-3.5 text-amber-400"></i> Buka Folder di File Explorer
+              </button>
+              <button onclick="generateCurrentStudentVideo()" id="btn-generate-video" class="touch-target py-2 px-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-[11px] font-black rounded-lg shadow-md flex items-center justify-center gap-1.5 transition">
+                <i data-lucide="video" class="w-3.5 h-3.5"></i> Render Video MP4
+              </button>
+            </div>
+          </div>
+
+          <!-- SMARTPHONE MOCKUP FRAME -->
+          <div class="relative w-full max-w-[280px] mx-auto aspect-[9/16] bg-slate-950 rounded-[32px] border-4 border-slate-700 shadow-2xl p-3 flex flex-col justify-between overflow-hidden">
+            
+            <!-- Phone Notch / Speaker -->
+            <div class="w-24 h-4 bg-slate-800 rounded-full mx-auto mb-2 flex-shrink-0"></div>
+
+            <!-- Real Video Screen Viewport -->
+            <div class="relative flex-1 bg-black rounded-2xl overflow-hidden border border-slate-800 flex items-center justify-center" id="video-screen-container">
+              <video id="student-real-video" class="w-full h-full object-cover" controls playsinline preload="metadata">
+                <source id="student-video-src" src="/videos/video_portofolio_2510015410010.mp4" type="video/mp4">
+                Browser Anda tidak mendukung tag video.
+              </video>
+            </div>
+
+            <!-- Video Download + Caption Button below phone -->
+            <div class="mt-2.5 flex flex-col gap-1.5 px-1">
+              <button onclick="downloadStudentVideoMP4()" id="btn-download-video-mp4" class="touch-target w-full py-2 px-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 shadow-md shadow-amber-500/20 transition">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Unduh Video MP4 (1080x1920)
+              </button>
+              <button onclick="copyInstagramCaption()" id="btn-copy-caption" class="touch-target w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] rounded-xl flex items-center justify-center gap-1.5 border border-slate-600 transition">
+                <i data-lucide="instagram" class="w-3.5 h-3.5"></i> Salin Caption Instagram
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Video Audio Script Box -->
+          <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+            <span class="text-slate-400 font-medium block">Naskah Lengkap Voiceover Bu Gadis (AI TTS):</span>
+            <p class="text-slate-200 italic" id="video-full-script">
+              Loading script...
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: SIMULATOR WHATSAPP DISPATCHER (DENGAN LAMPIRAN PDF RESMI) -->
+    <!-- ========================================================================= -->
+    <section id="section-whatsapp" class="tab-section hidden space-y-6">
+      
+      <div class="bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 rounded-2xl p-5 border border-emerald-500/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="paperclip" class="w-4 h-4"></i> Pengiriman Dokumen WhatsApp Wali Murid
+          </span>
+          <h2 class="text-xl font-bold text-white mt-1">Simulator Pesan WhatsApp Resmi & Lampiran File PDF</h2>
+          <p class="text-xs text-slate-300 mt-1 max-w-2xl">
+            Bukan teks panjang biasa! Pesan diawali dengan <strong>Pesan Pembuka Sopan</strong> kemudian diikuti <strong>Lampiran 3 File PDF Terverifikasi</strong> (Rekap Kehadiran Bulanan, Rapor Capaian & Matriks Karier, serta Slide Portofolio DeckCraft).
+          </p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="btn-copy-wa-message" onclick="copyWhatsAppMessage()" class="touch-target px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition">
+            <i data-lucide="copy" class="w-4 h-4"></i> Salin Teks Pembuka
+          </button>
+        </div>
+      </div>
+
+      <!-- WHATSAPP CHAT SIMULATION CARD -->
+      <div class="max-w-3xl mx-auto bg-[#0b141a] rounded-2xl border border-emerald-900/50 shadow-2xl overflow-hidden">
+        
+        <!-- WA Header Bar -->
+        <div class="bg-[#202c33] px-4 py-3 flex items-center justify-between border-b border-slate-800">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center text-white font-bold text-sm">
+              🏛️
+            </div>
+            <div>
+              <div class="text-sm font-bold text-white flex items-center gap-1.5">
+                Kaprodi Arsitektur Resmi <i data-lucide="badge-check" class="w-4 h-4 text-emerald-400"></i>
+              </div>
+              <div class="text-[11px] text-emerald-400">Online • Akun Terverifikasi Kampus</div>
+            </div>
+          </div>
+          <div class="text-xs text-slate-400">
+            Tujuan: <strong class="text-slate-200" id="wa-recipient-name">-</strong>
+          </div>
+        </div>
+
+        <!-- Chat Body with Wallpaper -->
+        <div class="p-6 bg-[#0b141a] min-h-[460px] flex flex-col justify-end relative" style="background-image: radial-gradient(#1e293b 1px, transparent 1px); background-size: 24px 24px;">
+          
+          <!-- Message Bubble (Opening Text + PDF Attachment Cards) -->
+          <div class="bg-[#005c4b] text-slate-100 rounded-2xl rounded-tr-none p-4 max-w-xl ml-auto shadow-md border border-emerald-600/30 space-y-3 text-xs leading-relaxed">
+            
+            <!-- Opening Greeting Text -->
+            <div id="wa-opening-text" class="whitespace-pre-line font-sans">
+              Assalamu’alaikum Warahmatullahi Wabarakatuh.
+              Kepada Yth. Bapak/Ibu Wali Murid dari *M Yazid Zidane Mulyadi*,
+
+              Salam hangat dari Program Studi Arsitektur, Fakultas Teknik & Desain.
+              Berikut kami sampaikan Surat Resmi dan Berkas Laporan Akademik ananda pada mata kuliah *Aplikasi Komputer Arsitektur (AutoCAD & Gambar Kerja)* periode semester berjalan:
+            </div>
+
+            <!-- PDF ATTACHMENT CARDS INSIDE WHATSAPP BUBBLE -->
+            <div class="space-y-2 pt-1 border-t border-emerald-600/40">
+              
+              <!-- PDF Card 1: Kehadiran Bulanan -->
+              <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-emerald-500/30 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentMonthlyPDF()">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    PDF
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-1">01_rekap_kehadiran_bulanan.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">Rekap Presensi & Alasan</div>
+                  </div>
+                </div>
+                <button type="button" onclick="event.stopPropagation(); downloadCurrentStudentMonthlyPDF()" class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0 cursor-pointer" title="Unduh PDF 01: Presensi">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- PDF Card 2: Rapor Capaian & Pemetaan Karier -->
+              <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-emerald-500/30 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentFinalPDF()">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-9 h-9 rounded-lg bg-rose-600 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                    PDF
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-white truncate text-[11px]" id="wa-card-file-2">02_rapor_akhir_semester_kompetensi.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">Rapor Capaian & Matriks Karier</div>
+                  </div>
+                </div>
+                <button type="button" onclick="event.stopPropagation(); downloadCurrentStudentFinalPDF()" class="p-1.5 rounded-lg bg-emerald-600/60 hover:bg-emerald-600 text-white flex-shrink-0 cursor-pointer" title="Unduh PDF 02: Rapor">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+              <!-- PDF Card 3: DeckCraft Presentation Deck -->
+              <div class="bg-[#025141] hover:bg-[#024437] p-2.5 rounded-xl border border-amber-500/40 flex items-center justify-between gap-3 cursor-pointer transition" onclick="downloadCurrentStudentDeckcraftPDF()">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-9 h-9 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xs flex-shrink-0">
+                    DECK
+                  </div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-amber-300 truncate text-[11px]" id="wa-card-file-3">05_deckcraft_portofolio_arsitektur.pdf</div>
+                    <div class="text-[10px] text-emerald-200/80 font-mono">4 Slide Presentasi 16:9 Widescreen</div>
+                  </div>
+                </div>
+                <button type="button" onclick="event.stopPropagation(); downloadCurrentStudentDeckcraftPDF()" class="p-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold flex-shrink-0 cursor-pointer" title="Unduh PDF 05: DeckCraft">
+                  <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Closing Note -->
+            <div id="wa-closing-text" class="text-[11px] text-emerald-100/90 pt-1 border-t border-emerald-600/30">
+              Bapak/Ibu dapat mengunduh dan menyimpan berkas PDF di atas. Terima kasih atas doa, bimbingan, dan kepercayaan Bapak/Ibu mendampingi ananda tercinta di rumah.<br><br>
+              Hormat kami,<br>
+              <strong>Ketua Program Studi <span id="wa-kaprodi-prodi">Arsitektur</span></strong><br>
+              <strong id="wa-kaprodi-nama">-</strong><br>
+              <span class="text-emerald-300">Asisten Dosen: <span id="wa-asisten-nama">-</span></span>
+            </div>
+
+            <!-- WA Tick & Time -->
+            <div class="text-right text-[10px] text-emerald-200/70 font-mono flex items-center justify-end gap-1">
+              <span>08:15</span>
+              <span>✓✓</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="bg-[#202c33] p-4 flex items-center justify-between border-t border-slate-800 gap-3">
+          <div class="text-xs text-slate-400">
+            Terkirim ke wali murid dengan <strong>3 Lampiran PDF Resmi</strong>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btn-wa-download-all" onclick="downloadAll3StudentPDFs()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-bold text-xs rounded-xl flex items-center gap-1.5 transition">
+              <i data-lucide="download-cloud" class="w-4 h-4"></i> Unduh 3 PDF Sekaligus
+            </button>
+            <button id="btn-open-wa-direct" onclick="openWhatsAppDirect()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl flex items-center gap-2 transition">
+              <i data-lucide="external-link" class="w-4 h-4"></i> Buka WhatsApp Web
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 5: PENGATURAN IDENTITAS AKADEMIK -->
+    <!-- ========================================================================= -->
+    <section id="section-pengaturan" class="tab-section hidden space-y-6">
+
+      <!-- Peringatan "sudah disimpan, belum diterapkan ke dokumen" -->
+      <div id="pengaturan-banner" class="hidden rounded-2xl p-5 border shadow-xl">
+        <div class="flex items-start gap-3">
+          <i data-lucide="alert-triangle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+          <div class="text-sm">
+            <p class="font-bold" id="pengaturan-banner-judul"></p>
+            <p class="mt-1 opacity-90" id="pengaturan-banner-isi"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl">
+        <div class="flex items-center gap-2 text-amber-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <i data-lucide="settings" class="w-4 h-4"></i> Pengaturan Identitas Akademik
+        </div>
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">Tempat Atur Nama</h2>
+        <p class="text-sm text-slate-300 mt-1 max-w-3xl">
+          Mata kuliah, dosen pengasuh, asisten dosen, ketua prodi, dan institusi diatur di sini.
+          Nilainya tersimpan di <code id="pengaturan-jalur" class="text-cyan-300 text-xs">config/identitas.json</code>
+          — satu-satunya sumber nama untuk dashboard, pesan wali murid, PDF, dan video.
+          Tidak ada lagi nama yang diketik langsung di dalam kode.
+        </p>
+      </div>
+
+      <form id="form-pengaturan" class="space-y-6" onsubmit="event.preventDefault(); simpanIdentitas();">
+
+        <!-- 1. Institusi -->
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-amber-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">1</span>
+            <h3 class="text-lg font-bold text-white">Institusi</h3>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Nama Universitas <span class="text-slate-500">(opsional)</span></span>
+              <input id="cfg-universitas" type="text" placeholder="biarkan kosong bila belum dipakai"
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Fakultas</span>
+              <input id="cfg-fakultas" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Program Studi</span>
+              <input id="cfg-prodi" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Kota (tempat tanda tangan)</span>
+              <input id="cfg-kota" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Ketua Program Studi</span>
+              <input id="cfg-kaprodi" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">NIP / NIDN Ketua Prodi <span class="text-slate-500">(opsional)</span></span>
+              <input id="cfg-nip-kaprodi" type="text" placeholder="biarkan kosong bila belum dipakai"
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+          </div>
+        </div>
+
+        <!-- 2. Teks Dashboard -->
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-amber-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">2</span>
+            <h3 class="text-lg font-bold text-white">Teks Dashboard</h3>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Judul</span>
+              <input id="cfg-judul" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Tanggal tanda tangan dokumen</span>
+              <input id="cfg-tanggal" type="text" required placeholder="18 Oktober 2026"
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Sub judul <span class="text-slate-500">(boleh memakai {prodi})</span></span>
+              <input id="cfg-subjudul" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Deskripsi</span>
+              <input id="cfg-deskripsi" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+          </div>
+        </div>
+
+        <!-- 3. Mata Kuliah -->
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-5">
+          <div class="flex items-center justify-between gap-3 flex-wrap">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-amber-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">3</span>
+              <h3 class="text-lg font-bold text-white">Mata Kuliah</h3>
+            </div>
+            <label class="flex items-center gap-2">
+              <span class="text-xs font-semibold text-slate-400">Sedang diatur:</span>
+              <select id="cfg-mk-pilih" onchange="pilihMkUntukDiatur(this.value)"
+                class="touch-target bg-slate-950 text-cyan-300 text-xs font-bold rounded px-2.5 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
+            </label>
+          </div>
+          <div class="grid md:grid-cols-2 gap-4">
+            <label class="block md:col-span-2">
+              <span class="text-xs font-semibold text-slate-400">Nama Mata Kuliah</span>
+              <input id="cfg-mk-nama" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Kode Mata Kuliah</span>
+              <input id="cfg-mk-kode" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">SKS</span>
+              <input id="cfg-mk-sks" type="number" min="1" max="12" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Kelas / Ruang</span>
+              <input id="cfg-mk-kelas" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Semester</span>
+              <input id="cfg-mk-semester" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block md:col-span-2">
+              <span class="text-xs font-semibold text-slate-400">Jadwal</span>
+              <input id="cfg-mk-jadwal" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block md:col-span-2">
+              <span class="text-xs font-semibold text-slate-400">Dosen Pengasuh <span class="text-slate-500">(satu nama per baris; urutan = Pengasuh I, II, ...)</span></span>
+              <textarea id="cfg-mk-dosen" rows="3" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-xs font-mono rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400"></textarea>
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">Asisten Dosen</span>
+              <input id="cfg-mk-asisten" type="text" required
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-400">NIP Asisten <span class="text-slate-500">(opsional)</span></span>
+              <input id="cfg-mk-asisten-nip" type="text"
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-amber-400">
+            </label>
+          </div>
+          <label class="flex items-center gap-2 text-xs text-slate-300">
+            <input id="cfg-mk-aktif" type="checkbox" class="w-4 h-4 accent-amber-500">
+            Jadikan mata kuliah ini yang <strong class="text-white">AKTIF</strong> di dashboard
+          </label>
+        </div>
+
+        <!-- Aksi -->
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-4">
+          <div>
+            <h3 class="text-lg font-bold text-white">Jalankan</h3>
+            <p class="text-xs text-slate-400 mt-1">
+              <strong class="text-slate-200">Simpan Identitas</strong> hanya mengubah label (instan, tidak menyentuh data).
+              <strong class="text-slate-200">Terapkan ke Dokumen</strong> meregenerasi data master sehingga nama baru ikut
+              ke pesan wali murid &amp; PDF. <strong class="text-slate-200">Cetak Ulang Paket PDF</strong> mencetak ulang
+              berkas arsip (berat, membuka Chromium).
+            </p>
+          </div>
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="submit" id="btn-simpan-identitas" onclick="simpanIdentitas()" class="px-4 py-2 rounded-lg text-sm font-bold bg-amber-500 hover:bg-amber-400 text-slate-950 transition shadow-lg cursor-pointer">
+              Simpan Identitas
+            </button>
+            <button type="button" id="btn-terapkan-dokumen" onclick="terapkanKeDokumen()" class="px-4 py-2 rounded-lg text-sm font-bold bg-sky-600 hover:bg-sky-500 text-white transition shadow-lg">
+              Terapkan ke Dokumen
+            </button>
+            <button type="button" id="btn-regenerasi-pdf" onclick="regenerasiPaketPdf()" class="px-4 py-2 rounded-lg text-sm font-bold bg-rose-600 hover:bg-rose-500 text-white transition shadow-lg">
+              Cetak Ulang Paket PDF
+            </button>
+            <button type="button" id="btn-muat-identitas" onclick="muatIdentitas()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              Muat Ulang
+            </button>
+            <span id="pengaturan-status" class="text-xs text-slate-400"></span>
+          </div>
+          <pre id="pengaturan-log" class="hidden bg-slate-950 rounded-xl p-4 border border-slate-800 text-[11px] leading-relaxed text-slate-300 font-mono overflow-x-auto whitespace-pre-wrap"></pre>
+        </div>
+      </form>
+    </section>
+
+    <!-- =====================================================================
+         TAB 6: KURIKULUM - sunting isi tree kurikulum langsung dari dashboard.
+         Sumbernya data/kurikulum/<PRODI>/<TAHUN AJAR>/<SEMESTER>/<MK>/.
+         ===================================================================== -->
+    <section id="section-kurikulum" class="tab-section hidden space-y-6">
+
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl">
+        <div class="flex items-center gap-2 text-violet-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <i data-lucide="layers" class="w-4 h-4"></i> Struktur Kurikulum
+        </div>
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">Kurikulum Bertingkat</h2>
+        <p class="text-sm text-slate-300 mt-1 max-w-3xl">
+          Prodi &rarr; Tahun Ajar &rarr; Semester &rarr; Mata Kuliah &rarr;
+          <strong>16 pertemuan</strong>. Tab ini menyunting isi tree kurikulum
+          (<code id="kurikulum-jalur" class="text-cyan-300 text-xs">data/kurikulum/</code>):
+          topik pertemuan, bobot, jumlah slot absen, jenis MK, dan semester kurikulum.
+          Nama MK, dosen, kelas, dan jadwal tetap diatur di tab 5 (Pengaturan).
+        </p>
+      </div>
+
+      <div id="kur-override" class="hidden"></div>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Mata Kuliah</p>
+          <p id="kur-mk" class="text-base font-extrabold text-white mt-1 leading-snug">-</p>
+          <p id="kur-kode" class="text-xs text-slate-400 mt-0.5"></p>
+          <p id="kur-aktif" class="text-[11px] mt-2"></p>
+        </div>
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Pertemuan &amp; Slot Absen</p>
+          <p id="kur-pertemuan" class="text-2xl font-extrabold text-white mt-1">-</p>
+          <p id="kur-slot" class="text-xs text-slate-400 mt-0.5"></p>
+        </div>
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Total Bobot</p>
+          <p id="kur-bobot" class="text-2xl font-extrabold text-white mt-1">-</p>
+          <p class="text-xs text-slate-400 mt-0.5">harus tepat 100</p>
+        </div>
+        <div class="bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <p class="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Peserta &amp; Topik</p>
+          <p id="kur-mhs" class="text-2xl font-extrabold text-white mt-1">-</p>
+          <p id="kur-topik" class="text-xs text-slate-400 mt-0.5"></p>
+        </div>
+      </div>
+
+      <div id="kurikulum-peringatan" class="hidden rounded-2xl p-5 border shadow-xl text-xs space-y-1.5"></div>
+
+      <form id="form-kurikulum" class="space-y-6" onsubmit="event.preventDefault(); simpanKurikulum();">
+
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-violet-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">A</span>
+            <h3 class="text-lg font-bold text-white">Identitas Penawaran</h3>
+          </div>
+          <p class="text-xs text-slate-400 -mt-2">
+            Dua kotak di bawah ini yang boleh disunting di sini. Sisanya pratinjau
+            (sumbernya <code class="text-cyan-300">config/identitas.json</code>, tab 5).
+          </p>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-400" for="kur-jenis-mk">Jenis Mata Kuliah</label>
+              <select id="kur-jenis-mk" class="touch-target mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-violet-400">
+                <option value="teori">teori (1 SKS = 50 menit)</option>
+                <option value="studio">studio / praktikum (1 SKS = 120 menit)</option>
+                <option value="teori_studio">teori_studio (campuran)</option>
+              </select>
+              <span id="kur-jenis-sumber" class="block text-[11px] text-amber-400 mt-1"></span>
+              <label class="mt-2 flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer">
+                <input id="kur-jenis-konfirmasi" type="checkbox" class="accent-violet-500 w-3.5 h-3.5">
+                Tandai sudah benar (dikonfirmasi)
+              </label>
+            </div>
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-400" for="kur-semester-kur">
+                Semester Kurikulum (MK ini diajarkan di semester berapa)
+              </label>
+              <input id="kur-semester-kur" type="number" min="1" max="14" placeholder="kosongkan bila belum tahu"
+                class="mt-1 w-full bg-slate-950 text-slate-100 text-sm rounded-lg px-3 py-2 border border-slate-700 focus:outline-none focus:border-violet-400">
+              <span id="kur-semester-sumber" class="block text-[11px] text-amber-400 mt-1"></span>
+              <label class="mt-2 flex items-center gap-2 text-[11px] text-slate-400 cursor-pointer">
+                <input id="kur-semester-konfirmasi" type="checkbox" class="accent-violet-500 w-3.5 h-3.5">
+                Tandai sudah benar (dikonfirmasi)
+              </label>
+            </div>
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-500" for="kur-pratinjau-kode">Kode MK</label>
+              <input id="kur-pratinjau-kode" type="text" readonly class="mt-1 w-full bg-slate-950/60 text-slate-400 text-sm rounded-lg px-3 py-2 border border-slate-800">
+            </div>
+            <div class="block">
+              <label class="text-xs font-semibold text-slate-500" for="kur-pratinjau-jadwal">Kelas / Jadwal</label>
+              <input id="kur-pratinjau-jadwal" type="text" readonly class="mt-1 w-full bg-slate-950/60 text-slate-400 text-sm rounded-lg px-3 py-2 border border-slate-800">
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-4">
+          <div class="flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-full bg-violet-500 text-slate-900 text-xs font-extrabold flex items-center justify-center">B</span>
+              <h3 class="text-lg font-bold text-white">16 Pertemuan</h3>
+            </div>
+            <div class="flex items-center gap-3">
+              <span id="kur-bobot-live" class="text-xs font-bold font-mono text-slate-300"></span>
+              <button type="button" onclick="isiTopikSisa()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+                Isi Topik Kosong
+              </button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                  <th class="text-left py-2 pr-2 w-10">P</th>
+                  <th class="text-left py-2 pr-2 w-20">Tipe</th>
+                  <th class="text-left py-2 pr-2">Topik Pertemuan</th>
+                  <th class="text-right py-2 pr-2 w-20">Bobot</th>
+                  <th class="text-right py-2 pr-2 w-20">Slot</th>
+                  <th class="text-left py-2 pr-2 w-32">Tanggal</th>
+                </tr>
+              </thead>
+              <tbody id="tabel-sesi-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between flex-wrap gap-3 bg-slate-900/70 rounded-2xl p-5 border border-slate-700/60 shadow-xl">
+          <div class="text-xs text-slate-400">
+            <p id="kurikulum-status"></p>
+            <p class="mt-0.5">Menyimpan akan menulis tree, lalu membangun ulang data master + katalog
+              (beberapa detik). Jika Σ bobot ≠ 100, penyimpanan ditolak.</p>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <button type="submit" id="btn-simpan-kurikulum" onclick="simpanKurikulum()" class="px-4 py-2 rounded-lg text-sm font-bold bg-violet-600 hover:bg-violet-500 text-white transition shadow-lg cursor-pointer">
+              Simpan ke Tree Kurikulum
+            </button>
+            <button type="button" onclick="muatDetailKurikulum()" class="px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              Muat Ulang
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 7: INFO SISTEM
+         Isi halaman ini dibaca dari public/info.md lalu dirender di browser oleh
+         renderMarkdown() di app.js (tanpa CDN, tetap 100% offline). -->
+    <!-- ========================================================================= -->
+    <section id="section-info" class="tab-section hidden space-y-6">
+
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800/80 to-slate-900 rounded-2xl p-6 border border-slate-700/60 shadow-xl">
+        <div class="flex items-center gap-2 text-sky-400 text-xs font-semibold uppercase tracking-wider mb-1">
+          <i data-lucide="info" class="w-4 h-4"></i> Dokumentasi Sistem
+        </div>
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">Info &amp; Cara Kerja Sistem</h2>
+            <p class="text-sm text-slate-300 mt-1 max-w-3xl">
+              Penjelasan alur data, aturan akademik, sepuluh tab dashboard, dan
+              rencana pengembangan. Sumber teksnya <code class="text-cyan-300 text-xs">public/info.md</code>
+              — perbarui berkas itu, lalu klik <strong>Muat Ulang</strong>.
+            </p>
+          </div>
+          <div class="flex items-center gap-2.5">
+            <span id="info-status" class="text-[11px] text-slate-500"></span>
+            <button type="button" onclick="muatInfoSistem(true)" class="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2">
+              <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Muat Ulang
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/70 rounded-2xl p-6 border border-slate-700/60 shadow-xl">
+        <div id="info-md" class="info-md">
+          <p class="text-sm text-slate-400">Memuat penjelasan sistem…</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- TAB 8: REKAP PERIODE (Level 3: satu semester semua MK; Level 4:
+         semua semester semua MK) — data dari /api/periode, dihitung dari
+         TREE, bukan master 1 MK. -->
+    <section id="section-rekap" class="tab-section hidden space-y-6">
+      <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg p-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="clipboard-list" class="w-4 h-4 text-fuchsia-400"></i>
+              Rekap Perjalanan Akademik
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Empat cakupan: perjalanan bulanan mahasiswa, satu MK per semester,
+              semua MK satu semester, dan seluruh semester. Dihitung dari tree
+              kurikulum; pertemuan yang presensinya belum diinput netral.
+            </p>
+          </div>
+          <div class="flex items-center flex-wrap gap-2">
+            <button id="rekap-scope-bulan" onclick="aktifkanScopeRekap('bulan')" class="touch-target px-3 py-1.5 text-xs font-bold rounded-lg border transition">
+              Per Bulan
+            </button>
+            <button id="rekap-scope-mk" onclick="aktifkanScopeRekap('mk')" class="touch-target px-3 py-1.5 text-xs font-bold rounded-lg border transition">
+              Per Semester (1 MK)
+            </button>
+            <button id="rekap-scope-semester" onclick="aktifkanScopeRekap('semester')" class="touch-target px-3 py-1.5 text-xs font-bold rounded-lg border transition">
+              Per Semester (Semua MK)
+            </button>
+            <button id="rekap-scope-semua" onclick="aktifkanScopeRekap('semua')" class="touch-target px-3 py-1.5 text-xs font-bold rounded-lg border transition">
+              Semua Semester
+            </button>
+            <select id="rekap-mhs" onchange="muatRekap()" class="hidden touch-target px-2.5 py-1.5 text-xs rounded-lg bg-slate-800 border border-slate-700 text-slate-200 max-w-[260px]"></select>
+            <button id="btn-jadikan-mk-aktif" onclick="jadikanKonteksAktifDashboard()" class="touch-target px-3 py-1.5 text-xs font-bold rounded-lg bg-cyan-600/30 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/40 transition flex items-center gap-1.5 cursor-pointer" title="Jadikan MK yang sedang diinspeksi sebagai MK aktif utama dashboard">
+              <i data-lucide="check-circle" class="w-3.5 h-3.5 text-cyan-400"></i>
+              <span>Jadikan MK Aktif</span>
+            </button> <button id="btn-muat-rekap" onclick="muatRekap()" class="touch-target px-3 py-1.5 text-xs font-bold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+              <i data-lucide="refresh-cw" class="w-3.5 h-3.5 inline"></i> Muat Ulang
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI rollup -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Mata Kuliah</span>
+              <span class="p-2 rounded-lg bg-sky-500/10 text-sky-400"><i data-lucide="book" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-white mt-2" id="rekap-kpi-mk">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="rekap-kpi-mk-desc">-</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium" id="rekap-kpi-at-risk-label">At-Risk (Unik)</span>
+              <span class="p-2 rounded-lg bg-rose-500/10 text-rose-400"><i data-lucide="alert-triangle" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-rose-400 mt-2" id="rekap-kpi-at-risk">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="rekap-kpi-at-risk-desc">-</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Rata-rata Kehadiran</span>
+              <span class="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="check-circle-2" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-emerald-400 mt-2" id="rekap-kpi-kehadiran">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="rekap-kpi-kehadiran-desc">Rata-rata antar-MK yang bisa dihitung</div>
+          </div>
+          <div class="bg-slate-800/60 rounded-xl p-4 border border-slate-700/50">
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-400 font-medium">Rata-rata Nilai</span>
+              <span class="p-2 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="star" class="w-4 h-4"></i></span>
+            </div>
+            <div class="text-2xl font-bold text-amber-400 mt-2" id="rekap-kpi-nilai">-</div>
+            <div class="text-[11px] text-slate-400 mt-1" id="rekap-kpi-nilai-desc">-</div>
+          </div>
+        </div>
+
+        <div class="mt-4 text-xs text-slate-400" id="rekap-status">Pilih cakupan, lalu tekan Muat Ulang.</div>
+        <div class="mt-2 text-xs text-slate-300" id="rekap-info"></div>
+      </div>
+
+      <!-- Panel Potensi Mahasiswa per MK: pilih MK bebas; data dari katalog
+           build (data/courses/<kunci>.json) via /api/course_data. Kartu =
+           akademik + kehadiran + diagnosis AI + karier teratas. -->
+      <div class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg p-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <i data-lucide="users" class="w-4 h-4 text-rose-400"></i>
+              Potensi Mahasiswa per Mata Kuliah
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Potensi 3 lapis: chip kehadiran <strong>per bulan</strong>, ringkasan
+              <strong>per MK/semester</strong>, dan badge perkembangan
+              <strong>sepanjang kuliah</strong> per mahasiswa — grade, kesiapan,
+              kehadiran, dan diagnosis AI dihitung dari katalog MK terpilih.
+            </p>
+          </div>
+          <select id="rekap-potensi-sel" onchange="muatPotensiMk()"
+            class="touch-target bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-semibold focus:outline-none focus:border-rose-500 transition max-w-[26rem]">
+            <option value="">Memuat daftar MK…</option>
+          </select>
+        </div>
+        <div id="rekap-potensi-kpi" class="flex flex-wrap items-center gap-x-5 gap-y-1 mt-4 text-xs text-slate-300"></div>
+        <div id="rekap-potensi-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 mt-4"></div>
+      </div>
+
+      <!-- Perjalanan bulanan mahasiswa: kartu per bulan + timeline pertemuan. -->
+      <div id="rekap-bulan-view" class="hidden bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg p-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div>
+            <h4 class="text-sm font-bold text-white" id="rekap-bulan-judul">Perjalanan Bulanan Mahasiswa</h4>
+            <p class="text-xs text-slate-400 mt-0.5" id="rekap-bulan-sub">Pilih mahasiswa untuk melihat perjalanan per bulan.</p>
+          </div>
+          <span class="text-[11px] text-slate-500">Sumber: presensi &amp; nilai per pertemuan (MK aktif)</span>
+        </div>
+        <div id="rekap-bulan-cards" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"></div>
+      </div>
+
+      <div id="rekap-tabel-wrapper" class="bg-[#0f172a] rounded-2xl border border-slate-800 shadow-lg overflow-hidden">
+        <div class="overflow-x-auto max-h-[560px] overflow-y-auto">
+          <table class="w-full text-left text-xs">
+            <thead id="rekap-thead" class="bg-slate-900/90 text-slate-400 uppercase font-mono tracking-wider sticky top-0 border-b border-slate-800 z-10">
+              <tr>
+                <th class="px-4 py-3">Mata Kuliah</th>
+                <th class="px-4 py-3">Periode</th>
+                <th class="px-4 py-3 text-center">Peserta</th>
+                <th class="px-4 py-3 text-center">Kehadiran</th>
+                <th class="px-4 py-3 text-center">Nilai</th>
+                <th class="px-4 py-3 text-center">At-Risk</th>
+                <th class="px-4 py-3 text-center">Pertemuan</th>
+                <th class="px-4 py-3 text-center">Topik</th>
+                <th class="px-4 py-3 text-center">Bulan</th>
+                <th class="px-4 py-3">Status</th>
+              </tr>
+            </thead>
+            <tbody id="rekap-table-body" class="divide-y divide-slate-800/70">
+              <tr><td colspan="10" class="px-4 py-8 text-center text-slate-500 italic">Belum ada data.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 9: PORTOFOLIO MAHASISWA 4 LAPIS (bulanan -> MK -> semester -> kuliah) -->
+    <!-- Satu sumber data: /api/portofolio (katalog SEMUA MK), PDF via              -->
+    <!-- /api/pdf/download?type=portofolio_lengkap — same numbers as dashboard.    -->
+    <!-- ========================================================================= -->
+    <section id="section-portofolio" class="tab-section hidden space-y-6">
+      <!-- Pilih mahasiswa + aksi PDF -->
+      <div class="bg-[#0f172a] rounded-2xl p-5 border border-lime-500/30 shadow-lg">
+        <div class="flex items-start justify-between gap-4 flex-wrap">
+          <div class="flex-1 min-w-[280px]">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-1">
+              <i data-lucide="book-open" class="w-4 h-4 text-lime-400"></i>
+              Portofolio Mahasiswa — 4 Lapis Laporan
+            </h3>
+            <p class="text-xs text-slate-400">
+              Per bulan → per MK → per semester → sepanjang kuliah. Sumber:
+              katalog SEMUA MK di tree — angka selalu sama dengan dashboard & PDF.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="porto-sel" class="bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white font-semibold min-w-[240px]" onchange="muatPortofolio()"></select>
+            <div class="flex gap-1.5 flex-wrap">
+              <button id="btn-porto-unduh-lengkap" onclick="unduhPortofolioPdf('portofolio_lengkap')" class="touch-target px-3 py-2 rounded-lg bg-lime-500/10 hover:bg-lime-500/20 border border-lime-500/40 text-lime-300 text-xs font-bold transition" title="PDF 4 lapis: katalog semua MK, rekap bulanan per MK, rollup semester, KPI kumulatif">⬇ PDF Lengkap</button>
+              <button onclick="unduhPortofolioPdf('monthly')" class="touch-target px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-bold transition" title="PDF bulanan MK aktif">⬇ Bulanan (MK Aktif)</button>
+              <button id="btn-porto-unduh-rapor" onclick="unduhPortofolioPdf('rapor')" class="touch-target px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-bold transition" title="Rapor akhir semester + matriks karier">⬇ Rapor</button>
+              <button onclick="unduhPortofolioPdf('deckcraft')" class="touch-target px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 text-xs font-bold transition" title="Slide deck portofolio arsitektur">⬇ Deck</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lapis 4: KPI sepanjang kuliah -->
+      <div id="porto-kpi" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3"></div>
+
+      <!-- ANALISIS NILAI -> POTENSI (lintas MK, ambang = mesin diagnosis v3) -->
+      <div class="bg-[#0f172a] rounded-2xl p-5 border border-emerald-500/30 shadow-lg">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i> Analisis Potensi dari Nilai
+          </h3>
+          <span class="text-[11px] text-slate-400 font-mono" id="porto-analisis-sebaran">-</span>
+        </div>
+        <div id="porto-analisis"></div>
+      </div>
+
+      <!-- Lapis 3: accordion semester (berisi lapis 2+1) -->
+      <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-lg">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i> Kronologis per Semester
+          </h3>
+          <span class="text-[11px] text-slate-400 font-mono" id="porto-meta">-</span>
+        </div>
+        <div id="porto-isi" class="space-y-3">
+          <p class="text-slate-500 italic text-sm">Pilih mahasiswa untuk memuat portofolio.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 10: ENGINE - pusat pemeriksa input & output (terpisah) -->
+    <section id="section-engine" class="tab-section hidden space-y-6">
+
+      <!-- Pusat INPUT -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="inbox" class="w-5 h-5 text-sky-400"></i>
+              Engine Input &mdash; Pemeriksa Data Masuk
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Pemindaian <code>input/inbox/</code> dicocokkan lewat SHA-256: berkas yang pernah masuk/diproses ditandai <strong class="text-amber-300">duplikat</strong>, tidak diproses dua kali.</p>
+          </div>
+          <button onclick="engineInputPindai()" id="btn-engine-input" class="bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Pindai Inbox</button>
+        </div>
+        <div id="engine-input-ringkasan" class="flex gap-2 mb-3 text-xs hidden"></div>
+        <div id="engine-input-isi">
+          <p class="text-slate-500 italic text-sm">Belum dipindai &mdash; klik "Pindai Inbox".</p>
+        </div>
+      </div>
+
+      <!-- Pusat OUTPUT -->
+      <div class="bg-slate-900/70 border border-slate-800 rounded-2xl p-6">
+        <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="file-check-2" class="w-5 h-5 text-violet-400"></i>
+              Engine Output &mdash; Integritas &amp; Lapis Kirim
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">Berkas lama yang utuh &amp; tanda logika/format sama <strong class="text-emerald-300">diberikan apa adanya</strong>; overwrite hanya bila logika penyajian maju atau ukuran berkas tak cocok. Lapis <code>output/kirim/</code> disiapkan untuk mesin kirim otomatis kaprodi &amp; wali murid.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="engineOutputAudit()" id="btn-engine-output" class="bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Audit Output</button>
+            <button onclick="engineOutputRapikan()" id="btn-engine-rapikan" class="bg-amber-600 hover:bg-amber-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Rapikan + Lapis Kirim</button>
+          </div>
+        </div>
+        <div id="engine-output-isi">
+          <p class="text-slate-500 italic text-sm">Belum diaudit &mdash; klik "Audit Output".</p>
+        </div>
+      </div>
+
+    </section>
+
+  
+
+<section id="section-dosen" class="tab-section hidden space-y-6">
+      <!-- Header Banner -->
+      <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 rounded-2xl p-6 border border-indigo-500/40 shadow-xl laser-indigo has-crosshair">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <i data-lucide="user-check" class="w-4 h-4"></i> Audit Beban Mengajar &amp; RPS
+            </div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">Kinerja Dosen Pengasuh &amp; Kepatuhan RPS</h2>
+            <p class="text-sm text-slate-300 mt-1 max-w-2xl">
+              Audit kepatuhan pengajaran 16 pertemuan, pemenuhan modul kurikulum RPS, dan verifikasi Berita Acara Perkuliahan (BAP).
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btn-dosen-unduh-pdf" onclick="downloadDosenAuditPDF()" class="touch-target px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg transition flex items-center gap-1.5 cursor-pointer" title="Unduh PDF 04 Audit Kinerja Dosen & RPS">
+              <i data-lucide="download" class="w-4 h-4"></i> Unduh PDF Audit Dosen
+            </button>
+            <button id="btn-dosen-refresh" onclick="renderDosenSection()" class="touch-target px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-indigo-500/40 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat Ulang Audit Kinerja Dosen">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-indigo-400"></i> Refresh
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. Tim Pengajar (Dosen Pengasuh & Asisten Studio) -->
+      <div>
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <i data-lucide="users" class="w-4 h-4 text-violet-400"></i> Tim Pengajar &amp; Instruktur Studio Lab
+        </h3>
+        <div id="dosen-tim-pengajar" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Rendered via renderDosenSection() -->
+        </div>
+      </div>
+
+      <!-- 2. Ringkasan Kinerja & Catatan Kaprodi -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Kepatuhan Realisasi Modul</div>
+            <div id="dosen-kpi-keterlaksanaan" class="text-2xl font-black text-emerald-400 font-mono mt-1">88.4%</div>
+            <div class="text-[10px] text-slate-500 mt-0.5">Ambang Akreditasi &gt; 85%</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md flex items-center justify-between">
+          <div>
+            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Mata Kuliah Diampu</div>
+            <div id="dosen-kpi-mk-nama" class="text-sm font-bold text-white mt-1 truncate max-w-[200px]">Aplikasi Komputer Arsitektur &amp; QS</div>
+            <div id="dosen-kpi-mk-info" class="text-[10px] text-slate-400 font-mono mt-0.5">ARS204 • 3 SKS • Kelas A</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/30 flex items-center justify-center text-violet-400">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+          </div>
+        </div>
+
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md">
+          <div class="flex items-center gap-1.5 text-[11px] font-semibold text-amber-400 uppercase tracking-wider mb-1">
+            <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Catatan &amp; Arahan Kaprodi
+          </div>
+          <div id="dosen-kaprodi-note" class="text-xs text-slate-300 italic line-clamp-3">
+            Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Tabel 16 Pertemuan Silabus & Realisasi Kelas -->
+      <div class="bg-[#0f172a] rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> Rekapitulasi 16 Sesi Pertemuan Perkuliahan
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Kesesuaian topik silabus RPS, pemenuhan CPMK, dan pengesahan Berita Acara Perkuliahan (BAP)</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 text-xs font-mono font-bold">16 Pertemuan Lengkap</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-900/90 text-slate-400 font-mono text-[10.5px] uppercase tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="py-2.5 px-3 w-12 text-center">Sesi</th>
+                <th class="py-2.5 px-3 w-28">Tanggal</th>
+                <th class="py-2.5 px-3 w-20">Tipe</th>
+                <th class="py-2.5 px-3">Topik RPS &amp; Realisasi Perkuliahan</th>
+                <th class="py-2.5 px-3 w-36">Status Pengajar</th>
+                <th class="py-2.5 px-3 w-28 text-right">Keterlaksanaan</th>
+                <th class="py-2.5 px-3 w-40">Capaian CPMK</th>
+                <th class="py-2.5 px-3 w-24 text-center">BAP</th>
+              </tr>
+            </thead>
+            <tbody id="tabel-dosen-body" class="divide-y divide-slate-800/60 font-sans text-xs text-slate-300">
+              <!-- Rendered via renderDosenSection() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+<section id="section-yayasan" class="tab-section hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 rounded-2xl p-6 border border-purple-500/40 shadow-xl laser-purple has-crosshair">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 text-purple-400 text-xs font-semibold uppercase tracking-wider mb-1">
+              <i data-lucide="shield-alert" class="w-4 h-4"></i> High-Level Governance &amp; Investment Intelligence
+            </div>
+            <h2 class="text-2xl font-extrabold text-white tracking-tight">Cockpit Eksekutif Yayasan &amp; Investor</h2>
+            <p class="text-sm text-slate-300 mt-1 max-w-2xl">
+              Instrumen pengawasan makro universitas: mitigasi risiko retensi, audit kesehatan 30 mata kuliah arsitektur, dan pelaporan akreditasi terpadu.
+            </p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button id="btn-yayasan-unduh-paket" onclick="unduhPaketLengkapAkreditasiProdi()" class="touch-target px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-500/20 transition flex items-center gap-1.5 cursor-pointer" title="Unduh Paket Arsip Lengkap Akreditasi (ZIP/Master)">
+              <i data-lucide="download" class="w-4 h-4"></i> Paket Akreditasi
+            </button>
+            <button id="btn-yayasan-unduh-pdf" onclick="unduhExecutivePitchPdf()" class="touch-target px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/40 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Unduh PDF 06 Executive Pitch Deck Yayasan (16:9 Landscape)">
+              <i data-lucide="file-text" class="w-4 h-4 text-purple-400"></i> Pitch PDF
+            </button>
+            <button id="btn-yayasan-copy-pitch" onclick="salinExecutivePitchText()" class="touch-target px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Salin Naskah Pidato Eksekutif Boardroom ke Clipboard">
+              <i data-lucide="copy" class="w-4 h-4 text-amber-400"></i> Salin Naskah
+            </button>
+            <button id="btn-yayasan-refresh" onclick="renderExecutiveCockpit()" class="touch-target px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 font-bold text-xs transition flex items-center gap-1.5 cursor-pointer" title="Muat Ulang Agregasi Realtime Cockpit">
+              <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6 KPI Strategic Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-[#0f172a] rounded-xl p-3 border border-slate-800 shadow-md">
+          <div class="text-[11px] text-slate-400">Total Mahasiswa</div>
+          <div id="yayasan-kpi-mhs-total" class="text-xl font-bold text-white font-mono mt-1">214 Mhs</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">Kohort Aktif</div>
+        </div>
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md">
+          <div class="text-[11px] text-slate-400">Tingkat Retensi</div>
+          <div id="yayasan-kpi-retensi" class="text-xl font-bold text-emerald-400 font-mono mt-1">94.2%</div>
+          <div class="text-[10px] text-emerald-500/80 mt-0.5">Sangat Unggul</div>
+        </div>
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md">
+          <div class="text-[11px] text-slate-400">At-Risk Rate</div>
+          <div id="yayasan-kpi-risk-rate" class="text-xl font-bold text-rose-400 font-mono mt-1">11.8%</div>
+          <div class="text-[10px] text-rose-500/80 mt-0.5">Terkendali (&lt; 15%)</div>
+        </div>
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md">
+          <div class="text-[11px] text-slate-400">Kepatuhan RPS</div>
+          <div id="yayasan-kpi-rps" class="text-xl font-bold text-cyan-400 font-mono mt-1">88.4%</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">Audit Pengajaran</div>
+        </div>
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md">
+          <div class="text-[11px] text-slate-400">Kasus Mengulang</div>
+          <div id="yayasan-kpi-retake" class="text-xl font-bold text-amber-400 font-mono mt-1">3 Mhs</div>
+          <div class="text-[10px] text-amber-500/80 mt-0.5">Diberi Remedial</div>
+        </div>
+        <div class="bg-[#0f172a] rounded-xl p-4 border border-slate-800 shadow-md">
+          <div class="text-[11px] text-slate-400">Kesiapan Akreditasi</div>
+          <div id="yayasan-kpi-akreditasi" class="text-xl font-bold text-indigo-400 font-mono mt-1">UNGGUL</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">LAM-Teknik Standar</div>
+        </div>
+      </div>
+
+      <!-- TABEL MATRIKS 30 MATA KULIAH PRODI ARSITEKTUR -->
+      <div class="bg-[#0f172a] rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
+        <div class="p-4 border-b border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="table-properties" class="w-4 h-4 text-cyan-400"></i> Matriks Evaluasi &amp; Kasus Mengulang 30 Mata Kuliah
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">Hasil audit komprehensif seluruh mata kuliah prodi Arsitektur lintas semester ganjil/genap.</p>
+          </div>
+          <div class="flex items-center gap-2.5 flex-wrap">
+            <input type="text" id="yayasan-search-mk" onkeyup="filterYayasanMatriks()" placeholder="Cari nama / kode MK..." class="touch-target bg-slate-900 text-xs text-slate-200 rounded-xl px-3 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-500 w-44" />
+            <div class="flex items-center bg-slate-900 p-0.5 rounded-xl border border-slate-800 text-xs">
+              <button onclick="setYayasanMatriksFilter('all')" id="btn-filter-mk-semua" class="touch-target px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 transition">Semua (30)</button>
+              <button onclick="setYayasanMatriksFilter('kritis')" id="btn-filter-mk-kritis" class="touch-target px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">Kritis / Asistensi</button>
+              <button onclick="setYayasanMatriksFilter('aman')" id="btn-filter-mk-aman" class="touch-target px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">Terkendali</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse" id="yayasan-matriks-table">
+            <thead class="bg-slate-900/90 text-slate-400 font-mono text-[10.5px] uppercase tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="py-2.5 px-3 text-center w-12">No</th>
+                <th class="py-2.5 px-3 w-28">Kode MK</th>
+                <th class="py-2.5 px-3">Nama Mata Kuliah</th>
+                <th class="py-2.5 px-3 text-center w-20">SKS</th>
+                <th class="py-2.5 px-3 text-center w-24">Peserta</th>
+                <th class="py-2.5 px-3 text-center w-28">Remedial</th>
+                <th class="py-2.5 px-3 text-center w-24">Rata Nilai</th>
+                <th class="py-2.5 px-3 text-center w-36">Status MK</th>
+              </tr>
+            </thead>
+            <tbody id="yayasan-matriks-tbody" class="divide-y divide-slate-800/60 font-sans text-xs text-slate-300">
+              <!-- Rendered via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ================================================================= -->
+    <!-- TAB 8: PERTUMBUHAN PMB & PENYERAPAN 30 MK KURIKULUM (ANALISIS SENIOR) -->
+    <!-- ================================================================= -->
+    <section id="section-pertumbuhan" class="tab-section hidden space-y-6">
+      <!-- HEADER TAB PERTUMBUHAN -->
+      <div class="bg-gradient-to-r from-slate-900 via-[#0b1728] to-slate-900 border border-emerald-500/30 rounded-2xl p-5 shadow-2xl relative overflow-hidden">
+        <div class="absolute -right-8 -top-8 w-44 h-44 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              PILAR STRATEGIS YAYASAN &bull; TREN MULTI-TAHUN KOHORT
+            </div>
+            <h2 class="text-xl md:text-2xl font-black text-white flex items-center gap-2.5">
+              <i data-lucide="trending-up" class="w-6 h-6 text-emerald-400"></i>
+              Analisis Pertumbuhan PMB &amp; Penyerapan Kurikulum 30 MK
+            </h2>
+            <p class="text-xs text-slate-400 max-w-3xl">
+              Dashboard intelijen kohort multi-tahun memadukan volume mahasiswa baru, analisis retensi anti-DO, penerimaan kas PMB, serta tingkat penyerapan pasar atas 30 mata kuliah di seluruh semester aktif.
+            </p>
+          </div>
+          <div class="flex items-center gap-2.5 shrink-0">
+            <a href="/api/pdf/download?type=cohort_report" target="_blank" id="btn-export-cohort-pdf" class="touch-target px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20 inline-flex items-center gap-2 transition" title="Unduh Dokumen 07 Resmi untuk Rapat Yayasan">
+              <i data-lucide="file-down" class="w-4 h-4"></i> Ekspor PDF Dokumen 07 (Kohort &amp; BSS)
+            </a>
+            <button onclick="renderGrowthTab()" class="touch-target px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-bold inline-flex items-center gap-2 transition">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i> Sinkronisasi
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 HERO KPI CARDS -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Card 1: Growth YoY -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-emerald-500/30 rounded-2xl p-4 shadow-lg hover:border-emerald-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pertumbuhan PMB (YoY)</span>
+            <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <i data-lucide="trending-up" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-black text-white font-mono" id="stat-growth-yoy">+133.3% YoY</div>
+          <p class="text-[11px] text-emerald-400 font-medium mt-1 flex items-center gap-1">
+            <span>&uarr; Angkatan 2025: 35 Mahasiswa Baru</span>
+          </p>
+        </div>
+
+        <!-- Card 2: Retensi Mahasiswa -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-cyan-500/30 rounded-2xl p-4 shadow-lg hover:border-cyan-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tingkat Retensi</span>
+            <div class="w-8 h-8 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-black text-white font-mono" id="stat-growth-retensi">94.6%</div>
+          <p class="text-[11px] text-cyan-400 font-medium mt-1 flex items-center gap-1">
+            <span>Zona 1 &amp; 2 Terjaga (Anti-DO Aktif)</span>
+          </p>
+        </div>
+
+        <!-- Card 3: Arus Kas Masuk PMB Baru -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-purple-500/30 rounded-2xl p-4 shadow-lg hover:border-purple-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Penerimaan Kas PMB Baru</span>
+            <div class="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <i data-lucide="wallet" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-black text-white font-mono" id="stat-growth-kas">Rp 227.5 Jt</div>
+          <p class="text-[11px] text-purple-300 font-medium mt-1 flex items-center gap-1">
+            <span>Kas Masuk Angkatan Terbaru (35 Mhs)</span>
+          </p>
+        </div>
+
+        <!-- Card 4: Utilisasi Kapasitas Studio -->
+        <div class="bg-gradient-to-br from-slate-900 to-slate-950 border border-amber-500/30 rounded-2xl p-4 shadow-lg hover:border-amber-500/50 transition">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Utilisasi Studio Desain</span>
+            <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <i data-lucide="layers" class="w-4 h-4"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-black text-white font-mono" id="stat-growth-studio">87.5%</div>
+          <p class="text-[11px] text-amber-300 font-medium mt-1 flex items-center gap-1">
+            <span>Kapasitas 35 Kursi Studio Terisi Optimal</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- ROW 1: GRAFIK TREN PMB MULTI-TAHUN -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-black text-white flex items-center gap-2">
+              <i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-400"></i>
+              Tren Pendaftaran Mahasiswa Baru &amp; Penerimaan Kas PMB (2021 &ndash; 2026)
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Perbandingan kuota pendaftar target yayasan versus realisasi mahasiswa aktif, laju pertumbuhan YoY, dan realisasi penerimaan kas.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold">&bull; Realisasi</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-700/60 text-slate-300 border border-slate-600/40">&bull; Target</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">&bull; Kas PMB</span>
+          </div>
+        </div>
+        <div id="chart-pmb-growth" class="w-full min-h-[320px]"></div>
+      </div>
+
+      <!-- FILTER BAR SERAPAN 30 MK -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2">
+            <label for="sel-growth-periode" class="text-xs font-bold text-slate-300">Periode:</label>
+            <select id="sel-growth-periode" onchange="filterGrowthData()" class="bg-slate-950 border border-slate-700 text-xs text-white rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-emerald-500">
+              <option value="all">Semua Periode (6 Semester Terdata)</option>
+              <option value="2024-2025-GANJIL">2024/2025 Ganjil</option>
+              <option value="2024-2025-GENAP">2024/2025 Genap</option>
+              <option value="2025-2026-GANJIL">2025/2026 Ganjil</option>
+              <option value="2025-2026-GENAP" selected>2025/2026 Genap (Aktif)</option>
+              <option value="2026-2027-GANJIL">2026/2027 Ganjil</option>
+              <option value="2026-2027-GENAP">2026/2027 Genap</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="sel-growth-rumpun" class="text-xs font-bold text-slate-300">Rumpun MK:</label>
+            <select id="sel-growth-rumpun" onchange="filterGrowthData()" class="bg-slate-950 border border-slate-700 text-xs text-white rounded-xl px-3 py-1.5 focus:ring-2 focus:ring-emerald-500">
+              <option value="all">Semua Rumpun (30 Mata Kuliah)</option>
+              <option value="Studio">Studio Perancangan &amp; Desain</option>
+              <option value="Struktur">Struktur &amp; Rekayasa Konstruksi</option>
+              <option value="Komputasi/BIM">BIM, CAD &amp; Komputasi</option>
+              <option value="Teori">Sejarah, Teori &amp; Permukiman</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="relative w-full md:w-64">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5"></i>
+            <input type="text" id="search-growth-mk" oninput="onGrowthSearchInput()" placeholder="Cari nama / kode MK..." class="w-full bg-slate-950 border border-slate-700 text-xs text-white pl-8 pr-3 py-1.5 rounded-xl focus:ring-2 focus:ring-emerald-500">
+          </div>
+          <span id="growth-mk-count-badge" class="px-2.5 py-1 rounded-xl text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 whitespace-nowrap">30 MK</span>
+        </div>
+      </div>
+
+      <!-- ROW 2: GRAFIK PENYERAPAN PASAR KURIKULUM 30 MK -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 shadow-xl">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <div>
+            <h3 class="text-base font-black text-white flex items-center gap-2">
+              <i data-lucide="activity" class="w-4 h-4 text-cyan-400"></i>
+              Analisis Penyerapan Kurikulum &amp; Tingkat Partisipasi Peserta MK
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Rasio serapan pasar peserta terhadap populasi aktif kohort berjalan. Mengukur utilisasi kelas dan beban ajar dosen pengampu.
+            </p>
+          </div>
+          <!-- FORMULA CALLOUT BADGE -->
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-950/80 border border-slate-700 rounded-xl text-[10.5px] font-mono text-slate-300">
+            <span class="text-emerald-400 font-bold">Rumus:</span> S<sub>MK</sub> = (n / N<sub>aktif</sub>) &times; 100% &bull; L = (N / 100) &times; n
+          </div>
+        </div>
+        <div id="chart-enrolment-absorption" class="w-full min-h-[350px]"></div>
+      </div>
+
+      <!-- ROW 3: TABEL MATRIKS ENROLMENT & ABSORPTION 30 MK -->
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+        <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+          <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="table" class="w-4 h-4 text-emerald-400"></i>
+            Matriks Lengkap Enrolment Kurikulum 30 MK
+          </h4>
+          <span class="text-[11px] text-slate-400">Diurutkan berdasarkan Tingkat Penyerapan Pasar Tertinggi</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-slate-950/80 text-[10.5px] font-mono font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800">
+                <th class="py-3 px-3 text-center">No</th>
+                <th class="py-3 px-3">Kode &amp; Mata Kuliah</th>
+                <th class="py-3 px-3">Periode &amp; Rumpun</th>
+                <th class="py-3 px-3 text-center">SKS</th>
+                <th class="py-3 px-3 text-center">Populasi Aktif (N)</th>
+                <th class="py-3 px-3 text-center">Peserta (n)</th>
+                <th class="py-3 px-3 text-center">Penyerapan (S<sub>MK</sub>)</th>
+                <th class="py-3 px-3 text-center">Pertumbuhan (&Delta;%)</th>
+                <th class="py-3 px-3 text-center">Load Index (L)</th>
+                <th class="py-3 px-3 text-center">Status Serapan</th>
+                <th class="py-3 px-3 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="growth-enrolment-tbody" class="divide-y divide-slate-800/80 text-xs text-slate-300">
+              <!-- Populated via JavaScript renderGrowthEnrolmentTable() -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+
+<section id="section-analytics" class="tab-section hidden space-y-6">
+      <div class="bg-gradient-to-r from-cyan-950/40 via-slate-900 to-slate-900 rounded-2xl p-6 border border-cyan-500/40 shadow-2xl relative overflow-hidden laser-cyan has-crosshair">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 relative z-10">
+          <div>
+            <div class="flex items-center gap-2 text-cyan-400 text-xs font-mono font-bold uppercase tracking-wider mb-1">
+              <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Observatorium Visual • Intelligence Analytics
+            </div>
+            <h2 class="text-2xl font-black text-white tracking-tight">Visual Analytics Studio &amp; Rekapitulasi Eksekutif</h2>
+            <p class="text-xs text-slate-300 mt-1 max-w-3xl">
+              Sintesis visual makro 4-pilar: dinamika retensi mahasiswa lintas semester, kapasitas beban 8 mata kuliah utama, perbandingan mutu 4 rumpun keilmuan, dan indeks kesehatan akademik prodi.
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button onclick="sinkronkanVisualAnalytics()" id="btn-sync-analytics" class="touch-target px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition cursor-pointer">
+              <i data-lucide="refresh-cw" class="w-4 h-4" id="icon-sync-analytics"></i>
+              <span>🔄 Sinkronkan Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Badges Ringkasan Makro Observatorium -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-5 border-t border-slate-800">
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 font-medium">Total Mahasiswa Terdaftar</div>
+            <div id="stat-analytics-total-mhs" class="text-xl font-black text-cyan-400 font-mono mt-0.5">214 Mhs</div>
+            <div class="text-[10px] text-slate-500">Lintas Semester 1 - 8</div>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 font-medium">Total Mata Kuliah Aktif</div>
+            <div id="stat-analytics-total-mk" class="text-xl font-black text-violet-400 font-mono mt-0.5">30 MK</div>
+            <div class="text-[10px] text-slate-500">4 Rumpun Kurikulum</div>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 font-medium">Rata-rata Retensi Kampus</div>
+            <div id="stat-analytics-retensi" class="text-xl font-black text-emerald-400 font-mono mt-0.5">83.3%</div>
+            <div class="text-[10px] text-slate-500">Kohort 2024 - 2027</div>
+          </div>
+          <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+            <div class="text-[11px] text-slate-400 font-medium">Indeks Mutu Capaian Prodi</div>
+            <div id="stat-analytics-mutu" class="text-xl font-black text-amber-400 font-mono mt-0.5">89.8%</div>
+            <div class="text-[10px] text-slate-500">Status: Sangat Unggul</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 PILAR UTAMA VISUAL ANALYTICS TANPA DROPDOWN (100% REKAPITULASI DATA NYATA) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-xl laser-cyan has-crosshair flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="users" class="w-4 h-4 text-cyan-400"></i> 1. Rekapitulasi Mahasiswa Aktif Lintas Semester
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Sebaran mahasiswa aktif, at-risk, dan retensi per tingkat semester.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30 text-[11px] font-mono font-bold">Sem 1 - 8</span>
+            </div>
+            <div id="chart-analytics-retensi" class="min-h-[280px]"></div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>💡 Kohort awal memiliki rasio aktif 88.6%, stabil hingga semester atas.</span>
+            <span class="text-emerald-400 font-bold">Retensi Stabil</span>
+          </div>
+        </div>
+
+        <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-xl laser-rose has-crosshair flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="gauge" class="w-4 h-4 text-rose-400"></i> 2. Rekapitulasi Kapasitas &amp; Beban 8 MK Utama
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Jumlah peserta vs peserta at-risk pada 8 mata kuliah inti prodi.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-300 border border-rose-500/30 text-[11px] font-mono font-bold">8 MK Inti</span>
+            </div>
+            <div id="chart-analytics-workload" class="min-h-[280px]"></div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>💡 Garis merah putus-putus menunjukkan kapasitas maksimum kelas reguler (35 mhs).</span>
+            <span class="text-amber-400 font-bold">Beban Proporsional</span>
+          </div>
+        </div>
+
+        <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-xl laser-purple has-crosshair flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="layers" class="w-4 h-4 text-purple-400"></i> 3. Komparasi Kinerja 4 Rumpun Mata Kuliah
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Tingkat kelulusan vs kepatuhan RPS per rumpun kurikulum arsitektur.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/30 text-[11px] font-mono font-bold">4 Rumpun</span>
+            </div>
+            <div id="chart-analytics-rumpun" class="min-h-[280px]"></div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>💡 Rumpun Studio Perancangan mendominasi bobot SKS dengan kelulusan rata-rata 88.5%.</span>
+            <span class="text-purple-400 font-bold">Capaian Unggul</span>
+          </div>
+        </div>
+
+        <div class="bg-[#0f172a] rounded-2xl p-5 border border-slate-800 shadow-xl laser-amber has-crosshair flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i data-lucide="activity" class="w-4 h-4 text-amber-400"></i> 4. Indeks Kesehatan &amp; Kelulusan Akademik Prodi
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">Kombinasi multi-matriks: retensi, presensi kuliah, ketepatan kelulusan, dan mutu karya studio.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 text-[11px] font-mono font-bold">Skor Komposit</span>
+            </div>
+            <div id="chart-analytics-pareto" class="min-h-[280px]"></div>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-800 text-[11px] text-slate-400 flex items-center justify-between">
+            <span>💡 Indeks komposit prodi berada pada 89.8% — Masuk kategori predikat akreditasi 'Unggul'.</span>
+            <span class="text-emerald-400 font-bold">Akreditasi Siap</span>
+          </div>
+        </div>
+      </div>
+    </section>
+</main>
+  </div> <!-- END BODY SHELL: LEFT SIDEBAR + MAIN CONTENT -->
+
+  <!-- FOOTER -->
+  <footer id="app-footer" class="mt-12 border-t border-slate-800/80 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div>
+        <strong>SIAK-KAPRODI</strong> • Sistem Otomasi Akademik & Portofolio <span id="footer-prodi">Program Studi Arsitektur</span>
+      </div>
+      <div class="flex items-center gap-4 text-slate-400">
+        <span>Port: <strong>40404</strong></span>
+        <span>•</span>
+        <span>Powered by OpenCraft Architecture Framework</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOAST HOST (pengganti window.alert yang memblokir) -->
+  <div id="toast-host" class="fixed bottom-5 right-5 z-[100] flex flex-col gap-2.5 pointer-events-none"></div>
+
+  <!-- BANNER: CDN GAGAL LOAD -->
+  <div id="cdn-warning" class="hidden bg-rose-950 border-b border-rose-800 px-4 py-2.5 text-xs text-rose-200">
+    <div class="max-w-7xl mx-auto flex items-center gap-2.5">
+      <i data-lucide="wifi-off" class="w-4 h-4 flex-shrink-0"></i>
+      <span id="cdn-warning-text" class="flex-1"></span>
+      <button onclick="location.reload()" class="px-2.5 py-1 bg-rose-800 hover:bg-rose-700 rounded-lg font-semibold flex items-center gap-1.5">
+        <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Muat Ulang
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING SKELETON -->
+  <div id="app-loading" class="max-w-7xl mx-auto px-4 lg:px-8 py-10 space-y-4">
+    <div class="h-3 w-48 rounded bg-slate-800 animate-pulse"></div>
+    <div class="h-8 w-2/3 rounded bg-slate-800 animate-pulse"></div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+      <div class="h-24 rounded-xl bg-slate-800/60 animate-pulse"></div>
+    </div>
+    <p class="text-xs text-slate-500 text-center pt-2">Memuat data akademik dari server lokal...</p>
+  </div>
+
+  <!-- BANNER: DATA GAGAL DIMUAT -->
+  <div id="app-error" class="hidden max-w-2xl mx-auto px-4 py-14">
+    <div class="bg-rose-950/50 border border-rose-800/60 rounded-2xl p-6 text-center space-y-4">
+      <div class="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center mx-auto">
+        <i data-lucide="database-zap" class="w-6 h-6 text-rose-400"></i>
+      </div>
+      <h3 class="text-base font-bold text-white">Data akademik tidak dapat dimuat</h3>
+      <p id="app-error-message" class="text-xs text-slate-300 leading-relaxed"></p>
+      <div class="flex items-center justify-center gap-2.5 pt-1">
+        <button id="btn-retry-load" onclick="retryLoad()" class="touch-target px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold rounded-xl flex items-center gap-2 transition">
+          <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i> Coba Lagi
+        </button>
+        <span class="text-[11px] text-slate-500">atau jalankan ulang <code class="text-amber-400 font-mono">run_server.bat</code></span>
+      </div>
+    </div>
+  </div>
+
+  
+<!-- MODAL AUDIT DATA MAHASISWA MATA KULIAH RAWAN (#modal-asistensi-mk) -->
+  <div id="modal-asistensi-mk" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-amber-500/40 rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative laser-amber max-h-[85vh] flex flex-col my-auto">
+      <button onclick="tutupModalAsistensiMk()" class="touch-target absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 p-2 rounded-xl border border-slate-700 transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <div class="border-b border-slate-800 pb-4">
+        <div class="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider mb-1">
+          <i data-lucide="shield-check" class="w-4 h-4"></i> Audit Data Mahasiswa Mata Kuliah Rawan
+        </div>
+        <h3 class="text-xl font-black text-white" id="modal-asistensi-nama-mk">Mata Kuliah</h3>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mt-1">
+          <span>Kode: <strong class="text-slate-200 font-mono" id="modal-asistensi-kode-mk">-</strong></span>
+          <span>•</span>
+          <span>Bobot: <strong class="text-slate-200 font-mono" id="modal-asistensi-sks">-</strong></span>
+          <span>•</span>
+          <span>Dosen: <strong class="text-slate-200" id="modal-asistensi-dosen">-</strong></span>
+          <span>•</span>
+          <span id="modal-asistensi-status-badge"></span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 my-4">
+        <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl text-center">
+          <div class="text-[10.5px] text-slate-400 font-medium">Total Peserta</div>
+          <div class="text-lg font-black text-white font-mono mt-0.5" id="modal-asistensi-total-mhs">-</div>
+        </div>
+        <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl text-center">
+          <div class="text-[10.5px] text-rose-400 font-medium">Mahasiswa Remedial</div>
+          <div class="text-lg font-black text-rose-400 font-mono mt-0.5" id="modal-asistensi-total-rem">-</div>
+        </div>
+        <div class="bg-slate-950/80 border border-slate-800 p-3 rounded-xl text-center">
+          <div class="text-[10.5px] text-amber-400 font-medium">Rata-rata Nilai</div>
+          <div class="text-lg font-black text-amber-400 font-mono mt-0.5" id="modal-asistensi-rata-nilai">-</div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <button onclick="filterModalAsistensiTabel('remedial')" id="modal-asistensi-tab-rem" class="touch-target px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 transition">
+            Mahasiswa Berisiko (<span id="modal-asistensi-badge-rem">0</span>)
+          </button>
+          <button onclick="filterModalAsistensiTabel('all')" id="modal-asistensi-tab-all" class="touch-target px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition">
+            Semua Peserta (<span id="modal-asistensi-badge-all">0</span>)
+          </button>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/70 p-1 mb-4">
+        <table class="w-full text-left border-collapse" id="modal-asistensi-table">
+          <thead class="sticky top-0 bg-slate-900 text-slate-400 font-mono text-[10.5px] uppercase tracking-wider border-b border-slate-800">
+            <tr>
+              <th class="py-2.5 px-3 text-center w-10">No</th>
+              <th class="py-2.5 px-3 w-28">NPM</th>
+              <th class="py-2.5 px-3">Nama Mahasiswa</th>
+              <th class="py-2.5 px-3 text-center w-20">Nilai</th>
+              <th class="py-2.5 px-3 text-center w-24">Kehadiran</th>
+              <th class="py-2.5 px-3 text-center w-36">Aksi Mahasiswa</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80 font-sans text-xs text-slate-300" id="modal-asistensi-tbody">
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-slate-800 flex-wrap gap-2">
+        <div class="text-[11px] text-slate-400 italic">
+          💡 Klik 'Lihat Portofolio' untuk membuka rekam jejak akademik di Tab 10.
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="bukaKurikulumDariModalAsistensi()" class="touch-target px-3.5 py-2 bg-violet-600/20 hover:bg-violet-600/30 text-violet-300 text-xs font-bold rounded-xl border border-violet-500/40 transition flex items-center gap-1.5 cursor-pointer" title="Buka RPS dan modul 16 pertemuan MK ini di Tab 6">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-violet-400"></i> Buka RPS (Tab 6)
+          </button>
+          <button id="btn-close-modal-asistensi" onclick="tutupModalAsistensiMk()" class="touch-target px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition cursor-pointer">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DRILLDOWN AT-RISK DI TAB 9 (#modal-at-risk) -->
+  <div id="modal-at-risk" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-slate-900 border border-rose-500/40 rounded-2xl max-w-2xl w-full p-6 shadow-2xl relative laser-rose max-h-[85vh] flex flex-col my-auto">
+      <button onclick="tutupModalAtRisk()" class="touch-target absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 p-2 rounded-xl border border-slate-700 transition">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+      <div class="flex items-center gap-2 text-rose-400 text-xs font-mono font-bold uppercase tracking-wider mb-1">
+        <i data-lucide="alert-triangle" class="w-4 h-4"></i> Drilldown Deteksi Dini
+      </div>
+      <h3 class="text-xl font-bold text-white">Daftar Mahasiswa Kategori At-Risk</h3>
+      <p class="text-xs text-slate-400 mt-1" id="modal-at-risk-subtitle">Mahasiswa unik yang memenuhi kriteria risiko akademik.</p>
+      
+      <div class="mt-4 flex-1 overflow-y-auto space-y-2 pr-1" id="modal-at-risk-list">
+      </div>
+
+      <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+        <span id="modal-at-risk-count">Total: 0 Mahasiswa</span>
+        <button onclick="tutupModalAtRisk()" class="touch-target px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700 transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+<!-- ===================================================================== -->
+  <div id="gatekeeper-modal" class="hidden">
+    <div class="gatekeeper-card">
+      <!-- Glow ambient background -->
+      <div class="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Badge Akses Resmi -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] font-bold tracking-wider uppercase mb-4 shadow-sm">
+        <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+        <span>SISTEM TERPROTEKSI • ARSITEKTUR INTELLIGENCE</span>
+      </div>
+
+      <!-- Icon & Logo Institusi -->
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 flex items-center justify-center text-slate-950 font-black text-3xl shadow-xl shadow-amber-500/20 mb-3 border border-amber-400/40">
+        🏛️
+      </div>
+
+      <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">SIAK-KAPRODI</h2>
+      <p class="text-xs text-slate-400 font-medium mt-0.5">Universitas Bung Hatta • Program Studi Arsitektur</p>
+
+      <div class="mt-4 p-3 rounded-xl bg-slate-950/60 border border-slate-800 text-xs text-slate-300 w-full leading-relaxed">
+        Silakan masukkan <span class="text-amber-400 font-semibold">6-Digit PIN Akses Kaprodi</span> untuk membuka dashboard observatorium & data akademik.
+      </div>
+
+      <!-- Display PIN Dots -->
+      <div id="gatekeeper-dots" class="flex items-center justify-center gap-2.5 my-5 cursor-pointer">
+        <div class="pin-box" data-idx="0">•</div>
+        <div class="pin-box" data-idx="1">•</div>
+        <div class="pin-box" data-idx="2">•</div>
+        <div class="pin-box" data-idx="3">•</div>
+        <div class="pin-box" data-idx="4">•</div>
+        <div class="pin-box" data-idx="5">•</div>
+      </div>
+
+      <!-- Input Hidden untuk Keyboard Fisik -->
+      <input type="password" id="gatekeeper-pin-input" maxlength="6" inputmode="numeric" autocomplete="one-time-code" class="absolute opacity-0 pointer-events-none" />
+
+      <!-- Error / Status Alert -->
+      <div id="gatekeeper-status" class="min-h-[22px] text-xs font-semibold text-rose-400 mb-2 flex items-center justify-center gap-1.5 opacity-0 transition-opacity">
+        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+        <span id="gatekeeper-status-text">PIN salah. Silakan coba kembali.</span>
+      </div>
+
+      <!-- Numeric Keypad Grid (3 Kolom Baku) -->
+      <div class="gatekeeper-keypad">
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="1">1</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="2">2</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="3">3</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="4">4</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="5">5</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="6">6</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="7">7</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="8">8</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="9">9</button>
+        <button type="button" id="btn-gatekeeper-clear" class="py-3 rounded-xl bg-slate-800/40 hover:bg-slate-700/50 border border-slate-800 text-xs font-semibold text-slate-400 transition active:scale-95 cursor-pointer">CLEAR</button>
+        <button type="button" class="keypad-btn py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700/60 text-lg font-bold text-white transition active:scale-95 cursor-pointer" data-val="0">0</button>
+        <button type="button" id="btn-gatekeeper-backspace" class="py-3 rounded-xl bg-slate-800/40 hover:bg-slate-700/50 border border-slate-800 text-sm font-semibold text-slate-400 transition active:scale-95 flex items-center justify-center cursor-pointer">⌫</button>
+      </div>
+
+      <!-- Tombol Verifikasi Utama (UI-AUTH-03) -->
+      <button type="button" id="btn-gatekeeper-submit" class="w-full max-w-[280px] py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-sm tracking-wide shadow-lg shadow-amber-500/25 transition flex items-center justify-center gap-2 cursor-pointer">
+        <i data-lucide="unlock" class="w-4 h-4"></i>
+        <span>Buka Dashboard</span>
+      </button>
+
+      <!-- Hint untuk Visitor Showcase -->
+      <div class="mt-5 pt-4 border-t border-slate-800/80 w-full flex items-center justify-center gap-2 text-[11px] text-slate-400">
+        <span>💡 Hint Akses Showcase:</span>
+        <button type="button" id="btn-gatekeeper-hint" class="text-amber-400 hover:text-amber-300 font-mono font-bold underline transition cursor-pointer">
+          PIN: 404040
+        </button>
+      </div>
+    </div>
+  </div>
+      
+
+  <!-- Script Controller -->
+  <script src="gh_pages_mock.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

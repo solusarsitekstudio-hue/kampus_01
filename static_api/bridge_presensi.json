@@ -1,0 +1,179 @@
+{
+  "npm": "2410015410001",
+  "nama": "FAJAR ADITYA PRATAMA",
+  "kehadiran_total": 100.0,
+  "bulanan": [
+    {
+      "bulan_ke": 1,
+      "label": "Bulan 1 (P1 - P4)",
+      "slot_hadir": 0,
+      "slot_total": 8,
+      "alpha_total": 0,
+      "persentase": 0.0,
+      "status": "Perhatian",
+      "pertemuan": [
+        {
+          "pertemuan": 1,
+          "topik": "Pengenalan AutoCAD & Gambar Denah Dasar",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 2,
+          "topik": "Medium Drawing: Kolom, Dinding & Dimensi",
+          "tipe": "studio",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 3,
+          "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 4,
+          "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi",
+          "tipe": "studio",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        }
+      ]
+    },
+    {
+      "bulan_ke": 2,
+      "label": "Bulan 2 (P5 - P8)",
+      "slot_hadir": 0,
+      "slot_total": 8,
+      "alpha_total": 0,
+      "persentase": 0.0,
+      "status": "Perhatian",
+      "pertemuan": [
+        {
+          "pertemuan": 5,
+          "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 6,
+          "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
+          "tipe": "studio",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 7,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 8,
+          "topik": "Ujian Tengah Semester",
+          "tipe": "uts",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        }
+      ]
+    },
+    {
+      "bulan_ke": 3,
+      "label": "Bulan 3 (P9 - P12)",
+      "slot_hadir": 0,
+      "slot_total": 8,
+      "alpha_total": 0,
+      "persentase": 0.0,
+      "status": "Perhatian",
+      "pertemuan": [
+        {
+          "pertemuan": 9,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 10,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "studio",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 11,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 12,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "studio",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        }
+      ]
+    },
+    {
+      "bulan_ke": 4,
+      "label": "Bulan 4 (P13 - P16)",
+      "slot_hadir": 0,
+      "slot_total": 8,
+      "alpha_total": 0,
+      "persentase": 0.0,
+      "status": "Perhatian",
+      "pertemuan": [
+        {
+          "pertemuan": 13,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 14,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "studio",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 15,
+          "topik": "(belum diisi - menunggu RPS)",
+          "tipe": "teori",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        },
+        {
+          "pertemuan": 16,
+          "topik": "Ujian Akhir Semester",
+          "tipe": "uas",
+          "status_pertemuan": "Hadir",
+          "slot_hadir": 0,
+          "slot_total": 2
+        }
+      ]
+    }
+  ]
+}

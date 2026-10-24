@@ -1,0 +1,858 @@
+{
+  "latest": {
+    "latest_course": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+    "latest_timestamp": "2026-10-22_21-43-18",
+    "latest_directory": "E:\\WORKSPACE\\KAMPUS_01\\output\\APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS\\2026-10-22_21-43-18",
+    "updated_at": "2026-10-22 21:43:31"
+  },
+  "runs": [
+    {
+      "course_name": "Aplikasi Komputer Arsitektur & QS",
+      "course_code": "5412522233",
+      "program_studi": "ARSITEKTUR",
+      "generated_at": "2026-10-22 21:43:31",
+      "timestamp_id": "2026-10-22_21-43-18",
+      "target_directory": "E:\\WORKSPACE\\KAMPUS_01\\output\\APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS\\2026-10-22_21-43-18",
+      "total_files": 11,
+      "data_stamp": "c5c0fd42e6c7",
+      "format_v": "v1",
+      "files": [
+        {
+          "filename": "01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "size_kb": 272.1
+        },
+        {
+          "filename": "01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "size_kb": 260.7
+        },
+        {
+          "filename": "01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "size_kb": 278.1
+        },
+        {
+          "filename": "02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "size_kb": 560.1
+        },
+        {
+          "filename": "02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "size_kb": 560.4
+        },
+        {
+          "filename": "02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "size_kb": 554.4
+        },
+        {
+          "filename": "03_laporan_penilaian_kaprodi_master_gradebook.pdf",
+          "size_kb": 239.3
+        },
+        {
+          "filename": "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
+          "size_kb": 267.2
+        },
+        {
+          "filename": "05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+          "size_kb": 1327.4
+        },
+        {
+          "filename": "05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+          "size_kb": 1328.9
+        },
+        {
+          "filename": "05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+          "size_kb": 1328.2
+        }
+      ]
+    },
+    {
+      "peruntukan": "mesin kirim otomatis - Wali Murid (per mahasiswa)",
+      "diperbarui": "2026-10-23 20:41:45",
+      "sumber_run": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18",
+      "stempel_data": "58d3927d72fa",
+      "total_mahasiswa": 65,
+      "belumpunya_dokumen": 30,
+      "mahasiswa": {
+        "2410015410001": {
+          "nama": "FAJAR ADITYA PRATAMA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410002": {
+          "nama": "DINA SALSABILA PUTRI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410003": {
+          "nama": "RIZKY ANANDA MAULANA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410004": {
+          "nama": "MEUTIA KHAIRUNNISA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410005": {
+          "nama": "BAGAS WICAKSONO",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410006": {
+          "nama": "ANISA RAHMAWATI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410007": {
+          "nama": "DAFFA RAYHAN KURNIAWAN",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410008": {
+          "nama": "SHINTA BELLA LESTARI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410009": {
+          "nama": "GILANG RAMADHAN",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410010": {
+          "nama": "NAFISAH AULIA DEWI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410011": {
+          "nama": "ILHAM BUDI SANTOSO",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410012": {
+          "nama": "CLARA AYUNDA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410013": {
+          "nama": "RENDY PRASITYA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410014": {
+          "nama": "CITRA MAHARANI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2410015410015": {
+          "nama": "HENDRA WIJAYA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2510015410001": {
+          "nama": "ALSA DMI YESYA PUTRI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "ukuran": 278664
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "ukuran": 573520
+            },
+            {
+              "nama": "05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "ukuran": 1359217
+            },
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "ukuran": 98378
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+              "ukuran": 177274
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410002": {
+          "nama": "AULIA PUTRI MAYTISHA",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410002_AULIA_PUTRI_MAYTISHA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410002_AULIA_PUTRI_MAYTISHA.pdf",
+              "ukuran": 98389
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410002_AULIA_PUTRI_MAYTISHA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410002_AULIA_PUTRI_MAYTISHA.pdf",
+              "ukuran": 177291
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410003": {
+          "nama": "HAFIZUL FAJRI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410003_HAFIZUL_FAJRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410003_HAFIZUL_FAJRI.pdf",
+              "ukuran": 98759
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410003_HAFIZUL_FAJRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410003_HAFIZUL_FAJRI.pdf",
+              "ukuran": 177229
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410004": {
+          "nama": "MUHAMMAD SATIYA AL FIKRI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410004_MUHAMMAD_SATIYA_AL_FIKRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410004_MUHAMMAD_SATIYA_AL_FIKRI.pdf",
+              "ukuran": 98449
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410004_MUHAMMAD_SATIYA_AL_FIKRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410004_MUHAMMAD_SATIYA_AL_FIKRI.pdf",
+              "ukuran": 177313
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410005": {
+          "nama": "LIVIA OKTARI FIRNY",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410005_LIVIA_OKTARI_FIRNY.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410005_LIVIA_OKTARI_FIRNY.pdf",
+              "ukuran": 98475
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410005_LIVIA_OKTARI_FIRNY.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410005_LIVIA_OKTARI_FIRNY.pdf",
+              "ukuran": 177328
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410006": {
+          "nama": "ZHILLAN SANDY FADRIAN",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410006_ZHILLAN_SANDY_FADRIAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410006_ZHILLAN_SANDY_FADRIAN.pdf",
+              "ukuran": 98623
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410006_ZHILLAN_SANDY_FADRIAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410006_ZHILLAN_SANDY_FADRIAN.pdf",
+              "ukuran": 177463
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410007": {
+          "nama": "ULYA NAFISAH PUTRI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410007_ULYA_NAFISAH_PUTRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410007_ULYA_NAFISAH_PUTRI.pdf",
+              "ukuran": 98409
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410007_ULYA_NAFISAH_PUTRI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410007_ULYA_NAFISAH_PUTRI.pdf",
+              "ukuran": 177278
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410008": {
+          "nama": "VIOLET MORASAKI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410008_VIOLET_MORASAKI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410008_VIOLET_MORASAKI.pdf",
+              "ukuran": 98330
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410008_VIOLET_MORASAKI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410008_VIOLET_MORASAKI.pdf",
+              "ukuran": 177115
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410009": {
+          "nama": "AYU ARISTIN",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410009_AYU_ARISTIN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410009_AYU_ARISTIN.pdf",
+              "ukuran": 98306
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410009_AYU_ARISTIN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410009_AYU_ARISTIN.pdf",
+              "ukuran": 177208
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410010": {
+          "nama": "M YAZID ZIDANE MULYADI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "ukuran": 266994
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "ukuran": 573834
+            },
+            {
+              "nama": "05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "ukuran": 1360816
+            },
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "ukuran": 98595
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+              "ukuran": 177464
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410011": {
+          "nama": "ROZI ANDRIAN SURVA",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "ukuran": 284755
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "ukuran": 567701
+            },
+            {
+              "nama": "05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "ukuran": 1360115
+            },
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "ukuran": 98538
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+              "ukuran": 177321
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410013": {
+          "nama": "ZAHRA PUTRI RAMADHANI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410013_ZAHRA_PUTRI_RAMADHANI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410013_ZAHRA_PUTRI_RAMADHANI.pdf",
+              "ukuran": 98685
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410013_ZAHRA_PUTRI_RAMADHANI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410013_ZAHRA_PUTRI_RAMADHANI.pdf",
+              "ukuran": 177253
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410014": {
+          "nama": "NADIA PERMATA HUSINA",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410014_NADIA_PERMATA_HUSINA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410014_NADIA_PERMATA_HUSINA.pdf",
+              "ukuran": 98283
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410014_NADIA_PERMATA_HUSINA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410014_NADIA_PERMATA_HUSINA.pdf",
+              "ukuran": 177064
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410015": {
+          "nama": "MUHAMMAD FADLAN ZIKRA",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410015_MUHAMMAD_FADLAN_ZIKRA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410015_MUHAMMAD_FADLAN_ZIKRA.pdf",
+              "ukuran": 98534
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410015_MUHAMMAD_FADLAN_ZIKRA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410015_MUHAMMAD_FADLAN_ZIKRA.pdf",
+              "ukuran": 177270
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410016": {
+          "nama": "MUHAMMAD HIDAYAT",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410016_MUHAMMAD_HIDAYAT.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410016_MUHAMMAD_HIDAYAT.pdf",
+              "ukuran": 98343
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410016_MUHAMMAD_HIDAYAT.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410016_MUHAMMAD_HIDAYAT.pdf",
+              "ukuran": 177246
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410017": {
+          "nama": "ADAM MAULANA",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410017_ADAM_MAULANA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410017_ADAM_MAULANA.pdf",
+              "ukuran": 98220
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410017_ADAM_MAULANA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410017_ADAM_MAULANA.pdf",
+              "ukuran": 176993
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410018": {
+          "nama": "ILHAM FADIL AZHIM",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410018_ILHAM_FADIL_AZHIM.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410018_ILHAM_FADIL_AZHIM.pdf",
+              "ukuran": 98491
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410018_ILHAM_FADIL_AZHIM.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410018_ILHAM_FADIL_AZHIM.pdf",
+              "ukuran": 177231
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410019": {
+          "nama": "DIFLA HAZIRATHUL SYABIRAH",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410019_DIFLA_HAZIRATHUL_SYABIRAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410019_DIFLA_HAZIRATHUL_SYABIRAH.pdf",
+              "ukuran": 98794
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410019_DIFLA_HAZIRATHUL_SYABIRAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410019_DIFLA_HAZIRATHUL_SYABIRAH.pdf",
+              "ukuran": 177506
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410020": {
+          "nama": "DAFFA RAMDHAN FADILLAH",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410020_DAFFA_RAMDHAN_FADILLAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410020_DAFFA_RAMDHAN_FADILLAH.pdf",
+              "ukuran": 98332
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410020_DAFFA_RAMDHAN_FADILLAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410020_DAFFA_RAMDHAN_FADILLAH.pdf",
+              "ukuran": 177069
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410021": {
+          "nama": "FELISA ANDREINA",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410021_FELISA_ANDREINA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410021_FELISA_ANDREINA.pdf",
+              "ukuran": 98272
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410021_FELISA_ANDREINA.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410021_FELISA_ANDREINA.pdf",
+              "ukuran": 177007
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410022": {
+          "nama": "ANANTA DANA FATSYAH",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410022_ANANTA_DANA_FATSYAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410022_ANANTA_DANA_FATSYAH.pdf",
+              "ukuran": 98405
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410022_ANANTA_DANA_FATSYAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410022_ANANTA_DANA_FATSYAH.pdf",
+              "ukuran": 177259
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410023": {
+          "nama": "ASYFA ASRAN",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410023_ASYFA_ASRAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410023_ASYFA_ASRAN.pdf",
+              "ukuran": 98542
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410023_ASYFA_ASRAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410023_ASYFA_ASRAN.pdf",
+              "ukuran": 177195
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410024": {
+          "nama": "ARTIKA SARIDEWI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410024_ARTIKA_SARIDEWI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410024_ARTIKA_SARIDEWI.pdf",
+              "ukuran": 98554
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410024_ARTIKA_SARIDEWI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410024_ARTIKA_SARIDEWI.pdf",
+              "ukuran": 177184
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410025": {
+          "nama": "MUHAMMAD GELFIANO HASAN",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410025_MUHAMMAD_GELFIANO_HASAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410025_MUHAMMAD_GELFIANO_HASAN.pdf",
+              "ukuran": 98328
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410025_MUHAMMAD_GELFIANO_HASAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410025_MUHAMMAD_GELFIANO_HASAN.pdf",
+              "ukuran": 177069
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410026": {
+          "nama": "SYARIF AL GHIFARI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410026_SYARIF_AL_GHIFARI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410026_SYARIF_AL_GHIFARI.pdf",
+              "ukuran": 98383
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410026_SYARIF_AL_GHIFARI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410026_SYARIF_AL_GHIFARI.pdf",
+              "ukuran": 177243
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410027": {
+          "nama": "ADELITA NUGRAINI",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410027_ADELITA_NUGRAINI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410027_ADELITA_NUGRAINI.pdf",
+              "ukuran": 98251
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410027_ADELITA_NUGRAINI.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410027_ADELITA_NUGRAINI.pdf",
+              "ukuran": 177027
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410028": {
+          "nama": "LATIVA NORUL HASANAH",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410028_LATIVA_NORUL_HASANAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410028_LATIVA_NORUL_HASANAH.pdf",
+              "ukuran": 98368
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410028_LATIVA_NORUL_HASANAH.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410028_LATIVA_NORUL_HASANAH.pdf",
+              "ukuran": 177151
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410029": {
+          "nama": "MUHAMMAD AZIZURROHIM",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410029_MUHAMMAD_AZIZURROHIM.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410029_MUHAMMAD_AZIZURROHIM.pdf",
+              "ukuran": 98475
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410029_MUHAMMAD_AZIZURROHIM.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410029_MUHAMMAD_AZIZURROHIM.pdf",
+              "ukuran": 177258
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410030": {
+          "nama": "MUHAMMAD AFIF",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410030_MUHAMMAD_AFIF.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410030_MUHAMMAD_AFIF.pdf",
+              "ukuran": 98466
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410030_MUHAMMAD_AFIF.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410030_MUHAMMAD_AFIF.pdf",
+              "ukuran": 176996
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410031": {
+          "nama": "EURO YUNAN",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410031_EURO_YUNAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410031_EURO_YUNAN.pdf",
+              "ukuran": 98508
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410031_EURO_YUNAN.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410031_EURO_YUNAN.pdf",
+              "ukuran": 177208
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410032": {
+          "nama": "ANNISA ARYANTO",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410032_ANNISA_ARYANTO.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410032_ANNISA_ARYANTO.pdf",
+              "ukuran": 98539
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410032_ANNISA_ARYANTO.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410032_ANNISA_ARYANTO.pdf",
+              "ukuran": 177228
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410033": {
+          "nama": "ALVIANDI ARIF",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410033_ALVIANDI_ARIF.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410033_ALVIANDI_ARIF.pdf",
+              "ukuran": 98547
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410033_ALVIANDI_ARIF.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410033_ALVIANDI_ARIF.pdf",
+              "ukuran": 177077
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410034": {
+          "nama": "ROOFI HIDAYAT",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410034_ROOFI_HIDAYAT.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410034_ROOFI_HIDAYAT.pdf",
+              "ukuran": 98597
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410034_ROOFI_HIDAYAT.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410034_ROOFI_HIDAYAT.pdf",
+              "ukuran": 177249
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410036": {
+          "nama": "ATIFAH AL AFUWUU",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410036_ATIFAH_AL_AFUWUU.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410036_ATIFAH_AL_AFUWUU.pdf",
+              "ukuran": 98804
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410036_ATIFAH_AL_AFUWUU.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410036_ATIFAH_AL_AFUWUU.pdf",
+              "ukuran": 177178
+            }
+          ],
+          "catatan": ""
+        },
+        "2510015410038": {
+          "nama": "RAFIQ INTAN HARIY",
+          "dokumen": [
+            {
+              "nama": "01_rekap_kehadiran_bulanan_2510015410038_RAFIQ_INTAN_HARIY.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/01_rekap_kehadiran_bulanan/01_rekap_kehadiran_bulanan_2510015410038_RAFIQ_INTAN_HARIY.pdf",
+              "ukuran": 98836
+            },
+            {
+              "nama": "02_rapor_akhir_semester_2510015410038_RAFIQ_INTAN_HARIY.pdf",
+              "path": "output/distribusi_batch_angkatan_2025/02_rapor_akhir_semester/02_rapor_akhir_semester_2510015410038_RAFIQ_INTAN_HARIY.pdf",
+              "ukuran": 177316
+            }
+          ],
+          "catatan": ""
+        },
+        "2610015410001": {
+          "nama": "ARKAN NAUFAL FIRDAUS",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410002": {
+          "nama": "ZAHRA AMALIA SYAHRIR",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410003": {
+          "nama": "RANGGA ADIPUTRA NUGROHO",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410004": {
+          "nama": "TASYA KAMILA HERMAWAN",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410005": {
+          "nama": "DAFFA IBNU ALKAUTSAR",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410006": {
+          "nama": "SALMA KHAIRUNNISA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410007": {
+          "nama": "ALIF RAMADHAN SUPRIADI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410008": {
+          "nama": "NAYLA AZZAHRA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410009": {
+          "nama": "RYAN HIDAYATULLAH",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410010": {
+          "nama": "AULIA RAHMADHANI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410011": {
+          "nama": "FATIH AL FARUQ",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410012": {
+          "nama": "KEYLA PUTRI ANDRIANI",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410013": {
+          "nama": "RAFI ATHALLAH",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410014": {
+          "nama": "DEWI LESTARI KURNIA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        },
+        "2610015410015": {
+          "nama": "HILMI SYAHPUTRA",
+          "dokumen": [],
+          "catatan": "belum ada dokumen di disk - cetak PDF per mahasiswa dulu"
+        }
+      },
+      "aturan": [
+        "baca path dari field 'path' (relatif repo)",
+        "npm tanpa dokumen tidak dikirim, hanya ditandai"
+      ]
+    },
+    {
+      "peruntukan": "mesin kirim otomatis - Kaprodi",
+      "diperbarui": "2026-10-23 20:41:45",
+      "sumber_run": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18",
+      "stempel_data": "58d3927d72fa",
+      "dokumen_kelas": [
+        {
+          "nama": "03_laporan_penilaian_kaprodi_master_gradebook.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/03_laporan_penilaian_kaprodi_master_gradebook.pdf",
+          "ukuran": 245013
+        },
+        {
+          "nama": "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
+          "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
+          "ukuran": 273565
+        }
+      ],
+      "aturan": [
+        "baca path dari field 'path' (relatif repo)",
+        "jangan kirim berkas yang audit()-nya 'rusak'/'hilang'"
+      ]
+    }
+  ]
+}

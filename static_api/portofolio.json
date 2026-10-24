@@ -1,0 +1,2152 @@
+{
+  "npm": "2410015410001",
+  "nama": "FAJAR ADITYA PRATAMA",
+  "prodi": "ARSITEKTUR",
+  "jumlah_mk": 15,
+  "jumlah_mk_at_risk": 0,
+  "rata_nilai": 95.0,
+  "rata_kehadiran": 100.0,
+  "total_alpha": 0,
+  "delta_nilai_terakhir": 0.0,
+  "arah_nilai": "stabil",
+  "semester": [
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "jumlah_mk": 6,
+      "rata_nilai": 95.3,
+      "rata_kehadiran": 100.0,
+      "jumlah_at_risk": 0,
+      "mk": [
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GANJIL",
+          "kunci_mk": "ARS101",
+          "nama_mk": "Dasar-Dasar Desain Arsitektur",
+          "sks": 3,
+          "dosen_pengasuh": [
+            "Ir. Nasril Sikumbang, M.T."
+          ],
+          "nilai": 95.4,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2024-08",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            },
+            {
+              "bulan": "2024-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.8
+            },
+            {
+              "bulan": "2024-10",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            },
+            {
+              "bulan": "2024-11",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 96
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GANJIL",
+          "kunci_mk": "ARS102",
+          "nama_mk": "Gambar Teknik Arsitektur",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Fielda Roza, S.T., M.T."
+          ],
+          "nilai": 94.1,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2024-08",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.0
+            },
+            {
+              "bulan": "2024-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.8
+            },
+            {
+              "bulan": "2024-10",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.8
+            },
+            {
+              "bulan": "2024-11",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.2
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 94,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 97,
+            "manajemen_waktu": 95
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GANJIL",
+          "kunci_mk": "ARS103",
+          "nama_mk": "Matematika Teknik",
+          "sks": 3,
+          "dosen_pengasuh": [
+            "Dr. Eng. Hendra Wijaya, S.T., M.T."
+          ],
+          "nilai": 95.6,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2024-08",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.3
+            },
+            {
+              "bulan": "2024-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.0
+            },
+            {
+              "bulan": "2024-10",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.6
+            },
+            {
+              "bulan": "2024-11",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.2
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 96,
+            "ketelitian_detail": 83,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GANJIL",
+          "kunci_mk": "ARS104",
+          "nama_mk": "Fisika Bangunan 1",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Duddy Fajriansyah, S.T., M.T."
+          ],
+          "nilai": 95.7,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2024-08",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.3
+            },
+            {
+              "bulan": "2024-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.5
+            },
+            {
+              "bulan": "2024-10",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.2
+            },
+            {
+              "bulan": "2024-11",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.8
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 96,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 95
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GANJIL",
+          "kunci_mk": "ARS105",
+          "nama_mk": "Sejarah Arsitektur Barat",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Dr. Rina Marlia, S.S., M.Hum."
+          ],
+          "nilai": 95.3,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2024-08",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            },
+            {
+              "bulan": "2024-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.8
+            },
+            {
+              "bulan": "2024-10",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.8
+            },
+            {
+              "bulan": "2024-11",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 83,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GANJIL",
+          "kunci_mk": "ARS106",
+          "nama_mk": "Pengantar Lingkungan Binaan",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Aprilia Yunita, S.T., M.T."
+          ],
+          "nilai": 95.5,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2024-08",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 97.3
+            },
+            {
+              "bulan": "2024-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            },
+            {
+              "bulan": "2024-10",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.4
+            },
+            {
+              "bulan": "2024-11",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.8
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 96,
+            "ketelitian_detail": 83,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        }
+      ]
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "jumlah_mk": 6,
+      "rata_nilai": 94.9,
+      "rata_kehadiran": 100.0,
+      "jumlah_at_risk": 0,
+      "mk": [
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GENAP",
+          "kunci_mk": "ARS107",
+          "nama_mk": "Studio Perancangan Arsitektur 1",
+          "sks": 4,
+          "dosen_pengasuh": [
+            "Ir. Nasril Sikumbang, M.T.",
+            "Fielda Roza, S.T., M.T."
+          ],
+          "nilai": 95.6,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2025-01",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.7
+            },
+            {
+              "bulan": "2025-02",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.2
+            },
+            {
+              "bulan": "2025-03",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.5
+            },
+            {
+              "bulan": "2025-04",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.4
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 96,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GENAP",
+          "kunci_mk": "ARS108",
+          "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Aprilia Yunita, S.T., M.T.",
+            "Duddy Fajriansyah, S.T., M.T."
+          ],
+          "nilai": 93.9,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2025-01",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.7
+            },
+            {
+              "bulan": "2025-02",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            },
+            {
+              "bulan": "2025-03",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.0
+            },
+            {
+              "bulan": "2025-04",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 92.8
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 94,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 97,
+            "manajemen_waktu": 96
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GENAP",
+          "kunci_mk": "ARS109",
+          "nama_mk": "Struktur & Konstruksi Bangunan 1",
+          "sks": 3,
+          "dosen_pengasuh": [
+            "Duddy Fajriansyah, S.T., M.T."
+          ],
+          "nilai": 95.4,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2025-01",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.7
+            },
+            {
+              "bulan": "2025-02",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.0
+            },
+            {
+              "bulan": "2025-03",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 97.5
+            },
+            {
+              "bulan": "2025-04",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.0
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 96
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GENAP",
+          "kunci_mk": "ARS110",
+          "nama_mk": "Fisika Bangunan 2",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Duddy Fajriansyah, S.T., M.T."
+          ],
+          "nilai": 93.9,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2025-01",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.3
+            },
+            {
+              "bulan": "2025-02",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.0
+            },
+            {
+              "bulan": "2025-03",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.5
+            },
+            {
+              "bulan": "2025-04",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.8
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 94,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 97,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GENAP",
+          "kunci_mk": "ARS111",
+          "nama_mk": "Sejarah Arsitektur Nusantara",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Dr. Rina Marlia, S.S., M.Hum."
+          ],
+          "nilai": 95.5,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2025-01",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.3
+            },
+            {
+              "bulan": "2025-02",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.2
+            },
+            {
+              "bulan": "2025-03",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.8
+            },
+            {
+              "bulan": "2025-04",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.0
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 96,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 96
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2024-2025",
+          "semester": "GENAP",
+          "kunci_mk": "ARS112",
+          "nama_mk": "Teknologi Material Bangunan",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Fielda Roza, S.T., M.T."
+          ],
+          "nilai": 95.0,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2025-01",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.3
+            },
+            {
+              "bulan": "2025-02",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.5
+            },
+            {
+              "bulan": "2025-03",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.0
+            },
+            {
+              "bulan": "2025-04",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.0
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 83,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        }
+      ]
+    },
+    {
+      "tahun_ajar": "2025-2026",
+      "semester": "GENAP",
+      "jumlah_mk": 3,
+      "rata_nilai": 94.9,
+      "rata_kehadiran": 100.0,
+      "jumlah_at_risk": 0,
+      "mk": [
+        {
+          "tahun_ajar": "2025-2026",
+          "semester": "GENAP",
+          "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+          "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+          "sks": 2,
+          "dosen_pengasuh": [
+            "Aprilia Yunita, S.T., M.T.",
+            "Duddy Fajriansyah, S.T., M.T."
+          ],
+          "nilai": 94.6,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2026-06",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.7
+            },
+            {
+              "bulan": "2026-07",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.0
+            },
+            {
+              "bulan": "2026-08",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.8
+            },
+            {
+              "bulan": "2026-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 93.8
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 83,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 97,
+            "manajemen_waktu": 97
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2025-2026",
+          "semester": "GENAP",
+          "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+          "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+          "sks": 3,
+          "dosen_pengasuh": [
+            "Duddy Fajriansyah, S.T., M.T."
+          ],
+          "nilai": 95.4,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2026-06",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.2
+            },
+            {
+              "bulan": "2026-07",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.8
+            },
+            {
+              "bulan": "2026-08",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.0
+            },
+            {
+              "bulan": "2026-09",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.5
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 98,
+            "manajemen_waktu": 96
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        },
+        {
+          "tahun_ajar": "2025-2026",
+          "semester": "GENAP",
+          "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+          "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+          "sks": 4,
+          "dosen_pengasuh": [
+            "Ir. Nasril Sikumbang, M.T.",
+            "Fielda Roza, S.T., M.T."
+          ],
+          "nilai": 94.7,
+          "grade": "A",
+          "kehadiran": 100.0,
+          "alpha": 0,
+          "at_risk": false,
+          "alasan_at_risk": "",
+          "archetype": "star",
+          "status_alert": "PRESTASI OPTIMAL",
+          "jumlah_pertemuan": 16,
+          "bulanan": [
+            {
+              "bulan": "2026-06",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.8
+            },
+            {
+              "bulan": "2026-07",
+              "pertemuan": 4,
+              "hadir_persen": 100.0,
+              "rata_skor": 94.0
+            },
+            {
+              "bulan": "2026-08",
+              "pertemuan": 5,
+              "hadir_persen": 100.0,
+              "rata_skor": 95.4
+            },
+            {
+              "bulan": "2026-09",
+              "pertemuan": 3,
+              "hadir_persen": 100.0,
+              "rata_skor": 96.0
+            }
+          ],
+          "kompetensi": {
+            "penguasaan_cad": 95,
+            "ketelitian_detail": 82,
+            "kedisiplinan_asistensi": 100,
+            "logika_ruang_struktur": 97,
+            "manajemen_waktu": 96
+          },
+          "radar_sumber": {
+            "penguasaan_cad": "terukur",
+            "ketelitian_detail": "terukur",
+            "kedisiplinan_asistensi": "terukur",
+            "logika_ruang_struktur": "estimasi",
+            "manajemen_waktu": "terukur"
+          }
+        }
+      ]
+    }
+  ],
+  "mk": [
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "kunci_mk": "ARS101",
+      "nama_mk": "Dasar-Dasar Desain Arsitektur",
+      "sks": 3,
+      "dosen_pengasuh": [
+        "Ir. Nasril Sikumbang, M.T."
+      ],
+      "nilai": 95.4,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2024-08",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        },
+        {
+          "bulan": "2024-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.8
+        },
+        {
+          "bulan": "2024-10",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        },
+        {
+          "bulan": "2024-11",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 96
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "kunci_mk": "ARS102",
+      "nama_mk": "Gambar Teknik Arsitektur",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Fielda Roza, S.T., M.T."
+      ],
+      "nilai": 94.1,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2024-08",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.0
+        },
+        {
+          "bulan": "2024-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.8
+        },
+        {
+          "bulan": "2024-10",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.8
+        },
+        {
+          "bulan": "2024-11",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.2
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 94,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 97,
+        "manajemen_waktu": 95
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "kunci_mk": "ARS103",
+      "nama_mk": "Matematika Teknik",
+      "sks": 3,
+      "dosen_pengasuh": [
+        "Dr. Eng. Hendra Wijaya, S.T., M.T."
+      ],
+      "nilai": 95.6,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2024-08",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.3
+        },
+        {
+          "bulan": "2024-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.0
+        },
+        {
+          "bulan": "2024-10",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.6
+        },
+        {
+          "bulan": "2024-11",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.2
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 96,
+        "ketelitian_detail": 83,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "kunci_mk": "ARS104",
+      "nama_mk": "Fisika Bangunan 1",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "nilai": 95.7,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2024-08",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.3
+        },
+        {
+          "bulan": "2024-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.5
+        },
+        {
+          "bulan": "2024-10",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.2
+        },
+        {
+          "bulan": "2024-11",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.8
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 96,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 95
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "kunci_mk": "ARS105",
+      "nama_mk": "Sejarah Arsitektur Barat",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Dr. Rina Marlia, S.S., M.Hum."
+      ],
+      "nilai": 95.3,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2024-08",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        },
+        {
+          "bulan": "2024-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.8
+        },
+        {
+          "bulan": "2024-10",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.8
+        },
+        {
+          "bulan": "2024-11",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 83,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GANJIL",
+      "kunci_mk": "ARS106",
+      "nama_mk": "Pengantar Lingkungan Binaan",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Aprilia Yunita, S.T., M.T."
+      ],
+      "nilai": 95.5,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2024-08",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 97.3
+        },
+        {
+          "bulan": "2024-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        },
+        {
+          "bulan": "2024-10",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.4
+        },
+        {
+          "bulan": "2024-11",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.8
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 96,
+        "ketelitian_detail": 83,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "kunci_mk": "ARS107",
+      "nama_mk": "Studio Perancangan Arsitektur 1",
+      "sks": 4,
+      "dosen_pengasuh": [
+        "Ir. Nasril Sikumbang, M.T.",
+        "Fielda Roza, S.T., M.T."
+      ],
+      "nilai": 95.6,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2025-01",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.7
+        },
+        {
+          "bulan": "2025-02",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.2
+        },
+        {
+          "bulan": "2025-03",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.5
+        },
+        {
+          "bulan": "2025-04",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.4
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 96,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "kunci_mk": "ARS108",
+      "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Aprilia Yunita, S.T., M.T.",
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "nilai": 93.9,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2025-01",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.7
+        },
+        {
+          "bulan": "2025-02",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        },
+        {
+          "bulan": "2025-03",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.0
+        },
+        {
+          "bulan": "2025-04",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 92.8
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 94,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 97,
+        "manajemen_waktu": 96
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "kunci_mk": "ARS109",
+      "nama_mk": "Struktur & Konstruksi Bangunan 1",
+      "sks": 3,
+      "dosen_pengasuh": [
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "nilai": 95.4,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2025-01",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.7
+        },
+        {
+          "bulan": "2025-02",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.0
+        },
+        {
+          "bulan": "2025-03",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 97.5
+        },
+        {
+          "bulan": "2025-04",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.0
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 96
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "kunci_mk": "ARS110",
+      "nama_mk": "Fisika Bangunan 2",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "nilai": 93.9,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2025-01",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.3
+        },
+        {
+          "bulan": "2025-02",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.0
+        },
+        {
+          "bulan": "2025-03",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.5
+        },
+        {
+          "bulan": "2025-04",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.8
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 94,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 97,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "kunci_mk": "ARS111",
+      "nama_mk": "Sejarah Arsitektur Nusantara",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Dr. Rina Marlia, S.S., M.Hum."
+      ],
+      "nilai": 95.5,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2025-01",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.3
+        },
+        {
+          "bulan": "2025-02",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.2
+        },
+        {
+          "bulan": "2025-03",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.8
+        },
+        {
+          "bulan": "2025-04",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.0
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 96,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 96
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2024-2025",
+      "semester": "GENAP",
+      "kunci_mk": "ARS112",
+      "nama_mk": "Teknologi Material Bangunan",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Fielda Roza, S.T., M.T."
+      ],
+      "nilai": 95.0,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2025-01",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.3
+        },
+        {
+          "bulan": "2025-02",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.5
+        },
+        {
+          "bulan": "2025-03",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.0
+        },
+        {
+          "bulan": "2025-04",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.0
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 83,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2025-2026",
+      "semester": "GENAP",
+      "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+      "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+      "sks": 2,
+      "dosen_pengasuh": [
+        "Aprilia Yunita, S.T., M.T.",
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "nilai": 94.6,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2026-06",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.7
+        },
+        {
+          "bulan": "2026-07",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.0
+        },
+        {
+          "bulan": "2026-08",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.8
+        },
+        {
+          "bulan": "2026-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 93.8
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 83,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 97,
+        "manajemen_waktu": 97
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2025-2026",
+      "semester": "GENAP",
+      "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+      "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+      "sks": 3,
+      "dosen_pengasuh": [
+        "Duddy Fajriansyah, S.T., M.T."
+      ],
+      "nilai": 95.4,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2026-06",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.2
+        },
+        {
+          "bulan": "2026-07",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.8
+        },
+        {
+          "bulan": "2026-08",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.0
+        },
+        {
+          "bulan": "2026-09",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.5
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 98,
+        "manajemen_waktu": 96
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    },
+    {
+      "tahun_ajar": "2025-2026",
+      "semester": "GENAP",
+      "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+      "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+      "sks": 4,
+      "dosen_pengasuh": [
+        "Ir. Nasril Sikumbang, M.T.",
+        "Fielda Roza, S.T., M.T."
+      ],
+      "nilai": 94.7,
+      "grade": "A",
+      "kehadiran": 100.0,
+      "alpha": 0,
+      "at_risk": false,
+      "alasan_at_risk": "",
+      "archetype": "star",
+      "status_alert": "PRESTASI OPTIMAL",
+      "jumlah_pertemuan": 16,
+      "bulanan": [
+        {
+          "bulan": "2026-06",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.8
+        },
+        {
+          "bulan": "2026-07",
+          "pertemuan": 4,
+          "hadir_persen": 100.0,
+          "rata_skor": 94.0
+        },
+        {
+          "bulan": "2026-08",
+          "pertemuan": 5,
+          "hadir_persen": 100.0,
+          "rata_skor": 95.4
+        },
+        {
+          "bulan": "2026-09",
+          "pertemuan": 3,
+          "hadir_persen": 100.0,
+          "rata_skor": 96.0
+        }
+      ],
+      "kompetensi": {
+        "penguasaan_cad": 95,
+        "ketelitian_detail": 82,
+        "kedisiplinan_asistensi": 100,
+        "logika_ruang_struktur": 97,
+        "manajemen_waktu": 96
+      },
+      "radar_sumber": {
+        "penguasaan_cad": "terukur",
+        "ketelitian_detail": "terukur",
+        "kedisiplinan_asistensi": "terukur",
+        "logika_ruang_struktur": "estimasi",
+        "manajemen_waktu": "terukur"
+      }
+    }
+  ],
+  "mk_gagal": [],
+  "analisis_potensi": {
+    "label": "POTENSI TINGGI",
+    "alasan": "Kanal terkuat Humaniora, Profesi & Manajemen — rata 95.4 (2 MK • tertinggi Sejarah Arsitektur Nusantara 95.5) • Rata nilai 95.0 dari 15 MK • hadir rata-rata 100.0% • tren nilai stabil",
+    "rekomendasi": "Prioritas: asah Penelitian & Komunikasi (estimasi skor 91), mulai dari MK Sejarah Arsitektur Barat dan Sejarah Arsitektur Nusantara. Arah karier terdekat: Site Architect & Pengawas Lapangan Konstruksi (94%).",
+    "radar": {
+      "penguasaan_cad": 95,
+      "ketelitian_detail": 82,
+      "kedisiplinan_asistensi": 100,
+      "logika_ruang_struktur": 98,
+      "manajemen_waktu": 96
+    },
+    "radar_sumber": {
+      "penguasaan_cad": "terukur",
+      "ketelitian_detail": "terukur",
+      "kedisiplinan_asistensi": "terukur",
+      "logika_ruang_struktur": "estimasi",
+      "manajemen_waktu": "terukur"
+    },
+    "kanal": [
+      {
+        "kanal": "HUMANAS",
+        "nama": "Humaniora, Profesi & Manajemen",
+        "jumlah_mk": 2,
+        "rata_nilai": 95.4,
+        "mk_teratas": {
+          "nama_mk": "Sejarah Arsitektur Nusantara",
+          "nilai": 95.5,
+          "grade": "A"
+        }
+      },
+      {
+        "kanal": "STRUKTUR",
+        "nama": "Struktur & Konstruksi",
+        "jumlah_mk": 1,
+        "rata_nilai": 95.4,
+        "mk_teratas": {
+          "nama_mk": "Struktur & Konstruksi Bangunan 1",
+          "nilai": 95.4,
+          "grade": "A"
+        }
+      },
+      {
+        "kanal": "DESAIN",
+        "nama": "Studio Desain & Perancangan",
+        "jumlah_mk": 4,
+        "rata_nilai": 95.3,
+        "mk_teratas": {
+          "nama_mk": "Studio Perancangan Arsitektur 1",
+          "nilai": 95.6,
+          "grade": "A"
+        }
+      },
+      {
+        "kanal": "LINGKUNGAN",
+        "nama": "Bangunan, Lingkungan & Sains",
+        "jumlah_mk": 3,
+        "rata_nilai": 95.1,
+        "mk_teratas": {
+          "nama_mk": "Fisika Bangunan 1",
+          "nilai": 95.7,
+          "grade": "A"
+        }
+      },
+      {
+        "kanal": "TEKNOLOGI",
+        "nama": "Teknologi & Komputer Arsitektur",
+        "jumlah_mk": 3,
+        "rata_nilai": 94.3,
+        "mk_teratas": {
+          "nama_mk": "Teknologi Material Bangunan",
+          "nilai": 95.0,
+          "grade": "A"
+        }
+      }
+    ],
+    "kanal_terkuat": "HUMANAS",
+    "dimensi_khas": {
+      "nalar_sejarah": {
+        "label": "Nalar Historis & Sejarah",
+        "nilai": 96,
+        "sumber": "estimasi"
+      },
+      "etika_regulasi": {
+        "label": "Etika & Regulasi Profesi",
+        "nilai": 97,
+        "sumber": "estimasi"
+      },
+      "riset_komunikasi": {
+        "label": "Penelitian & Komunikasi",
+        "nilai": 91,
+        "sumber": "estimasi"
+      }
+    },
+    "mk_terkuat": [
+      {
+        "nama_mk": "Fisika Bangunan 1",
+        "nilai": 95.7,
+        "grade": "A"
+      },
+      {
+        "nama_mk": "Matematika Teknik",
+        "nilai": 95.6,
+        "grade": "A"
+      },
+      {
+        "nama_mk": "Studio Perancangan Arsitektur 1",
+        "nilai": 95.6,
+        "grade": "A"
+      }
+    ],
+    "mk_terlemah": [
+      {
+        "nama_mk": "Fisika Bangunan 2",
+        "nilai": 93.9,
+        "grade": "A"
+      },
+      {
+        "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+        "nilai": 93.9,
+        "grade": "A"
+      },
+      {
+        "nama_mk": "Gambar Teknik Arsitektur",
+        "nilai": 94.1,
+        "grade": "A"
+      }
+    ],
+    "sebaran": {
+      "tertinggi": 95.7,
+      "terendah": 93.9,
+      "deviasi": 0.6
+    },
+    "distribusi": {
+      "star": 15
+    },
+    "matriks_karier_kuliah": [
+      {
+        "id": 7,
+        "profesi": "Site Architect & Pengawas Lapangan Konstruksi",
+        "bidang_industri": "Kontraktor Pelaksana Bangunan / Manajemen Konstruaksi (MK)",
+        "kecocokan_persen": 94,
+        "kategori_kecocokan": "Tinggi",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: logika ruang & struktur 98; kedisiplinan asistensi 100; skor kecocokan 94.",
+        "keterampilan_kunci": "Verifikasi Gambar As-Built, Pengawasan Mutu Beton, Deteksi Kesalahan Elevasi Lapangan",
+        "saran_pengembangan": "Ikuti magang lapangan di proyek konstruksi bertingkat untuk mengasah ketegasan supervisi. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "logika ruang & struktur 98",
+          "kedisiplinan asistensi 100",
+          "skor kecocokan 94"
+        ]
+      },
+      {
+        "id": 2,
+        "profesi": "BIM Modeler & Coordinator (Building Information Modeling)",
+        "bidang_industri": "Kontraktor EPC Multinasional / Konsultan Rekayasa Digital",
+        "kecocokan_persen": 92.6,
+        "kategori_kecocokan": "Tinggi",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: penguasaan lingkungan CAD 95; manajemen waktu 96; skor kecocokan 92.6.",
+        "keterampilan_kunci": "Manajemen Layer Standar Industri, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
+        "saran_pengembangan": "Mulai mempelajari dasar Revit Architecture dan integrasi clash detection antar disiplin struktur. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "penguasaan lingkungan CAD 95",
+          "manajemen waktu 96",
+          "skor kecocokan 92.6"
+        ]
+      },
+      {
+        "id": 4,
+        "profesi": "Detail Engineering Drawing (DED) Specialist",
+        "bidang_industri": "Konsultan Perancangan Teknis & Rekayasa Gambar Kerja",
+        "kecocokan_persen": 87.4,
+        "kategori_kecocokan": "Tinggi",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: ketelitian detail gambar 82; manajemen waktu 96; skor kecocokan 87.4.",
+        "keterampilan_kunci": "Potongan Vertikal Bangunan, Detail Sambungan Pondasi, Standar Notasi PUPR",
+        "saran_pengembangan": "Pelajari standar etiket lembar kerja konsultan dan variasi detail sambungan struktur baja/kayu. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "ketelitian detail gambar 82",
+          "manajemen waktu 96",
+          "skor kecocokan 87.4"
+        ]
+      },
+      {
+        "id": 10,
+        "profesi": "Project Planner & Kontraktor Mandiri (Design & Build)",
+        "bidang_industri": "Wirausaha Kreatif Sektor Jasa Rancang Bangun",
+        "kecocokan_persen": 72.3,
+        "kategori_kecocokan": "Sedang",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: penguasaan lingkungan CAD 95; logika ruang & struktur 98; kanal terkuat Humaniora, Profesi & Manajemen; 2 MK Humaniora, Profesi & Manajemen rata 95.4; dim khas terkuat Etika & Regulasi Profesi 97; skor kecocokan 72.3.",
+        "keterampilan_kunci": "Penguasaan End-to-End Desain ke Konstruksi, Komunikasi Klien, Negosiasi Anggaran, Manajemen Tim",
+        "saran_pengembangan": "Bangun jejaring dengan rekan sipil/mekanikal dan kumpulkan portofolio proyek riil sejak masa kuliah. Langkah konkret: perkuat penguasaan lingkungan CAD (saat ini 95).",
+        "bukti": [
+          "penguasaan lingkungan CAD 95",
+          "logika ruang & struktur 98",
+          "kanal terkuat Humaniora, Profesi & Manajemen",
+          "2 MK Humaniora, Profesi & Manajemen rata 95.4",
+          "dim khas terkuat Etika & Regulasi Profesi 97",
+          "skor kecocokan 72.3"
+        ]
+      },
+      {
+        "id": 6,
+        "profesi": "3D Architectural Visualizer & CG Artist",
+        "bidang_industri": "Creative Architectural Media & Studio Rendering Internasional",
+        "kecocokan_persen": 71.5,
+        "kategori_kecocokan": "Sedang",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: penguasaan lingkungan CAD 95; manajemen waktu 96; skor kecocokan 71.5.",
+        "keterampilan_kunci": "Pemodelan 3D Isometrik/Aksonometrik, Komposisi Kamera, Pencahayaan Alami, Visual Storytelling",
+        "saran_pengembangan": "Tingkatkan portofolio visual dengan software render real-time (Enscape/Twinmotion/Lumion). Langkah konkret: perkuat penguasaan lingkungan CAD (saat ini 95).",
+        "bukti": [
+          "penguasaan lingkungan CAD 95",
+          "manajemen waktu 96",
+          "skor kecocokan 71.5"
+        ]
+      },
+      {
+        "id": 9,
+        "profesi": "Green Building & Sustainable Design Specialist",
+        "bidang_industri": "Konsultan Bangunan Hijau & Sertifikasi Efisiensi Energi",
+        "kecocokan_persen": 64.6,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: logika ruang & struktur 98; ketelitian detail gambar 82; skor kecocokan 64.6.",
+        "keterampilan_kunci": "Desain Pasif Tropis, Pencahayaan Alami Optimal, Shading Fasad, Efisiensi Energi",
+        "saran_pengembangan": "Pahami pedoman Greenship GBCI dan simulasi komputasi aliran udara dalam bangunan. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "logika ruang & struktur 98",
+          "ketelitian detail gambar 82",
+          "skor kecocokan 64.6"
+        ]
+      },
+      {
+        "id": 3,
+        "profesi": "Quantity Surveyor (QS) & Cost Estimator Bangunan",
+        "bidang_industri": "BUMN Karya / Developer Properti Skala Besar",
+        "kecocokan_persen": 64.1,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: ketelitian detail gambar 82; penguasaan lingkungan CAD 95; skor kecocokan 64.1.",
+        "keterampilan_kunci": "Kalkulasi Volume Galian/Pondasi, Penyusunan BQ, Analisis Satuan Harga (AHSP)",
+        "saran_pengembangan": "Perdalam rumus rekapitulasi volume otomatis menggunakan spreadsheet dan integrasi data CAD. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "ketelitian detail gambar 82",
+          "penguasaan lingkungan CAD 95",
+          "skor kecocokan 64.1"
+        ]
+      },
+      {
+        "id": 8,
+        "profesi": "Landscape Architect Assistant",
+        "bidang_industri": "Studio Arsitektur Lansekap & Perencanaan Wilayah",
+        "kecocokan_persen": 58.8,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: logika ruang & struktur 98; kedisiplinan asistensi 100; skor kecocokan 58.8.",
+        "keterampilan_kunci": "Tata Hijau, Analisis Orientasi Matahari & Angin, Drainase Tapak, Desain Hardscape",
+        "saran_pengembangan": "Pelajari jenis tanaman tropis arsitektural dan sistem perkerasan ramah serapan air tanah. Langkah konkret: perkuat manajemen waktu (saat ini 96).",
+        "bukti": [
+          "logika ruang & struktur 98",
+          "kedisiplinan asistensi 100",
+          "skor kecocokan 58.8"
+        ]
+      },
+      {
+        "id": 1,
+        "profesi": "Architectural Designer (Arsitek Perancang Pratama)",
+        "bidang_industri": "Biro Konsultan Perencana Arsitektur & Desain",
+        "kecocokan_persen": 50.8,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: penguasaan lingkungan CAD 95; logika ruang & struktur 98; skor kecocokan 50.8.",
+        "keterampilan_kunci": "Konsep Tata Ruang, Denah Fungsi, Sketsa Arsitektur, AutoCAD 2D",
+        "saran_pengembangan": "Aktif mengikuti sayembara arsitektur mahasiswa dan eksplorasi gubahan massa kontemporer. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "penguasaan lingkungan CAD 95",
+          "logika ruang & struktur 98",
+          "skor kecocokan 50.8"
+        ]
+      },
+      {
+        "id": 5,
+        "profesi": "Interior Architect & Space Planner",
+        "bidang_industri": "Studio Interior Arsitektur & Desain Hunian Komersial",
+        "kecocokan_persen": 49.8,
+        "kategori_kecocokan": "Rendah",
+        "analisis_potensi": "Ananda FAJAR ADITYA PRATAMA diproyeksikan mendekati profil ini dari bukti nyata: penguasaan lingkungan CAD 95; ketelitian detail gambar 82; skor kecocokan 49.8.",
+        "keterampilan_kunci": "Sirkulasi Mikro, Ergonomi Ruang Tamu/Kamar, Detail Kusen & Pintu, Material Finishing",
+        "saran_pengembangan": "Eksplorasi katalog material lokal, tekstur finishing dinding, dan pencahayaan aksen ruang dalam. Langkah konkret: perkuat ketelitian detail gambar (saat ini 82).",
+        "bukti": [
+          "penguasaan lingkungan CAD 95",
+          "ketelitian detail gambar 82",
+          "skor kecocokan 49.8"
+        ]
+      }
+    ]
+  },
+  "registry_meta": {
+    "npm": "2410015410001",
+    "nama": "FAJAR ADITYA PRATAMA",
+    "angkatan": 2024,
+    "clean_npm": "2410015410001",
+    "angkatan_label": "Angkatan 2024",
+    "kode_prodi": "541",
+    "id_mahasiswa": "0001",
+    "semester_ke": 4,
+    "semester_label": "Semester 4",
+    "zona": {
+      "zona": 1,
+      "kode": "REGULER",
+      "label": "Zona 1 - Reguler Ideal",
+      "keterangan": "Masa studi standar 144 SKS tepat waktu",
+      "color": "emerald",
+      "at_risk_do": false
+    },
+    "total_semester_bss": 0,
+    "riwayat_bss": [],
+    "semester_efektif": 4,
+    "semester_efektif_label": "Semester 4 (Efektif)",
+    "is_bss": false,
+    "status_akademik": "AKTIF",
+    "status_label": "Zona 1 - Reguler Aktif",
+    "zona_efektif": {
+      "zona": 1,
+      "kode": "REGULER",
+      "label": "Zona 1 - Reguler Ideal",
+      "keterangan": "Masa studi standar 144 SKS tepat waktu",
+      "color": "emerald",
+      "at_risk_do": false
+    },
+    "biaya_semester_ini": 6500000,
+    "biaya_semester_label": "Rp 6.500.000"
+  }
+}

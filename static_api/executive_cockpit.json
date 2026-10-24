@@ -1,0 +1,155 @@
+{
+  "status": "success",
+  "metadata": {
+    "prodi": "Arsitektur",
+    "fakultas": "Teknik & Desain",
+    "universitas": "Universitas Bung Hatta",
+    "kaprodi": "Dr. Al Busyra Fuadi, S.T., M.Sc.",
+    "mata_kuliah_aktif": "Aplikasi Komputer Arsitektur & QS",
+    "total_mahasiswa": 83,
+    "total_katalog_mk": 30,
+    "angkatan_aktif": "all"
+  },
+  "breakdown_angkatan": {
+    "2024": {
+      "angkatan": 2024,
+      "total_mahasiswa": 16,
+      "total_at_risk": 1,
+      "sisa_semester": 4,
+      "subtotal": 26000000,
+      "subtotal_rp": "Rp 26.000.000"
+    },
+    "2025": {
+      "angkatan": 2025,
+      "total_mahasiswa": 35,
+      "total_at_risk": 5,
+      "sisa_semester": 6,
+      "subtotal": 195000000,
+      "subtotal_rp": "Rp 195.000.000"
+    },
+    "2026": {
+      "angkatan": 2026,
+      "total_mahasiswa": 15,
+      "total_at_risk": 0,
+      "sisa_semester": 8,
+      "subtotal": 0,
+      "subtotal_rp": "Rp 0"
+    },
+    "senior": {
+      "angkatan": "senior",
+      "label": "Senior Kritis (Sem 9+)",
+      "total_mahasiswa": 15,
+      "total_at_risk": 0,
+      "sisa_semester": 2,
+      "subtotal": 279500000,
+      "subtotal_rp": "Rp 279.500.000"
+    }
+  },
+  "zona_summary": {
+    "zona_1_reguler": 68,
+    "zona_2_extended": 8,
+    "zona_3_kritis": 4,
+    "zona_4_darurat": 3,
+    "total_senior": 15,
+    "total_bss_cuti": 3,
+    "pendapatan_bss_rp": "Rp 1.500.000"
+  },
+  "kas_yayasan_bss": {
+    "total_bss": 3,
+    "biaya_administrasi": 500000,
+    "pendapatan_bss_rp": "Rp 1.500.000",
+    "keterangan": "3 mahasiswa cuti sah (BSS) menyumbang pendapatan administratif Rp 1.500.000 tanpa risiko DO."
+  },
+  "kpi_eksekutif": {
+    "total_kas_masuk": "Rp 539.500.000",
+    "dana_terselamatkan": "Rp 500.500.000",
+    "pertumbuhan_pmb": "+133.3%",
+    "pmb_growth_badge": "📈 Lonjakan PMB: +133% (Angk 24: 15 Mhs ➔ Angk 25: 35 Mhs)",
+    "kesiapan_akreditasi": "88.7%",
+    "tingkat_kelulusan": "92.8%",
+    "efisiensi_operasional": "94.2%"
+  },
+  "kartu_truf": [
+    {
+      "id": "kartu_finansial",
+      "nomor": 1,
+      "badge": "Gross Inflow & PMB Growth Moat",
+      "judul": "Arus Kas Masuk SPP & Pertumbuhan PMB Multi-Periode",
+      "angka_utama": "Rp 539.500.000",
+      "sub_angka": "📈 Lonjakan PMB +133% (15 ➔ 35 Mhs) • Proteksi Kas Retensi 92.8%",
+      "warna": "amber",
+      "ikon": "wallet",
+      "deskripsi": "Realisasi penerimaan kas SPP semester berjalan mencapai Rp 539,500,000 dari 83 mahasiswa aktif lintas jenjang. Tren pendaftar baru melonjak +133.3% dari Angkatan 2024 (15 mhs) ke Angkatan 2025 (35 mhs), didukung efisiensi retensi 92.8% yang menjaga seluruh kapasitas kelas terutilisasi penuh tanpa kebocoran arus kas yayasan.",
+      "poin_kunci": [
+        "Gross SPP Masuk Semester Berjalan: Rp 539,500,000",
+        "Lonjakan PMB Antar-Periode: +133.3% (15 ➔ 35 Mahasiswa Baru)",
+        "Proteksi Arus Kas Sisa Studi dari Potensi Lost-Revenue: Rp 500,500,000"
+      ]
+    },
+    {
+      "id": "kartu_akreditasi",
+      "nomor": 2,
+      "badge": "Akreditasi Unggul LAM Teknik & BAN-PT",
+      "judul": "Audit Mutu 1-Klik Tanpa Lembur Rekayasa Dokumen",
+      "angka_utama": "100% Audit Ready",
+      "sub_angka": "16/16 Sesi BAP Digital Terisi • Keterlaksanaan 88.7%",
+      "warna": "emerald",
+      "ikon": "shield-check",
+      "deskripsi": "Setiap sesi tatap muka dosen terekam secara matematis dengan log Berita Acara Perkuliahan (BAP). Tingkat keterlaksanaan modul mencapai 88.7%, dilengkapi PDF Master Gradebook (PDF 03) dan Audit Evaluasi Dosen (PDF 04) siap cetak kapan pun asesor akreditasi berkunjung.",
+      "poin_kunci": [
+        "BAP & Presensi Tatap Muka 16 Pertemuan Tervalidasi Sah",
+        "CPMK Terpetakan Otomatis ke Evaluasi Mahasiswa",
+        "Ekspor PDF 03 & PDF 04 Seketika (Zero Lembur Manual)"
+      ]
+    },
+    {
+      "id": "kartu_pmb",
+      "nomor": 3,
+      "badge": "Magnet Promosi PMB & Daya Tarik Wali",
+      "judul": "Showcase Digital Karya Mahasiswa (Bukan Janji Brosur)",
+      "angka_utama": "83 Mahasiswa",
+      "sub_angka": "100% Slide Deck 16:9 Siap Pamer • 1 Video Reels Siap Tayang",
+      "warna": "cyan",
+      "ikon": "sparkles",
+      "deskripsi": "Setiap mahasiswa memiliki portofolio slide interaktif 16:9 (DeckCraft) dan video vertikal 9:16 yang mendokumentasikan progres gambar kerja asli mereka dari pertemuan awal hingga gambar akhir. Menjadi materi promosi PMB paling otentik di media sosial.",
+      "poin_kunci": [
+        "DeckCraft 16:9 Interaktif per Mahasiswa",
+        "Video Portofolio Sinematik 9:16 dengan Voiceover",
+        "Katalog Karya Nyata untuk Meningkatkan Minat Calon Mahasiswa Baru"
+      ]
+    },
+    {
+      "id": "kartu_iku",
+      "nomor": 4,
+      "badge": "IKU 1: Kesiapan Kerja & Trace Study Cepat",
+      "judul": "Pemetaan 10 Karier Arsitektur Sejak Bangku Kuliah",
+      "angka_utama": "Site Architect & Lapangan",
+      "sub_angka": "96.4% Mahasiswa Terpetakan ke Sektor Unggulan",
+      "warna": "purple",
+      "ikon": "trending-up",
+      "deskripsi": "Diagnosis kompetensi memetakan DNA spesialisasi mahasiswa ke 10 domain industri arsitektur (BIM Coordinator, Urban Designer, Interior Architect, Green Building Specialist). Mempercepat penyerapan kerja lulusan dan mendongkrak capaian IKU 1 Universitas.",
+      "poin_kunci": [
+        "10 Matriks Rekomendasi Karier Berbasis Kemampuan Nyata",
+        "Top 1 Sektor: Site Architect & Lapangan (80 mhs)",
+        "Menghubungkan Lulusan Langsung dengan Kebutuhan Industri"
+      ]
+    },
+    {
+      "id": "kartu_skala",
+      "nomor": 5,
+      "badge": "Scale-Ready: Blueprint Satu Universitas",
+      "judul": "Dari 1 Mata Kuliah Menuju Standar Seluruh Fakultas",
+      "angka_utama": "30 MK Terdata",
+      "sub_angka": "Mesin Standar untuk Replikasi ke Seluruh Prodi Teknik",
+      "warna": "blue",
+      "ikon": "layers",
+      "deskripsi": "Infrastruktur sistem dirancang modular. Template penilaian, audit RPS, dan laporan wali telah mencakup katalog 30 mata kuliah di Program Studi Arsitektur dan siap direplikasi ke seluruh program studi lain di lingkungan Teknik & Desain.",
+      "poin_kunci": [
+        "Katalog 30 Mata Kuliah Kurikulum Lengkap Terintegrasi",
+        "Format Data Terstandarisasi Siap Pakai",
+        "Efisiensi Ratusan Juta Rupiah Dibanding Pengadaan Software Vendor Luar"
+      ]
+    }
+  ],
+  "executive_pitch": "Yang Terhormat Pengurus Yayasan dan Bapak Rektor,\n\nKAMPUS_01 membuktikan pertumbuhan nyata institusi: realisasi penerimaan kas SPP semester ini mencapai Rp 539,500,000 dengan lonjakan mahasiswa baru (PMB) sebesar +133.3% (dari 15 ke 35 mahasiswa). Melalui Early Warning presensi & evaluasi studio terpadu, sistem sekaligus memproteksi potensi arus kas hingga wisuda senilai Rp 500,500,000. Seluruh 16 sesi perkuliahan telah dilengkapi BAP digital dan materi audit akreditasi yang siap cetak seketika untuk mendukung akreditasi Unggul universitas."
+}

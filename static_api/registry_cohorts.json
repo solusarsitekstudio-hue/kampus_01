@@ -1,0 +1,112 @@
+{
+  "prodi": "ARSITEKTUR",
+  "tahun_ajar": "2025/2026",
+  "semester": "GENAP",
+  "total_mahasiswa_terdata": 83,
+  "total_aktif": 80,
+  "total_bss_cuti": 3,
+  "zona_1_reguler": 68,
+  "zona_2_extended": 8,
+  "zona_3_kritis": 4,
+  "zona_4_darurat_do": 3,
+  "finansial_yayasan": {
+    "biaya_administrasi_bss_per_sem": 500000,
+    "spp_per_semester": 6500000,
+    "pendapatan_administrasi_bss_rp": "Rp 1.500.000",
+    "pendapatan_spp_aktif_rp": "Rp 520.000.000",
+    "total_estimasi_pemasukan_rp": "Rp 521.500.000",
+    "keterangan": "Pemasukan kas resmi yayasan mencakup SPP mahasiswa aktif dan biaya administrasi registrasi mahasiswa cuti (BSS)."
+  },
+  "breakdown_angkatan": [
+    {
+      "angkatan": 2026,
+      "label": "Angkatan 2026",
+      "total": 15,
+      "aktif": 15,
+      "bss": 0,
+      "semester_berjalan": 1,
+      "zona": 1,
+      "zona_label": "Zona 1 - Reguler Ideal"
+    },
+    {
+      "angkatan": 2025,
+      "label": "Angkatan 2025",
+      "total": 35,
+      "aktif": 35,
+      "bss": 0,
+      "semester_berjalan": 2,
+      "zona": 1,
+      "zona_label": "Zona 1 - Reguler Ideal"
+    },
+    {
+      "angkatan": 2024,
+      "label": "Angkatan 2024",
+      "total": 16,
+      "aktif": 15,
+      "bss": 1,
+      "semester_berjalan": 4,
+      "zona": 1,
+      "zona_label": "Zona 1 - Reguler Ideal"
+    },
+    {
+      "angkatan": 2023,
+      "label": "Angkatan 2023",
+      "total": 1,
+      "aktif": 0,
+      "bss": 1,
+      "semester_berjalan": 6,
+      "zona": 1,
+      "zona_label": "Zona 1 - Reguler Ideal"
+    },
+    {
+      "angkatan": 2022,
+      "label": "Angkatan 2022",
+      "total": 1,
+      "aktif": 0,
+      "bss": 1,
+      "semester_berjalan": 8,
+      "zona": 1,
+      "zona_label": "Zona 1 - Reguler Ideal"
+    },
+    {
+      "angkatan": 2021,
+      "label": "Angkatan 2021",
+      "total": 8,
+      "aktif": 8,
+      "bss": 0,
+      "semester_berjalan": 10,
+      "zona": 2,
+      "zona_label": "Zona 2 - Extended Studio"
+    },
+    {
+      "angkatan": 2020,
+      "label": "Angkatan 2020",
+      "total": 4,
+      "aktif": 4,
+      "bss": 0,
+      "semester_berjalan": 12,
+      "zona": 3,
+      "zona_label": "Zona 3 - Kritis SP-1"
+    },
+    {
+      "angkatan": 2018,
+      "label": "Angkatan 2018",
+      "total": 2,
+      "aktif": 2,
+      "bss": 0,
+      "semester_berjalan": 16,
+      "zona": 4,
+      "zona_label": "Zona 4 - Darurat DO"
+    },
+    {
+      "angkatan": 2011,
+      "label": "Angkatan 2011",
+      "total": 1,
+      "aktif": 1,
+      "bss": 0,
+      "semester_berjalan": 30,
+      "zona": 4,
+      "zona_label": "Zona 4 - Darurat DO"
+    }
+  ]
+}

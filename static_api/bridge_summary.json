@@ -1,0 +1,541 @@
+{
+  "status": "success",
+  "meta": {
+    "engine": "AcademicBridge v1.0 (Modular Domain Facade)",
+    "mata_kuliah": "Aplikasi Komputer Arsitektur & QS",
+    "total_mahasiswa": 37
+  },
+  "presensi": {
+    "total_mahasiswa": 37,
+    "rata_kehadiran_persen": 85.6,
+    "total_at_risk": 6,
+    "basis_perhitungan": "slot",
+    "slot_total_semester": 32,
+    "daftar_at_risk": [
+      {
+        "npm": "2410015410002",
+        "nama": "DINA SALSABILA PUTRI",
+        "alpha": 3,
+        "persentase": 62.5,
+        "alasan": [
+          "Alpha 3x",
+          "Kehadiran 62.5%"
+        ]
+      },
+      {
+        "npm": "2510015410007",
+        "nama": "ULYA NAFISAH PUTRI",
+        "alpha": 2,
+        "persentase": 68.8,
+        "alasan": [
+          "Alpha 2x",
+          "Kehadiran 68.8%"
+        ]
+      },
+      {
+        "npm": "2510015410011",
+        "nama": "ROZI ANDRIAN SURVA",
+        "alpha": 3,
+        "persentase": 62.5,
+        "alasan": [
+          "Alpha 3x",
+          "Kehadiran 62.5%"
+        ]
+      },
+      {
+        "npm": "2510015410014",
+        "nama": "NADIA PERMATA HUSINA",
+        "alpha": 2,
+        "persentase": 68.8,
+        "alasan": [
+          "Alpha 2x",
+          "Kehadiran 68.8%"
+        ]
+      },
+      {
+        "npm": "2510015410021",
+        "nama": "FELISA ANDREINA",
+        "alpha": 2,
+        "persentase": 68.8,
+        "alasan": [
+          "Alpha 2x",
+          "Kehadiran 68.8%"
+        ]
+      },
+      {
+        "npm": "2510015410028",
+        "nama": "LATIVA NORUL HASANAH",
+        "alpha": 2,
+        "persentase": 68.8,
+        "alasan": [
+          "Alpha 2x",
+          "Kehadiran 68.8%"
+        ]
+      }
+    ]
+  },
+  "nilai": {
+    "rata_nilai_studio": 77.6,
+    "distribusi_grade": {
+      "A": 3,
+      "A-": 14,
+      "B+": 6,
+      "B": 10,
+      "C": 4,
+      "D": 0,
+      "Belum Lengkap": 0
+    },
+    "grade_modus": "A-",
+    "total_lulus": 29,
+    "tingkat_kelulusan_persen": 78.4
+  },
+  "kurikulum": {
+    "kode_mk": "5412522233",
+    "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+    "sks": 2,
+    "total_pertemuan": 16,
+    "komposisi_pertemuan": {
+      "teori": 0,
+      "studio": 0,
+      "teori_plus_studio": 0,
+      "ujian": 0
+    },
+    "status_rps": "100% Terpetakan (16 Pertemuan)",
+    "dosen_pengasuh": [
+      "Aprilia Yunita, S.T., M.T.",
+      "Duddy Fajriansyah, S.T., M.T."
+    ],
+    "asisten_dosen": "Adrian Ridhoa, S.T."
+  },
+  "dosen": {
+    "tim_pengajar": [
+      {
+        "nama": "Aprilia Yunita, S.T., M.T.",
+        "peran": "Dosen Pengasuh Utama",
+        "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
+      },
+      {
+        "nama": "Duddy Fajriansyah, S.T., M.T.",
+        "peran": "Dosen Pengasuh Pendamping",
+        "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
+      },
+      {
+        "nama": "Adrian Ridhoa, S.T.",
+        "peran": "Asisten Dosen & Instruktur Studio Lab LIKDA",
+        "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
+        "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
+      }
+    ],
+    "keterlaksanaan_persen": 100.0,
+    "total_sesi": 16,
+    "status_kesiapan_akreditasi": "Siap Audit BAN-PT & LAM Teknik",
+    "catatan": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
+  },
+  "retake": {
+    "total_mahasiswa_mengulang": 3,
+    "prodi": "Arsitektur",
+    "mata_kuliah": "Aplikasi Komputer Arsitektur & QS",
+    "daftar_mahasiswa_retake": [
+      {
+        "npm": "2410015410001",
+        "nama": "FAJAR ADITYA PRATAMA",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A",
+        "nilai_sekarang": 94.6,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410002",
+        "nama": "DINA SALSABILA PUTRI",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "C",
+        "nilai_sekarang": 60.3,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Masih Butuh Pendampingan Intensif",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2510015410011",
+        "nama": "ROZI ANDRIAN SURVA",
+        "angkatan": 2025,
+        "status_peserta": "ulang",
+        "grade_sekarang": "C",
+        "nilai_sekarang": 60.7,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Semester Lalu",
+          "nilai_sebelumnya": "E (Tidak Tuntas)",
+          "skor_sebelumnya": 45.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Masih Butuh Pendampingan Intensif",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      }
+    ],
+    "matriks_prodi_ringkas": {
+      "total_mk_terdata": 30,
+      "total_kasus_remedial_prodi": 48,
+      "mk_paling_banyak_remedial": {
+        "id": "ARS203",
+        "kode_mk": "5412521103",
+        "nama_mk": "Sistem Utilitas Bangunan",
+        "dosen": "Aprilia Yunita, S.T., M.T.",
+        "sks": 2,
+        "total_mahasiswa": 35,
+        "total_remedial": 7,
+        "rata_nilai": 76.8,
+        "status_mk": "Kritis / Butuh Asistensi Tambahan"
+      },
+      "matriks_per_mk": [
+        {
+          "id": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+          "kode_mk": "5412522233",
+          "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+          "dosen": "Aprilia Yunita, S.T., M.T., Duddy Fajriansyah, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 37,
+          "total_remedial": 2,
+          "rata_nilai": 77.6,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS101",
+          "kode_mk": "5412511101",
+          "nama_mk": "Dasar-Dasar Desain Arsitektur",
+          "dosen": "Ir. Nasril Sikumbang, M.T.",
+          "sks": 3,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 76.6,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS102",
+          "kode_mk": "5412511102",
+          "nama_mk": "Gambar Teknik Arsitektur",
+          "dosen": "Fielda Roza, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 0,
+          "rata_nilai": 77.9,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS103",
+          "kode_mk": "5412511103",
+          "nama_mk": "Matematika Teknik",
+          "dosen": "Dr. Eng. Hendra Wijaya, S.T., M.T.",
+          "sks": 3,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 76.8,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS104",
+          "kode_mk": "5412511104",
+          "nama_mk": "Fisika Bangunan 1",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 76.6,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS105",
+          "kode_mk": "5412511105",
+          "nama_mk": "Sejarah Arsitektur Barat",
+          "dosen": "Dr. Rina Marlia, S.S., M.Hum.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 75.9,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS106",
+          "kode_mk": "5412511106",
+          "nama_mk": "Pengantar Lingkungan Binaan",
+          "dosen": "Aprilia Yunita, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 75.9,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS107",
+          "kode_mk": "5412512101",
+          "nama_mk": "Studio Perancangan Arsitektur 1",
+          "dosen": "Ir. Nasril Sikumbang, M.T., Fielda Roza, S.T., M.T.",
+          "sks": 4,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 78.4,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS108",
+          "kode_mk": "5412512102",
+          "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+          "dosen": "Aprilia Yunita, S.T., M.T., Duddy Fajriansyah, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 0,
+          "rata_nilai": 77.1,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS109",
+          "kode_mk": "5412512103",
+          "nama_mk": "Struktur & Konstruksi Bangunan 1",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 3,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 78.9,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS110",
+          "kode_mk": "5412512104",
+          "nama_mk": "Fisika Bangunan 2",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 75.2,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS111",
+          "kode_mk": "5412512105",
+          "nama_mk": "Sejarah Arsitektur Nusantara",
+          "dosen": "Dr. Rina Marlia, S.S., M.Hum.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 3,
+          "rata_nilai": 75.6,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS112",
+          "kode_mk": "5412512106",
+          "nama_mk": "Teknologi Material Bangunan",
+          "dosen": "Fielda Roza, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 75.3,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS201",
+          "kode_mk": "5412521101",
+          "nama_mk": "Studio Perancangan Arsitektur 2",
+          "dosen": "Ir. Nasril Sikumbang, M.T., Fielda Roza, S.T., M.T.",
+          "sks": 4,
+          "total_mahasiswa": 35,
+          "total_remedial": 0,
+          "rata_nilai": 78.1,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS202",
+          "kode_mk": "5412521102",
+          "nama_mk": "Struktur & Konstruksi Bangunan 2",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 3,
+          "total_mahasiswa": 35,
+          "total_remedial": 1,
+          "rata_nilai": 78.4,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS203",
+          "kode_mk": "5412521103",
+          "nama_mk": "Sistem Utilitas Bangunan",
+          "dosen": "Aprilia Yunita, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 35,
+          "total_remedial": 7,
+          "rata_nilai": 76.8,
+          "status_mk": "Kritis / Butuh Asistensi Tambahan"
+        },
+        {
+          "id": "ARS204",
+          "kode_mk": "5412521104",
+          "nama_mk": "Arsitektur Tropis & Berkelanjutan",
+          "dosen": "Fielda Roza, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 35,
+          "total_remedial": 7,
+          "rata_nilai": 77.1,
+          "status_mk": "Kritis / Butuh Asistensi Tambahan"
+        },
+        {
+          "id": "ARS205",
+          "kode_mk": "5412521105",
+          "nama_mk": "Perencanaan Tata Ruang & Lanskap",
+          "dosen": "Aprilia Yunita, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 35,
+          "total_remedial": 0,
+          "rata_nilai": 78.5,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS206",
+          "kode_mk": "5412521106",
+          "nama_mk": "Metodologi Penelitian Arsitektur",
+          "dosen": "Dr. Rina Marlia, S.S., M.Hum.",
+          "sks": 2,
+          "total_mahasiswa": 35,
+          "total_remedial": 4,
+          "rata_nilai": 77.3,
+          "status_mk": "Kritis / Butuh Asistensi Tambahan"
+        },
+        {
+          "id": "ARS301",
+          "kode_mk": "5412531101",
+          "nama_mk": "Studio Perancangan Arsitektur 4",
+          "dosen": "Ir. Nasril Sikumbang, M.T., Fielda Roza, S.T., M.T.",
+          "sks": 4,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 76.0,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS302",
+          "kode_mk": "5412531102",
+          "nama_mk": "Struktur & Konstruksi Bangunan 4",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 3,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 77.9,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS303",
+          "kode_mk": "5412531103",
+          "nama_mk": "Perancangan Interior & Furnitur",
+          "dosen": "Aprilia Yunita, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 0,
+          "rata_nilai": 76.3,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS304",
+          "kode_mk": "5412531104",
+          "nama_mk": "Arsitektur Digital & BIM",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 0,
+          "rata_nilai": 78.0,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS305",
+          "kode_mk": "5412531105",
+          "nama_mk": "Hukum & Etika Profesi Arsitek",
+          "dosen": "Dr. Rina Marlia, S.S., M.Hum.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 73.5,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS306",
+          "kode_mk": "5412531106",
+          "nama_mk": "Ekonomi & Feasibilitas Proyek",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 2,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 74.1,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS307",
+          "kode_mk": "5412532101",
+          "nama_mk": "Studio Perancangan Arsitektur 5 (TA)",
+          "dosen": "Ir. Nasril Sikumbang, M.T., Fielda Roza, S.T., M.T.",
+          "sks": 6,
+          "total_mahasiswa": 15,
+          "total_remedial": 2,
+          "rata_nilai": 76.6,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS308",
+          "kode_mk": "5412532102",
+          "nama_mk": "Tugas Akhir / Skripsi",
+          "dosen": "Fielda Roza, S.T., M.T.",
+          "sks": 4,
+          "total_mahasiswa": 15,
+          "total_remedial": 0,
+          "rata_nilai": 76.2,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "ARS309",
+          "kode_mk": "5412532103",
+          "nama_mk": "Praktik Profesi / Magang",
+          "dosen": "Aprilia Yunita, S.T., M.T.",
+          "sks": 3,
+          "total_mahasiswa": 15,
+          "total_remedial": 0,
+          "rata_nilai": 77.5,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+          "kode_mk": "5412522302",
+          "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+          "dosen": "Duddy Fajriansyah, S.T., M.T.",
+          "sks": 3,
+          "total_mahasiswa": 15,
+          "total_remedial": 1,
+          "rata_nilai": 77.5,
+          "status_mk": "Terkendali"
+        },
+        {
+          "id": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+          "kode_mk": "5412522404",
+          "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+          "dosen": "Ir. Nasril Sikumbang, M.T., Fielda Roza, S.T., M.T.",
+          "sks": 4,
+          "total_mahasiswa": 37,
+          "total_remedial": 1,
+          "rata_nilai": 78.8,
+          "status_mk": "Terkendali"
+        }
+      ]
+    }
+  }
+}

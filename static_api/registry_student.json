@@ -1,0 +1,36 @@
+{
+  "npm": "2510015410010",
+  "nama": "M YAZID ZIDANE MULYADI",
+  "angkatan": 2025,
+  "clean_npm": "2510015410010",
+  "angkatan_label": "Angkatan 2025",
+  "kode_prodi": "541",
+  "id_mahasiswa": "0010",
+  "semester_ke": 2,
+  "semester_label": "Semester 2",
+  "zona": {
+    "zona": 1,
+    "kode": "REGULER",
+    "label": "Zona 1 - Reguler Ideal",
+    "keterangan": "Masa studi standar 144 SKS tepat waktu",
+    "color": "emerald",
+    "at_risk_do": false
+  },
+  "total_semester_bss": 0,
+  "riwayat_bss": [],
+  "semester_efektif": 2,
+  "semester_efektif_label": "Semester 2 (Efektif)",
+  "is_bss": false,
+  "status_akademik": "AKTIF",
+  "status_label": "Zona 1 - Reguler Aktif",
+  "zona_efektif": {
+    "zona": 1,
+    "kode": "REGULER",
+    "label": "Zona 1 - Reguler Ideal",
+    "keterangan": "Masa studi standar 144 SKS tepat waktu",
+    "color": "emerald",
+    "at_risk_do": false
+  },
+  "biaya_semester_ini": 6500000,
+  "biaya_semester_label": "Rp 6.500.000"
+}

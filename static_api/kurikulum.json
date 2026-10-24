@@ -1,0 +1,852 @@
+{
+  "aktif": {
+    "prodi": "ARSITEKTUR",
+    "tahun_ajar": "2025-2026",
+    "semester": "GENAP",
+    "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"
+  },
+  "prodi": [
+    "ARSITEKTUR"
+  ],
+  "pohon": {
+    "ARSITEKTUR": {
+      "2024-2025": {
+        "GANJIL": [
+          {
+            "kunci_mk": "ARS101",
+            "nama_mk": "Dasar-Dasar Desain Arsitektur",
+            "kode_mk": "ARS101",
+            "sks": 3,
+            "kelas": "ARS101 A (Lab LIKDA)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Ir. Nasril Sikumbang, M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 480 menit/minggu, sedangkan patokan sistem 3 SKS x 120 menit = 360 menit (160 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS102",
+            "nama_mk": "Gambar Teknik Arsitektur",
+            "kode_mk": "ARS102",
+            "sks": 2,
+            "kelas": "ARS102 A (Lab LIKDA)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 480 menit/minggu, sedangkan patokan sistem 2 SKS x 120 menit = 240 menit (240 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS103",
+            "nama_mk": "Matematika Teknik",
+            "kode_mk": "ARS103",
+            "sks": 3,
+            "kelas": "ARS103 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Dr. Eng. Hendra Wijaya, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": []
+          },
+          {
+            "kunci_mk": "ARS104",
+            "nama_mk": "Fisika Bangunan 1",
+            "kode_mk": "ARS104",
+            "sks": 2,
+            "kelas": "ARS104 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS105",
+            "nama_mk": "Sejarah Arsitektur Barat",
+            "kode_mk": "ARS105",
+            "sks": 2,
+            "kelas": "ARS105 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Dr. Rina Marlia, S.S., M.Hum."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS106",
+            "nama_mk": "Pengantar Lingkungan Binaan",
+            "kode_mk": "ARS106",
+            "sks": 2,
+            "kelas": "ARS106 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          }
+        ],
+        "GENAP": [
+          {
+            "kunci_mk": "ARS107",
+            "nama_mk": "Studio Perancangan Arsitektur 1",
+            "kode_mk": "ARS107",
+            "sks": 4,
+            "kelas": "ARS107 A (Lab LIKDA)",
+            "jadwal": "Rabu, 10:10 - 15:50 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Ir. Nasril Sikumbang, M.T.",
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 340,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 340 menit/minggu, sedangkan patokan sistem 4 SKS x 120 menit = 480 menit (85 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS108",
+            "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+            "kode_mk": "ARS108",
+            "sks": 2,
+            "kelas": "ARS108 A (Lab LIKDA)",
+            "jadwal": "Rabu, 10:10 - 15:50 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T.",
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 340,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 340 menit/minggu, sedangkan patokan sistem 2 SKS x 120 menit = 240 menit (170 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS109",
+            "nama_mk": "Struktur & Konstruksi Bangunan 1",
+            "kode_mk": "ARS109",
+            "sks": 3,
+            "kelas": "ARS109 A (Ruang Kuliah)",
+            "jadwal": "Kamis, 08:00 - 10:30 WIB",
+            "jenis_mk": "teori_studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 3 SKS x 120 menit = 360 menit (50 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS110",
+            "nama_mk": "Fisika Bangunan 2",
+            "kode_mk": "ARS110",
+            "sks": 2,
+            "kelas": "ARS110 A (Ruang Kuliah)",
+            "jadwal": "Kamis, 08:00 - 10:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS111",
+            "nama_mk": "Sejarah Arsitektur Nusantara",
+            "kode_mk": "ARS111",
+            "sks": 2,
+            "kelas": "ARS111 A (Ruang Kuliah)",
+            "jadwal": "Kamis, 08:00 - 10:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Dr. Rina Marlia, S.S., M.Hum."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS112",
+            "nama_mk": "Teknologi Material Bangunan",
+            "kode_mk": "ARS112",
+            "sks": 2,
+            "kelas": "ARS112 A (Ruang Kuliah)",
+            "jadwal": "Kamis, 08:00 - 10:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          }
+        ]
+      },
+      "2025-2026": {
+        "GANJIL": [
+          {
+            "kunci_mk": "ARS201",
+            "nama_mk": "Studio Perancangan Arsitektur 2",
+            "kode_mk": "ARS201",
+            "sks": 4,
+            "kelas": "ARS201 A (Lab LIKDA)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Ir. Nasril Sikumbang, M.T.",
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": []
+          },
+          {
+            "kunci_mk": "ARS202",
+            "nama_mk": "Struktur & Konstruksi Bangunan 2",
+            "kode_mk": "ARS202",
+            "sks": 3,
+            "kelas": "ARS202 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori_studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 3 SKS x 120 menit = 360 menit (50 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS203",
+            "nama_mk": "Sistem Utilitas Bangunan",
+            "kode_mk": "ARS203",
+            "sks": 2,
+            "kelas": "ARS203 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS204",
+            "nama_mk": "Arsitektur Tropis & Berkelanjutan",
+            "kode_mk": "ARS204",
+            "sks": 2,
+            "kelas": "ARS204 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS205",
+            "nama_mk": "Perencanaan Tata Ruang & Lanskap",
+            "kode_mk": "ARS205",
+            "sks": 2,
+            "kelas": "ARS205 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori_studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 120 menit = 240 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS206",
+            "nama_mk": "Metodologi Penelitian Arsitektur",
+            "kode_mk": "ARS206",
+            "sks": 2,
+            "kelas": "ARS206 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Dr. Rina Marlia, S.S., M.Hum."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          }
+        ],
+        "GENAP": [
+          {
+            "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+            "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+            "kode_mk": "5412522233",
+            "sks": 2,
+            "kelas": "TEKZA (Lab LIKDA)",
+            "jadwal": "Rabu, 10:10 - 15:50 WIB",
+            "jenis_mk": "teori_studio",
+            "jenis_mk_sumber": "dikonfirmasi-dashboard",
+            "semester_kurikulum": 2,
+            "semester_kurikulum_sumber": "dikonfirmasi-dashboard",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T.",
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 340,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 340 menit/minggu, sedangkan patokan sistem 2 SKS x 120 menit = 240 menit (170 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+            "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+            "kode_mk": "5412522302",
+            "sks": 3,
+            "kelas": "Ruang Kuliah B.204",
+            "jadwal": "Selasa, 13:00 - 16:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "dikonfirmasi-dashboard",
+            "semester_kurikulum": 7,
+            "semester_kurikulum_sumber": "dikonfirmasi-dashboard",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 210,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 210 menit/minggu, sedangkan patokan sistem 3 SKS x 50 menit = 150 menit (70 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "STUDIO_PERANCANGAN_ARSITEKTUR_2",
+            "nama_mk": "Studio Perancangan Arsitektur 2 (Desain Rumah Tinggal)",
+            "kode_mk": "5412522404",
+            "sks": 4,
+            "kelas": "Studio Desain 2 (Gedung Arsitektur Lt. 3)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "dikonfirmasi-dashboard",
+            "semester_kurikulum": 2,
+            "semester_kurikulum_sumber": "dikonfirmasi-dashboard",
+            "dosen_pengasuh": [
+              "Ir. Nasril Sikumbang, M.T.",
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": []
+          }
+        ]
+      },
+      "2026-2027": {
+        "GANJIL": [
+          {
+            "kunci_mk": "ARS301",
+            "nama_mk": "Studio Perancangan Arsitektur 4",
+            "kode_mk": "ARS301",
+            "sks": 4,
+            "kelas": "ARS301 A (Lab LIKDA)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Ir. Nasril Sikumbang, M.T.",
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": []
+          },
+          {
+            "kunci_mk": "ARS302",
+            "nama_mk": "Struktur & Konstruksi Bangunan 4",
+            "kode_mk": "ARS302",
+            "sks": 3,
+            "kelas": "ARS302 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori_studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 3 SKS x 120 menit = 360 menit (50 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS303",
+            "nama_mk": "Perancangan Interior & Furnitur",
+            "kode_mk": "ARS303",
+            "sks": 2,
+            "kelas": "ARS303 A (Lab LIKDA)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 480 menit/minggu, sedangkan patokan sistem 2 SKS x 120 menit = 240 menit (240 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS304",
+            "nama_mk": "Arsitektur Digital & BIM",
+            "kode_mk": "ARS304",
+            "sks": 2,
+            "kelas": "ARS304 A (Lab LIKDA)",
+            "jadwal": "Senin & Kamis, 08:00 - 12:00 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 480,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 480 menit/minggu, sedangkan patokan sistem 2 SKS x 120 menit = 240 menit (240 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS305",
+            "nama_mk": "Hukum & Etika Profesi Arsitek",
+            "kode_mk": "ARS305",
+            "sks": 2,
+            "kelas": "ARS305 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Dr. Rina Marlia, S.S., M.Hum."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS306",
+            "nama_mk": "Ekonomi & Feasibilitas Proyek",
+            "kode_mk": "ARS306",
+            "sks": 2,
+            "kelas": "ARS306 A (Ruang Kuliah)",
+            "jadwal": "Selasa, 13:00 - 15:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Duddy Fajriansyah, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 2 SKS x 50 menit = 100 menit (75 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          }
+        ],
+        "GENAP": [
+          {
+            "kunci_mk": "ARS307",
+            "nama_mk": "Studio Perancangan Arsitektur 5 (TA)",
+            "kode_mk": "ARS307",
+            "sks": 6,
+            "kelas": "ARS307 A (Lab LIKDA)",
+            "jadwal": "Rabu, 10:10 - 15:50 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Ir. Nasril Sikumbang, M.T.",
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "Adrian Ridhoa, S.T.",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 340,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 340 menit/minggu, sedangkan patokan sistem 6 SKS x 120 menit = 720 menit (57 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS308",
+            "nama_mk": "Tugas Akhir / Skripsi",
+            "kode_mk": "ARS308",
+            "sks": 4,
+            "kelas": "ARS308 A (Ruang Kuliah)",
+            "jadwal": "Kamis, 08:00 - 10:30 WIB",
+            "jenis_mk": "teori",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Fielda Roza, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 16,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 150,
+            "masalah": [],
+            "peringatan": [
+              "jadwal 150 menit/minggu, sedangkan patokan sistem 4 SKS x 50 menit = 200 menit (38 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+            ]
+          },
+          {
+            "kunci_mk": "ARS309",
+            "nama_mk": "Praktik Profesi / Magang",
+            "kode_mk": "ARS309",
+            "sks": 3,
+            "kelas": "ARS309 A (Lab LIKDA)",
+            "jadwal": "Rabu, 10:10 - 15:50 WIB",
+            "jenis_mk": "studio",
+            "jenis_mk_sumber": "",
+            "semester_kurikulum": null,
+            "semester_kurikulum_sumber": "",
+            "dosen_pengasuh": [
+              "Aprilia Yunita, S.T., M.T."
+            ],
+            "asisten_dosen": "-",
+            "pertemuan": 16,
+            "pertemuan_standar": 16,
+            "slot_total": 32,
+            "bobot_total": 100.0,
+            "topik_terisi": 6,
+            "topik_placeholder": 10,
+            "jadwal_menit": 340,
+            "masalah": [],
+            "peringatan": []
+          }
+        ]
+      }
+    }
+  },
+  "aturan": [
+    "Aturan at-risk: Alpha >= 2x ATAU Kehadiran < 75%",
+    "Kehadiran: tampilan per pertemuan, persen berbasis slot, minimal 50% slot agar 1 pertemuan dihitung hadir",
+    "Slot absen belum lengkap: ditandai Belum Diinput + grade ditahan (bukan Alpha, tidak dinilai 0)",
+    "Jam per SKS: teori 50 menit, studio 120 menit, teori_studio 120 menit",
+    "Standar kampus: 16 pertemuan, UTS ke-8, UAS ke-16"
+  ],
+  "pertemuan_total": 16,
+  "pertemuan_ujian": {
+    "uts": 8,
+    "uas": 16
+  }
+}
