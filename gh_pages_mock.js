@@ -90,8 +90,10 @@
           targetPdf = "./generated_pdfs/02_sample_master.pdf";
         } else if (["04", "evaluasi", "dosen", "audit", "evaluasi_dosen"].includes(rawType)) {
           targetPdf = "./generated_pdfs/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf";
-        } else if (["05", "deckcraft", "portofolio", "deck", "portofolio_lengkap", "porto4"].includes(rawType)) {
+        } else if (["05", "deckcraft", "deck"].includes(rawType)) {
           targetPdf = "./generated_pdfs/05_sample_master.pdf";
+        } else if (["05b", "portofolio_lengkap", "porto4", "porto_lengkap", "portofolio"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/05b_sample_master.pdf";
         } else if (["06", "boardroom", "boardroom_pitch", "executive_pitch"].includes(rawType)) {
           targetPdf = "./generated_pdfs/06_boardroom_pitch_deck_yayasan.pdf";
         } else if (["07", "cohort", "cohort_report", "laporan_kohort", "yayasan", "laporan_yayasan"].includes(rawType)) {
