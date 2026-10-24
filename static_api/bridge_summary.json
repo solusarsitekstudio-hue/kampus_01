@@ -2,13 +2,13 @@
   "status": "success",
   "meta": {
     "engine": "AcademicBridge v1.0 (Modular Domain Facade)",
-    "mata_kuliah": "Aplikasi Komputer Arsitektur & QS",
-    "total_mahasiswa": 37
+    "mata_kuliah": "Studio Perancangan Arsitektur 1",
+    "total_mahasiswa": 15
   },
   "presensi": {
-    "total_mahasiswa": 37,
-    "rata_kehadiran_persen": 85.6,
-    "total_at_risk": 6,
+    "total_mahasiswa": 15,
+    "rata_kehadiran_persen": 86.1,
+    "total_at_risk": 3,
     "basis_perhitungan": "slot",
     "slot_total_semester": 32,
     "daftar_at_risk": [
@@ -23,18 +23,8 @@
         ]
       },
       {
-        "npm": "2510015410007",
-        "nama": "ULYA NAFISAH PUTRI",
-        "alpha": 2,
-        "persentase": 68.8,
-        "alasan": [
-          "Alpha 2x",
-          "Kehadiran 68.8%"
-        ]
-      },
-      {
-        "npm": "2510015410011",
-        "nama": "ROZI ANDRIAN SURVA",
+        "npm": "2410015410005",
+        "nama": "BAGAS WICAKSONO",
         "alpha": 3,
         "persentase": 62.5,
         "alasan": [
@@ -43,28 +33,8 @@
         ]
       },
       {
-        "npm": "2510015410014",
-        "nama": "NADIA PERMATA HUSINA",
-        "alpha": 2,
-        "persentase": 68.8,
-        "alasan": [
-          "Alpha 2x",
-          "Kehadiran 68.8%"
-        ]
-      },
-      {
-        "npm": "2510015410021",
-        "nama": "FELISA ANDREINA",
-        "alpha": 2,
-        "persentase": 68.8,
-        "alasan": [
-          "Alpha 2x",
-          "Kehadiran 68.8%"
-        ]
-      },
-      {
-        "npm": "2510015410028",
-        "nama": "LATIVA NORUL HASANAH",
+        "npm": "2410015410012",
+        "nama": "CLARA AYUNDA",
         "alpha": 2,
         "persentase": 68.8,
         "alasan": [
@@ -75,24 +45,24 @@
     ]
   },
   "nilai": {
-    "rata_nilai_studio": 77.6,
+    "rata_nilai_studio": 78.4,
     "distribusi_grade": {
-      "A": 3,
-      "A-": 14,
-      "B+": 6,
-      "B": 10,
-      "C": 4,
+      "A": 1,
+      "A-": 7,
+      "B+": 3,
+      "B": 2,
+      "C": 2,
       "D": 0,
       "Belum Lengkap": 0
     },
     "grade_modus": "A-",
-    "total_lulus": 29,
-    "tingkat_kelulusan_persen": 78.4
+    "total_lulus": 12,
+    "tingkat_kelulusan_persen": 80.0
   },
   "kurikulum": {
-    "kode_mk": "5412522233",
-    "nama_mk": "Aplikasi Komputer Arsitektur & QS",
-    "sks": 2,
+    "kode_mk": "5412512101",
+    "nama_mk": "Studio Perancangan Arsitektur 1",
+    "sks": 4,
     "total_pertemuan": 16,
     "komposisi_pertemuan": {
       "teori": 0,
@@ -102,21 +72,21 @@
     },
     "status_rps": "100% Terpetakan (16 Pertemuan)",
     "dosen_pengasuh": [
-      "Aprilia Yunita, S.T., M.T.",
-      "Duddy Fajriansyah, S.T., M.T."
+      "Ir. Nasril Sikumbang, M.T.",
+      "Fielda Roza, S.T., M.T."
     ],
     "asisten_dosen": "Adrian Ridhoa, S.T."
   },
   "dosen": {
     "tim_pengajar": [
       {
-        "nama": "Aprilia Yunita, S.T., M.T.",
+        "nama": "Ir. Nasril Sikumbang, M.T.",
         "peran": "Dosen Pengasuh Utama",
         "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
         "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
       },
       {
-        "nama": "Duddy Fajriansyah, S.T., M.T.",
+        "nama": "Fielda Roza, S.T., M.T.",
         "peran": "Dosen Pengasuh Pendamping",
         "kehadiran": "Belum ada rekap presensi dosen (diisi manual oleh prodi)",
         "status": "Belum dinilai (instrumen penilaian dosen belum ada)"
@@ -134,9 +104,9 @@
     "catatan": "Perkuliahan berjalan sangat disiplin dan interaktif. Metode asistensi studio di Lab LIKDA terbukti efektif mengangkat pemahaman mahasiswa. Disarankan untuk semester depan modul dapat ditambah pengenalan BIM Arsitektur (Revit) tingkat dasar."
   },
   "retake": {
-    "total_mahasiswa_mengulang": 3,
+    "total_mahasiswa_mengulang": 15,
     "prodi": "Arsitektur",
-    "mata_kuliah": "Aplikasi Komputer Arsitektur & QS",
+    "mata_kuliah": "Studio Perancangan Arsitektur 1",
     "daftar_mahasiswa_retake": [
       {
         "npm": "2410015410001",
@@ -144,7 +114,7 @@
         "angkatan": 2024,
         "status_peserta": "ulang",
         "grade_sekarang": "A",
-        "nilai_sekarang": 94.6,
+        "nilai_sekarang": 95.6,
         "histori_retake": {
           "is_retake": true,
           "semester_ambil_pertama": "Ganjil 2024/2025",
@@ -161,7 +131,7 @@
         "angkatan": 2024,
         "status_peserta": "ulang",
         "grade_sekarang": "C",
-        "nilai_sekarang": 60.3,
+        "nilai_sekarang": 61.2,
         "histori_retake": {
           "is_retake": true,
           "semester_ambil_pertama": "Ganjil 2024/2025",
@@ -173,19 +143,223 @@
         }
       },
       {
-        "npm": "2510015410011",
-        "nama": "ROZI ANDRIAN SURVA",
-        "angkatan": 2025,
+        "npm": "2410015410003",
+        "nama": "RIZKY ANANDA MAULANA",
+        "angkatan": 2024,
         "status_peserta": "ulang",
-        "grade_sekarang": "C",
-        "nilai_sekarang": 60.7,
+        "grade_sekarang": "B+",
+        "nilai_sekarang": 79.6,
         "histori_retake": {
           "is_retake": true,
-          "semester_ambil_pertama": "Semester Lalu",
-          "nilai_sebelumnya": "E (Tidak Tuntas)",
-          "skor_sebelumnya": 45.0,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410004",
+        "nama": "MEUTIA KHAIRUNNISA",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 82.3,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410005",
+        "nama": "BAGAS WICAKSONO",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "C",
+        "nilai_sekarang": 61.4,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
           "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
           "status_saat_ini": "Masih Butuh Pendampingan Intensif",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410006",
+        "nama": "ANISA RAHMAWATI",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 80.7,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410007",
+        "nama": "DAFFA RAYHAN KURNIAWAN",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "B",
+        "nilai_sekarang": 71.3,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410008",
+        "nama": "SHINTA BELLA LESTARI",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "B+",
+        "nilai_sekarang": 79.9,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410009",
+        "nama": "GILANG RAMADHAN",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 84.2,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410010",
+        "nama": "NAFISAH AULIA DEWI",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 83.7,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410011",
+        "nama": "ILHAM BUDI SANTOSO",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 80.8,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410012",
+        "nama": "CLARA AYUNDA",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "B",
+        "nilai_sekarang": 72.7,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410013",
+        "nama": "RENDY PRASITYA",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "B+",
+        "nilai_sekarang": 78.0,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410014",
+        "nama": "CITRA MAHARANI",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 82.2,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
+          "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
+        }
+      },
+      {
+        "npm": "2410015410015",
+        "nama": "HENDRA WIJAYA",
+        "angkatan": 2024,
+        "status_peserta": "ulang",
+        "grade_sekarang": "A-",
+        "nilai_sekarang": 81.9,
+        "histori_retake": {
+          "is_retake": true,
+          "semester_ambil_pertama": "Ganjil 2024/2025",
+          "nilai_sebelumnya": "D",
+          "skor_sebelumnya": 52.0,
+          "alasan_mengulang": "Asistensi gambar kerja belum mencapai standar minimal studio",
+          "status_saat_ini": "Progres Meningkat (Remedial Berhasil)",
           "rekomendasi_pendampingan": "Berikan asistensi 1-on-1 bersama Asisten Dosen setiap hari Kamis."
         }
       }

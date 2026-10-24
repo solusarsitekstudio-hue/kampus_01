@@ -5,7 +5,7 @@
     "fakultas": "Teknik & Desain",
     "universitas": "Universitas Bung Hatta",
     "kaprodi": "Dr. Al Busyra Fuadi, S.T., M.Sc.",
-    "mata_kuliah_aktif": "Aplikasi Komputer Arsitektur & QS",
+    "mata_kuliah_aktif": "Studio Perancangan Arsitektur 1",
     "total_mahasiswa": 83,
     "total_katalog_mk": 30,
     "angkatan_aktif": "all"
@@ -14,18 +14,18 @@
     "2024": {
       "angkatan": 2024,
       "total_mahasiswa": 16,
-      "total_at_risk": 1,
+      "total_at_risk": 3,
       "sisa_semester": 4,
-      "subtotal": 26000000,
-      "subtotal_rp": "Rp 26.000.000"
+      "subtotal": 78000000,
+      "subtotal_rp": "Rp 78.000.000"
     },
     "2025": {
       "angkatan": 2025,
       "total_mahasiswa": 35,
-      "total_at_risk": 5,
+      "total_at_risk": 0,
       "sisa_semester": 6,
-      "subtotal": 195000000,
-      "subtotal_rp": "Rp 195.000.000"
+      "subtotal": 0,
+      "subtotal_rp": "Rp 0"
     },
     "2026": {
       "angkatan": 2026,
@@ -62,11 +62,11 @@
   },
   "kpi_eksekutif": {
     "total_kas_masuk": "Rp 539.500.000",
-    "dana_terselamatkan": "Rp 500.500.000",
+    "dana_terselamatkan": "Rp 357.500.000",
     "pertumbuhan_pmb": "+133.3%",
     "pmb_growth_badge": "📈 Lonjakan PMB: +133% (Angk 24: 15 Mhs ➔ Angk 25: 35 Mhs)",
-    "kesiapan_akreditasi": "88.7%",
-    "tingkat_kelulusan": "92.8%",
+    "kesiapan_akreditasi": "88.8%",
+    "tingkat_kelulusan": "96.4%",
     "efisiensi_operasional": "94.2%"
   },
   "kartu_truf": [
@@ -76,14 +76,14 @@
       "badge": "Gross Inflow & PMB Growth Moat",
       "judul": "Arus Kas Masuk SPP & Pertumbuhan PMB Multi-Periode",
       "angka_utama": "Rp 539.500.000",
-      "sub_angka": "📈 Lonjakan PMB +133% (15 ➔ 35 Mhs) • Proteksi Kas Retensi 92.8%",
+      "sub_angka": "📈 Lonjakan PMB +133% (15 ➔ 35 Mhs) • Proteksi Kas Retensi 96.4%",
       "warna": "amber",
       "ikon": "wallet",
-      "deskripsi": "Realisasi penerimaan kas SPP semester berjalan mencapai Rp 539,500,000 dari 83 mahasiswa aktif lintas jenjang. Tren pendaftar baru melonjak +133.3% dari Angkatan 2024 (15 mhs) ke Angkatan 2025 (35 mhs), didukung efisiensi retensi 92.8% yang menjaga seluruh kapasitas kelas terutilisasi penuh tanpa kebocoran arus kas yayasan.",
+      "deskripsi": "Realisasi penerimaan kas SPP semester berjalan mencapai Rp 539,500,000 dari 83 mahasiswa aktif lintas jenjang. Tren pendaftar baru melonjak +133.3% dari Angkatan 2024 (15 mhs) ke Angkatan 2025 (35 mhs), didukung efisiensi retensi 96.4% yang menjaga seluruh kapasitas kelas terutilisasi penuh tanpa kebocoran arus kas yayasan.",
       "poin_kunci": [
         "Gross SPP Masuk Semester Berjalan: Rp 539,500,000",
         "Lonjakan PMB Antar-Periode: +133.3% (15 ➔ 35 Mahasiswa Baru)",
-        "Proteksi Arus Kas Sisa Studi dari Potensi Lost-Revenue: Rp 500,500,000"
+        "Proteksi Arus Kas Sisa Studi dari Potensi Lost-Revenue: Rp 357,500,000"
       ]
     },
     {
@@ -92,10 +92,10 @@
       "badge": "Akreditasi Unggul LAM Teknik & BAN-PT",
       "judul": "Audit Mutu 1-Klik Tanpa Lembur Rekayasa Dokumen",
       "angka_utama": "100% Audit Ready",
-      "sub_angka": "16/16 Sesi BAP Digital Terisi • Keterlaksanaan 88.7%",
+      "sub_angka": "16/16 Sesi BAP Digital Terisi • Keterlaksanaan 88.8%",
       "warna": "emerald",
       "ikon": "shield-check",
-      "deskripsi": "Setiap sesi tatap muka dosen terekam secara matematis dengan log Berita Acara Perkuliahan (BAP). Tingkat keterlaksanaan modul mencapai 88.7%, dilengkapi PDF Master Gradebook (PDF 03) dan Audit Evaluasi Dosen (PDF 04) siap cetak kapan pun asesor akreditasi berkunjung.",
+      "deskripsi": "Setiap sesi tatap muka dosen terekam secara matematis dengan log Berita Acara Perkuliahan (BAP). Tingkat keterlaksanaan modul mencapai 88.8%, dilengkapi PDF Master Gradebook (PDF 03) dan Audit Evaluasi Dosen (PDF 04) siap cetak kapan pun asesor akreditasi berkunjung.",
       "poin_kunci": [
         "BAP & Presensi Tatap Muka 16 Pertemuan Tervalidasi Sah",
         "CPMK Terpetakan Otomatis ke Evaluasi Mahasiswa",
@@ -124,13 +124,13 @@
       "badge": "IKU 1: Kesiapan Kerja & Trace Study Cepat",
       "judul": "Pemetaan 10 Karier Arsitektur Sejak Bangku Kuliah",
       "angka_utama": "Site Architect & Lapangan",
-      "sub_angka": "96.4% Mahasiswa Terpetakan ke Sektor Unggulan",
+      "sub_angka": "98.8% Mahasiswa Terpetakan ke Sektor Unggulan",
       "warna": "purple",
       "ikon": "trending-up",
       "deskripsi": "Diagnosis kompetensi memetakan DNA spesialisasi mahasiswa ke 10 domain industri arsitektur (BIM Coordinator, Urban Designer, Interior Architect, Green Building Specialist). Mempercepat penyerapan kerja lulusan dan mendongkrak capaian IKU 1 Universitas.",
       "poin_kunci": [
         "10 Matriks Rekomendasi Karier Berbasis Kemampuan Nyata",
-        "Top 1 Sektor: Site Architect & Lapangan (80 mhs)",
+        "Top 1 Sektor: Site Architect & Lapangan (82 mhs)",
         "Menghubungkan Lulusan Langsung dengan Kebutuhan Industri"
       ]
     },
@@ -151,5 +151,5 @@
       ]
     }
   ],
-  "executive_pitch": "Yang Terhormat Pengurus Yayasan dan Bapak Rektor,\n\nKAMPUS_01 membuktikan pertumbuhan nyata institusi: realisasi penerimaan kas SPP semester ini mencapai Rp 539,500,000 dengan lonjakan mahasiswa baru (PMB) sebesar +133.3% (dari 15 ke 35 mahasiswa). Melalui Early Warning presensi & evaluasi studio terpadu, sistem sekaligus memproteksi potensi arus kas hingga wisuda senilai Rp 500,500,000. Seluruh 16 sesi perkuliahan telah dilengkapi BAP digital dan materi audit akreditasi yang siap cetak seketika untuk mendukung akreditasi Unggul universitas."
+  "executive_pitch": "Yang Terhormat Pengurus Yayasan dan Bapak Rektor,\n\nKAMPUS_01 membuktikan pertumbuhan nyata institusi: realisasi penerimaan kas SPP semester ini mencapai Rp 539,500,000 dengan lonjakan mahasiswa baru (PMB) sebesar +133.3% (dari 15 ke 35 mahasiswa). Melalui Early Warning presensi & evaluasi studio terpadu, sistem sekaligus memproteksi potensi arus kas hingga wisuda senilai Rp 357,500,000. Seluruh 16 sesi perkuliahan telah dilengkapi BAP digital dan materi audit akreditasi yang siap cetak seketika untuk mendukung akreditasi Unggul universitas."
 }

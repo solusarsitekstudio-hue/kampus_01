@@ -128,7 +128,21 @@
         return _origFetch("./static_api/bridge_nilai.json", init);
       }
       if (parsedPath.startsWith("/api/bridge/course_detail")) {
-        return _origFetch("./static_api/courses.json", init);
+        const urlParams = new URLSearchParams(url.split("?")[1] || "");
+        const cid = (urlParams.get("id") || "").trim();
+        try {
+          const allRes = await _origFetch("./static_api/bridge_course_detail_all.json", init);
+          if (allRes.ok) {
+            const allMap = await allRes.json();
+            if (allMap && cid && allMap[cid]) {
+              return new Response(JSON.stringify(allMap[cid]), {
+                status: 200,
+                headers: { "Content-Type": "application/json" }
+              });
+            }
+          }
+        } catch (e) {}
+        return _origFetch("./static_api/bridge_course_detail.json", init);
       }
     }
 

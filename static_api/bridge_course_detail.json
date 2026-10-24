@@ -1,0 +1,439 @@
+{
+  "status": "success",
+  "id": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+  "kunci_mk": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
+  "kode_mk": "5412522233",
+  "nama_mk": "Aplikasi Komputer Arsitektur & QS",
+  "sks": 2,
+  "kelas": "TEKZA (Lab LIKDA)",
+  "dosen": "Aprilia Yunita, S.T., M.T., Duddy Fajriansyah, S.T., M.T.",
+  "prodi": "ARSITEKTUR",
+  "tahun_ajar": "2025-2026",
+  "semester": "GENAP",
+  "total_mahasiswa": 37,
+  "total_remedial": 2,
+  "rata_nilai": 77.6,
+  "status_mk": "Terkendali",
+  "daftar_mahasiswa_remedial": [
+    {
+      "npm": "2410015410002",
+      "nama": "DINA SALSABILA PUTRI",
+      "grade": "C",
+      "nilai_rata_rata": 60.3,
+      "kehadiran_persen": 62.5,
+      "alpha_count": 3,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 3x",
+        "Kehadiran 62.5%"
+      ],
+      "status_asistensi": "Butuh Pendampingan Intensif",
+      "catatan_kendala": "Keterlambatan pengumpulan tugas kalkulasi / gambar studio"
+    },
+    {
+      "npm": "2510015410011",
+      "nama": "ROZI ANDRIAN SURVA",
+      "grade": "C",
+      "nilai_rata_rata": 60.7,
+      "kehadiran_persen": 62.5,
+      "alpha_count": 3,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 3x",
+        "Kehadiran 62.5%"
+      ],
+      "status_asistensi": "Butuh Pendampingan Intensif",
+      "catatan_kendala": "Keterlambatan pengumpulan tugas kalkulasi / gambar studio"
+    }
+  ],
+  "daftar_semua_mahasiswa": [
+    {
+      "npm": "2410015410001",
+      "nama": "FAJAR ADITYA PRATAMA",
+      "grade": "A",
+      "nilai_rata_rata": 94.6,
+      "kehadiran_persen": 100.0,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2410015410002",
+      "nama": "DINA SALSABILA PUTRI",
+      "grade": "C",
+      "nilai_rata_rata": 60.3,
+      "kehadiran_persen": 62.5,
+      "alpha_count": 3,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 3x",
+        "Kehadiran 62.5%"
+      ]
+    },
+    {
+      "npm": "2510015410010",
+      "nama": "M YAZID ZIDANE MULYADI",
+      "grade": "A",
+      "nilai_rata_rata": 95.3,
+      "kehadiran_persen": 100.0,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410001",
+      "nama": "ALSA DMI YESYA PUTRI",
+      "grade": "A",
+      "nilai_rata_rata": 91.0,
+      "kehadiran_persen": 93.8,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410002",
+      "nama": "AULIA PUTRI MAYTISHA",
+      "grade": "B",
+      "nilai_rata_rata": 73.9,
+      "kehadiran_persen": 78.1,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410003",
+      "nama": "HAFIZUL FAJRI",
+      "grade": "A-",
+      "nilai_rata_rata": 80.0,
+      "kehadiran_persen": 93.8,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410004",
+      "nama": "MUHAMMAD SATIYA AL FIKRI",
+      "grade": "A-",
+      "nilai_rata_rata": 80.0,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410005",
+      "nama": "LIVIA OKTARI FIRNY",
+      "grade": "A-",
+      "nilai_rata_rata": 83.6,
+      "kehadiran_persen": 93.8,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410006",
+      "nama": "ZHILLAN SANDY FADRIAN",
+      "grade": "B+",
+      "nilai_rata_rata": 77.9,
+      "kehadiran_persen": 84.4,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410007",
+      "nama": "ULYA NAFISAH PUTRI",
+      "grade": "B",
+      "nilai_rata_rata": 74.0,
+      "kehadiran_persen": 68.8,
+      "alpha_count": 2,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 2x",
+        "Kehadiran 68.8%"
+      ]
+    },
+    {
+      "npm": "2510015410008",
+      "nama": "VIOLET MORASAKI",
+      "grade": "A-",
+      "nilai_rata_rata": 80.8,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410009",
+      "nama": "AYU ARISTIN",
+      "grade": "B",
+      "nilai_rata_rata": 72.7,
+      "kehadiran_persen": 96.9,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410011",
+      "nama": "ROZI ANDRIAN SURVA",
+      "grade": "C",
+      "nilai_rata_rata": 60.7,
+      "kehadiran_persen": 62.5,
+      "alpha_count": 3,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 3x",
+        "Kehadiran 62.5%"
+      ]
+    },
+    {
+      "npm": "2510015410013",
+      "nama": "ZAHRA PUTRI RAMADHANI",
+      "grade": "A-",
+      "nilai_rata_rata": 81.0,
+      "kehadiran_persen": 93.8,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410014",
+      "nama": "NADIA PERMATA HUSINA",
+      "grade": "B",
+      "nilai_rata_rata": 70.9,
+      "kehadiran_persen": 68.8,
+      "alpha_count": 2,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 2x",
+        "Kehadiran 68.8%"
+      ]
+    },
+    {
+      "npm": "2510015410015",
+      "nama": "MUHAMMAD FADLAN ZIKRA",
+      "grade": "B",
+      "nilai_rata_rata": 71.8,
+      "kehadiran_persen": 84.4,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410016",
+      "nama": "MUHAMMAD HIDAYAT",
+      "grade": "A-",
+      "nilai_rata_rata": 81.8,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410017",
+      "nama": "ADAM MAULANA",
+      "grade": "B+",
+      "nilai_rata_rata": 78.3,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410018",
+      "nama": "ILHAM FADIL AZHIM",
+      "grade": "A-",
+      "nilai_rata_rata": 80.1,
+      "kehadiran_persen": 96.9,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410019",
+      "nama": "DIFLA HAZIRATHUL SYABIRAH",
+      "grade": "C",
+      "nilai_rata_rata": 63.4,
+      "kehadiran_persen": 84.4,
+      "alpha_count": 1,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410020",
+      "nama": "DAFFA RAMDHAN FADILLAH",
+      "grade": "A-",
+      "nilai_rata_rata": 82.4,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410021",
+      "nama": "FELISA ANDREINA",
+      "grade": "B",
+      "nilai_rata_rata": 72.7,
+      "kehadiran_persen": 68.8,
+      "alpha_count": 2,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 2x",
+        "Kehadiran 68.8%"
+      ]
+    },
+    {
+      "npm": "2510015410022",
+      "nama": "ANANTA DANA FATSYAH",
+      "grade": "C",
+      "nilai_rata_rata": 65.8,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 1,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410023",
+      "nama": "ASYFA ASRAN",
+      "grade": "B+",
+      "nilai_rata_rata": 78.2,
+      "kehadiran_persen": 90.6,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410024",
+      "nama": "ARTIKA SARIDEWI",
+      "grade": "A-",
+      "nilai_rata_rata": 81.0,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410025",
+      "nama": "MUHAMMAD GELFIANO HASAN",
+      "grade": "B+",
+      "nilai_rata_rata": 79.6,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410026",
+      "nama": "SYARIF AL GHIFARI",
+      "grade": "A-",
+      "nilai_rata_rata": 82.6,
+      "kehadiran_persen": 100.0,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410027",
+      "nama": "ADELITA NUGRAINI",
+      "grade": "A-",
+      "nilai_rata_rata": 81.6,
+      "kehadiran_persen": 93.8,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410028",
+      "nama": "LATIVA NORUL HASANAH",
+      "grade": "B",
+      "nilai_rata_rata": 73.3,
+      "kehadiran_persen": 68.8,
+      "alpha_count": 2,
+      "at_risk": true,
+      "alasan_at_risk": [
+        "Alpha 2x",
+        "Kehadiran 68.8%"
+      ]
+    },
+    {
+      "npm": "2510015410029",
+      "nama": "MUHAMMAD AZIZURROHIM",
+      "grade": "A-",
+      "nilai_rata_rata": 82.1,
+      "kehadiran_persen": 84.4,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410030",
+      "nama": "MUHAMMAD AFIF",
+      "grade": "B+",
+      "nilai_rata_rata": 79.9,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410031",
+      "nama": "EURO YUNAN",
+      "grade": "B",
+      "nilai_rata_rata": 71.8,
+      "kehadiran_persen": 90.6,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410032",
+      "nama": "ANNISA ARYANTO",
+      "grade": "A-",
+      "nilai_rata_rata": 80.4,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410033",
+      "nama": "ALVIANDI ARIF",
+      "grade": "B",
+      "nilai_rata_rata": 73.2,
+      "kehadiran_persen": 78.1,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410034",
+      "nama": "ROOFI HIDAYAT",
+      "grade": "B+",
+      "nilai_rata_rata": 79.3,
+      "kehadiran_persen": 90.6,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410036",
+      "nama": "ATIFAH AL AFUWUU",
+      "grade": "A-",
+      "nilai_rata_rata": 82.8,
+      "kehadiran_persen": 87.5,
+      "alpha_count": 0,
+      "at_risk": false,
+      "alasan_at_risk": []
+    },
+    {
+      "npm": "2510015410038",
+      "nama": "RAFIQ INTAN HARIY",
+      "grade": "B",
+      "nilai_rata_rata": 74.2,
+      "kehadiran_persen": 75.0,
+      "alpha_count": 1,
+      "at_risk": false,
+      "alasan_at_risk": []
+    }
+  ]
+}

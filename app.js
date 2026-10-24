@@ -22756,7 +22756,7 @@ function renderGrowthEnrolmentTable() {
         <td class="py-2.5 px-3 text-center font-mono text-cyan-300 font-bold">${r.composite_load_index}</td>
         <td class="py-2.5 px-3 text-center">${badgeStatus}</td>
         <td class="py-2.5 px-3 text-center whitespace-nowrap">
-          <button onclick="bukaModalEvaluasiMkRawan('${escapeHtml(r.kode_mk)}')" class="touch-target px-2.5 py-1 bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white border border-slate-700 rounded-lg font-bold text-[10.5px] transition inline-flex items-center gap-1">
+          <button onclick="bukaModalEvaluasiMkRawan('${escapeHtml(r.id || r.kode_mk)}')" class="touch-target px-2.5 py-1 bg-slate-800 hover:bg-emerald-600 text-slate-300 hover:text-white border border-slate-700 rounded-lg font-bold text-[10.5px] transition inline-flex items-center gap-1">
             <i data-lucide="eye" class="w-3 h-3"></i> Asistensi
           </button>
         </td>
