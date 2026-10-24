@@ -1,0 +1,863 @@
+{
+  "status": "success",
+  "prodi": "ARSITEKTUR",
+  "tahun_ajar": "2024-2025",
+  "semester": "GANJIL",
+  "kunci_mk": "ARS302",
+  "nama_mk": "Struktur & Konstruksi Bangunan 4",
+  "kode_mk": "5412531102",
+  "rumpun": "Struktur & Rekayasa Konstruksi",
+  "grafik_1_mahasiswa_aktif": {
+    "categories": [
+      "Sem 1",
+      "Sem 2",
+      "Sem 3",
+      "Sem 4",
+      "Sem 5",
+      "Sem 6",
+      "Sem 7",
+      "Sem 8"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Aktif Penuh",
+        "data": [
+          22,
+          29,
+          27,
+          28,
+          29,
+          27,
+          27,
+          26
+        ]
+      },
+      {
+        "name": "Cuti / Izin Akademik",
+        "data": [
+          1,
+          2,
+          2,
+          1,
+          2,
+          1,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Mahasiswa At-Risk / Kritis",
+        "data": [
+          12,
+          3,
+          4,
+          3,
+          2,
+          3,
+          2,
+          1
+        ]
+      }
+    ],
+    "total_aktif": 215,
+    "total_terdaftar": 257,
+    "total_cuti": 12,
+    "total_at_risk": 30,
+    "retensi_rata_pct": 83.7
+  },
+  "grafik_2_kapasitas_mk": {
+    "categories": [
+      "Dasar Desain",
+      "Studio 1",
+      "Struktur 1",
+      "Studio 2",
+      "Struktur 2",
+      "Tropis",
+      "Studio 4",
+      "Studio 5 (TA)"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Reguler",
+        "data": [
+          31,
+          29,
+          32,
+          28,
+          30,
+          33,
+          29,
+          31
+        ]
+      },
+      {
+        "name": "Mahasiswa Mengulang",
+        "data": [
+          4,
+          6,
+          3,
+          7,
+          5,
+          2,
+          6,
+          4
+        ]
+      }
+    ],
+    "kapasitas_maksimal": 35,
+    "total_mk": 30,
+    "status_prodi": "OPTIMAL"
+  },
+  "grafik_3_rumpun": {
+    "categories": [
+      "Studio Perancangan & CAD",
+      "Struktur & Rekayasa Konstruksi",
+      "Teori & Sejarah Arsitektur",
+      "Sains & Fisika Bangunan"
+    ],
+    "series": [
+      {
+        "name": "Rata-rata Nilai",
+        "data": [
+          77.5,
+          78.2,
+          76.5,
+          75.9
+        ]
+      },
+      {
+        "name": "Rata-rata Kehadiran (%)",
+        "data": [
+          83.5,
+          84.2,
+          82.3,
+          81.2
+        ]
+      }
+    ]
+  },
+  "grafik_4_kesehatan_prodi": {
+    "labels": [
+      "Retensi Mahasiswa",
+      "Presensi Kuliah",
+      "Kelulusan Tepat Waktu",
+      "Mutu Studio"
+    ],
+    "series": [
+      94,
+      88,
+      85,
+      92
+    ],
+    "indeks_komposit": 89.8
+  },
+  "grafik_1_kehadiran": {
+    "categories": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6",
+      "P7",
+      "P8",
+      "P9",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16"
+    ],
+    "series": [
+      {
+        "name": "Tingkat Kehadiran Kelas (%)",
+        "data": [
+          89.2,
+          90.8,
+          89.2,
+          83.1,
+          81.5,
+          80.0,
+          80.0,
+          96.9,
+          90.8,
+          76.9,
+          84.6,
+          86.2,
+          84.6,
+          83.1,
+          87.7,
+          95.4
+        ]
+      },
+      {
+        "name": "Ambang Batas Minimum (75%)",
+        "data": [
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0
+        ]
+      }
+    ],
+    "ambang": 75.0,
+    "titik_kritis": [],
+    "nama_mk": "Struktur & Konstruksi Bangunan 4"
+  },
+  "grafik_2_retensi": {
+    "categories": [
+      "Sem 1",
+      "Sem 2",
+      "Sem 3",
+      "Sem 4",
+      "Sem 5",
+      "Sem 6",
+      "Sem 7",
+      "Sem 8"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Aktif Penuh",
+        "data": [
+          22,
+          29,
+          27,
+          28,
+          29,
+          27,
+          27,
+          26
+        ]
+      },
+      {
+        "name": "Cuti / Izin Akademik",
+        "data": [
+          1,
+          2,
+          2,
+          1,
+          2,
+          1,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Mahasiswa At-Risk / Kritis",
+        "data": [
+          12,
+          3,
+          4,
+          3,
+          2,
+          3,
+          2,
+          1
+        ]
+      }
+    ],
+    "total_aktif": 215,
+    "total_terdaftar": 257,
+    "total_cuti": 12,
+    "total_at_risk": 30,
+    "retensi_rata_pct": 83.7
+  },
+  "grafik_4_scatter": {
+    "points": [
+      {
+        "x": 100.0,
+        "y": 96.0,
+        "nama": "FAJAR ADITYA PRATAMA",
+        "npm": "2410015410001",
+        "grade": "A",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 62.5,
+        "y": 59.0,
+        "nama": "DINA SALSABILA PUTRI",
+        "npm": "2410015410002",
+        "grade": "D / Evaluasi",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 87.5,
+        "y": 83.4,
+        "nama": "RIZKY ANANDA MAULANA",
+        "npm": "2410015410003",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 87.5,
+        "y": 83.2,
+        "nama": "MEUTIA KHAIRUNNISA",
+        "npm": "2410015410004",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 62.5,
+        "y": 58.7,
+        "nama": "BAGAS WICAKSONO",
+        "npm": "2410015410005",
+        "grade": "D / Evaluasi",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 100.0,
+        "y": 81.9,
+        "nama": "ANISA RAHMAWATI",
+        "npm": "2410015410006",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 80.0,
+        "nama": "DAFFA RAYHAN KURNIAWAN",
+        "npm": "2410015410007",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 87.5,
+        "y": 80.7,
+        "nama": "SHINTA BELLA LESTARI",
+        "npm": "2410015410008",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 87.5,
+        "y": 78.3,
+        "nama": "GILANG RAMADHAN",
+        "npm": "2410015410009",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 78.1,
+        "y": 81.1,
+        "nama": "NAFISAH AULIA DEWI",
+        "npm": "2410015410010",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 81.8,
+        "nama": "ILHAM BUDI SANTOSO",
+        "npm": "2410015410011",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 68.8,
+        "y": 73.4,
+        "nama": "CLARA AYUNDA",
+        "npm": "2410015410012",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 90.6,
+        "y": 77.9,
+        "nama": "RENDY PRASITYA",
+        "npm": "2410015410013",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 93.8,
+        "y": 79.8,
+        "nama": "CITRA MAHARANI",
+        "npm": "2410015410014",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 93.8,
+        "y": 83.3,
+        "nama": "HENDRA WIJAYA",
+        "npm": "2410015410015",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 100.0,
+        "y": 94.8,
+        "nama": "M YAZID ZIDANE MULYADI",
+        "npm": "2510015410010",
+        "grade": "A",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 93.8,
+        "y": 90.1,
+        "nama": "ALSA DMI YESYA PUTRI",
+        "npm": "2510015410001",
+        "grade": "A",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 78.1,
+        "y": 74.9,
+        "nama": "AULIA PUTRI MAYTISHA",
+        "npm": "2510015410002",
+        "grade": "B",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 81.2,
+        "y": 71.3,
+        "nama": "HAFIZUL FAJRI",
+        "npm": "2510015410003",
+        "grade": "B",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 79.8,
+        "nama": "MUHAMMAD SATIYA AL FIKRI",
+        "npm": "2510015410004",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 84.4,
+        "y": 79.5,
+        "nama": "LIVIA OKTARI FIRNY",
+        "npm": "2510015410005",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 93.8,
+        "y": 78.0,
+        "nama": "ZHILLAN SANDY FADRIAN",
+        "npm": "2510015410006",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 68.8,
+        "y": 73.9,
+        "nama": "ULYA NAFISAH PUTRI",
+        "npm": "2510015410007",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 87.5,
+        "y": 83.9,
+        "nama": "VIOLET MORASAKI",
+        "npm": "2510015410008",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 84.4,
+        "y": 72.8,
+        "nama": "AYU ARISTIN",
+        "npm": "2510015410009",
+        "grade": "B",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 62.5,
+        "y": 58.8,
+        "nama": "ROZI ANDRIAN SURVA",
+        "npm": "2510015410011",
+        "grade": "D / Evaluasi",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 96.9,
+        "y": 83.1,
+        "nama": "ZAHRA PUTRI RAMADHANI",
+        "npm": "2510015410013",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 68.8,
+        "y": 72.3,
+        "nama": "NADIA PERMATA HUSINA",
+        "npm": "2510015410014",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 81.2,
+        "y": 79.1,
+        "nama": "MUHAMMAD FADLAN ZIKRA",
+        "npm": "2510015410015",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 80.0,
+        "nama": "MUHAMMAD HIDAYAT",
+        "npm": "2510015410016",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 74.8,
+        "nama": "ADAM MAULANA",
+        "npm": "2510015410017",
+        "grade": "B",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 84.4,
+        "y": 80.7,
+        "nama": "ILHAM FADIL AZHIM",
+        "npm": "2510015410018",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 93.8,
+        "y": 83.5,
+        "nama": "DIFLA HAZIRATHUL SYABIRAH",
+        "npm": "2510015410019",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 87.5,
+        "y": 83.4,
+        "nama": "DAFFA RAMDHAN FADILLAH",
+        "npm": "2510015410020",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 68.8,
+        "y": 73.6,
+        "nama": "FELISA ANDREINA",
+        "npm": "2510015410021",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 75.0,
+        "y": 83.8,
+        "nama": "ANANTA DANA FATSYAH",
+        "npm": "2510015410022",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 84.4,
+        "y": 79.6,
+        "nama": "ASYFA ASRAN",
+        "npm": "2510015410023",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 81.3,
+        "nama": "ARTIKA SARIDEWI",
+        "npm": "2510015410024",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 81.0,
+        "nama": "MUHAMMAD GELFIANO HASAN",
+        "npm": "2510015410025",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 80.5,
+        "nama": "SYARIF AL GHIFARI",
+        "npm": "2510015410026",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 78.1,
+        "y": 79.0,
+        "nama": "ADELITA NUGRAINI",
+        "npm": "2510015410027",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 68.8,
+        "y": 72.3,
+        "nama": "LATIVA NORUL HASANAH",
+        "npm": "2510015410028",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 81.2,
+        "y": 77.6,
+        "nama": "MUHAMMAD AZIZURROHIM",
+        "npm": "2510015410029",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 93.8,
+        "y": 76.3,
+        "nama": "MUHAMMAD AFIF",
+        "npm": "2510015410030",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 96.9,
+        "y": 78.5,
+        "nama": "EURO YUNAN",
+        "npm": "2510015410031",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 82.2,
+        "nama": "ANNISA ARYANTO",
+        "npm": "2510015410032",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 87.5,
+        "y": 79.9,
+        "nama": "ALVIANDI ARIF",
+        "npm": "2510015410033",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 90.6,
+        "y": 77.9,
+        "nama": "ROOFI HIDAYAT",
+        "npm": "2510015410034",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 80.1,
+        "nama": "ATIFAH AL AFUWUU",
+        "npm": "2510015410036",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 82.7,
+        "nama": "RAFIQ INTAN HARIY",
+        "npm": "2510015410038",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 100.0,
+        "y": 95.0,
+        "nama": "ARKAN NAUFAL FIRDAUS",
+        "npm": "2610015410001",
+        "grade": "A",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 68.8,
+        "y": 74.1,
+        "nama": "ZAHRA AMALIA SYAHRIR",
+        "npm": "2610015410002",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 62.5,
+        "y": 59.0,
+        "nama": "RANGGA ADIPUTRA NUGROHO",
+        "npm": "2610015410003",
+        "grade": "D / Evaluasi",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 87.5,
+        "y": 84.0,
+        "nama": "TASYA KAMILA HERMAWAN",
+        "npm": "2610015410004",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 84.4,
+        "y": 77.6,
+        "nama": "DAFFA IBNU ALKAUTSAR",
+        "npm": "2610015410005",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 81.2,
+        "y": 82.5,
+        "nama": "SALMA KHAIRUNNISA",
+        "npm": "2610015410006",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 62.5,
+        "y": 61.5,
+        "nama": "ALIF RAMADHAN SUPRIADI",
+        "npm": "2610015410007",
+        "grade": "C",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 87.5,
+        "y": 84.2,
+        "nama": "NAYLA AZZAHRA",
+        "npm": "2610015410008",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 68.8,
+        "y": 72.1,
+        "nama": "RYAN HIDAYATULLAH",
+        "npm": "2610015410009",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 90.6,
+        "y": 80.3,
+        "nama": "AULIA RAHMADHANI",
+        "npm": "2610015410010",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 90.6,
+        "y": 77.2,
+        "nama": "FATIH AL FARUQ",
+        "npm": "2610015410011",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 82.0,
+        "nama": "KEYLA PUTRI ANDRIANI",
+        "npm": "2610015410012",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 100.0,
+        "y": 81.6,
+        "nama": "RAFI ATHALLAH",
+        "npm": "2610015410013",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 84.4,
+        "y": 76.3,
+        "nama": "DEWI LESTARI KURNIA",
+        "npm": "2610015410014",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 81.1,
+        "nama": "HILMI SYAHPUTRA",
+        "npm": "2610015410015",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      }
+    ],
+    "threshold_kehadiran": 75.0,
+    "threshold_nilai": 80.0
+  },
+  "grafik_5_workload": {
+    "categories": [
+      "Dasar Desain",
+      "Studio 1",
+      "Struktur 1",
+      "Studio 2",
+      "Struktur 2",
+      "Tropis",
+      "Studio 4",
+      "Studio 5 (TA)"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Reguler",
+        "data": [
+          31,
+          29,
+          32,
+          28,
+          30,
+          33,
+          29,
+          31
+        ]
+      },
+      {
+        "name": "Mahasiswa Mengulang",
+        "data": [
+          4,
+          6,
+          3,
+          7,
+          5,
+          2,
+          6,
+          4
+        ]
+      }
+    ],
+    "kapasitas_maksimal": 35,
+    "total_mk": 30,
+    "status_prodi": "OPTIMAL"
+  },
+  "grafik_6_pareto": {
+    "labels": [
+      "Retensi Mahasiswa",
+      "Presensi Kuliah",
+      "Kelulusan Tepat Waktu",
+      "Mutu Studio"
+    ],
+    "series": [
+      94,
+      88,
+      85,
+      92
+    ],
+    "indeks_komposit": 89.8
+  }
+}

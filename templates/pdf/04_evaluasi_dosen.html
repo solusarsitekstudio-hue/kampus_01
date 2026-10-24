@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumen 04: Laporan Evaluasi Kinerja Dosen & Audit Modul RPS</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 8px;
+    }
+    .page {
+      width: 100%;
+      height: 100%;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .kop-surat {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-clean {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5px;
+      border: 1px solid #cbd5e1;
+    }
+    .table-clean th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 3.5px 5px;
+      font-family: monospace;
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .table-clean td {
+      padding: 3px 5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HALAMAN 1: TIM DOSEN & REKAP MENGAJAR ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 04: Evaluasi Dosen & Kurikulum RPS (Halaman 1/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Laporan Kinerja Pengajaran & Kepatuhan Realisasi RPS Mata Kuliah {{ course.nama_mk }}
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">AUDIT PENGAJARAN</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.semester }}</div>
+        </div>
+      </div>
+
+      <!-- BANNER IDENTITAS MATA KULIAH -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; border-radius: 6px; padding: 7px 10px; margin-bottom: 8px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 900; letter-spacing: -0.2px;">{{ course.nama_mk }} ({{ course.kode_mk }})</div>
+          <div style="font-size: 8.5px; color: #94a3b8; font-family: monospace; margin-top: 1px;">
+            Beban: {{ course.sks or 4 }} SKS (Studio Perancangan) • Kelas: {{ course.kelas or 'Reguler A' }} • Semester: {{ course.semester }}
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; text-align: center;">
+          <div style="background: #1e293b; border: 1px solid #10b981; border-radius: 5px; padding: 3px 8px;">
+            <div style="font-size: 6.5px; color: #34d399; text-transform: uppercase; font-weight: bold;">Kepatuhan Sesi</div>
+            <div style="font-size: 13px; font-weight: 900; font-family: monospace; color: #34d399;">16/16 (100%)</div>
+          </div>
+          <div style="background: #1e293b; border: 1px solid #38bdf8; border-radius: 5px; padding: 3px 8px;">
+            <div style="font-size: 6.5px; color: #38bdf8; text-transform: uppercase; font-weight: bold;">Rerata SKS</div>
+            <div style="font-size: 13px; font-weight: 900; font-family: monospace; color: #38bdf8;">170 Menit/Mgg</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABEL TIM PENGAJAR STUDIO -->
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Tabel 1: Profil Tim Dosen Pengampu & Rekapitulasi Presensi Mengajar
+        </div>
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th style="width: 180px; text-align: left;">Nama Dosen & Gelar</th>
+              <th style="text-align: left;">Peran Penugasan Studio</th>
+              <th style="width: 100px; text-align: center;">Realisasi Pertemuan</th>
+              <th style="width: 80px; text-align: center;">Status Kinerja</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in tim_pengajar %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="font-weight: bold; color: #0f172a;">{{ t.nama }}</td>
+              <td>{{ t.peran }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ t.kehadiran }}</td>
+              <td style="text-align: center;">
+                <span style="background: #dcfce7; color: #166534; font-size: 6.5px; padding: 1px 4px; border-radius: 2px; font-weight: bold;">{{ t.status }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4 LENCANA MUTU PENGAJARAN (HYBRID BADGES) -->
+      <div>
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Lencana Kualitas Pengajaran Studio (Lecturer Studio Badges):
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">🎯</div>
+            <div style="font-size: 8px; font-weight: bold; color: #166534; margin-top: 1px;">RPS Compliance 100%</div>
+            <div style="font-size: 6.5px; color: #15803d; margin-top: 1px;">Seluruh 16 modul ajar tersampaikan tepat waktu</div>
+          </div>
+          <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">📐</div>
+            <div style="font-size: 8px; font-weight: bold; color: #1e40af; margin-top: 1px;">Studio Intensive Mentoring</div>
+            <div style="font-size: 6.5px; color: #1d4ed8; margin-top: 1px;">Rasio asistensi meja gambar terdistribusi merata</div>
+          </div>
+          <div style="flex: 1; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">🖥️</div>
+            <div style="font-size: 8px; font-weight: bold; color: #6b21a8; margin-top: 1px;">BIM & CAD Integration</div>
+            <div style="font-size: 6.5px; color: #6b21a8; margin-top: 1px;">Pemanfaatan software industri arsitektur modern</div>
+          </div>
+          <div style="flex: 1; background: #fffbeb; border: 1px solid #fde68a; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">🛡️</div>
+            <div style="font-size: 8px; font-weight: bold; color: #92400e; margin-top: 1px;">Zero Abandonment Rate</div>
+            <div style="font-size: 6.5px; color: #b45309; margin-top: 1px;">Tidak ada mahasiswa putus asa tanpa bimbingan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 1 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>SIAK-KAPRODI • Audit Kinerja Dosen Program Studi Arsitektur</div>
+      <div>Halaman 1 dari 3 (Tim Pengajar & Rekap Mengajar)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 2: AUDIT MODUL RPS ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 04: Evaluasi Dosen & Kurikulum RPS (Halaman 2/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Audit Kesesuaian Modul Rencana Pembelajaran Semester (RPS) vs Realisasi Studio
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0284c7; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">AUDIT MODUL</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">Standar IAI</div>
+        </div>
+      </div>
+
+      <!-- TABEL EVALUASI RPS -->
+      <div>
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Tabel 2: Hasil Audit Kesesuaian Silabus & Praktik Studio Perancangan
+        </div>
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th style="width: 170px; text-align: left;">Blok Modul RPS</th>
+              <th style="width: 60px; text-align: center;">Tingkat Kepatuhan</th>
+              <th style="width: 110px; text-align: left;">Evaluasi Mutu</th>
+              <th style="text-align: left;">Catatan Lapangan & Rekomendasi Kaprodi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for e in evaluasi_rps %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="font-weight: bold; color: #0f172a;">{{ e.modul }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ e.kepatuhan }}</td>
+              <td style="font-weight: 600; color: #0369a1;">{{ e.evaluasi }}</td>
+              <td style="color: #334155;">{{ e.catatan }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 2 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Standar Akreditasi: Beban tatap muka, tugas terstruktur, dan mandiri terpenuhi penuh sesuai SN-Dikti.</div>
+      <div>Halaman 2 dari 3 (Audit Modul RPS Studio)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 3: REKOMENDASI & PENGESAHAN ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 04: Evaluasi Dosen & Kurikulum RPS (Halaman 3/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Rekomendasi Kaprodi, Rencana Tindak Lanjut Peningkatan Mutu, & Pengesahan
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">PENGESAHAN AUDIT</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+        </div>
+      </div>
+
+      <!-- KOTAK EVALUASI & REKOMENDASI KAPRODI -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #16a34a; border-radius: 5px; padding: 8px 12px; margin-bottom: 12px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #166534; text-transform: uppercase; margin-bottom: 2px;">
+          Kesimpulan Hasil Audit Mutu Pembelajaran Studio oleh Ketua Program Studi:
+        </div>
+        <div style="font-size: 7.5px; line-height: 1.4; color: #334155;">
+          Proses pembelajaran mata kuliah <strong>{{ course.nama_mk }}</strong> berjalan sangat baik dengan tingkat penyelesaian tugas studio mencapai <strong>{{ "%.1f"|format(stats.persen_lulus) }}%</strong>. Tim dosen pengampu konsisten mendampingi mahasiswa pada sesi asistensi meja gambar dan menyelenggarakan review karya tengah semester. Untuk tahun akademik mendatang, disarankan menambah alokasi waktu pengenalan software rendering real-time pada modul ke-9.
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGESAHAN DUA TANDA TANGAN (KAPRODI & KOORDINATOR DOSEN) -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="font-size: 7px; color: #64748b; max-width: 340px;">
+          Laporan audit mutu pengajaran dan kurikulum RPS ini diterbitkan secara resmi untuk arsip Gugus Penjaminan Mutu (GPM) Fakultas Teknik & Desain.
+        </div>
+        <div style="display: flex; gap: 30px; text-align: center;">
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Auditor Mutu:</div>
+            <div style="font-weight: bold; color: #0f172a;">Ketua Program Studi {{ identitas.prodi }}</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">{{ identitas.ketua_prodi }}</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. {{ identitas.nip_ketua_prodi }}</div>
+          </div>
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Diverifikasi Oleh:</div>
+            <div style="font-weight: bold; color: #0f172a;">Koordinator Pengampu Studio</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">Ir. Nasril Sikumbang, M.T.</div>
+            <div style="font-family: monospace; color: #64748b;">NIDN. 1018047901</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

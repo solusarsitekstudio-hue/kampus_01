@@ -1,0 +1,64 @@
+{
+  "versi": 1,
+  "angkatan": 2021,
+  "prodi": "Arsitektur",
+  "keterangan": "Arsip Partisi Mahasiswa Senior Extended (Semester 10 - Studio Akhir & Skripsi)",
+  "mahasiswa": [
+    {
+      "npm": "2110015410001",
+      "nama": "ADITYA REZA PRATAMA",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410002",
+      "nama": "BELLA SAVIRA",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410003",
+      "nama": "CHANDRA KUSUMA",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410004",
+      "nama": "DWI RAHMAWATI",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410005",
+      "nama": "EKO PRASETYO",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410006",
+      "nama": "FARHAN AL GHAZALI",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410007",
+      "nama": "GITA NOVIANTI",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2110015410008",
+      "nama": "HENDRA SAPUTRA",
+      "angkatan": 2021,
+      "status": "EXTENDED",
+      "riwayat_bss": []
+    }
+  ]
+}

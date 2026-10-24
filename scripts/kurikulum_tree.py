@@ -47,6 +47,7 @@ import tempfile
 from datetime import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import registry_parser as RP
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
@@ -166,6 +167,31 @@ def path_mk(prodi, tahun_ajar, semester, kunci_mk):
 
 def path_mahasiswa(prodi):
     return os.path.join(path_prodi(prodi), "mahasiswa.json")
+
+
+def folder_mahasiswa_partisi(prodi):
+    return os.path.join(path_prodi(prodi), "mahasiswa")
+
+
+def muat_daftar_mahasiswa_prodi(prodi):
+    """Muat seluruh mahasiswa prodi (dukungan partisi kohort + fallback master)."""
+    fld = folder_mahasiswa_partisi(prodi)
+    if os.path.isdir(fld):
+        partisi_files = [f for f in os.listdir(fld) if f.endswith(".json") and f != "alumni.json"]
+        if partisi_files:
+            hasil = []
+            for pf in sorted(partisi_files):
+                doc = baca_json(os.path.join(fld, pf))
+                m_list = doc.get("mahasiswa") if isinstance(doc, dict) else doc
+                if isinstance(m_list, list):
+                    hasil.extend(m_list)
+            if hasil:
+                return hasil
+    p = path_mahasiswa(prodi)
+    if os.path.isfile(p):
+        doc = baca_json(p)
+        return doc.get("mahasiswa") or []
+    return []
 
 
 def path_cetak_biru(prodi):
@@ -295,7 +321,12 @@ def daftar_tahun(prodi):
     root = path_prodi(prodi)
     if not os.path.isdir(root):
         return []
-    return sorted(d for d in os.listdir(root) if os.path.isdir(os.path.join(root, d)))
+    return sorted(
+        d for d in os.listdir(root)
+        if os.path.isdir(os.path.join(root, d))
+        and d != "mahasiswa"
+        and re.match(r"^\d{4}-\d{4}$", d)
+    )
 
 
 def daftar_semester(prodi, tahun_ajar):
@@ -485,14 +516,14 @@ def bangun_index(aktif=None):
     """Pindai folder kurikulum -> struktur ringkas untuk dropdown dashboard."""
     prodi_map = {}
     for prodi in daftar_prodi():
-        info_prodi = {"nama": None, "jumlah_mahasiswa": 0, "tahun_ajar": {}}
+        info_prodi = {"nama": prodi, "jumlah_mahasiswa": 0, "tahun_ajar": {}}
+        list_mhs = muat_daftar_mahasiswa_prodi(prodi)
+        info_prodi["jumlah_mahasiswa"] = len(list_mhs)
         mhs_path = path_mahasiswa(prodi)
         if os.path.exists(mhs_path):
             data_mhs = baca_json(mhs_path)
-            info_prodi["nama"] = data_mhs.get("prodi") or prodi
-            info_prodi["jumlah_mahasiswa"] = len(data_mhs.get("mahasiswa") or [])
-        else:
-            info_prodi["nama"] = prodi
+            if data_mhs.get("prodi"):
+                info_prodi["nama"] = data_mhs.get("prodi")
 
         for ta_slug in daftar_tahun(prodi):
             ta = ta_slug.replace("-", "/")

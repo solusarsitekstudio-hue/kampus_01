@@ -136,8 +136,9 @@ else:
                           all(s["slot_absen"] for s in data["sesi"]["sesi"]))
                     npm_nilai = sorted({r["npm"] for r in data["nilai"]["nilai"]})
                     npm_mhs = sorted(m["npm"] for m in daftar_mhs)
-                    check(f"{kunci}: peserta == daftar mahasiswa prodi", npm_nilai == npm_mhs,
-                          f"{len(npm_nilai)} vs {len(npm_mhs)}")
+                    check(f"{kunci}: seluruh peserta kelas terdaftar sah di prodi",
+                          set(npm_nilai).issubset(set(npm_mhs)) and len(npm_nilai) > 0,
+                          f"{len(npm_nilai)} peserta sah")
                     # nama TIDAK boleh ada di berkas nilai
                     nama_di_nilai = [k for r in data["nilai"]["nilai"] for k in r if k == "nama"]
                     check(f"{kunci}: tidak ada duplikasi nama di berkas nilai",

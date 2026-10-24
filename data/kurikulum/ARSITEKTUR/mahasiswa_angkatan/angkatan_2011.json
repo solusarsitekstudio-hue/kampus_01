@@ -1,0 +1,20 @@
+{
+  "versi": 1,
+  "angkatan": 2011,
+  "prodi": "Arsitektur",
+  "keterangan": "Arsip Partisi Mahasiswa Khusus Masa Studi Panjang (Kasus 10 Tahun UBH)",
+  "mahasiswa": [
+    {
+      "npm": "1110015111003",
+      "nama": "SURYA WIJAYA (KASUS STUDI 10 TH)",
+      "angkatan": 2011,
+      "status": "DARURAT_DO",
+      "riwayat_bss": [
+        "2015/2016-GANJIL",
+        "2015/2016-GENAP",
+        "2016/2017-GANJIL",
+        "2016/2017-GENAP"
+      ]
+    }
+  ]
+}

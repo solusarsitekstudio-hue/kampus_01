@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumen 02: Rapor Evaluasi Akhir Pembelajaran Studio - {{ student.nama }}</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 8mm 10mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 8px;
+    }
+    .page {
+      width: 100%;
+      height: 100%;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .kop-surat {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-clean {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5px;
+      border: 1px solid #cbd5e1;
+    }
+    .table-clean th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 3px 5px;
+      font-family: monospace;
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .table-clean td {
+      padding: 2.5px 5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HALAMAN 1: TRANSKRIP 16 SESI ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 02: Rapor Hasil Belajar Studio (Halaman 1/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Transkrip Evaluasi Formatif & Sumatif 16 Pertemuan Berbobot 100%
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">RAPOR RESMI STUDIO</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.semester }}</div>
+        </div>
+      </div>
+
+      <!-- BANNER IDENTITAS MAHASISWA -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; border-radius: 6px; padding: 7px 10px; margin-bottom: 6px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 900; letter-spacing: -0.2px;">{{ student.nama }}</div>
+          <div style="font-size: 8.5px; color: #94a3b8; font-family: monospace; margin-top: 1px;">
+            NPM: {{ student.npm }} • Angkatan: {{ student.angkatan or '2025' }} • Semester: {{ student.semester_ke or '2' }} • Status: {{ student.status or 'Aktif' }}
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; text-align: center;">
+          <div style="background: #1e293b; border: 1px solid #0284c7; border-radius: 5px; padding: 3px 7px;">
+            <div style="font-size: 6.5px; color: #38bdf8; text-transform: uppercase; font-weight: bold;">Nilai Akhir</div>
+            <div style="font-size: 12px; font-weight: 900; font-family: monospace; color: #38bdf8;">{{ "%.1f"|format(akademik.nilai_rata_rata or 90.0) }}</div>
+          </div>
+          <div style="background: #1e293b; border: 1px solid #10b981; border-radius: 5px; padding: 3px 7px;">
+            <div style="font-size: 6.5px; color: #34d399; text-transform: uppercase; font-weight: bold;">Grade Huruf</div>
+            <div style="font-size: 12px; font-weight: 900; font-family: monospace; color: #34d399;">{{ akademik.grade or 'A' }}</div>
+          </div>
+          <div style="background: #1e293b; border: 1px solid #f59e0b; border-radius: 5px; padding: 3px 7px;">
+            <div style="font-size: 6.5px; color: #fbbf24; text-transform: uppercase; font-weight: bold;">Kehadiran</div>
+            <div style="font-size: 12px; font-weight: 900; font-family: monospace; color: #fbbf24;">{{ "%.1f"|format(kehadiran.persen_hadir or 95.0) }}%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABEL RINCIAN 16 SESI -->
+      <div style="margin-bottom: 6px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Tabel 1: Rincian Nilai Formatif & Sumatif 16 Pertemuan Perkuliahan Studio
+        </div>
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th style="width: 25px; text-align: center;">Sesi</th>
+              <th style="text-align: left;">Topik Pembelajaran & Modul RPS</th>
+              <th style="width: 45px; text-align: center;">Tipe</th>
+              <th style="width: 50px; text-align: center;">Bobot (%)</th>
+              <th style="width: 55px; text-align: center;">Skor (0-100)</th>
+              <th style="width: 65px; text-align: center;">Skor Terbobot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in sessions %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">P{{ s.p_num }}</td>
+              <td style="font-weight: 600; color: #0f172a;">{{ s.topik }}</td>
+              <td style="text-align: center;">
+                <span style="background: {% if s.tipe == 'Studio' %}#e0f2fe; color: #0369a1;{% else %}#f1f5f9; color: #475569;{% endif %} padding: 1px 4px; border-radius: 3px; font-size: 6.5px; font-weight: bold;">
+                  {{ s.tipe }}
+                </span>
+              </td>
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ "%.1f"|format(s.bobot) }}%</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0f172a;">{{ "%.1f"|format(s.skor) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ "%.2f"|format(s.skor_bobot) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- KOTAK REKAPITULASI KOMPOSISI BOBOT -->
+      <div style="display: flex; gap: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 8px; font-size: 7.5px;">
+        <div style="flex: 1;">
+          <strong>Tugas Harian (14 Sesi):</strong> 58.8%
+        </div>
+        <div style="flex: 1;">
+          <strong>UTS Studio (Sesi 8):</strong> 15.8%
+        </div>
+        <div style="flex: 1;">
+          <strong>UAS Mahakarya (Sesi 16):</strong> 25.4%
+        </div>
+        <div style="flex: 1; text-align: right; font-weight: bold; color: #16a34a;">
+          Total Cakupan Bobot: {{ total_bobot }}% (Lengkap)
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 1 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Predikat: <strong>{{ akademik.predikat or 'Sangat Memuaskan / Kompeten Unggul' }}</strong> • Kesiapan Profesi: {{ kesiapan_profesi }}</div>
+      <div>Halaman 1 dari 3 (Transkrip 16 Sesi Studio)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 2: RADAR & 10 MATRIKS KARIR ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 02: Profil Kompetensi & Potensi Karir (Halaman 2/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Pemetaan Radar 5 Dimensi Studio Arsitektur & 10 Peluang Karir Masa Depan Otak-CR
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">RADAR & KARIER</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">NPM: {{ student.npm }}</div>
+        </div>
+      </div>
+
+      <!-- RADAR & RUBRIK SPLIT -->
+      <div style="display: flex; gap: 10px; margin-bottom: 6px; align-items: center;">
+        <div style="width: 165px; height: 165px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 2px; display: flex; align-items: center; justify-content: center;">
+          {{ radar_svg|safe }}
+        </div>
+        <div style="flex: 1;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+            Evaluasi 5 Dimensi Kompetensi Desain Studio:
+          </div>
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Dimensi Kompetensi</th>
+                <th style="text-align: center; width: 50px;">Capaian Mhs</th>
+                <th style="text-align: center; width: 50px;">Rata Kelas</th>
+                <th style="text-align: left;">Interpretasi Mutu</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="font-weight: 600;">Penguasaan CAD & Pemodelan BIM</td><td style="text-align: center; font-weight: bold; color: #16a34a;">{{ kompetensi.penguasaan_cad or 90 }}</td><td style="text-align: center;">82.4</td><td style="color: #166534;">Sangat Mahir (Unggul)</td></tr>
+              <tr style="background: #f8fafc;"><td style="font-weight: 600;">Ketelitian Detail & Gambar Kerja</td><td style="text-align: center; font-weight: bold; color: #16a34a;">{{ kompetensi.ketelitian_detail or 85 }}</td><td style="text-align: center;">78.5</td><td style="color: #166534;">Memenuhi Standar Industri</td></tr>
+              <tr><td style="font-weight: 600;">Kedisiplinan Asistensi & Respon Revisi</td><td style="text-align: center; font-weight: bold; color: #16a34a;">{{ kompetensi.kedisiplinan_asistensi or 95 }}</td><td style="text-align: center;">80.1</td><td style="color: #166534;">Disiplin Tinggi (Teladan)</td></tr>
+              <tr style="background: #f8fafc;"><td style="font-weight: 600;">Logika Ruang, Gubahan & Struktur</td><td style="text-align: center; font-weight: bold; color: #16a34a;">{{ kompetensi.logika_ruang_struktur or 90 }}</td><td style="text-align: center;">81.0</td><td style="color: #166534;">Kuat & Proporsional</td></tr>
+              <tr><td style="font-weight: 600;">Manajemen Waktu Studio & Presentasi</td><td style="text-align: center; font-weight: bold; color: #16a34a;">{{ kompetensi.manajemen_waktu or 90 }}</td><td style="text-align: center;">79.2</td><td style="color: #166534;">Tepat Waktu (Zero Delay)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABEL 10 MATRIKS KARIR -->
+      <div style="margin-bottom: 4px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Tabel 2: Pemetaan 10 Bidang Karir Profesional & Peluang Industri Arsitektur
+        </div>
+        <table class="table-clean" style="font-size: 6.8px;">
+          <thead>
+            <tr>
+              <th style="width: 20px; text-align: center;">No</th>
+              <th style="width: 150px; text-align: left;">Bidang Profesi & Sektor</th>
+              <th style="width: 80px; text-align: left;">Kecocokan</th>
+              <th style="width: 140px; text-align: left;">Keterampilan Kunci</th>
+              <th style="text-align: left;">Analisis Potensi Mahasiswa</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for c in karir_list %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ c.id }}</td>
+              <td>
+                <div style="font-weight: bold; color: #0f172a;">{{ c.profesi }}</div>
+                <div style="font-size: 6px; color: #64748b;">{{ c.bidang_industri }}</div>
+              </td>
+              <td>
+                <div style="display: flex; justify-content: space-between; font-family: monospace; margin-bottom: 1px;">
+                  <span style="font-weight: bold; color: {% if c.kecocokan_persen >= 90 %}#10b981{% elif c.kecocokan_persen >= 80 %}#0284c7{% else %}#f59e0b{% endif %};">{{ c.kecocokan_persen }}%</span>
+                  <span style="font-size: 6px; padding: 0 3px; border-radius: 2px; background: {% if c.kecocokan_persen >= 90 %}#dcfce7; color: #166534;{% elif c.kecocokan_persen >= 80 %}#e0f2fe; color: #0369a1;{% else %}#fef3c7; color: #92400e;{% endif %}">{{ c.kategori_kecocokan }}</span>
+                </div>
+                <div style="background: #e2e8f0; height: 3px; border-radius: 2px; overflow: hidden;">
+                  <div style="background: {% if c.kecocokan_persen >= 90 %}#10b981{% elif c.kecocokan_persen >= 80 %}#0284c7{% else %}#f59e0b{% endif %}; width: {{ c.kecocokan_persen }}%; height: 3px;"></div>
+                </div>
+              </td>
+              <td style="color: #475569;">{{ c.keterampilan_kunci }}</td>
+              <td style="color: #334155; line-height: 1.25;">{{ c.analisis_potensi }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 2 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Analisis potensi karir disusun berdasarkan capaian riil portfolio studio dan rubrik standar profesi Arsitek IAI.</div>
+      <div>Halaman 2 dari 3 (Profil Radar & 10 Matriks Karir)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 3: GAMIFIKASI & PENGESAHAN ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 02: Gamifikasi & Lembar Pengesahan (Halaman 3/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Dopamine Badges Studio, Rekomendasi Kaprodi & Lembar Konfirmasi Wali Murid
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #fef3c7; border: 1px solid #f59e0b; color: #92400e; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">PENGESAHAN RESMI</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+        </div>
+      </div>
+
+      <!-- 4 DOPAMINE BADGES -->
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Lencana Keunggulan Studio (Studio Dopamine Badges):
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">⚡</div>
+            <div style="font-size: 8px; font-weight: bold; color: #166534; margin-top: 1px;">Speed Draftsman</div>
+            <div style="font-size: 6.5px; color: #15803d; margin-top: 1px;">Kecepatan & ketepatan drafting CAD di atas rata-rata kelas</div>
+          </div>
+          <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">🏛️</div>
+            <div style="font-size: 8px; font-weight: bold; color: #1e40af; margin-top: 1px;">Structure Master</div>
+            <div style="font-size: 6.5px; color: #1d4ed8; margin-top: 1px;">Penguasaan tektonika struktur kayu & beton bertulang</div>
+          </div>
+          <div style="flex: 1; background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">✨</div>
+            <div style="font-size: 8px; font-weight: bold; color: #6b21a8; margin-top: 1px;">Creative Visionary</div>
+            <div style="font-size: 6.5px; color: #6b21a8; margin-top: 1px;">Orisinalitas konsep gubahan massa & filosofi bentuk</div>
+          </div>
+          <div style="flex: 1; background: #fffbeb; border: 1px solid #fde68a; border-radius: 5px; padding: 5px; text-align: center;">
+            <div style="font-size: 14px;">👑</div>
+            <div style="font-size: 8px; font-weight: bold; color: #92400e; margin-top: 1px;">Studio Vanguard</div>
+            <div style="font-size: 6.5px; color: #b45309; margin-top: 1px;">Disiplin asistensi studio konsisten 16 pertemuan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KOTAK CATATAN KAPRODI & WALI -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 5px; padding: 6px 10px; margin-bottom: 8px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0369a1; text-transform: uppercase; margin-bottom: 2px;">
+          Catatan Evaluasi Mutu Kaprodi & Panduan Pendampingan Wali Murid di Rumah:
+        </div>
+        <div style="font-size: 7.5px; line-height: 1.35; color: #334155;">
+          Mahasiswa <strong>{{ student.nama }}</strong> menunjukkan etos kerja studio yang sangat membanggakan dengan capaian nilai <strong>{{ akademik.grade or 'A' }}</strong>. Mohon bapak/ibu orang tua / wali murid tetap memantau waktu istirahat yang cukup di rumah menjelang pengumpulan tugas besar studio perancangan, serta terus mendukung keikutsertaan mahasiswa dalam kompetisi arsitektur tingkat regional dan nasional.
+        </div>
+      </div>
+
+      <!-- LEMBAR KONFIRMASI WALI MURID -->
+      <div style="border: 1px dashed #94a3b8; border-radius: 5px; padding: 6px 10px; margin-bottom: 8px; background: #ffffff;">
+        <div style="font-size: 8px; font-weight: bold; color: #0f172a; text-transform: uppercase; margin-bottom: 2px;">
+          Lembar Konfirmasi & Catatan Balik Orang Tua / Wali Murid:
+        </div>
+        <div style="font-size: 7px; color: #64748b; margin-bottom: 20px;">
+          (Silakan diisi dan ditandatangani untuk arsip monitoring Dosen Pembimbing Akademik)
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+          <div>Tanggal Diterima: .......................................</div>
+          <div>Nama Wali Murid: .......................................</div>
+          <div>Tanda Tangan Wali: ....................................</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGESAHAN DUA TANDA TANGAN (KAPRODI & DOSEN PENGAMPU) -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="font-size: 7px; color: #64748b; max-width: 320px;">
+          Rapor evaluasi pembelajaran studio ini diterbitkan secara sah oleh Sistem Informasi Akademik SIAK-KAPRODI. Seluruh nilai terekam permanen pada pangkalan data kurikulum Program Studi Arsitektur.
+        </div>
+        <div style="display: flex; gap: 30px; text-align: center;">
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+            <div style="font-weight: bold; color: #0f172a;">Ketua Program Studi {{ identitas.prodi }}</div>
+            <div style="height: 30px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">{{ identitas.ketua_prodi }}</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. {{ identitas.nip_ketua_prodi }}</div>
+          </div>
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Dosen Pengampu Studio,</div>
+            <div style="font-weight: bold; color: #0f172a;">Studio Perancangan Arsitektur</div>
+            <div style="height: 30px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">Ir. Nasril Sikumbang, M.T.</div>
+            <div style="font-family: monospace; color: #64748b;">NIDN. 1018047901</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

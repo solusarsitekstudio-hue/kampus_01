@@ -1,16 +1,38 @@
-/* Custom Stylesheet for SIAK-KAPRODI */
+/* =============================================================================
+   SIAK-KAPRODI — Pure Obsidian High-Fidelity Architectural UI Theme
+   100% Grounded in: presentasi/src/pitch_interactive.html (Otak-CR Standard)
+   Locked to Obsidian Dark Mode for optimal contrast, zero eye-strain & cyber-CAD aesthetics
+   ============================================================================= */
 
-/* ===== MACBOOK / SAFARI / HIGH-DPR FRIENDLY BASE ===== */
+/* ===== 1. DESIGN TOKENS & SYSTEM VARIABLES ===== */
 :root {
   color-scheme: dark;
+  --amber: #fbbf24;
+  --cyan: #38bdf8;
+  --violet: #c084fc;
+  --emerald: #34d399;
+  --rose: #fb7185;
+  --text: #f8fafc;
+  --tert: #94a3b8;
+  --bg-deep: #060911;
+  --bg-surface: rgba(15, 23, 42, 0.75);
+  --line: rgba(148, 163, 184, 0.14);
+  --line-hi: rgba(255, 255, 255, 0.22);
+  --line2: rgba(148, 163, 184, 0.08);
+  --sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
+
+/* ===== 2. BASE, RESETS & ACCESSIBILITY ===== */
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-deep);
 }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -19,35 +41,14 @@ html {
     scroll-behavior: auto !important;
   }
 }
-@media (prefers-contrast: more) {
-  :root {
-    --line: rgba(255,255,255,.25);
-    --mut: #cbd5e1;
-  }
-}
-body {
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  overscroll-behavior: none;
-}
-/* Safe area for MacBook Pro notch (Safari 15+) */
+
+/* Safe areas for MacBook Pro notch & mobile */
 .safe-top { padding-top: env(safe-area-inset-top); }
 .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
 .safe-left { padding-left: env(safe-area-inset-left); }
 .safe-right { padding-right: env(safe-area-inset-right); }
 
-/* Focus visible - keyboard navigation */
-:focus:not(:focus-visible) { outline: none; }
-:focus-visible {
-  outline: 2px solid #f59e0b;
-  outline-offset: 2px;
-}
-button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible {
-  outline: 2px solid #f59e0b;
-  outline-offset: 2px;
-}
-
-/* Minimum touch target 44x44 (iOS/macOS HIG) */
+/* Touch Targets & Keyboard Navigation */
 .touch-target {
   min-height: 44px;
   min-width: 44px;
@@ -55,91 +56,498 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   align-items: center;
   justify-content: center;
 }
-
-/* Scrollbars - thinner for trackpad, visible on hover */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-  transition: background 120ms ease;
-}
-::-webkit-scrollbar-thumb:hover { background: #475569; }
-::-webkit-scrollbar-corner { background: transparent; }
-* { scrollbar-width: thin; scrollbar-color: #334155 transparent; }
-
-/* Selection color already set in body class */
-
-/* Print Optimization */
-@media print {
-  header, #nav-tabs, button, footer { 
-    display: none !important;
-  }
-  body {
-    background: white !important;
-    color: black !important;
-  }
-  .tab-section {
-    display: block !important;
-  }
+:focus:not(:focus-visible) { outline: none; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+/* ===== 3. ATMOSPHERIC OBSIDIAN CANVAS & CAD DRAFTING GRID ===== */
+body {
+  font-family: var(--sans);
+  color: var(--text);
+  background-color: var(--bg-deep) !important;
+  background-image:
+    radial-gradient(circle at 18% 75%, rgba(251, 191, 36, 0.09) 0%, transparent 55%),
+    radial-gradient(circle at 85% 20%, rgba(56, 189, 248, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(192, 132, 252, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 85%, rgba(52, 211, 153, 0.05) 0%, transparent 45%),
+    #060911 !important;
+  background-attachment: fixed !important;
+  position: relative;
+  min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
 }
 
-/* Custom Table Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* CAD Drafting Grid Overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.038) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.038) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(130% 105% at 50% 45%, #000 45%, transparent 95%);
+  mask-image: radial-gradient(130% 105% at 50% 45%, #000 45%, transparent 95%);
+  z-index: 0;
 }
-::-webkit-scrollbar-track {
-  background: #0f172a;
+
+header, #app-main, footer, #toast-host, #cdn-warning, .modal-backdrop {
+  position: relative;
+  z-index: 10;
 }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(6, 9, 17, 0.8); }
 ::-webkit-scrollbar-thumb {
   background: #334155;
   border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  transition: background 150ms ease;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+::-webkit-scrollbar-corner { background: transparent; }
+* { scrollbar-width: thin; scrollbar-color: #334155 rgba(6, 9, 17, 0.6); }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ===== 4. TOP LASER ACCENT & FROSTED OBSIDIAN HEADER ===== */
+header {
+  background: rgba(8, 13, 24, 0.88) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15) !important;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.75) !important;
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
-/* Tab Active Styles */
-.active-tab {
-  background-color: #f59e0b !important;
-  color: #020617 !important;
-  box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.25);
+/* Top Neon Multicolored Laser Beam */
+header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fbbf24 0%, #38bdf8 38%, #c084fc 72%, #34d399 100%);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.65);
+  z-index: 60;
 }
 
-/* Tujuh tab tidak boleh terlipat dua baris; nav-nya sudah overflow-x-auto. */
+/* Subheader / Tabs Sticky Navigation Bar */
+header + div {
+  background: rgba(6, 10, 20, 0.92) !important;
+  backdrop-filter: blur(18px) !important;
+  -webkit-backdrop-filter: blur(18px) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.12) !important;
+  box-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.8) !important;
+}
+
+/* ===== 5. INTERACTIVE NAVIGATION TABS ===== */
 .tab-btn {
   white-space: nowrap;
   flex-shrink: 0;
+  border-radius: 12px !important;
+  font-family: var(--sans) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.tab-btn:not(.active-tab) {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  color: #94a3b8 !important;
+}
+
+.tab-btn:not(.active-tab):hover {
+  background: rgba(56, 189, 248, 0.08) !important;
+  border-color: rgba(56, 189, 248, 0.35) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 18px -2px rgba(56, 189, 248, 0.25) !important;
+}
+
+/* Active Tab: Radiant Amber Accent */
+.active-tab,
+.tab-btn.active-tab {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  color: #060911 !important;
+  border: 1px solid #fbbf24 !important;
+  box-shadow: 0 0 24px rgba(251, 191, 36, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.45) !important;
+  font-weight: 700 !important;
+  transform: translateY(-1px) !important;
+}
+
+.active-tab i,
+.active-tab svg,
+.active-tab span,
+.tab-btn.active-tab i,
+.tab-btn.active-tab svg,
+.tab-btn.active-tab span {
+  color: #060911 !important;
+  stroke: #060911 !important;
+}
+
+/* Sidebar Nav Tab Layout (Left Panel Optimization) */
+#sidebar-nav .tab-btn {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.625rem !important;
+  padding: 0.55rem 0.85rem !important;
+  text-align: left !important;
+  border-radius: 10px !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.15rem !important;
+  white-space: normal !important;
+}
+
+#sidebar-nav .tab-btn span {
+  flex: 1 1 0% !important;
+  font-size: 0.775rem !important;
 }
 
 .active-thumb {
-  border-color: #f59e0b !important;
-  background-color: rgba(245, 158, 11, 0.1) !important;
+  border-color: #fbbf24 !important;
+  background-color: rgba(251, 191, 36, 0.15) !important;
+  box-shadow: 0 0 14px rgba(251, 191, 36, 0.3) !important;
+}
+
+/* ===== 6. FROSTED GLASS PANELS, CARDS & CONTAINERS ===== */
+.panel,
+.bg-slate-800\/60,
+.bg-slate-800\/50,
+.bg-slate-800\/80,
+.bg-slate-800\/90,
+.bg-slate-900,
+.bg-slate-900\/90,
+.bg-slate-900\/80,
+.bg-slate-900\/70,
+.bg-\[\#0f172a\],
+.card-glass {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.052) 0%, rgba(255, 255, 255, 0.014) 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.14) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.09), 0 20px 40px -12px rgba(0, 0, 0, 0.65) !important;
+  border-radius: 16px !important;
+  position: relative;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              box-shadow 0.2s ease !important;
+}
+
+.bg-slate-800\/60:hover,
+.card-hover:hover {
+  border-color: rgba(148, 163, 184, 0.28) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 24px 48px -12px rgba(0, 0, 0, 0.75) !important;
+}
+
+/* ===== 7. ARCHITECTURAL CORNER CROSSHAIRS ('+') ===== */
+.panel::after,
+.has-crosshair::after,
+.card-crosshair::after {
+  content: "+";
+  position: absolute;
+  top: 9px;
+  right: 13px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(148, 163, 184, 0.25);
+  pointer-events: none;
+}
+
+/* ===== 8. LASER TOP ACCENT LINES ===== */
+.laser-amber,
+.laser-cyan,
+.laser-violet,
+.laser-emerald,
+.laser-rose {
+  position: relative;
+  overflow: hidden;
+}
+
+.laser-amber::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #fbbf24 0%, rgba(255, 255, 255, 0.28) 60%, transparent 100%);
+  box-shadow: 0 0 14px #fbbf24;
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.laser-cyan::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #38bdf8 0%, rgba(255, 255, 255, 0.28) 60%, transparent 100%);
+  box-shadow: 0 0 14px #38bdf8;
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.laser-violet::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #c084fc 0%, rgba(255, 255, 255, 0.28) 60%, transparent 100%);
+  box-shadow: 0 0 14px #c084fc;
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.laser-emerald::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #34d399 0%, rgba(255, 255, 255, 0.28) 60%, transparent 100%);
+  box-shadow: 0 0 14px #34d399;
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.laser-rose::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #fb7185 0%, rgba(255, 255, 255, 0.28) 60%, transparent 100%);
+  box-shadow: 0 0 14px #fb7185;
+  border-radius: 16px 16px 0 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ===== 9. KPI METRICS & STAT GLOW ===== */
+#kpi-nilai, .val-amber {
+  font-family: var(--mono) !important;
+  font-weight: 800 !important;
+  color: #fbbf24 !important;
+  text-shadow: 0 0 24px rgba(251, 191, 36, 0.45) !important;
+  letter-spacing: -0.02em !important;
+}
+
+#kpi-kesiapan, .val-cyan {
+  font-family: var(--mono) !important;
+  font-weight: 800 !important;
+  color: #38bdf8 !important;
+  text-shadow: 0 0 24px rgba(56, 189, 248, 0.45) !important;
+  letter-spacing: -0.02em !important;
+}
+
+#kpi-komp, .val-violet {
+  font-family: var(--mono) !important;
+  font-weight: 800 !important;
+  color: #c084fc !important;
+  text-shadow: 0 0 24px rgba(192, 132, 252, 0.45) !important;
+  letter-spacing: -0.02em !important;
+}
+
+#kpi-at-risk, .val-rose {
+  font-family: var(--mono) !important;
+  font-weight: 800 !important;
+  color: #fb7185 !important;
+  text-shadow: 0 0 24px rgba(251, 113, 133, 0.45) !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* ===== 10. PILL CHIPS & ARCHITECTURAL KICKERS ===== */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+.kicker i {
+  display: inline-block;
+  width: 28px;
+  height: 2px;
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
+}
+
+.kicker .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
 }
 
 /* Blueprint Pattern */
 .blueprint-bg {
-  background-color: #080c12;
-  background-image: 
-    linear-gradient(rgba(255, 200, 0, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 200, 0, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-color: #060911;
+  background-image:
+    linear-gradient(rgba(56, 189, 248, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56, 189, 248, 0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
-/* Toast Animation (FIX TAHAP A: ganti window.alert yang memblokir) */
+/* ===== 11. SELECT DROPDOWNS & FORM INPUTS ===== */
+select,
+input[type="text"],
+input[type="search"],
+input[type="number"],
+textarea {
+  background-color: rgba(7, 12, 22, 0.95) !important;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  color: #f8fafc !important;
+  border-radius: 10px !important;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease !important;
+}
+
+select:focus,
+input[type="text"]:focus,
+input[type="search"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+  border-color: var(--cyan) !important;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.3) !important;
+  outline: none !important;
+}
+
+select option {
+  background-color: #080d1a !important;
+  color: #f8fafc !important;
+}
+
+/* ===== 12. ACTION BUTTONS & GLOW STATES ===== */
+button.bg-amber-500 {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important;
+  color: #060911 !important;
+  font-weight: 700 !important;
+  border: 1px solid #fbbf24 !important;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+button.bg-amber-500:hover {
+  background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%) !important;
+  box-shadow: 0 0 28px rgba(251, 191, 36, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+  transform: translateY(-1px) !important;
+}
+
+button.bg-slate-800 {
+  background: rgba(255, 255, 255, 0.045) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 8px 16px -4px rgba(0, 0, 0, 0.4) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+button.bg-slate-800:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 12px 24px -6px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ===== 13. TABLES & GRADEBOOK HIGH-PRECISION STYLING ===== */
+table {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+
+thead th {
+  background: rgba(9, 14, 25, 0.95) !important;
+  color: #94a3b8 !important;
+  font-family: var(--mono) !important;
+  font-size: 0.72rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18) !important;
+  padding: 0.75rem 1rem !important;
+}
+
+tbody tr {
+  transition: background 0.15s ease !important;
+}
+
+tbody tr:hover {
+  background: rgba(56, 189, 248, 0.04) !important;
+}
+
+tbody td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08) !important;
+}
+
+/* ===== 14. APEXCHARTS OBSIDIAN THEME OVERRIDES ===== */
+.apexcharts-tooltip {
+  background: rgba(9, 14, 26, 0.96) !important;
+  backdrop-filter: blur(18px) !important;
+  border: 1px solid rgba(148, 163, 184, 0.25) !important;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  color: #f8fafc !important;
+  border-radius: 12px !important;
+}
+
+.apexcharts-tooltip-title {
+  background: rgba(15, 23, 42, 0.92) !important;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important;
+  font-family: var(--mono) !important;
+  font-weight: 700 !important;
+}
+
+.apexcharts-xaxistooltip,
+.apexcharts-yaxistooltip {
+  background: #080d19 !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
+  border-radius: 6px !important;
+  font-family: var(--mono) !important;
+}
+
+/* ===== 15. TOAST ANIMATIONS ===== */
 @keyframes toast-in {
   from { opacity: 0; transform: translateY(12px) scale(0.96); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -155,9 +563,9 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   animation: toast-out 260ms ease-in both;
 }
 
-/* Print Optimization */
+/* ===== 16. PRINT OPTIMIZATION ===== */
 @media print {
-  header, #nav-tabs, button, footer { 
+  header, #nav-tabs, button, footer {
     display: none !important;
   }
   body {
@@ -169,11 +577,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   }
 }
 
-/* =============================================================================
-   TAB 7: INFO SISTEM — tipografi markdown
-   Ditulis sebagai CSS biasa supaya tidak perlu build ulang Tailwind setiap kali
-   public/info.md diperbarui.
-   ============================================================================= */
+/* ===== 17. TAB 7: INFO SISTEM — MARKDOWN TYPOGRAPHY ===== */
 .info-md {
   color: #cbd5e1;
   font-size: 0.875rem;
@@ -190,7 +594,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   letter-spacing: -0.02em;
   margin: 0 0 0.75rem;
   padding-bottom: 0.6rem;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.7);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }
 .info-md h2 {
   color: #f1f5f9;
@@ -233,26 +637,26 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 
 .info-md hr {
   border: 0;
-  border-top: 1px solid rgba(51, 65, 85, 0.7);
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
   margin: 1.75rem 0;
 }
 
 .info-md blockquote {
   margin: 0.9rem 0;
   padding: 0.7rem 1rem;
-  border-left: 3px solid #f59e0b;
-  background: rgba(245, 158, 11, 0.07);
+  border-left: 3px solid #fbbf24;
+  background: rgba(251, 191, 36, 0.08);
   border-radius: 0 0.5rem 0.5rem 0;
   color: #e2e8f0;
 }
 .info-md blockquote p { margin: 0.35rem 0; }
 
 .info-md code {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--mono);
   font-size: 0.78rem;
   color: #67e8f9;
   background: rgba(15, 23, 42, 0.9);
-  border: 1px solid rgba(51, 65, 85, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 0.3rem;
   padding: 0.08rem 0.32rem;
 }
@@ -260,8 +664,8 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .info-md .info-pre {
   margin: 0.9rem 0 1.1rem;
   padding: 0.9rem 1rem;
-  background: #05080f;
-  border: 1px solid rgba(51, 65, 85, 0.8);
+  background: #040711;
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 0.6rem;
   overflow-x: auto;
 }
@@ -279,7 +683,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .info-md .info-table-wrap {
   margin: 0.9rem 0 1.2rem;
   overflow-x: auto;
-  border: 1px solid rgba(51, 65, 85, 0.7);
+  border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 0.6rem;
 }
 .info-md table {
@@ -296,7 +700,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   letter-spacing: 0.04em;
   font-size: 0.68rem;
   padding: 0.55rem 0.75rem;
-  border-bottom: 1px solid rgba(51, 65, 85, 0.8);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
   white-space: nowrap;
 }
 .info-md tbody td {
@@ -316,3 +720,199 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
   font-size: 0.82rem;
 }
 
+/* ===== DROPDOWN SELECT & OPTGROUP OBSIDIAN CAD STYLING ===== */
+select optgroup {
+  background-color: #0f172a !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+  font-style: normal !important;
+  padding: 8px 10px !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+select option {
+  background-color: #0b0f19 !important;
+  color: #f1f5f9 !important;
+  font-weight: 500 !important;
+  padding: 6px 12px !important;
+}
+
+select option:checked,
+select option:hover {
+  background-color: #1e293b !important;
+  color: #38bdf8 !important;
+}
+
+/* Sidebar Active Tab Icon High Contrast */
+#sidebar-nav .tab-btn.active-tab svg,
+#sidebar-nav .tab-btn.active-tab i {
+  color: #06090e !important;
+  stroke: #06090e !important;
+}
+
+
+/* =============================================================================
+   🛡️ GATEKEEPER MODAL & KEYPAD SHIELD (UI-AUTH-01 & SYS-SEC-10)
+   ============================================================================= */
+#gatekeeper-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 100000 !important;
+  background-color: rgba(7, 11, 20, 0.97) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+#gatekeeper-modal.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.gatekeeper-card {
+  position: relative !important;
+  width: 100% !important;
+  max-width: 440px !important;
+  padding: 2rem 1.75rem !important;
+  border-radius: 1.5rem !important;
+  background-color: #0f172a !important; /* solid slate-900 */
+  border: 1px solid #334155 !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.98), 0 0 40px rgba(245, 158, 11, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  overflow: hidden !important;
+}
+
+.gatekeeper-keypad {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 0.5rem !important;
+  width: 100% !important;
+  max-width: 280px !important;
+  margin: 0 auto 1rem auto !important;
+}
+
+.pin-box {
+  width: 2.75rem !important;
+  height: 3.25rem !important;
+  border-radius: 0.75rem !important;
+  background-color: #020617 !important;
+  border: 2px solid #334155 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.5rem !important;
+  font-family: ui-monospace, monospace !important;
+  font-weight: 700 !important;
+  color: #fbbf24 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6) !important;
+  transition: all 0.2s ease !important;
+}
+
+.pin-box.active {
+  border-color: #f59e0b !important;
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #fef3c7 !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.3), inset 0 2px 4px rgba(0,0,0,0.6) !important;
+}
+
+
+/* =============================================================================
+   📱 ISOLATED MOBILE RESPONSIVE DRAWER & GATEKEEPER AUTO-FIT (UI-NAV-02, 03 & UI-AUTH-04)
+   Guaranteed ZERO-REGRESSION on Desktop Widescreen (>= 1024px)
+   ============================================================================= */
+
+/* Mobile & Tablet Drawer (< 1024px) */
+@media (max-width: 1023px) {
+  #sidebar-backdrop {
+    display: none;
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(3, 7, 18, 0.75) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 9998 !important;
+  }
+  #sidebar-backdrop.mobile-open {
+    display: block !important;
+  }
+
+  #sidebar-nav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    z-index: 9999 !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.6) !important;
+    background-color: #070d1e !important;
+  }
+  #sidebar-nav.mobile-open {
+    transform: translateX(0) !important;
+  }
+
+  #btn-mobile-menu-toggle {
+    display: inline-flex !important;
+  }
+
+  #btn-mobile-close-sidebar {
+    display: inline-flex !important;
+  }
+
+  #app-main {
+    width: 100% !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* Guard: On screens >= 1024px (Desktop Widescreen), mobile elements are strictly hidden */
+@media (min-width: 1024px) {
+  #sidebar-backdrop {
+    display: none !important;
+  }
+  #btn-mobile-menu-toggle {
+    display: none !important;
+  }
+  #btn-mobile-close-sidebar,
+  #mobile-sidebar-header {
+    display: none !important;
+  }
+}
+
+/* Gatekeeper PIN Responsive Elastic Fit (< 480px) */
+@media (max-width: 480px) {
+  .gatekeeper-card {
+    max-width: calc(100vw - 2rem) !important;
+    margin: 0 auto !important;
+    padding: 1.5rem 1rem !important;
+  }
+  .pin-box {
+    width: 2.25rem !important;
+    height: 2.85rem !important;
+    font-size: 1.25rem !important;
+    border-radius: 0.5rem !important;
+  }
+  .gatekeeper-keypad {
+    max-width: 260px !important;
+    gap: 0.4rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .keypad-btn {
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.65rem !important;
+    font-size: 1rem !important;
+  }
+}

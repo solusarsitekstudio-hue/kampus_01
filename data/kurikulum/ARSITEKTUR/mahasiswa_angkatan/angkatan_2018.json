@@ -1,0 +1,22 @@
+{
+  "versi": 1,
+  "angkatan": 2018,
+  "prodi": "Arsitektur",
+  "keterangan": "Arsip Partisi Mahasiswa Darurat DO (Semester 16 - Ambang Batas 7-8 Tahun)",
+  "mahasiswa": [
+    {
+      "npm": "1810015410001",
+      "nama": "MUHAMMAD ILHAM",
+      "angkatan": 2018,
+      "status": "DARURAT_DO",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "1810015410002",
+      "nama": "NANDA PERMATA",
+      "angkatan": 2018,
+      "status": "DARURAT_DO",
+      "riwayat_bss": []
+    }
+  ]
+}

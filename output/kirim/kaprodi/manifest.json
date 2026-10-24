@@ -1,17 +1,17 @@
 {
   "peruntukan": "mesin kirim otomatis - Kaprodi",
-  "diperbarui": "2026-10-21 11:05:48",
-  "sumber_run": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05",
-  "stempel_data": "d3450eec8194",
+  "diperbarui": "2026-10-23 20:41:45",
+  "sumber_run": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18",
+  "stempel_data": "58d3927d72fa",
   "dokumen_kelas": [
     {
       "nama": "03_laporan_penilaian_kaprodi_master_gradebook.pdf",
-      "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/03_laporan_penilaian_kaprodi_master_gradebook.pdf",
+      "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/03_laporan_penilaian_kaprodi_master_gradebook.pdf",
       "ukuran": 245013
     },
     {
       "nama": "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
-      "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-21_11-05-05/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
+      "path": "output/APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS/2026-10-22_21-43-18/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
       "ukuran": 273565
     }
   ],

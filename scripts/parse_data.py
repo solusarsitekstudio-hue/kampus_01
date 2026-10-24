@@ -1,3 +1,4 @@
+import modular_engine
 """parse_data: bangun data/academic_data.json DARI tree kurikulum.
 
 TAHAP E - SUMBER DATA PINDAH
@@ -450,58 +451,109 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
         )
         career_matrix = ai_diagnosis["matriks_karier_10"]
 
-        # Video Storyboard for Student Showcase (Focus on pride, progress, and motivating parents)
+        # Video & WA narrative adaptif (Otak-CR: Vanguard, Builder, Turnaround)
+        is_turnaround = bool(student_is_at_risk or archetype in ("at_risk", "perlu_penguatan") or grade in ("D / Evaluasi", "C"))
+        is_vanguard = bool(archetype in ("star", "high") or grade in ("A", "A-"))
+
+        if is_turnaround:
+            vo_script = (
+                f"Setiap langkah di dunia rancang bangun adalah proses pendewasaan. Ananda {nama.title()} "
+                f"terus berproses mengasah kemampuan studio arsitektur pada mata kuliah {_nama_mk}. "
+                f"Dengan evaluasi terarah dan pendampingan berkelanjutan bersama keluarga, ananda siap melangkah bangkit "
+                f"memaksimalkan potensinya di semester depan."
+            )
+            sc_texts = [
+                f"Pendampingan Studio {nama.split()[0]}",
+                "Fokus Gambar Kerja & Pemahaman Ruang",
+                "Evaluasi Konstruktif Menuju Standar",
+                "Komitmen Pembinaan Keluarga & Kampus",
+            ]
+            wa_catatan_penutup = (
+                f"Setiap mahasiswa memiliki dinamika proses belajar masing-masing. Program studi siap mendampingi "
+                f"ananda melalui sesi asistensi terarah agar pemahaman studio dan ketekunan belajar semakin optimal "
+                f"pada semester mendatang."
+            )
+        elif is_vanguard:
+            vo_script = (
+                f"Dedikasi luar biasa di studio arsitektur! Inilah ananda {nama.title()}, yang berhasil menuntaskan "
+                f"seluruh modul perancangan gambar kerja presisi dengan capaian predikat unggul {grade}. "
+                f"Karya nyata ini menjadi bukti kesiapan ananda melangkah sebagai calon arsitek masa depan kebanggaan keluarga dan almamater!"
+            )
+            sc_texts = [
+                f"Karya Unggulan Ananda {nama.split()[0]}",
+                "Presisi Gambar Kerja & Detail Struktur",
+                "Portofolio Standar Profesional Industri",
+                "Kebanggaan Almamater & Apresiasi Orang Tua",
+            ]
+            wa_catatan_penutup = (
+                f"Bapak/Ibu patut berbangga atas pencapaian ananda yang menunjukkan konsistensi luar biasa sepanjang semester ini. "
+                f"Kami siap mendukung pengembangan karya ananda menuju panggung sayembara dan magang profesional."
+            )
+        else:
+            vo_script = (
+                f"Progres nyata dan dedikasi belajar di studio arsitektur! Ananda {nama.title()} telah menuntaskan "
+                f"rangkaian eksplorasi gambar digital dan logika konstruksi dengan predikat {grade}. "
+                f"Setiap lembar karya menjadi pijakan kokoh untuk terus berkembang menjadi perancang yang handal dan kompeten."
+            )
+            sc_texts = [
+                f"Progres Nyata Ananda {nama.split()[0]}",
+                "Eksplorasi Denah & Detail Konstruksi",
+                "Pengembangan Portofolio Studio Mandiri",
+                "Dukungan Penuh Orang Tua & Kampus",
+            ]
+            wa_catatan_penutup = (
+                f"Ananda menunjukkan grafik pertumbuhan yang sehat dan konsisten. Dukungan Bapak/Ibu di rumah sangat berarti "
+                f"dalam menyempurnakan ketelitian dan jam terbang berkarya ananda."
+            )
+
         video_storyboard = {
             "durasi_detik": 32,
             "format": "9:16 Vertikal (Reels / Shorts / WhatsApp Story)",
             "bgm_mood": "Inspiratif, Modern Upbeat Acoustic Architecture",
-            "voiceover_script": (
-                f"Alhamdulillah! Satu semester penuh dedikasi dan kerja keras di Lab Komputer Arsitektur! "
-                f"Inilah ananda {nama.title()}, yang telah berhasil menuntaskan seluruh modul gambar kerja digital "
-                f"mulai dari perancangan denah presisi hingga detail potongan struktural dengan capaian predikat {grade}. "
-                f"Bapak dan Ibu patut sangat bangga, ananda siap melangkah menjadi arsitek masa depan kebanggaan keluarga dan bangsa!"
-            ),
+            "voiceover_script": vo_script,
             "scenes": [
                 {
                     "detik": "00:00 - 00:06",
                     "visual": "Foto Mahasiswa & Gelar Sertifikasi Kompetensi Studio 2026",
-                    "teks": f"Kebanggaan Ananda {nama.split()[0]}"
+                    "teks": sc_texts[0],
                 },
                 {
                     "detik": "00:06 - 00:16",
                     "visual": "Zoom-in aktivitas gambar di layar AutoCAD Lab LIKDA",
-                    "teks": "Fokus Menggambar Denah & Detail Struktur"
+                    "teks": sc_texts[1],
                 },
                 {
                     "detik": "00:16 - 00:25",
                     "visual": "Karya layout lembar kerja etiket cetak PDF standar A3",
-                    "teks": "Karya Nyata Siap Portofolio Profesional"
+                    "teks": sc_texts[2],
                 },
                 {
                     "detik": "00:25 - 00:32",
                     "visual": "Logo Resmi Prodi Arsitektur & Pesan Apresiasi Orang Tua",
-                    "teks": "Terima Kasih Atas Doa & Dukungan Orang Tua"
-                }
-            ]
+                    "teks": sc_texts[3],
+                },
+            ],
         }
 
         # WhatsApp Message (Polite, formal, NO competitive rank, highlighting pride & 10 career possibilities)
         wa_message = (
-            f"Assalamuâ€™alaikum Warahmatullahi Wabarakatuh.\n\n"
+            f"Assalamu'alaikum Warahmatullahi Wabarakatuh.\n\n"
             f"Kepada Yth. Bapak/Ibu Wali Murid dari *{nama.upper()}*,\n\n"
             f"Salam hangat dan salam takzim dari Program Studi {_prodi}, Fakultas {_fakultas}.\n\n"
             f"Melalui pesan resmi ini, kami menyampaikan Laporan Perkembangan Akademik, Portofolio Gambar Kerja, dan Analisis Pemetaan Potensi Karier ananda pada mata kuliah *{_nama_mk}*:\n\n"
-            f"ðŸ“Š *Ringkasan Capaian Kompetensi:*\n"
-            f"â€¢ Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/{_total_sesi} Sesi Terlaksana)\n"
-            f"â€¢ Nilai Akhir Studio: *{avg_score}* (Predikat: *{grade}* - {predikat})\n"
-            f"â€¢ Status Kompetensi: *{status_kompetensi}*\n"
-            f"â€¢ Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
-            f"ðŸ’¡ *Catatan Dosen Pengasuh:*\n"
+            f"📊 *Ringkasan Capaian Kompetensi:*\n"
+            f"• Kehadiran Studio: *{attendance_pct}%* ({total_hadir}/{_total_sesi} Sesi Terlaksana)\n"
+            f"• Nilai Akhir Studio: *{avg_score}* (Predikat: *{grade}* - {predikat})\n"
+            f"• Status Kompetensi: *{status_kompetensi}*\n"
+            f"• Kesiapan Industri: *{kesiapan_profesi}* (Indeks: *{indeks_kesiapan}/100*)\n\n"
+            f"💡 *Catatan Dosen Pengasuh:*\n"
             f"\"{ai_diagnosis['analisis_karakter_spasial'][:140]}...\"\n\n"
-            f"ðŸ“ *Lampiran Berkas Resmi Terlampir:*\n"
-            f"1. ðŸ“Ž Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n"
-            f"2. ðŸ“Ž Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n"
-            f"3. ðŸ“Ž Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\n"
+            f"🎯 *Rekomendasi Pendampingan:*\n"
+            f"{wa_catatan_penutup}\n\n"
+            f"📎 *Lampiran Berkas Resmi Terlampir:*\n"
+            f"1. Rekap Kehadiran Mahasiswa Bulanan (Presensi & Log Sesi)\n"
+            f"2. Rapor Hasil Evaluasi Akhir & Pemetaan 10 Karier Masa Depan\n"
+            f"3. Portofolio Presentasi Slide Deck 16:9 Widescreen (DeckCraft)\n\n"
             f"Bapak/Ibu dapat meninjau berkas dokumen terlampir. Terima kasih tak terhingga atas doa, bimbingan, dan cinta kasih Bapak/Ibu yang senantiasa mendampingi ananda di rumah.\n\n"
             f"Hormat kami,\n"
             f"*Ketua Program Studi {_prodi}*\n"
@@ -513,6 +565,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             "no": s.get("no", idx + 1),
             "npm": npm,
             "nama": nama,
+            "angkatan": s.get("angkatan") or KT.angkatan_dari_npm(npm),
             "archetype": archetype,
             "at_risk": student_is_at_risk,
             "alasan_at_risk": at_risk_reasons_list,
@@ -559,6 +612,7 @@ def generate_student_profiles(students, sessions, nilai_per_npm, ctx=None):
             # lama tetap utuh; tambahan (radar_sumber, mesin) tidak merusak
             # konsumen lama karena konsumen hanya membaca kunci yang ia tahu.
             "ai_diagnosis": ai_diagnosis,
+            "radars": modular_engine.hitung_4_radar(attendance_list, avg_score, attendance_pct),
             "marketing": {
                 "video": video_storyboard,
                 "wa_text": wa_message
@@ -843,8 +897,13 @@ def bangun_dataset(kunci=None):
     """
     ctx = muat_kurikulum(kunci)
     nilai_per_npm = kelompokkan_nilai(ctx["nilai_dokumen"])
+    enrolled_mhs = [
+        s for s in ctx["mahasiswa"]
+        if str(s.get("npm")) in nilai_per_npm
+    ]
+    mhs_to_process = enrolled_mhs if enrolled_mhs else ctx["mahasiswa"]
     return generate_student_profiles(
-        ctx["mahasiswa"], ctx["sessions"], nilai_per_npm, ctx
+        mhs_to_process, ctx["sessions"], nilai_per_npm, ctx
     )
 
 

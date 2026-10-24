@@ -1,0 +1,37 @@
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "keterangan": "Arsip Partisi Mahasiswa Cuti Akademik Sah (BSS) - Wajib Biaya Registrasi Administratif Rp 500.000/sem",
+  "mahasiswa": [
+    {
+      "npm": "2310015410018",
+      "nama": "TARI WULANDARI (CUTI BSS)",
+      "angkatan": 2023,
+      "status": "BSS",
+      "riwayat_bss": [
+        "2024/2025-GENAP",
+        "2025/2026-GANJIL",
+        "2025/2026-GENAP"
+      ]
+    },
+    {
+      "npm": "2210015410022",
+      "nama": "WAHYU NUR HIDAYAT (CUTI BSS)",
+      "angkatan": 2022,
+      "status": "BSS",
+      "riwayat_bss": [
+        "2025/2026-GANJIL",
+        "2025/2026-GENAP"
+      ]
+    },
+    {
+      "npm": "2410015410030",
+      "nama": "YOGA PRATAMA (CUTI BSS)",
+      "angkatan": 2024,
+      "status": "BSS",
+      "riwayat_bss": [
+        "2025/2026-GENAP"
+      ]
+    }
+  ]
+}

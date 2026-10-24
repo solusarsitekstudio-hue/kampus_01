@@ -1,0 +1,23 @@
+{
+  "versi": 1,
+  "prodi": "ARSITEKTUR",
+  "angkatan": 2019,
+  "total_mahasiswa": 1,
+  "mahasiswa": [
+    {
+      "npm": "1910015411003",
+      "nama": "ANDI SETIAWAN",
+      "angkatan": 2019,
+      "semester_ke": 14,
+      "status": "AKTIF",
+      "zona": {
+        "zona": 4,
+        "kode": "DARURAT_DO",
+        "label": "Zona 4 - Darurat DO",
+        "keterangan": "Masa studi mendekati/melebihi batas 7-10 tahun Dikti/Senat",
+        "color": "rose",
+        "at_risk_do": true
+      }
+    }
+  ]
+}

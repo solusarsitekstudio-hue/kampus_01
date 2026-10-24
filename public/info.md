@@ -1,131 +1,75 @@
 # SIAK-KAPRODI — Penjelasan Sistem
 
-> **Sistem Intelijen Akademik & Rekap Portofolio Arsitektur.**
+> **Sistem Intelijen Akademik & Rekap Portofolio Arsitektur.**  
 > Dashboard lokal (port **40404**) yang mengubah data perkuliahan menjadi rekap Kaprodi,
-> rapor wali murid, portofolio mahasiswa, dan paket PDF resmi — **tanpa internet**.
-> Termasuk analisis kekuatan/potensi tiap mahasiswa dan kabar progres untuk wali murid.
+> rapor wali murid, portofolio mahasiswa, cockpit pimpinan yayasan, dan paket PDF resmi — **tanpa internet**.  
+> Termasuk analisis kekuatan/potensi tiap mahasiswa, kabar progres wali murid, audit RPS dosen, dan transparansi kasus remedial lintas 30 mata kuliah.
 
-Versi dokumen: **v2.7 (Kelebihan & Nilai Jual)** — basis data tetap
-`2.6-KURIKULUM-BERTINGKAT`. Halaman ini membaca berkas `public/info.md`, jadi isinya
-bisa diperbarui tanpa mengubah kode program.
+Versi dokumen: **v2.8 (12-Tab Enterprise Academic Suite)** — basis data tetap
+`2.6-KURIKULUM-BERTINGKAT` per **23 Oktober 2026**. Halaman ini membaca langsung berkas
+`public/info.md`, sehingga seluruh dokumentasi selalu sinkron secara *real-time* tanpa perlu merestart program.
 
 ---
 
 ## 1. Apa yang sistem ini kerjakan
 
-Sistem ini mengambil **satu sumber data** (tree kurikulum), lalu menurunkannya menjadi
-banyak keluaran yang saling konsisten:
+Sistem ini mengambil **satu sumber kebenaran** (*single source of truth* dari folder tree kurikulum), lalu menurunkannya melalui arsitektur terisolasi (*Decoupled Bridge Engine*) menjadi berbagai keluaran terstruktur yang saling konsisten:
 
-- **Rekap Kaprodi** — kehadiran per slot absen, nilai terbobot, mahasiswa At-Risk, distribusi grade.
-- **Rapor wali murid** — narasi humanis tanpa peringkat kompetitif, radar 5 pilar, 10 rekomendasi profesi.
-- **Portofolio mahasiswa** — slide deck 16:9 dan video vertikal 9:16.
-- **Paket PDF resmi** — 11 berkas arsip (rekap bulanan, rapor semester, deck portofolio, gradebook Kaprodi, evaluasi dosen/RPS).
-- **Pesan WhatsApp** — format sopan siap kirim ke orang tua, dengan 3 lampiran PDF.
+- **1. Rekap Dashboard Kaprodi** — kehadiran per slot absen, nilai terbobot, mahasiswa At-Risk, distribusi grade studio, dan peta MK rawan.
+- **2. Rapor Wali Murid** — narasi humanis tanpa peringkat kompetitif, radar kompetensi 5 pilar, rekomendasi profesi berbukti, dan catatan bimbingan.
+- **3. Showcase & Video Karya** — slide deck 16:9 DeckCraft widescreen, galeri foto karya riil, dan generator video portofolio vertikal 9:16 Full HD.
+- **4. Simulator WhatsApp** — format pesan pembuka sopan siap salin ke orang tua, dilengkapi 3 dokumen lampiran PDF terverifikasi.
+- **5. Pengaturan Identitas** — manajemen nama institusi, kaprodi, dosen pengasuh, dan asisten dosen tersentral di `config/identitas.json` dengan pengaman 3 tingkat.
+- **6. Struktur Kurikulum** — editor struktur tree 16 pertemuan, validasi bobot total wajib 100%, dan status jenis MK (teori/studio).
+- **7. Presensi & RPS Dosen** — audit pemantauan 16 sesi tatap muka perkuliahan dosen, kesesuaian modul RPS, CPMK, dan Berita Acara Perkuliahan (BAP) akreditasi.
+- **8. Info & Dokumentasi** — buku panduan sistem, alur data, metodologi penilaian, dan transparansi arsitektur.
+- **9. Rekap Periode & Perjalanan Akademik** — analisis 4 cakupan (per bulan, 1 MK semester, semua MK satu semester, semua semester) + panel potensi mahasiswa per MK dinamis lintas 30 katalog.
+- **10. Portofolio Akademik 4 Lapis** — rekap komprehensif mahasiswa: Lapis 1 (Bulanan), Lapis 2 (Mata Kuliah + SKS + Dosen), Lapis 3 (Semester terbuka otomatis), Lapis 4 (Kumulatif & AI Review Karier Rotary).
+- **11. Engine Input & Output** — sistem verifikasi berkas inbox anti-duplikat hash SHA-256, audit integritas dokumen cetak, dan pembersihan lapis kirim otomatis.
+- **12. Cockpit Yayasan & Investor** — *Executive Boardroom*: valuasi efisiensi mutu, penyelamatan cashflow SPP, pitch deck akreditasi 1-klik, dan modal asistensi mahasiswa remedial per MK.
 
-Prinsipnya: **angka dihitung, bukan diketik**. Semua dokumen membaca data yang sama,
-jadi tidak ada dua dokumen yang saling bertentangan.
+Prinsip utamanya: **angka dihitung secara deterministik, bukan diketik**. Semua dokumen membaca data yang sama, sehingga tidak ada kontradiksi antar dokumen.
 
 ---
 
 ## 2. Kelebihan sistem & nilai jual
 
-Keunggulannya bukan "banyak fitur", tetapi **satu data yang sama dipakai ulang untuk
-tiga audiens sekaligus**: Kaprodi (kontrol), mahasiswa (portofolio), dan wali murid
-(kabar progres). Tidak ada angka yang diketik dua kali, jadi tidak ada versi yang
-saling bertentangan.
+Keunggulannya bukan sekadar "banyak tampilan", melainkan **satu sumber data yang sama diproses secara bertingkat untuk empat pemangku kepentingan sekaligus**: Kaprodi (kontrol mutu), Mahasiswa (portofolio rekam jejak), Wali Murid (kabar progres humanis), dan Yayasan/Rektorat (valuasi operasional & akreditasi).
 
 ### 2.1 Satu data, banyak keluaran yang konsisten
-
-- KPI, rapor, portofolio, PDF, dan pesan wali membaca `data/kurikulum/` yang sama.
-- Ubah satu nilai atau topik → semua keluaran ikut berubah saat dikompilasi ulang.
-- Tidak ada "rekap versi Excel" yang bisa berbeda dari dashboard.
+- Seluruh modul membaca data master dan katalog `data/kurikulum/` yang sama.
+- Perubahan nilai atau topik pertemuan langsung mengalir ke seluruh keluaran saat dikompilasi ulang.
+- Menghapus risiko kesalahan manusia (*human error*) akibat rekap Excel manual yang tercecer.
 
 ### 2.2 Portofolio otomatis per mahasiswa
+Setiap mahasiswa memiliki bahan presentasi yang diproduksi otomatis oleh sistem:
 
-Setiap mahasiswa punya bahan presentasi yang dibuat sistem, bukan template kosong:
-
-| Keluaran | Isi | Dipakai untuk |
+| Keluaran | Spesifikasi | Kegunaan Praktis |
 |---|---|---|
-| Deck 16:9 (4 slide) | identitas, capaian studio, radar kompetensi, pemetaan karier | presentasi studio, beasiswa, magang |
-| Video 9:16 (MP4) | naskah voiceover + visual dari data yang sama, dirender per NPM | status media sosial, profil singkat |
-| Rapor PDF | rekap pertemuan + narasi + lampiran | arsip wali/dosen |
+| **Deck 16:9 (4 Slide)** | PDF 16:9 Widescreen (Cover, Lineweight CAD, Denah 1:100, Sertifikat) | Presentasi studio, sidang magang, portofolio beasiswa |
+| **Video 9:16 (MP4)** | Video vertikal 30 detik Full HD dengan narasi personal & foto karya | Media sosial (Instagram Reels, TikTok), branding mahasiswa |
+| **Rapor PDF Lengkap** | Rekap bulanan, kehadiran jujur, narasi 4 kuadran, matriks profesi | Arsip wali murid, konseling dosen pembimbing akademik |
+| **Transkrip 4 Lapis** | Riwayat bulanan, identitas MK, rollup semester, capaian kumulatif | Portofolio akademik menyeluruh untuk sertifikasi industri |
 
-Semua bisa dipratinjau di dashboard dan diunduh per mahasiswa. Tidak perlu desain
-manual per anak — pekerjaan yang biasanya menghabiskan waktu asisten/dosen.
+### 2.3 Analisis kekuatan & potensi berbukti
+- **Matriks Karier Berbukti:** Setiap rekomendasi karier memiliki data `bukti` nyata (angka nilai MK dan kanal bidang terkait), narasinya dibangun dari angka tersebut, bukan template statis.
+- **Perapian AI Rotary Fail-Closed:** Narasi 3 profesi teratas dapat dirapikan oleh klaster Gemini Rotary AI (tombol *"Rapikan dengan AI"* di Tab 10). Setiap angka dalam narasi hasil AI diverifikasi secara ketat terhadap data bukti asli — satu angka karangan langsung ditolak.
+- **Radar 5 Pilar Kompetensi:** Penguasaan CAD, ketelitian detail, kedisiplinan asistensi, logika ruang & struktur, manajemen waktu.
+- **Tanpa Peringkat Kompetitif (Zero Ranking):** Menghindari toxic comparison, berfokus penuh pada kurva pertumbuhan kompetensi personal.
 
-### 2.3 Analisis kekuatan & potensi (bukan sekadar nilai)
+### 2.4 Kemitraan transparan dengan orang tua (Wali Murid)
+Tab 4 menyediakan draf pesan WhatsApp resmi siap salin ke wali murid, dilengkapi **3 dokumen lampiran PDF terverifikasi**:
+1. Rekap Kehadiran Bulanan (Presensi Jujur).
+2. Rapor Capaian Semester & Matriks Potensi Karier.
+3. Slide Portofolio Presentasi 16:9 DeckCraft.
 
-> Sejak 21 Oktober 2026 matriks karier **berbukti**: tiap baris karier punya
-> field `bukti` (angka nyata MK/kanal yang mendasari skor), narasinya dibangun
-> dari angka itu (bukan kalimat statis), dan karier sebidang ditimbang bukti
-> kanal — bukan bonus datar. Narasi 3 karier teratas bisa dirapikan engine
-> Gemini rotary (tombol "Rapikan dengan AI" di Tab 9); angka di hasil AI
-> diverifikasi harus muncul di bukti — satu angka karangan = dibuang.
+Pesan bersifat humanis, solutif, dan menyampaikan langkah pendampingan konkret yang dapat dilakukan keluarga di rumah.
 
-- **Radar 5 pilar**: penguasaan CAD, ketelitian detail, kedisiplinan asistensi,
-  logika ruang & struktur, manajemen waktu.
-- **Matriks 10 profesi**: persentase kecocokan, bidang industri, keterampilan kunci,
-  dan saran pengembangan (BIM Modeler, QS, perancang DED, visualizer 3D, dst.).
-- **Narasi 4 kuadran**: karakter spasial, proyeksi potensi, catatan penguatan, dan
-  panduan pendampingan untuk wali.
-- **Indeks Kesiapan Profesi** + predikat, dihitung dari nilai terbobot dan kehadiran.
-- **Tanpa ranking**: fokus pada pertumbuhan, bukan membandingkan anak.
-
-> Jujur: selama `nilai.json` masih sintetis, analisis ini **indikatif**. Persentase
-> karier adalah indikator dari skor kompetensi (bukan tes psikometri), dan nilai
-> radar berasal dari arketipe persona per NPM. Setelah nilai asli masuk, angkanya
-> ikut menjadi nyata — rumusnya tidak berubah.
-
-### 2.4 Wali murid tahu progres anaknya
-
-Tab 4 menyiapkan pesan WhatsApp sopan + **3 lampiran PDF**: rekap kehadiran, rapor
-akhir semester, dan deck portofolio.
-
-- Wali menerima kabar konkret: kehadiran, nilai, kekuatan, dan saran pendampingan.
-- Pengiriman **manual** (salin pesan → kirim sendiri). Tidak ada spam otomatis,
-  tidak ada API pihak ketiga, dan tidak ada data anak yang diunggah ke layanan luar.
-- Pesan menyebut apa yang bisa dibantu wali di rumah, bukan hanya angka.
-
-### 2.5 Efek soft marketing (alami, bukan iklan berbayar)
-
-Tab 3 menyediakan tombol **Salin Caption Instagram** (caption + hashtag) berdampingan
-dengan video 9:16 dan deck PDF. Ketika wali membagikannya:
-
-- prodi terlihat **transparan dan modern** — bukti proses belajar, bukan janji brosur;
-- kontennya sudah berbentuk visual siap posting, tanpa perlu desain tambahan;
-- biaya akuisisi nol: yang bekerja adalah kepuasan wali, bukan anggaran iklan;
-- calon mahasiswa/orang tua lain melihat kualitas output prodi dari karya nyata.
-
-Ini **efek**, bukan jaminan. Sistem tidak mengunggah apa pun ke media sosial dan
-tidak mengklaim kenaikan pendaftaran; yang disediakan adalah bahan dan pesan yang
-layak dibagikan.
-
-### 2.6 Efisiensi & tata kelola
-
-- Paket **11 PDF resmi** dibuat otomatis dan bisa dicetak ulang dari tab 5.
-- Impor portal tervalidasi: staging → ditinjau → backup → tulis atomik; impor dua
-  kali tidak menggandakan baris.
-- **Offline**: aset lokal, data tidak keluar dari komputer kampus.
-- **Fail-closed**: bobot ≠ 100, berkas rusak, atau data non-sintetis → berhenti dan
-  lapor, bukan menimpa diam-diam.
-- Jejak audit: SHA-256 berkas asli + backup bertanggal.
-
-### 2.7 Ringkasan nilai untuk tiap audiens
-
-| Audiens | Yang langsung didapat | Nilai jualnya |
-|---|---|---|
-| Kaprodi | kontrol kelas, daftar At-Risk, PDF resmi, audit impor | keputusan cepat, dokumen siap tanda tangan |
-| Mahasiswa | portofolio + analisis potensi + saran karier | bekal presentasi, magang, beasiswa |
-| Wali murid | kabar progres + rapor + portofolio | rasa dilibatkan, bukan hanya nilai akhir |
-| Prodi (brand) | output visual konsisten dari setiap mahasiswa | bukti mutu yang bisa dibagikan tanpa biaya iklan |
-
-### 2.8 Yang sengaja tidak diklaim
-
-- Bukan sistem akreditasi dan tidak mencetak klaim akreditasi.
-- Bukan pengganti penilaian dosen; nilai tetap berasal dari data perkuliahan.
-- Bukan alat ranking/seleksi; tidak ada peringkat kompetitif.
-- Bukan chatbot AI generatif untuk rapor; narasi dihitung dari aturan, bukan model.
-- Belum mengirim WhatsApp otomatis; pengiriman tetap dilakukan manusia.
+### 2.5 Cockpit eksekutif yayasan & penyelamatan SPP
+Tab 12 menyajikan dashboard *Boardroom*:
+- **Peta Mutu 30 MK:** Pemantauan menyeluruh seluruh kurikulum arsitektur dalam satu matriks ringkas.
+- **Modal Asistensi Remedial:** Transparansi data hingga ke level nama mahasiswa individual yang at-risk/remedial (grade C/D), absensi, serta draft WhatsApp pembinaan personal dari Ka Prodi.
+- **Retensi Finansial:** Mencegah mahasiswa drop-out (DO) sejak dini demi menjaga keberlanjutan cashflow SPP institusi.
 
 ---
 
@@ -138,260 +82,108 @@ data/kurikulum/<PRODI>/<TAHUN AJAR>/<SEMESTER>/<MK>/
 └── nilai.json       presensi + nilai per mahasiswa per slot
         │
         ▼
-scripts/parse_data.py  (kompilasi, tidak mengarang angka)
+scripts/parse_data.py  (kompilasi tanpa mengarang angka)
         │
         ├──▶ data/academic_data.json   master untuk MK aktif
-        ├──▶ data/courses/<MK>.json    katalog tiap MK
-        └──▶ config/kurikulum.json     indeks tree (turunan)
+        ├──▶ data/courses/<MK>.json    katalog tiap MK (30 MK kurikulum)
+        └──▶ config/kurikulum.json     indeks tree navigasi
         │
         ▼
-server.py (Python stdlib, port 40404) ──▶ REST API ──▶ public/app.js (SPA offline)
+server.py (Python stdlib, port 40404) ──▶ REST API (15 Endpoints)
         │
-        ├──▶ 10 tab dashboard (lihat bagian 4)
-        └──▶ output/<MK>/<TIMESTAMP>/  11 PDF + manifest.json
+        ├──▶ scripts/academic_bridge.py (Facade 4 Domain: Presensi, Nilai, Kurikulum, Retake)
+        ├──▶ scripts/portofolio.py & fitur_mahasiswa.py (Portofolio 4 Lapis)
+        ├──▶ scripts/ai_karier.py (Gemini Rotary Cluster Fail-Closed)
+        │
+        ▼
+public/app.js (SPA Offline Terintegrasi 12 Tab)
+        │
+        ├──▶ 12 Tab Antarmuka Interaktif
+        └──▶ output/<MK>/<TIMESTAMP>/ (Paket PDF Resmi + Manifest)
 ```
 
-Yang **boleh dihapus kapan saja**: `data/academic_data.json`, `data/courses/`,
-`config/kurikulum.json`, dan isi `output/`. Semuanya artefak build — jalankan
-`python scripts\parse_data.py` dan terbentuk kembali. Yang **tidak boleh hilang**:
-isi `data/kurikulum/` dan `config/identitas.json`.
+Yang **boleh dihapus kapan saja**: `data/academic_data.json`, `data/courses/`, `config/kurikulum.json`, dan isi `output/`. Semuanya merupakan artefak build yang dapat dibangun ulang dalam hitungan detik via `python scripts\parse_data.py`.  
+Yang **tidak boleh hilang**: isi `data/kurikulum/` dan `config/identitas.json`.
 
 ---
 
-## 4. Sepuluh tab dashboard
+## 4. Dua belas tab dashboard
 
-| Tab | Nama | Fungsi utama | Sumber data |
-|---|---|---|---|
-| 1 | Dashboard Kaprodi | **Kompetensi-first ( reposisi 2026-10-21)**: KPI Nilai/Kesiapan/Kompetensi/Pendampingan, tren nilai kelas, radar kelas, **peta MK rawan lintas semester**; presensi tetap lengkap di bagian bawah collapsible "Konteks Presensi" | `academic_data.json` + tree (`/api/periode`) |
-| 2 | Rapor Wali Murid | Rapor per mahasiswa, radar 5 pilar, matriks 10 karier | `academic_data.json` |
-| 3 | Portofolio & Video Progres | Deck 16:9, pratinjau + unduh video 9:16, salin caption Instagram | `output/`, `public/videos/` |
-| 4 | Simulator WhatsApp | Pesan ke wali murid + tautan 3 lampiran PDF | `output/` |
-| 5 | Pengaturan | Identitas institusi/dosen, terapkan ke dokumen, cetak ulang PDF | `config/identitas.json` |
-| 6 | Kurikulum | Sunting topik, bobot, slot absen, jenis MK (Σ bobot wajib 100) | `data/kurikulum/` |
-| 7 | Info | Halaman penjelasan ini | `public/info.md` |
-| 8 | Rekap Periode | Rekap 4 level: per bulan, per MK, semua MK satu semester, semua semester — dihitung dari tree | `/api/periode` |
-| 9 | Portofolio Mahasiswa | Portofolio 4 lapis + analisis potensi dari nilai (kanal bidang, dimensi khas, matriks karier) | `/api/portofolio` |
-| 10 | Engine | Pindai inbox, audit integritas berkas, rapikan, lapis kirim | `data/engine/` |
-
-Tab 5 memakai **tiga tingkat** perubahan supaya dokumen resmi tidak berubah diam-diam:
-**Simpan Identitas** (label dashboard) → **Terapkan ke Dokumen** (data master + PDF
-diregenerasi) → **Cetak Ulang Paket PDF**. Tingkat 3 ditolak bila identitas belum diterapkan.
+| No | Tab Navigasi | Fungsi Utama | Sumber Data |
+|:---:|---|---|---|
+| **1** | **Dashboard Kaprodi** | **Kompetensi-First:** KPI rata-rata nilai, kesiapan industri, sebaran nilai studio, filter kelas, dan peta MK rawan lintas semester. | `data/academic_data.json` + tree kurikulum |
+| **2** | **Rapor Wali Murid** | Evaluasi 360° individual per mahasiswa, grafik radar kompetensi 5 pilar, narasi perkembangan 4 kuadran, dan rekomendasi profesi. | `data/academic_data.json` |
+| **3** | **Showcase & Video Karya** | Presenter slide deck 16:9 DeckCraft, deteksi folder karya riil mahasiswa, player video 9:16 Full HD, dan salin caption Instagram. | `output/`, `public/videos/` |
+| **4** | **Simulator WhatsApp** | Simulator pesan resmi ke wali murid + tautan 3 lampiran dokumen PDF terverifikasi, fitur 1-klik salin teks ke clipboard. | `output/`, `config/identitas.json` |
+| **5** | **Pengaturan** | Manajemen identitas kampus, pimpinan prodi, dosen pengasuh, asisten dosen, dan aturan bobot dengan pengaman 3 tingkat. | `config/identitas.json` |
+| **6** | **Kurikulum** | Editor struktur tree kurikulum 16 pertemuan, validasi bobot total wajib 100%, konfigurasi jenis MK (teori/studio), dan jadwal. | `data/kurikulum/` |
+| **7** | **Presensi & RPS Dosen** | Audit pemantauan 16 sesi tatap muka perkuliahan dosen, kesesuaian modul RPS, capaian CPMK, dan unduh PDF Berita Acara (BAP). | `scripts/academic_bridge.py` |
+| **8** | **Info Sistem** | Buku panduan interaktif, dokumentasi cara kerja sistem, metodologi penilaian, dan transparansi status modul (*halaman ini*). | `public/info.md` |
+| **9** | **Rekap Periode** | Rekap perjalanan akademik 4 cakupan (Bulan, 1 MK, Semester, Semua Semester) + panel potensi mahasiswa per MK dinamis (30 MK). | `/api/periode`, `/api/course_data` |
+| **10** | **Portofolio 4 Lapis** | Transkrip kompetensi 4 lapis (Bulan → MK → Semester [Accordion Open] → Kumulatif) + tombol *Rapikan dengan AI* (Gemini Rotary). | `/api/portofolio`, `/api/portofolio/ai` |
+| **11** | **Engine** | Pengendali integritas data: pindai inbox anti-duplikat SHA-256, audit output berkas PDF, perapian run lama, dan penyiapan lapis kirim. | `scripts/engine_input.py`, `scripts/engine_output.py` |
+| **12** | **Cockpit Yayasan & Investor** | *Executive Pitch*: valuasi operasional kampus, mitigasi resiko SPP, matriks 30 MK prodi, dan modal asistensi mahasiswa remedial per MK. | `/api/executive_cockpit`, `/api/bridge/course_detail` |
 
 ---
 
 ## 5. Aturan akademik yang dipegang sistem
 
 ### 5.1 Nilai akhir terbobot
-
 ```text
 Nilai Akhir = Σ (Skor Pertemuan × Bobot Pertemuan) / Σ Bobot Pertemuan
 ```
-
-Satu semester = **16 pertemuan**. Bobot diatur per mata kuliah di `sesi.json` dan
-jumlahnya wajib **tepat 100**; kalau tidak, dashboard menolak menyimpan (HTTP 422).
-**Alpha bernilai 0 dan tetap dihitung** — tidak ada nilai gratis untuk ketidakhadiran.
+Satu semester = **16 pertemuan**. Bobot diatur per mata kuliah di `sesi.json` dan jumlahnya wajib **tepat 100**; jika tidak pas 100, sistem menolak penyimpanan (HTTP 422). Ketidakhadiran (Alpha) bernilai 0 dan tetap diperhitungkan ke dalam rata-rata.
 
 ### 5.2 Pertemuan yang belum diinput
+Pertemuan yang slot absensinya belum diinput ditandai sebagai **"Belum Diinput"** — status ini netral (**bukan Alpha**, **bukan nilai 0**). Pertemuan ini tidak menekan rata-rata mahasiswa (bobot dinormalisasi ulang), dan status nilai sementara ditandai sebagai **"Belum Lengkap"**.
 
-Kalau slot absen satu pertemuan belum lengkap, pertemuan itu ditandai
-**"Belum Diinput"** — **bukan Alpha**, **bukan nilai 0**. Pertemuan tersebut keluar
-dari rata-rata (bobot dinormalisasi ulang) dan grade mahasiswa ditahan
-**"Belum Lengkap"** sampai datanya lengkap.
-
-### 5.3 Predikat grade
-
-| Grade | Syarat |
-|---|---|
-| A | rata-rata ≥ 85 dan kehadiran ≥ 80% |
-| A- | rata-rata ≥ 80 dan kehadiran ≥ 75% |
-| B+ | rata-rata ≥ 75 dan kehadiran ≥ 75% |
-| B | rata-rata ≥ 70 |
-| C | rata-rata ≥ 60 |
-| D / Evaluasi | rata-rata < 60 |
-| Belum Lengkap | masih ada pertemuan yang presensinya belum diinput |
-
-Ambang kehadiran hanya mengunci **predikat**, bukan kelulusan. Semua ambang hidup di
-`config/aturan.json` dan dibaca oleh `scripts/aturan.py` (fail-closed bila rusak).
+### 5.3 Predikat grade nilai
+| Grade | Standar Nilai & Kehadiran |
+|:---:|---|
+| **A** | Rata-rata ≥ 85 dan Kehadiran ≥ 80% |
+| **A-** | Rata-rata ≥ 80 dan Kehadiran ≥ 75% |
+| **B+** | Rata-rata ≥ 75 dan Kehadiran ≥ 75% |
+| **B** | Rata-rata ≥ 70 |
+| **C** | Rata-rata ≥ 60 |
+| **D / Evaluasi** | Rata-rata < 60 |
+| **Belum Lengkap** | Terdapat sesi pertemuan yang presensinya belum diinput |
 
 ### 5.4 Deteksi dini At-Risk
-
 ```text
 At-Risk  ⇔  (Alpha ≥ 2×)  ATAU  (Kehadiran < 75%)
 ```
-
-Hanya ada **satu** definisi, di `scripts/kelas_rules.py`. Badge tabel, kartu KPI,
-PDF gradebook, dan rapor wali membaca hasil yang sama.
-
-### 5.5 Zero Competitive Ranking
-
-Tidak ada peringkat mahasiswa di dashboard, PDF, maupun pesan wali murid. Tabel
-disortir berdasarkan NPM; kolom pertama adalah nomor absen resmi.
+Kriteria at-risk didefinisikan secara tunggal pada `scripts/kelas_rules.py`. Badge tabel, kartu KPI, laporan PDF, dan dashboard yayasan membaca logika yang sama.
 
 ---
 
-## 6. Sumber kebenaran dan struktur folder
-
-```text
-KAMPUS_01/
-├── config/
-│   ├── identitas.json     satu sumber nama (prodi, dosen, asisten, kop)
-│   ├── aturan.json        ambang At-Risk, grade, aturan kehadiran
-│   ├── kurikulum.json     indeks tree (DIBUAT, jangan diedit tangan)
-│   └── impor/             profil pemetaan kolom portal/modul
-├── data/
-│   ├── kurikulum/         ★ SUMBER KEBENARAN (ditulis manusia)
-│   ├── courses/           artefak katalog per MK
-│   ├── academic_data.json artefak master untuk MK aktif
-│   ├── _backup/           cadangan otomatis sebelum menulis
-│   └── _staging/          usulan impor/AI yang belum disetujui
-├── input/
-│   ├── inbox/             taruh berkas portal di sini
-│   └── raw/<stempel>/     arsip asli + SHA-256 + meta.json
-├── output/                paket PDF per run + manifest.json
-├── public/                index.html, app.js, style.css, info.md, vendor/ (offline)
-├── scripts/               mesin: tree, aturan, parse, PDF, video, impor/
-├── tests/                 tes regresi (angka, dokumen, API, keamanan, impor)
-└── server.py              server stdlib, port 40404
-```
-
-### Cara menjalankan
+## 6. Tata cara pengoperasian cepat
 
 ```cmd
-run_server.bat                          :: server + buka http://localhost:40404
-stop_server.bat                         :: matikan server dengan bersih
-python scripts\parse_data.py            :: bangun ulang master + katalog dari tree
-python scripts\migrasi_kurikulum.py --force
-python scripts\seed_nilai_sintetis.py --force
-generate_all_pdfs.bat                   :: cetak ulang paket PDF
+:: 1. Menjalankan Server & Dashboard (Port 40404)
+1_RUN_SERVER.bat
 
-:: jalur impor (lihat bagian 8)
-python -m scripts.impor.cli pindai
-python -m scripts.impor.cli impor --folder input/inbox
+:: 2. Menghentikan Server Secara Bersih
+STOP_SERVER.bat
+
+:: 3. Membangun Ulang Master & Katalog dari Tree Kurikulum
+python scripts\parse_data.py
+
+:: 4. Mencetak Ulang Seluruh Paket Dokumen PDF
+generate_all_pdfs.bat
+
+:: 5. Menjalankan Suite Verifikasi Regresi
+python tests\test_rules_unchanged.py
+python tests\test_kurikulum_api.py
+python tests\test_portofolio.py
+python tests\test_engine.py
 ```
-
-Urutan yang benar bila struktur atau nilai berubah: **migrasi → seed (opsional) →
-parse_data → cetak PDF**. Kedua skrip pertama idempoten dan tidak menghapus hasil
-suntingan manusia.
 
 ---
 
-## 7. Prinsip kejujuran data
+## 7. Batasan yang perlu diketahui
 
-Sistem ini memilih **mengaku belum tahu** daripada mengarang angka:
-
-| Hal | Status sekarang | Penanda |
-|---|---|---|
-| Nilai & presensi per pertemuan | **sintetis** (dibangkitkan deterministik per NPM + MK) | `nilai.json` → `"sintetis": true` |
-| Topik pertemuan | sebagian masih placeholder | `topik_terverifikasi` di `sesi.json` |
-| CPMK per pertemuan | placeholder | `cpmk_status = "placeholder"` |
-| Keselarasan materi vs RPS | proksi persen kehadiran kelas, bukan mutu materi | `status_penilaian_rps = "belum_tersedia"` |
-| Presensi dosen | belum pernah dicatat | ditulis apa adanya di PDF 3 |
-| Nama universitas di kop | sengaja kosong | `config/identitas.json` |
-| Klaim akreditasi | **tidak pernah** diklaim | dihapus dari semua dokumen |
-
-Data asli dari portal masuk lewat **kontrak baris** yang sama: `npm`, `pertemuan`,
-`slot`, `status`, `skor` (+ `alasan` opsional). Jangan menulis `nilai.json` dengan
-tangan; pakai `scripts/impor` supaya tervalidasi, terbackup, dan ada jejak audit
-(lihat bagian 8).
-
----
-
-## 8. Status pengembangan (jujur, per 21 Oktober 2026)
-
-> Bagian ini memisahkan **yang sudah ada kodenya** dari **yang masih rencana**.
-> Fitur yang belum aktif tidak boleh dibaca sebagai klaim.
-
-### 8.1 Sudah aktif — tombol di Tab 10 Engine + CLI tinjau/terima
-
-**Impor nilai dari portal (Excel / CSV / HTML)** — pemindaian inbox, audit
-duplikat, dan audit output kini punya tombol di **Tab 10 Engine**; peninjauan
-staging masih lewat CLI:
-
-```text
-input/inbox/  →  deteksi isi  →  baca tabel  →  baris kanonik  →  validasi
-              →  data/_staging/ (usulan + diff)
-              →  DITINJAU MANUSIA  →  data/_backup/  →  nilai.json
-```
-
-```cmd
-python -m scripts.impor.cli pindai
-python -m scripts.impor.cli impor --folder input/inbox
-python -m scripts.impor.cli tinjau data/_staging/<folder>
-python -m scripts.impor.cli terima data/_staging/<folder>
-```
-
-Yang sudah dijamin kode + tes:
-
-- Format dikenali dari isi (magic bytes), bukan ekstensi; `.xls`/`.doc` lama ditolak.
-- Kolom dipetakan lewat `config/impor/*.json`; header asing = berhenti, bukan ditebak.
-- Slot di luar `sesi.json`, Alpha berskor bukan 0, atau NPM asing → seluruh impor batal
-  dan pesannya menyebut berkas + nomor baris.
-- `terima` membackup `nilai.json` dulu; impor dua kali tidak menggandakan baris.
-- Data yang sudah **diverifikasi manusia** (bukan sintetis, bukan hasil impor)
-  ditolak tanpa `--paksa`.
-- Berkas asli diarsipkan ke `input/raw/<stempel>/` + SHA-256 + `meta.json`.
-
-**Ekstraksi & analisis modul (PDF / DOCX)**
-
-```cmd
-python -m scripts.impor.cli modul "input/inbox/RPS.pdf"
-python -m scripts.impor.cli usul  "input/inbox/RPS.pdf"
-python -m scripts.impor.cli terima-sesi data/_staging/<folder>
-```
-
-- PDF tanpa text layer ditandai `ocr_dibutuhkan` — isinya tidak dikarang.
-- AI memakai **engine Gemini rotary milik pengguna** (bukan API berbayar baru).
-  Hasilnya staging berstatus `tebakan`; hanya topik/deskripsi yang bisa masuk
-  `sesi.json`, setelah lolos validasi 16 pertemuan dan aturan Σ bobot = 100.
-- Belum ada tombol "ajukan/tinjau" di tab 6; sementara lewat CLI.
-
-### 8.2 Sebagian aktif — penangkap portal (login manual)
-
-```cmd
-python -m scripts.impor.cli portal --url "https://portal.kampus/..." --halaman 2
-```
-
-- Browser terbuka; **Kaprodi login sendiri** (skrip tidak menyimpan/membaca sandi).
-- Setelah halaman siap, skrip menyimpan HTML + screenshot + tabel ke
-  `input/raw/<stempel>/` dan `input/inbox/`, lalu alurnya sama dengan 7.1.
-- Halaman tanpa tabel **tidak dikarang**: hanya diarsipkan sebagai HTML/screenshot
-  dengan catatan untuk dibaca manusia atau AI vision.
-
-Yang **belum** ada:
-
-- login otomatis / penanganan 2FA (memang sengaja tidak dilakukan),
-- navigasi menu portal otomatis dan penjadwalan tangkapan,
-- tombol unggah dan panel tinjau/terima di dashboard (masih CLI).
-
-Prasyarat: akun resmi Kaprodi dan izin/kebijakan kampus. Kalau penangkap tidak
-bisa dipakai, jalur cadangannya tetap **unduh manual → `input/inbox/`**.
-
-### 8.3 Urutan yang tersisa
-
-| Tahap | Pekerjaan | Status |
-|---|---|---|
-| R1 | Skema baris + konverter tabel + validasi | **selesai (CLI)** |
-| R3 | Ekstraksi teks PDF/DOCX + arsip sumber | **selesai (CLI)** |
-| R4 | Analisis AI berskema + status `tebakan` | **selesai (CLI)** |
-| R2 | Penangkap portal | **sebagian**: login manual + tangkap tabel; belum otomatis penuh |
-| R5 | Panel tinjau/terima di tab 6 | belum |
-| R6 | OCR gambar/screenshot (vision) di alur penuh | belum (baru penanda) |
-
----
-
-## 9. Batasan yang perlu diketahui
-
-- Dashboard berjalan **offline**; seluruh aset ada di `public/vendor/`. Tidak ada
-  permintaan ke internet saat halaman dibuka.
-- Server hanya mendengarkan di `127.0.0.1` dan menolak dijalankan dua kali di port
-  yang sama.
-- Nilai yang tampil sekarang adalah **data demo sintetis**, bukan nilai resmi dosen.
-  Ganti lewat `scripts/impor` (bagian 8) sebelum dipakai untuk keputusan akademik.
-- Setiap perubahan aturan (ambang At-Risk, grade, bobot ujian) dilakukan di
-  `config/aturan.json`, bukan dengan mengedit kode.
-- Render video 9:16 membutuhkan **FFmpeg** di `PATH`; bila tidak ada, dashboard
-  menampilkan pesan gagal, bukan video kosong.
-- Analisis potensi dan persentase karier adalah **indikator dari data akademik**,
-  bukan asesmen psikometri dan bukan alat seleksi.
-- Pesan wali dan caption media sosial **disalin lalu dikirim manual**; sistem tidak
-  punya akses ke akun WhatsApp/Instagram siapa pun.
+- **Offline-First:** Seluruh komponen bekerja 100% lokal tanpa ketergantungan koneksi internet. Vendor CSS/JS tersimpan lokal di `public/vendor/`.
+- **Keamanan Port:** Server mendengarkan di `127.0.0.1:40404` dengan pengaman bentrok port (*clean taskkill*).
+- **Integritas Nilai:** Nilai awal yang disertakan merupakan data demo sintetis yang dibangun secara deterministik per NPM. Data nilai resmi dapat diimpor langsung melalui modul `scripts/impor/`.
+- **Render Video:** Pembuatan video portofolio vertikal 9:16 memerlukan pustaka FFmpeg yang terpasang di sistem operasi Windows.
+- **Privasi Pengiriman:** Pesan WhatsApp dan caption Instagram disalin secara manual oleh dosen/asisten; sistem tidak pernah mengakses akun privat pengguna.

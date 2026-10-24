@@ -73,15 +73,15 @@ flowchart TD
         H1 --> OUT10["Tab 10: Engine (pindai inbox → duplikat via SHA-256;<br/>audit integritas output + rapikan + lapis kirim)"]
     end
 
-    subgraph S5["Fase 5: Keluaran Berkas"]
-        F1 --> E0["run_masih_sah()? stempel data + FORMAT_V +<br/>integritas run terbaru (manifest data_stamp)"]
-        E0 -- "sah" --> SKIP["SKIP - run duplikat dibatalkan,<br/>berkas lama diberikan (zero Chromium)"]
-        E0 -- "tidak sah / belum ada" --> I1["scripts/generate_pdfs.py (Chromium/Playwright)"]
+    subgraph S5["Fase 5: Subsistem Keluaran Berkas PDF & Video (Modular Engine + Bridge)"]
+        F1 --> P_ENG["scripts/pdf_engine.py (Pure Calculation & Data Aggregator)"]
+        P_ENG --> P_BRG["scripts/pdf_bridge.py (Jinja2 + Playwright Chromium)"]
+        T_DIR["templates/pdf/*.html (7 Template Cetak Terisolasi 1-File-Per-Tipe)"] --> P_BRG
+        P_BRG --> J_MST["output/sample_master/ (7 Master Dokumen PDF < 3 Detik)"]
+        P_BRG --> J_DIS["output/distribusi_batch_angkatan_2025/ (71 PDF Arsip Batch & Manifes)"]
+        P_BRG --> J_STR["Stream On-Demand API (/api/pdf/download?type=...)"]
         F1 --> I2["scripts/video_composer.py (numpy + edge-tts)"]
-        I1 --> J1["output/&lt;MK&gt;/&lt;TIMESTAMP&gt;/ (11 PDF + manifest +<br/>data_stamp/format_v utk pintu skip)"]
-        I1 --> J2["generated_pdfs/ (salinan live preview)"]
-        I1 --> J3["06_portofolio_lengkap_&lt;npm&gt;.pdf (on-demand per mahasiswa,<br/>Tab 9 - semua MK sepanjang kuliah)"]
-        I1 --> J4["engine_output.catat → data/engine/output_registry.json<br/>(ukuran + tanda logika + stempel data + sha tiap PDF)"]
+        P_BRG --> J4["engine_output.catat → data/engine/output_registry.json"]
     end
 
     subgraph S6["Fase 6: Engine Cek Input & Output (Tab 10)"]
@@ -240,7 +240,9 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `scripts/identitas.py` | Pembaca/penulis `config/identitas.json` (backup dulu, tulis atomik) |
 | `scripts/parse_data.py` | Kompilator master v2.6 dari tree; **stempel per-MK (Tangga B)**: `stempel_kompilasi()` = sha1 sumber yang menentukan isi master MK itu (tree MK + mahasiswa prodi + aturan + kurikulum + identitas minus penunjuk aktif); stempel sama + snapshot ada → master = **salinan bit-identik** `data/master_mk/<KUNCI>.json` tanpa kompilasi 12 s; `--compile-ulang` memaksa penuh |
 | `scripts/process_input.py` | Menyimpan snapshot olahan per MK ke `input/processed/` |
-| `scripts/generate_pdfs.py` | Merender 11 PDF resmi lewat Chromium (Playwright) |
+| `scripts/pdf_engine.py` | **PDF Core Data Engine**: Agregasi data murni, kalkulasi bobot 100%, 10 karir AI Otak-CR, formula serapan 30 MK $S_{MK}$ & beban $L$, deteksi 4-blok burnout B1..B4 |
+| `scripts/pdf_bridge.py` | **PDF Bridge Renderer**: Adapter visual Jinja2 + Playwright Chromium (CLI 1 master, CLI 7 master, on-demand streaming API) |
+| `scripts/generate_pdfs.py` | Facade & Compatibility Layer ramping (115 baris) yang mendelegasikan ke `pdf_engine` dan `pdf_bridge` |
 | `scripts/video_composer.py` | Merender video 9:16 (numpy + edge-tts) |
 | `scripts/index_kurikulum.py` | Membangun ulang `config/kurikulum.json` dari folder; `--check` untuk mendeteksi drift |
 | `scripts/fetch_vendor.py` | Mengunci aset pihak ketiga ke `public/vendor/` supaya dashboard jalan **offline** |
@@ -251,16 +253,19 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `scripts/impor/nilai_impor.py` | Staging + diff + `terapkan()`: backup wajib, tulis atomik, mode `gabung`/`ganti`, idempoten |
 | `scripts/impor/dokumen.py` | Ekstraksi teks PDF/DOCX per halaman/bagian; PDF scan ditandai `ocr_dibutuhkan` |
 | `scripts/impor/ai_engine.py` + `analisis_mk.py` | Panggil engine Gemini rotary milik pengguna (bukan API baru) untuk mengusulkan topik/CPMK; hasil = staging "tebakan" |
+| `scripts/ai_karier.py` | **Lapis B potensi karier berbukti (Gemini rotary)**: fail-closed (config hilang/rusak/aktif=false -> None, UI tetap Lapis A), verifikasi angka-subset bukti (angka karangan ditolak), cache `data/ai_karier_cache.json`, top-N karier teratas |
 
 ---
 
-### 🧪 Peta Pengujian (22 berkas, tanpa server kecuali yang disebut)
+### 🧪 Peta Pengujian (24 berkas, tanpa server kecuali yang disebut)
 
 | Berkas | Yang dijaga |
 | --- | --- |
 | `tests/test_periode.py` | Agregasi periode dari tree: sinkron angka dengan master, belum-diinput netral (kehadiran `None`), Sakit/Izin ≠ Alpha, rollup pohon konsisten, cache mtime usang sendiri |
 | `tests/test_diagnosis.py` | Mesin v3 deterministik: klasifikasi sinyal nyata dari nilai/kinerja, radar terukur berlabel, 35 narasi unik, matriks karier tanpa RNG, bonus sebidang +4 & clamp cap |
 | `tests/test_portofolio.py` | Portofolio 4 lapis: aturan bulanan netral, fail-closed, determinism + cache, label potensi = `AMBANG` diagnosis.py, cluster kanal bidang (dedup MK kembar), dimensi khas selalu `estimasi`, matriks karier sepanjang kuliah |
+| `tests/test_karier_berbukti.py` | Potensi karier berbukti (Lapis A): skor sekanal ditimbang bukti kanal 70/30, bukti angka nyata dari MK & dimensi penopang, narasi dinamis terverifikasi, deterministik & cap profesi |
+| `tests/test_karier_ai_failclosed.py` | Lapis B AI karier fail-closed: config hilang/rusak/aktif=false -> fallback aman Lapis A, verifikasi angka (angka karangan dibuang), cache per-NPM, integrasi endpoint POST `/api/portofolio/ai` |
 | `tests/test_engine.py` | Engine input & output TERPISAH: duplikat via SHA-256 (isi sama nama beda), tandai-diproses fail-closed, siklus tulis guna_lama → overwrite_logika/integritas/tulis_ulang_pertama (catatan tanpa ukuran), stempel data (master berubah → tanda maju), `run_masih_sah` (sah / stempel maju / format maju / pdf korup), audit salinan_usang, regroup npm, rapikan (run terbaru selamat, brokat root disapu, lapis kirim + wali SEMUA mahasiswa tree |
 | `tests/test_parse_stempel.py` | Tangga A+B: stempel kompilasi deterministik & beda antar MK, registry fail-closed, jalur segar = salinan snapshot < 5 s (bukan 12 s), `--compile-ulang` penuh + stempel sinkron kembali |
 | `tests/test_rules_unchanged.py` | Membangun ulang dari data yang sama harus menghasilkan **angka identik** |
@@ -274,7 +279,7 @@ Paket PDF** (fail-closed: menolak kalau identitas belum diterapkan ke data).
 | `tests/test_aturan.py` | Ambang At-Risk & grade hidup di config dan benar-benar berpengaruh |
 | `tests/test_belum_diinput.py` | Slot belum terisi ≠ Alpha ≠ nilai 0; bobot dinormalisasi; grade ditahan |
 | `tests/test_seed_per_mk.py` | Nilai sintetis beda per MK, reproducible, persona tidak berpindah, absen tidak mendarat di UTS/UAS |
-| `tests/test_migrasi_non_destruktif.py` | `--force` tidak menghapus hasil edit manusia & tidak menimpa `nilai.json` |
+| `tests/test_migrasi_non_destruktif.py` | `--force` tidak menghapus hasil edit manusia & tidak menimpa `nilai.json`, mendukung bobot desimal (bobot_lama float) |
 | `tests/test_kurikulum_tree.py` | 16 pertemuan, validasi sesi, index anti-drift, path aman |
 | `tests/test_kurikulum_api.py` | API sunting kurikulum: fail-closed, tulisan atomik, status tebakan vs dikonfirmasi |
 | `tests/test_catalog_guard.py` | Ganti MK tidak bisa memundurkan data master (409 katalog lama) |
@@ -306,7 +311,7 @@ E:\WORKSPACE\KAMPUS_01\
 ├── generated_pdfs/               # salinan PDF untuk pratinjau web
 ├── public/                       # index.html, app.js, style.css, info.md, vendor/ (aset offline), videos/
 ├── scripts/                      # mesin: tree, persona, rules, migrasi, seed, parse, pdf, video, diagnosis, portofolio, bidang, engine_input, engine_output, impor/
-├── tests/                        # 22 berkas regresi (lihat peta di atas)
+├── tests/                        # 24 berkas regresi (lihat peta di atas)
 ├── server.py                     # server stdlib, port 40404
 ├── README.md                     # acuan utama
 ├── REQUIREMENTS.md               # kebutuhan teknis & prasyarat

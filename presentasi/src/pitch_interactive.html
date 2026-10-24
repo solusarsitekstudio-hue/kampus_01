@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>SIAK-KAPRODI — Interactive Animated Deck (14 Slide)</title>
+<link rel="stylesheet" href="../../public/vendor/fonts.css">
+<style>
+:root{
+  --amber:#fbbf24;
+  --cyan:#38bdf8;
+  --violet:#c084fc;
+  --emerald:#34d399;
+  --rose:#fb7185;
+  --text:#f8fafc;
+  --tert:#94a3b8;
+  --line:rgba(148,163,184,.18);
+  --line-hi:rgba(255,255,255,.24);
+  --line2:rgba(148,163,184,.10);
+  --sans:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Consolas,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#060911;}
+body{
+  font-family:var(--sans);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;
+  image-rendering:-webkit-optimize-contrast;
+}
+@page{size:20in 11.25in;margin:0;}
+
+.slide{
+  position:relative;width:1920px;height:1080px;overflow:hidden;
+  display:flex;flex-direction:column;
+  padding:72px 104px 68px;
+  page-break-after:always;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.slide:last-child{page-break-after:auto;}
+
+/* drafting grid cad */
+.slide::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(148,163,184,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(148,163,184,.045) 1px,transparent 1px);
+  background-size:64px 64px;
+  -webkit-mask-image:radial-gradient(130% 105% at 50% 45%,#000 45%,transparent 95%);
+  mask-image:radial-gradient(130% 105% at 50% 45%,#000 45%,transparent 95%);
+}
+.slide::after{
+  content:"";position:absolute;left:0;top:0;height:4px;width:100%;
+  background:linear-gradient(90deg,var(--acc),rgba(255,255,255,.1) 40%,transparent 80%);
+  box-shadow:0 0 16px var(--acc);
+}
+.slide>*{position:relative;z-index:2;}
+
+/* ========================================================
+   THEMATIC BACKGROUNDS PER SLIDE (OTAK-CR BESPOKE MOODS)
+======================================================== */
+/* S1: Golden Dawn Obsidian */
+.slide.s-01{
+  --acc:var(--amber);
+  background:
+    radial-gradient(circle at 18% 75%, rgba(251,191,36,.15) 0%, transparent 55%),
+    radial-gradient(circle at 85% 20%, rgba(56,189,248,.09) 0%, transparent 45%),
+    #060911;
+}
+
+/* S2: Crisis & Tension Rose */
+.slide.s-02{
+  --acc:var(--rose);
+  background:
+    radial-gradient(ellipse at 80% 30%, rgba(244,63,94,.18) 0%, transparent 60%),
+    radial-gradient(circle at 15% 85%, rgba(244,63,94,.08) 0%, transparent 50%),
+    #0e0811;
+}
+.slide.s-02::before{
+  background-image:
+    repeating-linear-gradient(45deg, rgba(244,63,94,.022) 0, rgba(244,63,94,.022) 1px, transparent 0, transparent 36px),
+    linear-gradient(rgba(148,163,184,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,.04) 1px, transparent 1px);
+  background-size:auto, 64px 64px, 64px 64px;
+}
+
+/* S3: Blueprint Order & Conduit Cyan */
+.slide.s-03{
+  --acc:var(--cyan);
+  background:
+    radial-gradient(ellipse at 50% 10%, rgba(56,189,248,.18) 0%, transparent 65%),
+    radial-gradient(circle at 10% 85%, rgba(56,189,248,.07) 0%, transparent 50%),
+    #040d1a;
+}
+
+/* S4: Precision Calibration Lab */
+.slide.s-04{
+  --acc:var(--cyan);
+  background:
+    radial-gradient(circle at 35% 25%, rgba(56,189,248,.13) 0%, transparent 55%),
+    radial-gradient(circle at 80% 75%, rgba(52,211,153,.10) 0%, transparent 50%),
+    #050b16;
+}
+
+/* S5: Mission Control Star (Hero Tab 1) */
+.slide.s-05{
+  --acc:var(--amber);
+  background:
+    radial-gradient(ellipse at 50% 32%, rgba(251,191,36,.16) 0%, transparent 65%),
+    radial-gradient(circle at 90% 80%, rgba(192,132,252,.09) 0%, transparent 50%),
+    radial-gradient(circle at 10% 80%, rgba(244,63,94,.08) 0%, transparent 50%),
+    #070914;
+}
+
+/* S6: Cognitive Violet Intelligence */
+.slide.s-06{
+  --acc:var(--violet);
+  background:
+    radial-gradient(circle at 75% 55%, rgba(192,132,252,.19) 0%, transparent 60%),
+    radial-gradient(circle at 15% 30%, rgba(56,189,248,.08) 0%, transparent 50%),
+    #090716;
+}
+
+/* S7: Architectural Strata & Career Matrix */
+.slide.s-07{
+  --acc:var(--violet);
+  background:
+    radial-gradient(circle at 25% 45%, rgba(192,132,252,.14) 0%, transparent 55%),
+    radial-gradient(circle at 80% 55%, rgba(251,191,36,.13) 0%, transparent 55%),
+    #070a18;
+}
+
+/* S8: Security Chamber & Fail-Closed Gate */
+.slide.s-08{
+  --acc:var(--cyan);
+  background:
+    radial-gradient(ellipse at 50% 15%, rgba(56,189,248,.15) 0%, transparent 55%),
+    radial-gradient(ellipse at 55% 85%, rgba(244,63,94,.20) 0%, transparent 50%),
+    #070710;
+}
+
+/* S9: Multi-Spectral Output Studio */
+.slide.s-09{
+  --acc:var(--cyan);
+  background:
+    radial-gradient(circle at 15% 40%, rgba(56,189,248,.11) 0%, transparent 45%),
+    radial-gradient(circle at 38% 40%, rgba(251,191,36,.11) 0%, transparent 45%),
+    radial-gradient(circle at 62% 40%, rgba(192,132,252,.11) 0%, transparent 45%),
+    radial-gradient(circle at 85% 40%, rgba(52,211,153,.11) 0%, transparent 45%),
+    #060a16;
+}
+
+/* S10: Cryptographic Audit Vault */
+.slide.s-10{
+  --acc:var(--cyan);
+  background:
+    radial-gradient(ellipse at 80% 35%, rgba(56,189,248,.15) 0%, transparent 55%),
+    radial-gradient(circle at 20% 75%, rgba(56,189,248,.09) 0%, transparent 50%),
+    #040a18;
+}
+
+/* S11: Intellectual Honesty Emerald */
+.slide.s-11{
+  --acc:var(--emerald);
+  background:
+    radial-gradient(circle at 25% 45%, rgba(52,211,153,.18) 0%, transparent 60%),
+    radial-gradient(circle at 75% 65%, rgba(56,189,248,.10) 0%, transparent 50%),
+    #030e0e;
+}
+
+/* S12: Telemetry Benchmark Obsidian */
+.slide.s-12{
+  --acc:var(--amber);
+  background:
+    radial-gradient(ellipse at 50% 25%, rgba(251,191,36,.15) 0%, transparent 60%),
+    radial-gradient(circle at 85% 85%, rgba(52,211,153,.09) 0%, transparent 50%),
+    #060812;
+}
+
+/* S13: Executive Boardroom & Cockpit Yayasan */
+.slide.s-13{
+  --acc:var(--amber);
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(251,191,36,.17) 0%, transparent 60%),
+    radial-gradient(circle at 85% 80%, rgba(244,63,94,.12) 0%, transparent 55%),
+    radial-gradient(circle at 15% 80%, rgba(52,211,153,.10) 0%, transparent 50%),
+    #070a16;
+}
+
+/* S14: Monumental Golden Finale */
+.slide.s-14{
+  --acc:var(--amber);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(251,191,36,.22) 0%, transparent 65%),
+    radial-gradient(circle at 15% 85%, rgba(56,189,248,.09) 0%, transparent 50%),
+    #060812;
+}
+
+/* header / footer */
+.top{display:flex;justify-content:space-between;align-items:center;}
+.kicker{display:flex;align-items:center;gap:14px;font-family:var(--mono);
+  font-size:16px;letter-spacing:.28em;text-transform:uppercase;color:var(--acc);}
+.kicker i{display:inline-block;width:38px;height:2px;background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc);}
+.pg{font-family:var(--mono);font-size:16px;letter-spacing:.22em;color:var(--tert);
+  border:1px solid var(--line);border-radius:6px;padding:4px 12px;background:rgba(255,255,255,.02);}
+.foot{position:absolute;left:104px;right:104px;bottom:32px;display:flex;
+  justify-content:space-between;font-family:var(--mono);font-size:13.5px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--tert);z-index:3;
+  border-top:1px solid var(--line2);padding-top:16px;}
+.foot b{color:var(--acc);font-weight:600;}
+
+/* tipe */
+h1{font-size:130px;font-weight:800;letter-spacing:-.045em;line-height:.95;}
+h2{font-size:62px;font-weight:800;letter-spacing:-.03em;line-height:1.05;margin-top:20px;}
+h2 em{font-style:normal;color:var(--acc);text-shadow:0 0 28px color-mix(in srgb,var(--acc) 30%,transparent);}
+.copy{font-size:25px;line-height:1.6;color:var(--text);font-weight:400;}
+.copy.dim{color:var(--tert);font-size:22px;}
+.demo{font-family:var(--mono);font-size:13.5px;letter-spacing:.09em;color:var(--tert);}
+.body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:32px;padding-top:20px;}
+
+/* panel & chip */
+.panel{border:1px solid var(--line);background:linear-gradient(145deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.018) 100%);
+  border-radius:16px;padding:28px 30px;backdrop-filter:blur(16px);position:relative;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 20px 40px -12px rgba(0,0,0,.7);}
+.panel::after{content:"+";position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);pointer-events:none;}
+.lab{font-family:var(--mono);font-size:13.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--tert);
+  display:inline-flex;align-items:center;gap:8px;}
+.chip{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line);
+  background:rgba(255,255,255,.03);border-radius:999px;padding:10px 22px;
+  font-family:var(--mono);font-size:15px;letter-spacing:.08em;color:var(--text);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
+.chip.acc{border-color:color-mix(in srgb,var(--acc) 60%,transparent);color:var(--acc);
+  background:color-mix(in srgb,var(--acc) 10%,transparent);box-shadow:0 0 16px color-mix(in srgb,var(--acc) 20%,transparent);}
+.chips{display:flex;flex-wrap:wrap;gap:12px;}
+
+/* grid kartu */
+.cards{display:grid;gap:22px;}
+.c4{grid-template-columns:repeat(4,1fr);}
+.c3{grid-template-columns:repeat(3,1fr);}
+.card{border:1px solid var(--line);background:linear-gradient(145deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.018) 100%);
+  border-radius:16px;padding:26px 24px;position:relative;overflow:hidden;backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 20px 40px -12px rgba(0,0,0,.7);}
+.card::after{content:"+";position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);pointer-events:none;}
+.card::before{content:"";position:absolute;left:0;top:0;height:3px;width:100%;
+  background:linear-gradient(90deg,var(--acc),rgba(255,255,255,.2) 60%,transparent 100%);
+  box-shadow:0 0 14px var(--acc);}
+.card h3{font-size:23px;font-weight:700;letter-spacing:-.01em;margin:12px 0 10px;}
+.card .copy{font-size:20px;line-height:1.55;}
+.card .idx{font-family:var(--mono);font-size:13.5px;letter-spacing:.2em;color:var(--acc);}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+.kpi{border:1px solid var(--line);background:linear-gradient(145deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.018) 100%);
+  border-radius:16px;padding:26px 28px;backdrop-filter:blur(16px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 20px 40px -12px rgba(0,0,0,.7);position:relative;}
+.kpi::after{content:"+";position:absolute;top:10px;right:14px;font-family:var(--mono);font-size:12px;color:rgba(255,255,255,.2);pointer-events:none;}
+.kpi::before{content:"";position:absolute;left:0;top:0;width:3px;height:100%;background:var(--acc);box-shadow:0 0 10px var(--acc);}
+.kpi .v{font-family:var(--mono);font-size:76px;font-weight:700;color:var(--amber);
+  letter-spacing:-.03em;line-height:1;text-shadow:0 0 28px rgba(251,191,36,.3);}
+.kpi .k{font-size:19px;font-weight:600;margin-top:14px;color:var(--text);}
+.kpi .n{font-family:var(--mono);font-size:13.5px;letter-spacing:.06em;color:var(--tert);margin-top:6px;}
+.kpi.risk .v{color:var(--rose);text-shadow:0 0 28px rgba(251,113,133,.35);}
+.kpi.risk::before{background:var(--rose);box-shadow:0 0 10px var(--rose);}
+
+/* pipa / diagram */
+.pipe{display:flex;align-items:stretch;gap:0;}
+.node{flex:1;border:1px solid var(--line);background:linear-gradient(145deg, rgba(255,255,255,.06) 0%, rgba(255,255,255,.018) 100%);
+  border-radius:14px;padding:22px 20px;display:flex;flex-direction:column;justify-content:center;gap:8px;position:relative;
+  backdrop-filter:blur(16px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 16px 36px -10px rgba(0,0,0,.6);}
+.node::after{content:"+";position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.2);pointer-events:none;}
+.node .t{font-size:21px;font-weight:700;}
+.node .s{font-family:var(--mono);font-size:13.5px;letter-spacing:.08em;color:var(--tert);}
+.node.hi{border-color:color-mix(in srgb,var(--acc) 60%,transparent);
+  background:color-mix(in srgb,var(--acc) 10%,transparent);box-shadow:0 0 24px color-mix(in srgb,var(--acc) 18%,transparent),inset 0 1px 0 rgba(255,255,255,.15);}
+.arw{display:flex;align-items:center;justify-content:center;width:68px;
+  font-family:var(--mono);font-size:30px;color:var(--acc);text-shadow:0 0 16px var(--acc);}
+.outs{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+.out{border:1px solid var(--line);border-radius:14px;padding:20px 18px;position:relative;
+  background:linear-gradient(145deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.015) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 28px -8px rgba(0,0,0,.5);backdrop-filter:blur(12px);}
+.out::after{content:"+";position:absolute;top:8px;right:10px;font-family:var(--mono);font-size:10px;color:rgba(255,255,255,.18);pointer-events:none;}
+.out .t{font-size:20px;font-weight:700;}
+.out .s{font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:var(--tert);margin-top:6px;}
+
+/* tabel */
+.tbl{width:100%;border-collapse:collapse;}
+.tbl td{border-bottom:1px solid var(--line2);padding:20px 8px;font-size:22px;}
+.tbl td:last-child{text-align:right;font-family:var(--mono);font-size:25px;
+  font-weight:600;color:var(--amber);letter-spacing:-.01em;text-shadow:0 0 16px rgba(251,191,36,.25);}
+.tbl tr:last-child td{border-bottom:none;}
+
+/* bagian mikro */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:34px;}
+.row{display:flex;gap:22px;}
+.step{flex:1;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:14px;padding:22px;}
+.step .no{font-family:var(--mono);font-size:14px;letter-spacing:.2em;color:var(--acc);}
+.step .t{font-size:21px;font-weight:700;margin-top:10px;}
+.step .s{font-size:17px;color:var(--tert);margin-top:6px;line-height:1.5;}
+.tags{display:flex;gap:10px;flex-wrap:wrap;}
+.tag{font-family:var(--mono);font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+  border:1px solid var(--line);border-radius:8px;padding:7px 12px;color:var(--text);
+  background:rgba(255,255,255,.02);}
+.quote{border-left:4px solid var(--amber);background:linear-gradient(90deg,rgba(251,191,36,.12) 0%,rgba(251,191,36,.02) 100%);
+  padding:22px 28px;border-radius:0 14px 14px 0;box-shadow:inset 0 1px 0 rgba(255,255,255,.06);}
+.quote .copy{font-size:22px;}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--mono);font-size:13.5px;
+  letter-spacing:.09em;color:var(--tert);}
+.legend span i{display:inline-block;width:11px;height:11px;border-radius:3px;
+  margin-right:7px;vertical-align:-1px;box-shadow:0 0 8px currentColor;}
+svg text{font-family:'Plus Jakarta Sans',sans-serif;}
+svg .mono{font-family:'JetBrains Mono',monospace;}
+
+/* ========================================================
+   INTERACTIVE ANIMATED DECK ENGINE (OTAK-CR & OPENCODE)
+======================================================== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #020409;
+  user-select: none;
+}
+#deck-viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+#deck-stage {
+  position: absolute;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: center center;
+  transition: transform 0.1s ease-out;
+}
+#deck-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--amber), var(--cyan) 50%, var(--violet));
+  z-index: 1000;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+
+/* Slide Transition Engine */
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 1920px;
+  height: 1080px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.97) translateY(14px);
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.4s;
+}
+.slide.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1) translateY(0);
+  z-index: 10;
+}
+.slide.past {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(1.02) translateY(-14px);
+}
+
+/* Staggered Element Reveals inside Active Slide */
+.slide .card,
+.slide .panel,
+.slide .kpi,
+.slide .node,
+.slide .out,
+.slide .quote {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.slide.active .card,
+.slide.active .panel,
+.slide.active .kpi,
+.slide.active .node,
+.slide.active .out,
+.slide.active .quote {
+  opacity: 1;
+  transform: translateY(0);
+}
+.slide.active .c4 .card:nth-child(1) { transition-delay: 0.08s; }
+.slide.active .c4 .card:nth-child(2) { transition-delay: 0.16s; }
+.slide.active .c4 .card:nth-child(3) { transition-delay: 0.24s; }
+.slide.active .c4 .card:nth-child(4) { transition-delay: 0.32s; }
+
+.slide.active .kpis .kpi:nth-child(1) { transition-delay: 0.06s; }
+.slide.active .kpis .kpi:nth-child(2) { transition-delay: 0.14s; }
+.slide.active .kpis .kpi:nth-child(3) { transition-delay: 0.22s; }
+.slide.active .kpis .kpi:nth-child(4) { transition-delay: 0.30s; }
+
+.slide.active .pipe .node:nth-child(1) { transition-delay: 0.08s; }
+.slide.active .pipe .node:nth-child(3) { transition-delay: 0.20s; }
+.slide.active .pipe .node:nth-child(5) { transition-delay: 0.32s; }
+.slide.active .pipe .node:nth-child(7) { transition-delay: 0.44s; }
+
+.slide.active .outs .out:nth-child(1) { transition-delay: 0.10s; }
+.slide.active .outs .out:nth-child(2) { transition-delay: 0.20s; }
+.slide.active .outs .out:nth-child(3) { transition-delay: 0.30s; }
+.slide.active .outs .out:nth-child(4) { transition-delay: 0.40s; }
+
+/* SVG Dynamic Plotting Animation */
+@keyframes drawPolyline {
+  from { stroke-dashoffset: 1400; }
+  to { stroke-dashoffset: 0; }
+}
+.slide.active polyline.anim-trend {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 1400;
+  animation: drawPolyline 1.3s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.25s;
+}
+
+@keyframes bloomRadar {
+  0% { transform: scale(0.2); opacity: 0; }
+  70% { transform: scale(1.04); opacity: 0.9; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.slide.active polygon.anim-radar {
+  transform-origin: 0 0;
+  animation: bloomRadar 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.2s;
+}
+
+/* Floating Architectural Control HUD */
+#deck-hud {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 16, 28, 0.88);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 8px 18px;
+  z-index: 2000;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+#deck-hud button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 7px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+#deck-hud button:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--cyan);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+#hud-counter {
+  font-family: var(--mono);
+  font-size: 14.5px;
+  color: var(--tert);
+  letter-spacing: 0.12em;
+  padding: 0 8px;
+}
+#hud-counter span#current-slide {
+  color: var(--amber);
+  font-weight: 700;
+  font-size: 16px;
+}
+.hud-sep {
+  width: 1px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.14);
+}
+#deck-hud button.active {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: var(--amber);
+  color: var(--amber);
+}
+
+/* Keyboard hint chip */
+#key-hints {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: rgba(148, 163, 184, 0.6);
+  letter-spacing: 0.1em;
+  z-index: 1500;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<div id="deck-viewport">
+  <div id="deck-progress"></div>
+  <div id="deck-stage">
+<section class="slide s-01">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_01 · Pitch Kaprodi &amp; Boardroom</span></div>
+    <div class="pg">01 / 14</div>
+  </div>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:64px;align-items:center;">
+      <div>
+        <div class="lab" style="color:var(--amber);">
+          <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);"></span>
+          Co-pilot akademik &amp; executive cockpit
+        </div>
+        <h1 style="margin-top:18px;background:linear-gradient(180deg,#ffffff 40%,#cbd5e1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">SIAK-<br>KAPRODI</h1>
+        <div style="font-size:38px;font-weight:700;margin-top:20px;color:var(--amber);letter-spacing:-.02em;text-shadow:0 0 24px rgba(251,191,36,.3);">
+          Arsitektur Intelligence &amp; Executive Cockpit
+        </div>
+        <p class="copy" style="margin-top:24px;max-width:30ch;">Satu pohon kurikulum dipasang sekali; seluruh semester, mutu capaian kelas, dan dokumen resmi dibangun darinya — bukan diisi ulang tangan.</p>
+        <div class="chips" style="margin-top:32px;">
+          <span class="chip acc">v2.6 · Kurikulum Bertingkat</span>
+          <span class="chip">Demo 30 MK · 35 mahasiswa</span>
+          <span class="chip">Offline 127.0.0.1</span>
+          <span class="chip">11 Tab Cockpit</span>
+        </div>
+      </div>
+
+      <!-- pohon kurikulum arsitektural -->
+      <div class="panel" style="padding:32px 32px 28px;position:relative;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="lab" style="color:var(--cyan);">Satu sumber kebenaran</div>
+          <span style="font-family:var(--mono);font-size:12px;color:var(--tert);letter-spacing:.15em;">HIERARCHICAL TREE</span>
+        </div>
+        <div style="margin-top:22px;display:flex;flex-direction:column;gap:12px;">
+          <div style="border:1px solid var(--line);border-radius:12px;padding:15px 18px;background:rgba(255,255,255,.03);display:flex;align-items:center;">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--tert);letter-spacing:.18em;">01</span>
+            <span style="font-size:21px;font-weight:700;margin-left:14px;">PRODI · Arsitektur</span>
+            <span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--cyan);border:1px solid rgba(56,189,248,.3);border-radius:4px;padding:2px 8px;">ROOT</span>
+          </div>
+          <div style="padding-left:24px;border-left:2px solid var(--cyan);">
+            <div style="border:1px solid var(--line);border-radius:12px;padding:15px 18px;background:rgba(255,255,255,.03);display:flex;align-items:center;">
+              <span style="font-family:var(--mono);font-size:14px;color:var(--tert);letter-spacing:.18em;">02</span>
+              <span style="font-size:21px;font-weight:700;margin-left:14px;">TAHUN AJAR</span>
+            </div>
+            <div style="padding-left:24px;border-left:2px solid var(--cyan);margin-top:12px;">
+              <div style="border:1px solid var(--line);border-radius:12px;padding:15px 18px;background:rgba(255,255,255,.03);display:flex;align-items:center;">
+                <span style="font-family:var(--mono);font-size:14px;color:var(--tert);letter-spacing:.18em;">03</span>
+                <span style="font-size:21px;font-weight:700;margin-left:14px;">SEMESTER</span>
+              </div>
+              <div style="padding-left:24px;border-left:2px solid var(--amber);margin-top:12px;">
+                <div style="border:1px solid rgba(251,191,36,.5);border-radius:12px;padding:15px 18px;
+                            background:linear-gradient(90deg,rgba(251,191,36,.12) 0%,rgba(251,191,36,.03) 100%);
+                            box-shadow:0 0 20px rgba(251,191,36,.12);display:flex;align-items:center;">
+                  <span style="font-family:var(--mono);font-size:14px;color:var(--amber);letter-spacing:.18em;">04</span>
+                  <span style="font-size:21px;font-weight:700;margin-left:14px;color:var(--amber);">MK</span>
+                  <span style="font-family:var(--mono);font-size:14px;color:var(--text);margin-left:14px;">30 MK · 16 pertemuan</span>
+                  <span style="margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--amber);font-weight:600;">LOCKED 100</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="demo" style="margin-top:20px;border-top:1px dashed var(--line2);padding-top:12px;">
+          Bobot tiap MK wajib 100 — selain itu server menolak (HTTP 422).
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Co-pilot Kaprodi</span></div>
+</section>
+<section class="slide s-02">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_02 · Masalah</span></div>
+    <div class="pg">02 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--rose);margin-bottom:8px;">FRIKSI AKADEMIK SAAT INI</div>
+      <h2>Empat suara sakit <em>kaprodi hari ini</em></h2>
+    </div>
+    <div class="cards c4">
+      <div class="card" style="border-top-color:var(--rose);">
+        <div class="idx" style="color:var(--rose);display:flex;justify-content:space-between;align-items:center;"><span>01</span><span style="font-size:11px;opacity:.7;letter-spacing:.12em;">ANOMALI</span></div>
+        <h3>Data taburan</h3>
+        <p class="copy">Nilai tersebar di Excel, portal, dan surel.</p>
+      </div>
+      <div class="card" style="border-top-color:var(--rose);">
+        <div class="idx" style="color:var(--rose);display:flex;justify-content:space-between;align-items:center;"><span>02</span><span style="font-size:11px;opacity:.7;letter-spacing:.12em;">REPETISI</span></div>
+        <h3>Laporan manual</h3>
+        <p class="copy">Laporan 30 MK disusun tangan tiap akhir semester.</p>
+      </div>
+      <div class="card" style="border-top-color:var(--rose);">
+        <div class="idx" style="color:var(--rose);display:flex;justify-content:space-between;align-items:center;"><span>03</span><span style="font-size:11px;opacity:.7;letter-spacing:.12em;">BIAS_MUTU</span></div>
+        <h3>Mutu ≠ presensi</h3>
+        <p class="copy">Alpha dan mutu capaian masih tercampur.</p>
+      </div>
+      <div class="card" style="border-top-color:var(--rose);">
+        <div class="idx" style="color:var(--rose);display:flex;justify-content:space-between;align-items:center;"><span>04</span><span style="font-size:11px;opacity:.7;letter-spacing:.12em;">ISOLASI</span></div>
+        <h3>Dokumen terpisah</h3>
+        <p class="copy">Rapor, laporan, dan surat diketik ulang.</p>
+      </div>
+    </div>
+    <div class="quote" style="border-left-color:var(--amber);background:linear-gradient(90deg,rgba(251,191,36,.14) 0%,rgba(251,191,36,.02) 100%);">
+      <p class="copy"><strong>Kaprodi butuh MENGHARGAI DATA</strong> — bukan sinonim “kaprodi = urus absen”.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Masalah</span></div>
+</section>
+<section class="slide s-03">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_03 · Solusi</span></div>
+    <div class="pg">03 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--cyan);margin-bottom:8px;">ARSITEKTUR DATA TERPUSAT</div>
+      <h2>Satu sumber kebenaran, <em>banyak dokumen</em></h2>
+      <p class="copy" style="margin-top:18px;max-width:78ch;">Pohon kurikulum dipasang Kaprodi sekali; master mahasiswa dan seluruh laporan dibangun dari pohon itu.</p>
+    </div>
+
+    <div>
+      <div class="pipe">
+        <div class="node hi" style="flex:1.05;">
+          <div class="s" style="color:var(--cyan);font-weight:700;">NODE_01 · SUMBER</div>
+          <div class="t" style="color:var(--cyan);">TREE kurikulum</div>
+          <div class="s" style="color:var(--cyan);">score lokal · 127.0.0.1</div>
+        </div>
+        <div class="arw">→</div>
+        <div class="node" style="flex:1.05;">
+          <div class="s" style="color:var(--tert);font-weight:700;">NODE_02 · BANGUN</div>
+          <div class="t">Master ber-segment</div>
+          <div class="s">per MK · per semester</div>
+        </div>
+        <div class="arw">→</div>
+        <div class="node" style="flex:1.05;">
+          <div class="s" style="color:var(--amber);font-weight:700;">NODE_03 · HIT TUNGGAL</div>
+          <div class="t">Dashboard &amp; render</div>
+          <div class="s">tanpa salin tempel</div>
+        </div>
+      </div>
+
+      <div class="arw" style="width:auto;justify-content:flex-start;padding-left:12px;height:48px;font-size:24px;">↓</div>
+
+      <div class="outs">
+        <div class="out" style="border-left:3px solid var(--cyan);box-shadow:inset 0 1px 0 rgba(56,189,248,.2);"><div class="t" style="color:var(--cyan);">Executive Cockpit</div><div class="s">11 tab offline</div></div>
+        <div class="out" style="border-left:3px solid var(--amber);box-shadow:inset 0 1px 0 rgba(251,191,36,.2);"><div class="t" style="color:var(--amber);">PDF resmi</div><div class="s">11 berkas</div></div>
+        <div class="out" style="border-left:3px solid var(--emerald);box-shadow:inset 0 1px 0 rgba(52,211,153,.2);"><div class="t" style="color:var(--emerald);">WhatsApp Hub</div><div class="s">simulator · 3 persona</div></div>
+        <div class="out" style="border-left:3px solid var(--violet);box-shadow:inset 0 1px 0 rgba(192,132,252,.2);"><div class="t" style="color:var(--violet);">Video 9:16</div><div class="s">stitch edge-tts</div></div>
+      </div>
+
+      <div class="chips" style="margin-top:24px;">
+        <span class="chip acc">1 sumber, banyak dokumen, tanpa salin tempel</span>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Solusi</span></div>
+</section>
+<section class="slide s-04">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_04 · Metodologi &amp; Keutuhan</span></div>
+    <div class="pg">04 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--cyan);margin-bottom:8px;">KALIBRASI &amp; INTEGRITAS</div>
+      <h2>Nilai yang <em>bisa dipertahankan</em> di forum</h2>
+    </div>
+    <div class="cards c4">
+      <div class="card">
+        <div class="idx">JURNAL</div>
+        <h3>Terbobot</h3>
+        <p class="copy">Skor pertemuan × bobot; semua nilai dari satu jurnal.</p>
+      </div>
+      <div class="card" style="border-color:rgba(251,191,36,.4);">
+        <div class="idx" style="color:var(--amber);">BOBOT</div>
+        <h3 style="color:var(--amber);">Wajib 100</h3>
+        <p class="copy">Total di luar 100 ditolak server (HTTP 422).</p>
+      </div>
+      <div class="card">
+        <div class="idx">BELUM DIINPUT</div>
+        <h3>Netral, bukan nol</h3>
+        <p class="copy">Grade ditahan, bobot dinormalisasi.</p>
+      </div>
+      <div class="card">
+        <div class="idx">ALPHA</div>
+        <h3>Nol tetap dihitung</h3>
+        <p class="copy">Tidak disembunyikan, tidak dianggap gagal diam-diam.</p>
+      </div>
+    </div>
+
+    <div class="row" style="align-items:center;gap:20px;">
+      <div class="panel" style="flex:1;display:flex;align-items:center;gap:24px;border-color:rgba(56,189,248,.35);">
+        <span class="lab" style="color:var(--cyan);">Kompilasi ber-segment</span>
+        <span style="font-family:var(--mono);font-size:28px;color:var(--amber);font-weight:700;">12.1 s</span>
+        <span style="color:var(--tert);font-size:20px;">build tak-order</span>
+        <span style="color:var(--cyan);font-size:24px;">→</span>
+        <span style="font-family:var(--mono);font-size:28px;color:var(--emerald);font-weight:700;">&lt; 1 s</span>
+        <span style="color:var(--tert);font-size:20px;">salin snapshot bit-identik per MK (0.2 s CLI)</span>
+      </div>
+    </div>
+    <div class="legend"><span><i style="background:#38bdf8"></i>teruji regresi</span><span><i style="background:#fbbf24"></i>alpha = 0 dihitung</span><span><i style="background:#94a3b8"></i>slot kosong netral</span></div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Metodologi</span></div>
+</section>
+<section class="slide s-05">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_05 · Tab 1 · Peta Kompetensi Studio 4</span></div>
+    <div class="pg">05 / 14</div>
+  </div>
+  <div class="body" style="gap:24px;">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <div>
+        <div class="lab" style="color:var(--amber);margin-bottom:6px;">STAR OF THE SHOW</div>
+        <h2 style="margin-top:0;">Muka dashboard menjawab <em>mutu</em>, bukan absen</h2>
+      </div>
+      <p class="copy" style="max-width:34ch;text-align:right;font-size:21px;color:var(--tert);">Klik MK rawan = drill-down tanpa mengubah MK aktif.</p>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="v">77.9</div><div class="k">Rata Nilai Studio</div><div class="n">ARS301 · bobot 100</div></div>
+      <div class="kpi"><div class="v">83.8</div><div class="k">Rata Kehadiran</div><div class="n">83.8% aktif kelas</div></div>
+      <div class="kpi"><div class="v">27</div><div class="k">Mahasiswa Lulus</div><div class="n">nilai &ge; 70 kompeten</div></div>
+      <div class="kpi risk"><div class="v">7</div><div class="k">Mahasiswa At-Risk</div><div class="n">alpha &ge; 2x atau presensi &lt; 75%</div></div>
+    </div>
+
+    <div class="cards c3" style="gap:22px;">
+      <!-- tren -->
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="lab" style="color:var(--amber);">Tren Nilai Kelas</div>
+          <span class="demo">16 pertemuan</span>
+        </div>
+        <svg width="100%" height="165" viewBox="0 0 600 165" preserveAspectRatio="none" aria-label="tren nilai per pertemuan" style="margin-top:10px;">
+          <defs>
+            <linearGradient id="trendGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity="0.32"/>
+              <stop offset="100%" stop-color="#fbbf24" stop-opacity="0.0"/>
+            </linearGradient>
+          </defs>
+          <line x1="0" y1="35" x2="600" y2="35" stroke="rgba(148,163,184,.14)" stroke-width="1"/>
+          <line x1="0" y1="90" x2="600" y2="90" stroke="rgba(148,163,184,.14)" stroke-width="1"/>
+          <line x1="0" y1="145" x2="600" y2="145" stroke="rgba(148,163,184,.14)" stroke-width="1"/>
+          <path d="M 20,120 L 57,112 L 95,124 L 132,104 L 169,98 L 207,106 L 244,92 L 281,88 L 319,96 L 356,84 L 393,90 L 431,80 L 468,86 L 505,76 L 543,82 L 580,74 L 580,165 L 20,165 Z"
+            fill="url(#trendGrad)"/>
+          <polyline class="anim-trend" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linejoin="round"
+            points="20,120 57,112 95,124 132,104 169,98 207,106 244,92 281,88 319,96 356,84 393,90 431,80 468,86 505,76 543,82 580,74"/>
+          <circle cx="20" cy="120" r="3" fill="#fbbf24"/>
+          <circle cx="57" cy="112" r="3" fill="#fbbf24"/>
+          <circle cx="95" cy="124" r="3" fill="#fbbf24"/>
+          <circle cx="132" cy="104" r="3" fill="#fbbf24"/>
+          <circle cx="169" cy="98" r="3" fill="#fbbf24"/>
+          <circle cx="207" cy="106" r="3" fill="#fbbf24"/>
+          <circle cx="244" cy="92" r="3" fill="#fbbf24"/>
+          <circle cx="281" cy="88" r="3" fill="#fbbf24"/>
+          <circle cx="319" cy="96" r="3" fill="#fbbf24"/>
+          <circle cx="356" cy="84" r="3" fill="#fbbf24"/>
+          <circle cx="393" cy="90" r="3" fill="#fbbf24"/>
+          <circle cx="431" cy="80" r="3" fill="#fbbf24"/>
+          <circle cx="468" cy="86" r="3" fill="#fbbf24"/>
+          <circle cx="505" cy="76" r="3" fill="#fbbf24"/>
+          <circle cx="543" cy="82" r="3" fill="#fbbf24"/>
+          <circle cx="580" cy="74" r="7" fill="#fbbf24" stroke="#070b14" stroke-width="2"/>
+        </svg>
+        <div class="demo" style="margin-top:4px;">bentuk tren, angka mengikuti data demo</div>
+      </div>
+
+      <!-- radar kelas -->
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="lab" style="color:var(--violet);">Radar Kompetensi Kelas</div>
+          <span class="demo">5 dimensi</span>
+        </div>
+        <svg width="100%" height="165" viewBox="0 0 340 185" aria-label="radar kompetensi kelas lima dimensi" style="margin-top:6px;">
+          <g transform="translate(170,92)">
+            <polygon points="0,-76 72.3,-23.5 44.7,61.5 -44.7,61.5 -72.3,-23.5" fill="none" stroke="rgba(148,163,184,.16)"/>
+            <polygon points="0,-50 47.6,-15.5 29.4,40.5 -29.4,40.5 -47.6,-15.5" fill="none" stroke="rgba(148,163,184,.16)"/>
+            <polygon points="0,-25 23.8,-7.7 14.7,20.2 -14.7,20.2 -23.8,-7.7" fill="none" stroke="rgba(148,163,184,.16)"/>
+            <line x1="0" y1="0" x2="0" y2="-76" stroke="rgba(148,163,184,.16)"/>
+            <line x1="0" y1="0" x2="72.3" y2="-23.5" stroke="rgba(148,163,184,.16)"/>
+            <line x1="0" y1="0" x2="44.7" y2="61.5" stroke="rgba(148,163,184,.16)"/>
+            <line x1="0" y1="0" x2="-44.7" y2="61.5" stroke="rgba(148,163,184,.16)"/>
+            <line x1="0" y1="0" x2="-72.3" y2="-23.5" stroke="rgba(148,163,184,.16)"/>
+            <polygon class="anim-radar" points="0,-62 50.6,-16.4 34.0,46.8 -26.8,37.0 -47.8,-15.4"
+              fill="rgba(192,132,252,.25)" stroke="#c084fc" stroke-width="2.5"/>
+            <circle cx="0" cy="-62" r="4" fill="#c084fc"/>
+            <circle cx="50.6" cy="-16.4" r="4" fill="#c084fc"/>
+            <circle cx="34.0" cy="46.8" r="4" fill="#c084fc"/>
+            <circle cx="-26.8" cy="37.0" r="4" fill="#c084fc"/>
+            <circle cx="-47.8" cy="-15.4" r="4" fill="#c084fc"/>
+            <text x="0" y="-84" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">CAD</text>
+            <text x="84" y="-24" text-anchor="start" fill="#f8fafc" font-size="12" font-weight="600">Detail</text>
+            <text x="54" y="78" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">Disiplin</text>
+            <text x="-54" y="78" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">Logika-Ruang</text>
+            <text x="-84" y="-24" text-anchor="end" fill="#f8fafc" font-size="12" font-weight="600">Manajemen-Waktu</text>
+          </g>
+        </svg>
+        <div class="demo" style="margin-top:4px;">sumber jujur per dimensi: terukur / estimasi</div>
+      </div>
+
+      <!-- peta MK rawan -->
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="lab" style="color:var(--rose);">Peta MK Rawan</div>
+          <span class="demo">5 terendah dari 30</span>
+        </div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;align-items:center;gap:14px;border:1px solid var(--line2);border-radius:8px;padding:9px 14px;background:rgba(251,113,133,.05);">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--rose);font-weight:700;">01</span>
+            <span style="font-size:18px;">MK lintas semester</span>
+            <span style="margin-left:auto;font-family:var(--mono);color:var(--amber);font-size:16px;">▸ detail</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;border:1px solid var(--line2);border-radius:8px;padding:9px 14px;background:rgba(251,113,133,.05);">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--rose);font-weight:700;">02</span>
+            <span style="font-size:18px;">MK lintas semester</span>
+            <span style="margin-left:auto;font-family:var(--mono);color:var(--amber);font-size:16px;">▸ detail</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;border:1px solid var(--line2);border-radius:8px;padding:9px 14px;background:rgba(251,113,133,.05);">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--rose);font-weight:700;">03</span>
+            <span style="font-size:18px;">MK lintas semester</span>
+            <span style="margin-left:auto;font-family:var(--mono);color:var(--amber);font-size:16px;">▸ detail</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;border:1px solid var(--line2);border-radius:8px;padding:9px 14px;background:rgba(251,113,133,.05);">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--rose);font-weight:700;">04</span>
+            <span style="font-size:18px;">MK lintas semester</span>
+            <span style="margin-left:auto;font-family:var(--mono);color:var(--amber);font-size:16px;">▸ detail</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px;border:1px solid var(--line2);border-radius:8px;padding:9px 14px;background:rgba(251,113,133,.05);">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--rose);font-weight:700;">05</span>
+            <span style="font-size:18px;">MK lintas semester</span>
+            <span style="margin-left:auto;font-family:var(--mono);color:var(--amber);font-size:16px;">▸ detail</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:1px dashed var(--line);border-radius:12px;padding:14px 22px;display:flex;
+                align-items:center;gap:20px;background:rgba(255,255,255,.02);">
+      <span class="lab">▾ Konteks Presensi</span>
+      <span class="copy" style="color:var(--tert);font-size:19px;">rekap kehadiran — konteks, bukan bintang</span>
+      <span style="margin-left:auto;font-family:var(--mono);font-size:14px;color:var(--tert);letter-spacing:.1em;border:1px solid var(--line);border-radius:4px;padding:3px 10px;">collapsible</span>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Tab 1</span></div>
+</section>
+<section class="slide s-06">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_06 · Diagnosis 4-Layer Modular Radar</span></div>
+    <div class="pg">06 / 14</div>
+  </div>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:.95fr 1.05fr;gap:52px;align-items:center;">
+      <div>
+        <div class="lab" style="color:var(--violet);margin-bottom:8px;">ARKETIPE SINYAL NYATA</div>
+        <h2 style="margin-top:0;">Diagnosis <em>4-layer modular radar</em></h2>
+        <p class="copy" style="margin-top:20px;">Arketipe terarah dari sinyal nilai terbobot. Empat lapis modular radar memetakan softskill studio, modul 16 sesi, lintas MK 1 semester, dan potensi masa depan tanpa peringkat kompetitif.</p>
+        <div class="tags" style="margin-top:20px;">
+          <span class="tag" style="border-color:rgba(52,211,153,.5);color:var(--emerald);background:rgba(52,211,153,.08);">star</span>
+          <span class="tag">normal</span>
+          <span class="tag" style="border-color:rgba(251,191,36,.5);color:var(--amber);background:rgba(251,191,36,.08);">perlu penguatan</span>
+          <span class="tag" style="border-color:rgba(251,113,133,.5);color:var(--rose);background:rgba(251,113,133,.08);">at-risk</span>
+        </div>
+        <div class="quote" style="margin-top:20px;border-left-color:var(--violet);background:linear-gradient(90deg,rgba(192,132,252,.12) 0%,rgba(192,132,252,.02) 100%);">
+          <div class="lab" style="color:var(--violet);margin-bottom:6px;">Contoh rekomendasi</div>
+          <p style="font-size:18px;line-height:1.5;color:var(--text);">Dampingi sebelum bobot berikutnya — dua pertemuan terakhir turun, kehadiran belum 75%.</p>
+        </div>
+        <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:rgba(192,132,252,.07);font-size:14px;color:var(--text);">
+            <span style="font-family:var(--mono);color:var(--violet);font-weight:700;">L1</span> Softskill Studio
+          </div>
+          <div style="border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:rgba(56,189,248,.07);font-size:14px;color:var(--text);">
+            <span style="font-family:var(--mono);color:var(--cyan);font-weight:700;">L2</span> Modul MK 16 Sesi
+          </div>
+          <div style="border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:rgba(251,191,36,.07);font-size:14px;color:var(--text);">
+            <span style="font-family:var(--mono);color:var(--amber);font-weight:700;">L3</span> Lintas 1 Semester
+          </div>
+          <div style="border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:rgba(52,211,153,.07);font-size:14px;color:var(--text);">
+            <span style="font-family:var(--mono);color:var(--emerald);font-weight:700;">L4</span> Potensi AI Otak-CR
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="padding:32px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="lab" style="color:var(--violet);">Modular Radar Multi-Layer</span>
+          <span class="demo">bentuk radar · data demo</span>
+        </div>
+        <svg width="100%" height="420" viewBox="0 0 620 420" aria-label="radar diagnosis lima dimensi" style="margin-top:8px;">
+          <g transform="translate(310,210)">
+            <polygon points="0,-146 138.8,-45.1 85.8,118.1 -85.8,118.1 -138.8,-45.1" fill="none" stroke="rgba(148,163,184,.18)"/>
+            <polygon points="0,-97 92.6,-30.1 57.2,78.7 -57.2,78.7 -92.6,-30.1" fill="none" stroke="rgba(148,163,184,.18)"/>
+            <polygon points="0,-49 46.3,-15.1 28.6,39.4 -28.6,39.4 -46.3,-15.1" fill="none" stroke="rgba(148,163,184,.18)"/>
+            <line x1="0" y1="0" x2="0" y2="-146" stroke="rgba(148,163,184,.18)"/>
+            <line x1="0" y1="0" x2="138.8" y2="-45.1" stroke="rgba(148,163,184,.18)"/>
+            <line x1="0" y1="0" x2="85.8" y2="118.1" stroke="rgba(148,163,184,.18)"/>
+            <line x1="0" y1="0" x2="-85.8" y2="118.1" stroke="rgba(148,163,184,.18)"/>
+            <line x1="0" y1="0" x2="-138.8" y2="-45.1" stroke="rgba(148,163,184,.18)"/>
+            <polygon class="anim-radar" points="0,-120 97.2,-31.6 65.2,89.8 -51.5,70.9 -91.6,-29.7"
+              fill="rgba(192,132,252,.24)" stroke="#c084fc" stroke-width="3"/>
+            <circle cx="0" cy="-120" r="5" fill="#c084fc"/>
+            <circle cx="97.2" cy="-31.6" r="5" fill="#c084fc"/>
+            <circle cx="65.2" cy="89.8" r="5" fill="#c084fc"/>
+            <circle cx="-51.5" cy="70.9" r="5" fill="#c084fc"/>
+            <circle cx="-91.6" cy="-29.7" r="5" fill="#c084fc"/>
+            <text x="0" y="-160" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">CAD</text>
+            <text x="154" y="-48" text-anchor="start" fill="#f8fafc" font-size="20" font-weight="700">Detail</text>
+            <text x="96" y="142" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Disiplin</text>
+            <text x="-96" y="142" text-anchor="middle" fill="#f8fafc" font-size="20" font-weight="700">Logika-Ruang</text>
+            <text x="-154" y="-48" text-anchor="end" fill="#f8fafc" font-size="20" font-weight="700">Manajemen-Waktu</text>
+          </g>
+        </svg>
+        <div class="legend" style="margin-top:6px;">
+          <span><i style="background:#c084fc"></i>L1 Softskill</span>
+          <span><i style="background:#38bdf8"></i>L2 Modul RPS</span>
+          <span><i style="background:#fbbf24"></i>L3 Semester</span>
+          <span><i style="background:#34d399"></i>L4 Potensi Pasar</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Diagnosis</span></div>
+</section>
+<section class="slide s-07">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_07 · Untuk Mahasiswa</span></div>
+    <div class="pg">07 / 14</div>
+  </div>
+  <div class="body" style="gap:26px;">
+    <div>
+      <div class="lab" style="color:var(--violet);margin-bottom:6px;">REKAM JEJAK &amp; KANAL KARIER</div>
+      <h2 style="margin-top:0;">Portofolio &amp; potensi karier <em>berbukti</em></h2>
+    </div>
+
+    <div class="split" style="gap:40px;">
+      <!-- 4 lapis -->
+      <div class="panel">
+        <div class="lab" style="color:var(--violet);">Portofolio 4 lapis</div>
+        <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:16px;border-left:4px solid var(--violet);padding:13px 18px;background:rgba(192,132,252,.07);border-radius:0 10px 10px 0;">
+            <span class="lab" style="color:var(--violet);width:170px;">01 · Bulanan</span>
+            <span style="color:var(--tert);font-size:19px;">ringkas per periode</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;border-left:4px solid var(--violet);padding:13px 18px;background:rgba(192,132,252,.11);border-radius:0 10px 10px 0;">
+            <span class="lab" style="color:var(--violet);width:170px;">02 · Per MK</span>
+            <span style="color:var(--tert);font-size:19px;">segmen ber-stempel</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;border-left:4px solid var(--violet);padding:13px 18px;background:rgba(192,132,252,.15);border-radius:0 10px 10px 0;">
+            <span class="lab" style="color:var(--violet);width:170px;">03 · Per semester</span>
+            <span style="color:var(--tert);font-size:19px;">snapshot konsisten</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;border-left:4px solid var(--violet);padding:13px 18px;background:rgba(192,132,252,.19);border-radius:0 10px 10px 0;">
+            <span class="lab" style="color:var(--violet);width:170px;">04 · Sepanjang kuliah</span>
+            <span style="color:var(--tert);font-size:19px;">gambarkan jejak utuh</span>
+          </div>
+        </div>
+        <div style="margin-top:20px;display:flex;align-items:center;gap:16px;border-top:1px dashed var(--line2);padding-top:14px;">
+          <span class="lab">Kecepatan</span>
+          <span style="font-family:var(--mono);font-size:25px;color:var(--tert);">280 ms</span>
+          <span style="font-family:var(--mono);font-size:25px;color:var(--emerald);font-weight:700;">→ 1–35 ms</span>
+          <span class="demo">mahasiswa ke-2 dst</span>
+        </div>
+      </div>
+
+      <!-- 10 karier -->
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span class="lab" style="color:var(--amber);">Potensi karier · matriks 10 karier</span>
+          <span class="demo">field `bukti` wajib ada</span>
+        </div>
+
+        <div class="row" style="margin-top:18px;align-items:stretch;gap:16px;">
+          <div class="node" style="border-radius:12px;padding:18px;border-color:rgba(251,191,36,.35);">
+            <div class="t" style="font-family:var(--mono);color:var(--amber);font-size:38px;font-weight:700;">70%</div>
+            <div class="s">campuran radar 5 dim</div>
+          </div>
+          <div class="node" style="border-radius:12px;padding:18px;border-color:rgba(251,191,36,.35);">
+            <div class="t" style="font-family:var(--mono);color:var(--amber);font-size:38px;font-weight:700;">30%</div>
+            <div class="s">bukti kanal: nilai MK sebidang + 3 dim khas bidang</div>
+          </div>
+        </div>
+
+        <div class="tags" style="margin-top:16px;">
+          <span class="tag">Studio Desain</span>
+          <span class="tag">Teknologi &amp; CA</span>
+          <span class="tag">Struktur &amp; Konstrain</span>
+          <span class="tag">Lingkungan</span>
+          <span class="tag">Humanora-Profesi</span>
+        </div>
+
+        <div style="margin-top:16px;border:1px dashed var(--line);border-radius:12px;padding:14px 18px;background:rgba(255,255,255,.015);">
+          <div class="lab" style="color:var(--violet);">Narasi dibuat dari angka, bukan kalimat beku</div>
+          <div style="font-family:var(--mono);font-size:18px;color:var(--text);margin-top:8px;line-height:1.5;">
+            “bukti: &lt;rata nilai MK sebidang&gt; · &lt;3 dim khas bidang&gt;” → kalimat disusun dari field itu
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="copy" style="max-width:110ch;">Sepuluh karier diberi field bukti; skor sebidang ditimbang 70% radar dan 30% bukti kanal.</p>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Portofolio &amp; karier</span></div>
+</section>
+<section class="slide s-08">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_08 · Lapis AI Multi-Engine</span></div>
+    <div class="pg">08 / 14</div>
+  </div>
+  <div class="body">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <div>
+        <div class="lab" style="color:var(--cyan);margin-bottom:6px;">FAIL-CLOSED SECURITY GATE</div>
+        <h2 style="margin-top:0;">Narasi dirapikan AI, <em>rintangan mutlak</em></h2>
+      </div>
+      <div class="chips">
+        <span class="chip acc">API · Agent · Lokal LLM</span>
+        <span class="chip">Fail-Closed Gate</span>
+      </div>
+    </div>
+
+    <p class="copy" style="max-width:96ch;">Bisa API, Agent otonom, atau lokal LLM tanpa biaya baru. AI hanya menerima bukti; satu angka tidak ada di bukti, hasil dibuang dan kembali template.</p>
+
+    <!-- gate diagram -->
+    <div class="pipe">
+      <div class="node">
+        <div class="s">INPUT</div>
+        <div class="t">Bukti karier</div>
+        <div class="s">angka nyata dari data</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <div class="s">PROMPT</div>
+        <div class="t">Terkunci</div>
+        <div class="s">hanya bukti, tanpa angka baru</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node hi">
+        <div class="s" style="color:var(--cyan);">GERBANG</div>
+        <div class="t" style="color:var(--cyan);">Verifikasi angka</div>
+        <div class="s">angka di dalam bukti</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <div class="s">OUTPUT</div>
+        <div class="t">Susun &amp; cache</div>
+        <div class="s">PDF &amp; pesan wali senada</div>
+      </div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:0;margin-top:8px;padding-left:38%;">
+      <div class="arw" style="width:auto;font-size:28px;color:var(--rose);">↓ gagal</div>
+      <div class="node" style="flex:0 0 460px;border-color:rgba(251,113,133,.6);background:linear-gradient(90deg,rgba(251,113,133,.16) 0%,rgba(251,113,133,.04) 100%);">
+        <div class="s" style="color:var(--rose);font-weight:700;">FAIL-CLOSED</div>
+        <div class="t" style="color:var(--rose);">Kembali template</div>
+        <div class="s">hasil AI tidak pernah dipaksa lolos</div>
+      </div>
+    </div>
+
+    <div class="legend" style="margin-top:8px;">
+      <span><i style="background:#38bdf8"></i>arus normal</span>
+      <span><i style="background:#fb7185"></i>jalur kegagalan</span>
+      <span>teruji regresi</span>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Lapis AI</span></div>
+</section>
+<section class="slide s-09">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_09 · Sinkronisasi Multi-Output</span></div>
+    <div class="pg">09 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--cyan);margin-bottom:6px;">MULTI-OUTPUT SYNCHRONIZATION</div>
+      <h2 style="margin-top:0;">Satu hit data, <em>semua dokumen</em></h2>
+      <p class="copy" style="margin-top:18px;max-width:74ch;">Satu hit data kurikulum; semua dokumen resmi dan media sinkron serentak.</p>
+    </div>
+
+    <div class="cards c4">
+      <div class="card" style="border-top-color:var(--cyan);">
+        <div class="idx">PDF RESMI</div>
+        <h3>11 PDF resmi</h3>
+        <p class="copy" style="color:var(--tert);font-size:18px;">rapor wali · laporan kaprodi · berita acara</p>
+      </div>
+      <div class="card" style="border-top-color:var(--amber);">
+        <div class="idx" style="color:var(--amber);">BOARDROOM</div>
+        <h3>Boardroom Deck</h3>
+        <p class="copy" style="color:var(--tert);font-size:18px;">14 slide PDF 16:9 · 2K PNG</p>
+      </div>
+      <div class="card" style="border-top-color:var(--violet);">
+        <div class="idx" style="color:var(--violet);">VIDEO</div>
+        <h3>Video 9:16</h3>
+        <p class="copy" style="color:var(--tert);font-size:18px;">stitch edge-tts · narasi presisi</p>
+      </div>
+      <div class="card" style="border-top-color:var(--emerald);">
+        <div class="idx" style="color:var(--emerald);">WHATSAPP</div>
+        <h3>WhatsApp Hub</h3>
+        <p class="copy" style="color:var(--tert);font-size:18px;">3 persona: mahasiswa · dosen · wali</p>
+      </div>
+    </div>
+
+    <div class="pipe" style="align-items:center;">
+      <div class="node hi" style="flex:.8;">
+        <div class="s">MASUK</div>
+        <div class="t">1 hit data</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node" style="flex:.9;">
+        <div class="s">BANGUN</div>
+        <div class="t">Render ber-segment</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node" style="flex:.9;">
+        <div class="s">KELUAR</div>
+        <div class="t">Dokumen senada</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node" style="flex:1.1;">
+        <div class="s">IDENTITAS</div>
+        <div class="t">Satu config</div>
+        <div class="s">nama &amp; identitas tidak ditik ulang</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Keluaran</span></div>
+</section>
+<section class="slide s-10">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_10 · Engine Cek Input &amp; Output</span></div>
+    <div class="pg">10 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--cyan);margin-bottom:6px;">INTEGRITAS ARSIP &amp; REGISTRI</div>
+      <h2 style="margin-top:0;">Yang masuk dan keluar, <em>diperiksa</em></h2>
+      <p class="copy" style="margin-top:18px;max-width:80ch;">Mesin kirim berikutnya tinggal membaca manifest, tanpa menebak.</p>
+    </div>
+
+    <div class="pipe">
+      <div class="node">
+        <div class="s">01 · MASUK</div>
+        <div class="t">Pindai inbox</div>
+        <div class="s">SHA-256 → duplikat → registri</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <div class="s">02 · KELUAR</div>
+        <div class="t">Audit output</div>
+        <div class="s">utuh · rusak · hilang · salinan usang</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <div class="s">03 · RAPI</div>
+        <div class="t">Rapikan</div>
+        <div class="s">arsipkan run lama</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node hi">
+        <div class="s" style="color:var(--cyan);">04 · SERAH</div>
+        <div class="t" style="color:var(--cyan);">LAPIS KIRIM</div>
+        <div class="s">manifest.json</div>
+      </div>
+    </div>
+
+    <div class="row" style="gap:22px;">
+      <div class="panel" style="flex:1;">
+        <div class="lab" style="color:var(--cyan);">Kenapa penting</div>
+        <p class="copy" style="margin-top:12px;font-size:21px;color:var(--tert);">File ganda dan output rusak ketahuan sebelum sampai ke rapor dosen.</p>
+      </div>
+      <div class="panel" style="flex:1;">
+        <div class="lab" style="color:var(--cyan);">Siapa meneruskan</div>
+        <p class="copy" style="margin-top:12px;font-size:21px;color:var(--tert);">Mesin kirim berikutnya tinggal membaca manifest yang sudah diserahkan.</p>
+      </div>
+    </div>
+    <div class="legend"><span>teruji regresi</span><span>tanpa internet</span><span>server Python stdlib</span></div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Engine cek</span></div>
+</section>
+<section class="slide s-11">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_11 · Kejujuran Data</span></div>
+    <div class="pg">11 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--emerald);margin-bottom:6px;">TRANSPARANSI METADATA</div>
+      <h2 style="margin-top:0;">“Apakah ini <em>jujur</em>?”</h2>
+    </div>
+
+    <div class="split" style="gap:40px;">
+      <div class="panel" style="border-color:rgba(52,211,153,.45);background:linear-gradient(145deg,rgba(52,211,153,.10) 0%,rgba(52,211,153,.02) 100%);">
+        <div class="lab" style="color:var(--emerald);">Pernyataan terbuka</div>
+        <p class="copy" style="margin-top:16px;font-size:29px;line-height:1.45;"><strong>Nilai demo masih sintetis</strong> — dinyatakan di metadata master, bukan disembunyikan.</p>
+        <p class="copy" style="margin-top:16px;color:var(--tert);font-size:21px;">Pipa nilai asli dosen adalah langkah berikutnya.</p>
+        <div class="tags" style="margin-top:20px;">
+          <span class="tag" style="border-color:rgba(52,211,153,.5);color:var(--emerald);">hasil AI berlabel tebakan</span>
+          <span class="tag">PDF tanpa layer teks → ocr_dibutuhkan</span>
+          <span class="tag">tanpa klaim status akreditasi</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="lab" style="color:var(--cyan);">Pipa impor nilai portal</div>
+        <div style="margin-top:18px;display:flex;flex-direction:column;gap:12px;">
+          <div style="display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:12px;padding:14px 18px;">
+            <span style="font-family:var(--mono);color:var(--cyan);font-size:15px;">01</span>
+            <span style="font-size:21px;font-weight:700;">Magic bytes</span>
+            <span style="margin-left:auto;color:var(--tert);font-size:18px;">Excel · CSV · HTML</span>
+          </div>
+          <div style="text-align:center;color:var(--cyan);font-family:var(--mono);font-size:22px;line-height:1;">↓</div>
+          <div style="display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:12px;padding:14px 18px;">
+            <span style="font-family:var(--mono);color:var(--cyan);font-size:15px;">02</span>
+            <span style="font-size:21px;font-weight:700;">Staging</span>
+            <span style="margin-left:auto;color:var(--tert);font-size:18px;">mapping tema · penolakan definisi-atas</span>
+          </div>
+          <div style="text-align:center;color:var(--cyan);font-family:var(--mono);font-size:22px;line-height:1;">↓</div>
+          <div style="display:flex;align-items:center;gap:16px;border:1px solid rgba(52,211,153,.6);border-radius:12px;padding:14px 18px;background:rgba(52,211,153,.1);">
+            <span style="font-family:var(--mono);color:var(--emerald);font-size:15px;">03</span>
+            <span style="font-size:21px;font-weight:700;color:var(--emerald);">REVIEW MANUSIA</span>
+            <span style="margin-left:auto;color:var(--text);font-size:18px;">tinjau → terima</span>
+          </div>
+          <div style="text-align:center;color:var(--cyan);font-family:var(--mono);font-size:22px;line-height:1;">↓</div>
+          <div style="display:flex;align-items:center;gap:16px;border:1px solid var(--line);border-radius:12px;padding:14px 18px;">
+            <span style="font-family:var(--mono);color:var(--cyan);font-size:15px;">04</span>
+            <span style="font-size:21px;font-weight:700;">Backup otomatis</span>
+            <span style="margin-left:auto;color:var(--tert);font-size:18px;">+ ekstraksi RPS PDF/DOCX</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="legend" style="margin-top:10px;"><span><i style="background:#34d399"></i>manusia memutuskan</span><span><i style="background:#38bdf8"></i>mesin menyiapkan</span></div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Kejujuran data</span></div>
+</section>
+<section class="slide s-12">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_12 · Angka Kinerja</span></div>
+    <div class="pg">12 / 14</div>
+  </div>
+  <div class="body">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+      <div>
+        <div class="lab" style="color:var(--amber);margin-bottom:6px;">BENCHMARK TELEMETRI</div>
+        <h2 style="margin-top:0;">Yang <em>dihitung</em>, bukan dijanjikan</h2>
+      </div>
+      <p class="copy" style="color:var(--tert);font-size:21px;max-width:34ch;text-align:right;">Semua angka diukur pada demo lokal 127.0.0.1.</p>
+    </div>
+
+    <div class="split" style="gap:40px;align-items:start;">
+      <div class="panel">
+        <table class="tbl">
+          <tr><td>Build tak-order (per-MK)</td><td>12.1 s</td></tr>
+          <tr><td>Salin snapshot per MK</td><td>&lt; 1 s · 0.2 s CLI</td></tr>
+          <tr><td>Portofolio ke-2 dst.</td><td>280 ms → 1–35 ms</td></tr>
+        </table>
+      </div>
+      <div class="panel">
+        <table class="tbl">
+          <tr><td>HTTP dingin</td><td>456 ms → 35–108 ms</td></tr>
+          <tr><td>Katalog build</td><td>21.6 MB</td></tr>
+          <tr><td>Dashboard lokal</td><td>11 tab · offline</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="row" style="gap:22px;">
+      <div class="panel" style="flex:1;border-color:rgba(52,211,153,.45);">
+        <div class="lab" style="color:var(--emerald);">Artinya</div>
+        <p class="copy" style="margin-top:12px;font-size:22px;">Laporan ulang tidak menunggu kompilasi panjang; snapshot yang sudah ada disalin apa adanya.</p>
+      </div>
+      <div class="panel" style="flex:1;">
+        <div class="lab">Catatan</div>
+        <p class="copy" style="margin-top:12px;font-size:22px;color:var(--tert);">Semua berjalan tanpa internet — server Python stdlib di 127.0.0.1.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Angka kinerja</span></div>
+</section>
+<section class="slide s-13">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_13 · Tab 11 · Cockpit Yayasan &amp; Investor</span></div>
+    <div class="pg">13 / 14</div>
+  </div>
+  <div class="body">
+    <div>
+      <div class="lab" style="color:var(--amber);margin-bottom:6px;">5 KARTU TRUF EKSEKUTIF YAYASAN</div>
+      <h2 style="margin-top:0;">Executive Cockpit &amp; <em>Kartu Truf Yayasan</em></h2>
+      <p class="copy" style="margin-top:16px;max-width:88ch;">Tab 11 menyajikan 5 kartu truf untuk Yayasan: valuasi finansial SPP, mitigasi lost cashflow mahasiswa at-risk, dan kesiapan akreditasi prodi secara real-time.</p>
+    </div>
+
+    <div class="cards c4">
+      <div class="card" style="border-top-color:var(--amber);">
+        <div class="idx" style="color:var(--amber);">LTV MAHASISWA</div>
+        <h3 style="font-size:32px;font-family:var(--mono);color:var(--amber);margin:12px 0 8px;">Rp 1.17 M</h3>
+        <div style="font-size:16px;color:var(--tert);line-height:1.45;">Proyeksi LTV SPP 35 mahasiswa sepanjang masa studi prodi.</div>
+      </div>
+      <div class="card" style="border-top-color:var(--rose);">
+        <div class="idx" style="color:var(--rose);">LOST CASHFLOW</div>
+        <h3 style="font-size:32px;font-family:var(--mono);color:var(--rose);margin:12px 0 8px;">Rp 195 M</h3>
+        <div style="font-size:16px;color:var(--tert);line-height:1.45;">Potensi SPP hilang dari 7 mahasiswa at-risk drop out.</div>
+      </div>
+      <div class="card" style="border-top-color:var(--emerald);">
+        <div class="idx" style="color:var(--emerald);">AKREDITASI</div>
+        <h3 style="font-size:32px;font-family:var(--mono);color:var(--emerald);margin:12px 0 8px;">87.3%</h3>
+        <div style="font-size:16px;color:var(--tert);line-height:1.45;">Indeks kesiapan instrumen borang akreditasi IAP.</div>
+      </div>
+      <div class="card" style="border-top-color:var(--cyan);">
+        <div class="idx" style="color:var(--cyan);">SKALABILITAS</div>
+        <h3 style="font-size:32px;font-family:var(--mono);color:var(--cyan);margin:12px 0 8px;">30 MK</h3>
+        <div style="font-size:16px;color:var(--tert);line-height:1.45;">Standardisasi pohon kurikulum serentak di prodi.</div>
+      </div>
+    </div>
+
+    <div class="pipe" style="align-items:stretch;">
+      <div class="node hi" style="flex:1;">
+        <div class="s" style="color:var(--amber);font-weight:700;">TRUF 01 · AUDIT</div>
+        <div class="t" style="font-size:19px;">Presensi &amp; RPS</div>
+        <div class="s">verifikasi 16 sesi</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node" style="flex:1;">
+        <div class="s" style="color:var(--rose);font-weight:700;">TRUF 02 · MITIGASI</div>
+        <div class="t" style="font-size:19px;">Early Warning</div>
+        <div class="s">7 mahasiswa rawan</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node" style="flex:1;">
+        <div class="s" style="color:var(--cyan);font-weight:700;">TRUF 03 · KELAS</div>
+        <div class="t" style="font-size:19px;">Aksi Dosen Wali</div>
+        <div class="s">dialog &amp; bimbingan</div>
+      </div>
+      <div class="arw">→</div>
+      <div class="node" style="flex:1.1;">
+        <div class="s" style="color:var(--emerald);font-weight:700;">TRUF 04 · BOARD</div>
+        <div class="t" style="font-size:19px;">Rapor Yayasan</div>
+        <div class="s">1-click eksekutif</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Cockpit Yayasan</span></div>
+</section>
+<section class="slide s-14">
+  <div class="top">
+    <div class="kicker"><span class="dot"></span><i></i><span>Sec_14 · Penutup &amp; Monograf CTA</span></div>
+    <div class="pg">14 / 14</div>
+  </div>
+  <div class="body">
+    <div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:32px;">
+      <div class="chips" style="justify-content:center;">
+        <span class="chip acc">Demo Hidup 10 Menit</span>
+        <span class="chip">v2.6 · Kurikulum Bertingkat</span>
+        <span class="chip">11 Tab Cockpit</span>
+      </div>
+      <h1 style="font-size:108px;background:linear-gradient(180deg,#ffffff 40%,#cbd5e1 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Bukan absen digital</h1>
+      <div style="font-size:54px;font-weight:700;color:var(--amber);letter-spacing:-.02em;text-shadow:0 0 32px rgba(251,191,36,.35);">
+        co-pilot mutu capaian &amp; executive cockpit
+      </div>
+      <p class="copy" style="max-width:60ch;font-size:27px;">Bawa satu pertanyaan kaprodi atau yayasan yang paling membebani; kita jawab langsung dari data yang sama.</p>
+      <div style="display:flex;gap:20px;margin-top:6px;">
+        <div class="panel" style="padding:18px 28px;text-align:left;">
+          <div class="lab">Kontak</div>
+          <div style="font-family:var(--mono);font-size:21px;margin-top:8px;color:var(--text);">[ nama · email · WA ]</div>
+        </div>
+        <div class="panel" style="padding:18px 28px;text-align:left;">
+          <div class="lab">Akses</div>
+          <div style="font-family:var(--mono);font-size:21px;margin-top:8px;color:var(--text);">127.0.0.1 · offline</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>SIAK-KAPRODI</b> v2.6 · Kurikulum Bertingkat</span><span>Terima kasih</span></div>
+</section>
+  </div>
+  <div id="deck-hud">
+    <button id="btn-prev" title="Sebelumnya (Panah Kiri)">◀ Prev</button>
+    <div id="hud-counter"><span id="current-slide">01</span> / <span id="total-slides">14</span></div>
+    <button id="btn-next" title="Berikutnya (Panah Kanan / Spasi)">Next ▶</button>
+    <div class="hud-sep"></div>
+    <button id="btn-fs" title="Layar Penuh (F)">⛶ Fullscreen</button>
+    <button id="btn-autoplay" title="Auto-Play 7 detik">▶ Auto</button>
+  </div>
+  <div id="key-hints">KONTROL: [◀ / ▶] GANTI SLIDE · [F] FULLSCREEN · [SPACE] LANJUT</div>
+</div>
+
+<script>
+(function() {
+  const stage = document.getElementById('deck-stage');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const progress = document.getElementById('deck-progress');
+  const curSlideEl = document.getElementById('current-slide');
+  const totalSlideEl = document.getElementById('total-slides');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const btnFs = document.getElementById('btn-fs');
+  const btnAutoplay = document.getElementById('btn-autoplay');
+
+  let currentIndex = 0;
+  let autoplayTimer = null;
+  const total = slides.length;
+
+  totalSlideEl.textContent = String(total).padStart(2, '0');
+
+  // Responsive Fit 16:9 Stage scaling
+  function resizeStage() {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const scale = Math.min(vw / 1920, vh / 1080);
+    stage.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', resizeStage);
+  resizeStage();
+
+  // Number Counter Animation for KPI Slide (Slide 5)
+  function animateNumbers(slideEl) {
+    const kpiValues = slideEl.querySelectorAll('.kpi .v');
+    kpiValues.forEach(el => {
+      const targetStr = el.textContent.trim();
+      const targetNum = parseFloat(targetStr);
+      if (isNaN(targetNum)) return;
+      const isDecimal = targetStr.includes('.');
+      const duration = 850;
+      const startTime = performance.now();
+
+      function update(now) {
+        const elapsed = now - startTime;
+        const progressRate = Math.min(elapsed / duration, 1);
+        const easeOut = 1 - Math.pow(1 - progressRate, 3);
+        const current = targetNum * easeOut;
+        el.textContent = isDecimal ? current.toFixed(1) : Math.round(current);
+        if (progressRate < 1) {
+          requestAnimationFrame(update);
+        } else {
+          el.textContent = targetStr;
+        }
+      }
+      requestAnimationFrame(update);
+    });
+  }
+
+  function goToSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= total) index = total - 1;
+    currentIndex = index;
+
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'past');
+      if (i === currentIndex) {
+        s.classList.add('active');
+        if (i === 4) { // Slide 5: Tab 1 KPI
+          setTimeout(() => animateNumbers(s), 100);
+        }
+      } else if (i < currentIndex) {
+        s.classList.add('past');
+      }
+    });
+
+    // Update Counter & Progress
+    curSlideEl.textContent = String(currentIndex + 1).padStart(2, '0');
+    progress.style.width = `${((currentIndex + 1) / total) * 100}%`;
+  }
+
+  function nextSlide() { goToSlide(currentIndex + 1); }
+  function prevSlide() { goToSlide(currentIndex - 1); }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  function toggleAutoplay() {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+      btnAutoplay.classList.remove('active');
+      btnAutoplay.textContent = '▶ Auto';
+    } else {
+      btnAutoplay.classList.add('active');
+      btnAutoplay.textContent = '⏸ Pause';
+      autoplayTimer = setInterval(() => {
+        if (currentIndex < total - 1) {
+          nextSlide();
+        } else {
+          goToSlide(0);
+        }
+      }, 7000);
+    }
+  }
+
+  // Keyboard Navigation
+  window.addEventListener('keydown', (e) => {
+    switch(e.key) {
+      case 'ArrowRight':
+      case 'Space':
+      case 'PageDown':
+        e.preventDefault();
+        nextSlide();
+        break;
+      case 'ArrowLeft':
+      case 'Backspace':
+      case 'PageUp':
+        e.preventDefault();
+        prevSlide();
+        break;
+      case 'Home':
+        e.preventDefault();
+        goToSlide(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        goToSlide(total - 1);
+        break;
+      case 'f':
+      case 'F':
+        toggleFullscreen();
+        break;
+    }
+  });
+
+  // Button Listeners
+  btnNext.addEventListener('click', nextSlide);
+  btnPrev.addEventListener('click', prevSlide);
+  btnFs.addEventListener('click', toggleFullscreen);
+  btnAutoplay.addEventListener('click', toggleAutoplay);
+
+  // Initialize Slide 1
+  goToSlide(0);
+})();
+</script>
+
+</body>
+</html>

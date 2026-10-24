@@ -32,7 +32,7 @@ if not exist "data\academic_data.json" (
 echo.
 echo Membuka browser ke http://localhost:%PORT% ...
 REM Tunggu server siap dulu, kalau tidak user lihat ERR_CONNECTION_REFUSED
-start "" /b cmd /c "timeout /t 3 /nobreak >nul & start "" http://localhost:%PORT%"
+start "" /b cmd /c "ping 127.0.0.1 -n 4 >nul & start "" http://localhost:%PORT%"
 
 echo Menjalankan Web Server di port %PORT%...
 %PY% server.py

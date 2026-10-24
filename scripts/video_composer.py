@@ -36,14 +36,10 @@ TEMP_DIR = os.path.join(BASE_DIR, "scratch", "video_temp")
 # video. Sumbernya satu: config/identitas.json.
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import identitas  # noqa: E402
+from kurikulum_tree import sanitize_folder_name  # noqa: E402
 
 os.makedirs(OUTPUT_VIDEOS_DIR, exist_ok=True)
 os.makedirs(TEMP_DIR, exist_ok=True)
-
-def sanitize_folder_name(name):
-    clean = re.sub(r'[\\/*?:"<>|]', "", name)
-    clean = clean.replace("&", "DAN").strip().replace(" ", "_").upper()
-    return clean
 
 def find_student_images(npm, course_name="APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS"):
     """
@@ -449,7 +445,7 @@ def render_vertical_slides_html(student, course_info, images):
             ⚡ PENGUASAAN TEKNIS STUDIO:
           </div>
           <div style="font-size: 28px; color: #e2e8f0; line-height: 1.5;">
-            Ananda <strong>{nama}</strong> menunjukkan kedisiplinan dan ketelitian gambar presisi tinggi sesuai standar Ikatan Arsitek Indonesia (IAI).
+            Ananda <strong>{nama}</strong> menunjukkan kedisiplinan dan ketelitian gambar presisi tinggi berstandar studio profesional & industri rancang bangun.
           </div>
         </div>
       </div>

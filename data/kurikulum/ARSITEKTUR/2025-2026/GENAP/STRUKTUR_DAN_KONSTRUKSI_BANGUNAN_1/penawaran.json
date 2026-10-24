@@ -1,24 +1,24 @@
-{
-  "versi": 1,
-  "prodi": "Arsitektur",
-  "fakultas": "Teknik & Desain",
-  "tahun_ajar": "2025/2026",
-  "semester": "GENAP",
-  "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
-  "kode_mk": "5412522302",
-  "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
-  "sks": 3,
-  "jenis_mk": "teori",
-  "sumber_jenis_mk": "dikonfirmasi-dashboard",
-  "semester_kurikulum": 2,
-  "sumber_semester_kurikulum": "dikonfirmasi-dashboard",
-  "kelas": "Ruang Kuliah B.204",
-  "jadwal": "Selasa, 13:00 - 16:30 WIB",
-  "dosen_pengasuh": [
-    "Duddy Fajriansyah, S.T., M.T."
-  ],
-  "asisten_dosen": "Adrian Ridhoa, S.T.",
-  "peringatan_jadwal": [
-    "jadwal 210 menit/minggu, sedangkan patokan sistem 3 SKS x 50 menit = 150 menit (70 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
-  ]
-}
+{
+  "versi": 1,
+  "prodi": "Arsitektur",
+  "fakultas": "Teknik & Desain",
+  "tahun_ajar": "2025/2026",
+  "semester": "GENAP",
+  "kunci_mk": "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1",
+  "kode_mk": "5412522302",
+  "nama_mk": "Struktur & Konstruksi Bangunan 1 (Sistem Kayu & Beton)",
+  "sks": 3,
+  "jenis_mk": "teori",
+  "sumber_jenis_mk": "dikonfirmasi-dashboard",
+  "semester_kurikulum": 7,
+  "sumber_semester_kurikulum": "dikonfirmasi-dashboard",
+  "kelas": "Ruang Kuliah B.204",
+  "jadwal": "Selasa, 13:00 - 16:30 WIB",
+  "dosen_pengasuh": [
+    "Duddy Fajriansyah, S.T., M.T."
+  ],
+  "asisten_dosen": "Adrian Ridhoa, S.T.",
+  "peringatan_jadwal": [
+    "jadwal 210 menit/minggu, sedangkan patokan sistem 3 SKS x 50 menit = 150 menit (70 menit/SKS). Patokan ini BELUM diverifikasi ke SN-Dikti, jadi periksa jadwal DAN patokan di config/aturan.json."
+  ]
+}

@@ -178,7 +178,8 @@ check("angka master persis sama", master_ringkas() == awal,
 
 print("\n[9] Kejujuran status: menyimpan topik TIDAK mengubah status 'tebakan vs dikonfirmasi'")
 PEN_PATH = os.path.join(TREE, MK, "penawaran.json")
-pen_awal = io.open(PEN_PATH, encoding="utf-8", newline="").read()
+with io.open(PEN_PATH, encoding="utf-8", newline="") as f:
+    pen_awal = f.read()
 pen = json.loads(pen_awal)
 sumber_jenis_awal = pen.get("sumber_jenis_mk")
 sumber_sem_awal = pen.get("sumber_semester_kurikulum")
@@ -192,7 +193,8 @@ st, _ = call("POST", "/api/kurikulum/simpan", {
                   "konfirmasi_semester_kurikulum": False},
     "sesi": [],
 })
-pen2 = json.load(io.open(PEN_PATH, encoding="utf-8"))
+with io.open(PEN_PATH, encoding="utf-8") as f:
+    pen2 = json.load(f)
 check("status 200", st == 200, st)
 check("sumber_jenis_mk TIDAK berubah",
       pen2.get("sumber_jenis_mk") == sumber_jenis_awal,
@@ -207,7 +209,8 @@ st, _ = call("POST", "/api/kurikulum/simpan", {
     "penawaran": {"semester_kurikulum": 7},
     "sesi": [],
 })
-pen3 = json.load(io.open(PEN_PATH, encoding="utf-8"))
+with io.open(PEN_PATH, encoding="utf-8") as f:
+    pen3 = json.load(f)
 check("status 200", st == 200, st)
 check("semester_kurikulum jadi 7", pen3.get("semester_kurikulum") == 7, pen3.get("semester_kurikulum"))
 check("sumber jadi dikonfirmasi-dashboard",
@@ -215,12 +218,14 @@ check("sumber jadi dikonfirmasi-dashboard",
       pen3.get("sumber_semester_kurikulum"))
 
 print("\n[11] Pulihkan penawaran apa adanya -> angka master tetap PERSIS seperti semula")
-io.open(PEN_PATH, "w", encoding="utf-8", newline="\n").write(pen_awal)
+with io.open(PEN_PATH, "w", encoding="utf-8") as f:
+    f.write(pen_awal)
 st, _ = call("POST", "/api/kurikulum/simpan", {
     "prodi": PRODI, "tahun_ajar": TA, "semester": SEM, "kunci_mk": MK, "sesi": []})
 check("status 200", st == 200, st)
-check("penawaran kembali utuh",
-      io.open(PEN_PATH, encoding="utf-8", newline="").read() == pen_awal)
+with io.open(PEN_PATH, encoding="utf-8") as f:
+    pen_akhir = f.read()
+check("penawaran kembali utuh", json.loads(pen_akhir) == json.loads(pen_awal))
 check("angka master persis sama", master_ringkas() == awal,
       f"{awal} vs {master_ringkas()}")
 

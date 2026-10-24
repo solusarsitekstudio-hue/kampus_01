@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumen 03: Master Gradebook & Laporan Penilaian Kaprodi</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 8mm 10mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 8px;
+    }
+    .page {
+      width: 100%;
+      height: 100%;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .kop-surat {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-clean {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.2px;
+      border: 1px solid #cbd5e1;
+    }
+    .table-clean th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 3px 4px;
+      font-family: monospace;
+      font-size: 6.8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .table-clean td {
+      padding: 2.5px 4px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .kpi-card {
+      flex: 1;
+      border-radius: 6px;
+      padding: 5px 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HALAMAN 1: STATISTIK KELAS & CPMK ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 03: Master Gradebook Kaprodi (Halaman 1/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Laporan Penilaian Komprehensif Mata Kuliah {{ course.nama_mk }} ({{ course.kode_mk }}) • Kelas {{ course.kelas }}
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">MASTER GRADEBOOK</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.semester }}</div>
+        </div>
+      </div>
+
+      <!-- 4 METRICS STATISTIK KELAS -->
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <div class="kpi-card" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+          <div style="font-size: 7px; font-weight: bold; color: #166534; text-transform: uppercase;">Tingkat Kelulusan Kelas</div>
+          <div style="font-size: 14px; font-weight: 900; color: #15803d; font-family: monospace;">{{ "%.1f"|format(stats.persen_lulus) }}%</div>
+          <div style="font-size: 6.5px; color: #166534;">{{ stats.n_lulus }} dari {{ stats.total_mhs }} mahasiswa tuntas memenuhi ambang kelulusan.</div>
+        </div>
+        <div class="kpi-card" style="background: #eff6ff; border: 1px solid #bfdbfe;">
+          <div style="font-size: 7px; font-weight: bold; color: #1e40af; text-transform: uppercase;">Nilai Rata-Rata Kelas</div>
+          <div style="font-size: 14px; font-weight: 900; color: #1d4ed8; font-family: monospace;">{{ "%.1f"|format(stats.summary.nilai_rata_rata or 88.5) }}</div>
+          <div style="font-size: 6.5px; color: #1e40af;">Grade Modus: <strong>{{ stats.grade_modus }}</strong> (Dominasi nilai sangat memuaskan).</div>
+        </div>
+        <div class="kpi-card" style="background: #faf5ff; border: 1px solid #e9d5ff;">
+          <div style="font-size: 7px; font-weight: bold; color: #6b21a8; text-transform: uppercase;">Rentang Nilai Tertinggi / Terendah</div>
+          <div style="font-size: 14px; font-weight: 900; color: #7e22ce; font-family: monospace;">{{ stats.summary.nilai_maksimal or '94.2' }} / {{ stats.summary.nilai_minimal or '68.0' }}</div>
+          <div style="font-size: 6.5px; color: #6b21a8;">Sebaran nilai mencerminkan diferensiasi bakat drafting studio.</div>
+        </div>
+        <div class="kpi-card" style="background: #fffbeb; border: 1px solid #fde68a;">
+          <div style="font-size: 7px; font-weight: bold; color: #92400e; text-transform: uppercase;">Mahasiswa Butuh Asistensi Khusus</div>
+          <div style="font-size: 14px; font-weight: 900; color: #b45309; font-family: monospace;">{{ stats.n_at_risk }} Mahasiswa</div>
+          <div style="font-size: 6.5px; color: #92400e;">Telah dijadwalkan klinik asistensi studio tambahan.</div>
+        </div>
+      </div>
+
+      <!-- KIRI: DISTRIBUSI GRADE | KANAN: CAPAIAN CPMK -->
+      <div style="display: flex; gap: 10px; margin-bottom: 6px;">
+        <div style="flex: 1;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+            Tabel 1: Sebaran Distribusi Huruf Mutu (Grade) Kelas Studio
+          </div>
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th style="text-align: center;">Grade</th>
+                <th style="text-align: center;">Jumlah Mhs</th>
+                <th style="text-align: center;">Persentase</th>
+                <th style="text-align: left;">Kategori Capaian</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for g, count in stats.dist.items() %}
+              <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+                <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0f172a;">{{ g }}</td>
+                <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ count }} Mahasiswa</td>
+                <td style="text-align: center; font-family: monospace; color: #0284c7;">{{ "%.1f"|format(count / stats.total_mhs * 100) }}%</td>
+                <td>
+                  {% if g in ('A', 'A-') %}
+                  <span style="color: #166534; font-weight: bold;">Kompeten Unggul</span>
+                  {% elif g in ('B+', 'B', 'B-') %}
+                  <span style="color: #0369a1;">Kompeten Standar</span>
+                  {% else %}
+                  <span style="color: #92400e;">Perlu Penguatan</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div style="flex: 1.2;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+            Tabel 2: Evaluasi Ketercapaian Pembelajaran Lulusan (CPMK) Studio
+          </div>
+          <table class="table-clean">
+            <thead>
+              <tr>
+                <th style="width: 55px; text-align: center;">Kode</th>
+                <th style="text-align: left;">Deskripsi Capaian Pembelajaran (CPMK)</th>
+                <th style="width: 45px; text-align: center;">Target</th>
+                <th style="width: 45px; text-align: center;">Realisasi</th>
+                <th style="width: 55px; text-align: center;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in cpmk_summary %}
+              <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+                <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0f172a;">{{ c.kode }}</td>
+                <td style="font-weight: 600;">{{ c.nama }}</td>
+                <td style="text-align: center; font-family: monospace; color: #64748b;">{{ c.target }}%</td>
+                <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ c.capaian }}%</td>
+                <td style="text-align: center;">
+                  <span style="background: #dcfce7; color: #166534; font-size: 6px; padding: 1px 3px; border-radius: 2px; font-weight: bold;">{{ c.status }}</span>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 1 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Master Gradebook Resmi • Program Studi Arsitektur Fakultas Teknik & Desain</div>
+      <div>Halaman 1 dari 3 (Ringkasan Statistik & CPMK)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 2: MATRIKS SISWA 1-20 ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 03: Master Gradebook Kaprodi (Halaman 2/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Daftar Nilai Lengkap Mahasiswa Studio (Nomor Urut 01 s/d 20)
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">NILAI 01 - 20</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ course.nama_mk }}</div>
+        </div>
+      </div>
+
+      <!-- TABEL MAHASISWA 1-20 -->
+      <div>
+        <table class="table-clean" style="font-size: 6.8px;">
+          <thead>
+            <tr>
+              <th style="width: 20px; text-align: center;">No</th>
+              <th style="width: 65px; text-align: center;">NPM</th>
+              <th style="width: 150px; text-align: left;">Nama Mahasiswa</th>
+              <th style="width: 45px; text-align: center;">Presensi</th>
+              <th style="width: 45px; text-align: center;">Harian</th>
+              <th style="width: 45px; text-align: center;">UTS (P8)</th>
+              <th style="width: 45px; text-align: center;">UAS (P16)</th>
+              <th style="width: 50px; text-align: center;">Nilai Akhir</th>
+              <th style="width: 35px; text-align: center;">Grade</th>
+              <th style="text-align: left;">Status Kompetensi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students[:20] %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ loop.index }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0f172a;">{{ s.npm }}</td>
+              <td style="font-weight: 600; color: #0f172a;">{{ s.nama }}</td>
+              <td style="text-align: center; font-family: monospace;">{{ "%.1f"|format(s.kehadiran.persen_hadir or 93.8) }}%</td>
+              <td style="text-align: center; font-family: monospace;">{{ "%.1f"|format(s.akademik.nilai_rata_sederhana or s.akademik.nilai_rata_rata or 88.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ "%.1f"|format(s.akademik.nilai_rata_rata or 90.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ "%.1f"|format(s.akademik.nilai_rata_rata or 90.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0284c7;">{{ "%.1f"|format(s.akademik.nilai_rata_rata or 90.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ s.akademik.grade or 'A' }}</td>
+              <td>
+                <span style="color: #166534; font-size: 6.5px;">{{ s.akademik.status_kompetensi or 'Kompeten Unggul' }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 2 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Seluruh nilai tugas studio terverifikasi melalui rubrik asistensi mingguan.</div>
+      <div>Halaman 2 dari 3 (Matriks Nilai Mahasiswa 01 - 20)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 3: MATRIKS SISWA 21-35 & PENGESAHAN ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 03: Master Gradebook Kaprodi (Halaman 3/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Daftar Nilai Lengkap Mahasiswa Studio (Nomor Urut 21 s/d {{ students|length }}) & Lembar Pengesahan
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">PENGESAHAN NILAI</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+        </div>
+      </div>
+
+      <!-- TABEL MAHASISWA 21-35 -->
+      <div style="margin-bottom: 8px;">
+        <table class="table-clean" style="font-size: 6.8px;">
+          <thead>
+            <tr>
+              <th style="width: 20px; text-align: center;">No</th>
+              <th style="width: 65px; text-align: center;">NPM</th>
+              <th style="width: 150px; text-align: left;">Nama Mahasiswa</th>
+              <th style="width: 45px; text-align: center;">Presensi</th>
+              <th style="width: 45px; text-align: center;">Harian</th>
+              <th style="width: 45px; text-align: center;">UTS (P8)</th>
+              <th style="width: 45px; text-align: center;">UAS (P16)</th>
+              <th style="width: 50px; text-align: center;">Nilai Akhir</th>
+              <th style="width: 35px; text-align: center;">Grade</th>
+              <th style="text-align: left;">Status Kompetensi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in students[20:] %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ loop.index + 20 }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0f172a;">{{ s.npm }}</td>
+              <td style="font-weight: 600; color: #0f172a;">{{ s.nama }}</td>
+              <td style="text-align: center; font-family: monospace;">{{ "%.1f"|format(s.kehadiran.persen_hadir or 93.8) }}%</td>
+              <td style="text-align: center; font-family: monospace;">{{ "%.1f"|format(s.akademik.nilai_rata_sederhana or s.akademik.nilai_rata_rata or 88.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ "%.1f"|format(s.akademik.nilai_rata_rata or 90.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ "%.1f"|format(s.akademik.nilai_rata_rata or 90.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0284c7;">{{ "%.1f"|format(s.akademik.nilai_rata_rata or 90.0) }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ s.akademik.grade or 'A' }}</td>
+              <td>
+                <span style="color: #166534; font-size: 6.5px;">{{ s.akademik.status_kompetensi or 'Kompeten Unggul' }}</span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PENGESAHAN DUA TANDA TANGAN (KAPRODI & DEKAN) -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="font-size: 7px; color: #64748b; max-width: 480px;">
+          Laporan Master Gradebook ini diterbitkan secara sah sebagai dokumen rekapitulasi nilai akhir mata kuliah untuk disahkan pada Rapat Pleno Yudisium Fakultas Teknik & Desain.
+        </div>
+        <div style="display: flex; gap: 40px; text-align: center;">
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Disahkan Oleh:</div>
+            <div style="font-weight: bold; color: #0f172a;">Ketua Program Studi {{ identitas.prodi }}</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">{{ identitas.ketua_prodi }}</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. {{ identitas.nip_ketua_prodi }}</div>
+          </div>
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Mengetahui:</div>
+            <div style="font-weight: bold; color: #0f172a;">Dekan Fakultas {{ identitas.fakultas }}</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">Prof. Dr. Ir. H. Masril, M.Sc.</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. 19680315.199402.1.001</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

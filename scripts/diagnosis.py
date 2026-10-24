@@ -245,7 +245,7 @@ _KARIER = [
      (("penguasaan_cad", 0.60), ("ketelitian_detail", 0.20),
       ("manajemen_waktu", 0.20)), 99,
      "Kerapian manajemen layer dan kedisiplinan koordinasi gambar digital menjadi modal kuat dalam adopsi teknologi BIM 3D/4D industri konstruksi modern.",
-     "Manajemen Layer Standar IAI, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
+     "Manajemen Layer Standar Industri, Kolaborasi Xref, Logika Elemen 3D, Presisi Grid",
      "Mulai mempelajari dasar Revit Architecture dan integrasi clash detection antar disiplin struktur."),
     (3, "Quantity Surveyor (QS) & Cost Estimator Bangunan",
      "BUMN Karya / Developer Properti Skala Besar",

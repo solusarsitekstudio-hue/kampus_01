@@ -623,7 +623,7 @@ Matriks karier sepanjang kuliah (Tab 9, PDF 06) direkonstruksi "berbukti":
 
 1. 🌟 **M Yazid Zidane Mulyadi (NPM 2510015410010)**
    * Kehadiran 100% (16/16 pertemuan, 32/32 slot), Grade A (95.3), Indeks Kesiapan 93.4%.
-   * Cocok untuk BIM Modeler & Architectural Designer.
+   * Cocok untuk BIM Modeler (92.2%) & Architectural Designer (50.6%).
 2. ⚠️ **Rozi Andrian Surva (NPM 2510015410011)**
    * Kehadiran 62.5% (**9 pertemuan penuh + 2 pertemuan hadir sebagian**, 20/32 slot),
      **3x Alpha**, 1x Sakit, 1x Izin.
@@ -1181,27 +1181,67 @@ kenyataannya.
    Yang dikerjakan manual: pengiriman otomatis dokumen ke kaprodi & wali murid
    (lapis `output/kirim/` beserta manifestnya sudah disiapkan sebagai pintu
    masuknya).
-5. **`sanitize_folder_name` masih ada salinan yang lebih longgar** di
-   `generate_pdfs.py` (~baris 104) dan `video_composer.py` (~baris 43). Versi
-   ketat sudah ada di `scripts/kurikulum_tree.py`, tetapi dua salinan itu belum
-   diseragamkan — jadi nama MK dengan karakter aneh bisa dinormalisasi berbeda.
-6. **`generate_pdfs.py` masih mengimpor `playwright` di baris paling atas.**
-   Aman selama dependensi terpasang, tetapi membuat modul tidak bisa dipakai
-   untuk sekadar membaca data.
+5. **`sanitize_folder_name` sudah diseragamkan** di seluruh sistem:
+   `generate_pdfs.py` dan `video_composer.py` mengimpor versi kanonik dari
+   `scripts/kurikulum_tree.py`.
+6. **`generate_pdfs.py` memuat `playwright` secara lazy** di dalam fungsi
+   generasi PDF, sehingga modul aman diimpor tanpa dependensi browser aktif.
 7. **Baris kementerian dan alamat pada kop surat masih literal** di
    `generate_pdfs.py` (`KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI` dan
    baris Gedung/Lab/Telp). Itu bukan identitas prodi, jadi sengaja belum dipindahkan
    ke config; ubah di situ bila perlu.
-8. **Narasi AI Gemini untuk Portofolio belum dieksekusi.** Analisis potensi
-   memakai templat v3 (`diagnosis.py`); jalur AI (panggil engine Gemini rotary,
-   cache per NPM, fallback tetap templat kalau gagal) sudah direncanakan tetapi
-   belum dipasang.
-9. **`tests/test_migrasi_non_destruktif.py` masih 2 kasus gagal (drift data).**
-   Validasi migrasi menolak sesi dengan total bobot ≠ 100 dan indeks turunan
-   belum memuat `jenis_mk` — modul migrasi/tree tidak berubah, sumber data
-   30 MK yang berubah. Perlu penelusuran tersendiri.
+8. **Narasi AI Gemini untuk Portofolio sudah terpasang (Lapis B).** Dikelola
+   oleh `scripts/ai_karier.py` dengan fail-closed, cache per-NPM, dan verifikasi
+   angka bukti.
+9. **`tests/test_migrasi_non_destruktif.py` lolos 100%.** Penanganan bobot desimal
+   pada `bobot_lama()` di `scripts/migrasi_kurikulum.py` telah diperbaiki sehingga
+   tidak ada lagi pemotongan integer pada mata kuliah dengan bobot pecahan.
 
 > Status data demo: `versi 2.6-KURIKULUM-BERTINGKAT` (stempel build terakhir ada di
 > `data/academic_data.json` → `metadata.build_id`).
 > Angka pada README ini adalah angka data demo (presensi & nilai sintetis),
 > bukan hasil penilaian resmi dosen.
+
+---
+
+## 🌐 PANDUAN DEPLOYMENT HIBRIDA (OPSI C): GITHUB PAGES & CLOUDFLARE TUNNEL
+
+SIAK-KAPRODI mendukung arsitektur deployment hibrida dual-track (Rp 0 tanpa biaya langganan):
+
+### 📦 1. TRACK 1: GitHub Pages (Showcase Publik Statis 24/7)
+Cocok untuk portofolio, presentasi ke yayasan, atau preview umum tanpa memerlukan PC lokal tetap menyala:
+
+**Langkah A: Hubungkan Repositori GitHub (Sekali Saja)**
+1. Buat repository baru di [github.com/new](https://github.com/new) (misal: `siak-kaprodi`).
+2. Di terminal folder proyek, jalankan:
+   ```powershell
+   git remote add origin https://github.com/<username-anda>/siak-kaprodi.git
+   git branch -M main
+   git push -u origin main
+   ```
+3. Di tab **Settings > Pages** pada repository GitHub:
+   - Pilih **Source**: *GitHub Actions* (untuk rilis otomatis via CI/CD), ATAU
+   - Pilih **Source**: *Deploy from a branch* -> pilih branch `gh-pages` / `/ (root)`.
+
+**Langkah B: Deploy 1-Klik dari Desktop**
+- Cukup klik ganda [`DEPLOY_GHPAGES.bat`](file:///e:/WORKSPACE/KAMPUS_01/DEPLOY_GHPAGES.bat).
+- Script akan otomatis mengompilasi 19 endpoint JSON, memverifikasi integritas bundle, dan mendorong folder `dist_gh_pages/` ke branch `gh-pages` GitHub.
+- Akses showcase di: `https://<username-anda>.github.io/siak-kaprodi/`.
+
+**Langkah C: Otomasi Cloud CI/CD (GitHub Actions)**
+- Setiap kali Anda melakukan `git push origin main`, file workflow [`.github/workflows/deploy_showcase.yml`](file:///e:/WORKSPACE/KAMPUS_01/.github/workflows/deploy_showcase.yml) akan otomatis mengompilasi dan merilis showcase ke GitHub Pages secara 24/7.
+
+
+### ⚡ 2. TRACK 2: Cloudflare Tunnel (Mesin Operasional Penuh Kaprodi)
+Cocok untuk operasional resmi kaprodi, penginputan nilai/kurikulum, dan pencetakan PDF massal via internet:
+1. Pastikan server lokal aktif:
+   ```cmd
+   1_RUN_SERVER.bat
+   ```
+2. Luncurkan Quick Tunnel Cloudflare:
+   ```cmd
+   START_TUNNEL.bat
+   ```
+3. Script otomatis mengunduh `bin/cloudflared.exe` (jika belum ada) dan menghasilkan URL publik HTTPS resmi (`https://*.trycloudflare.com`).
+4. **Proteksi Keamanan PIN:** Pengunjung umum dapat membaca data (GET), tetapi aksi mutasi data (`POST /api/kurikulum/simpan`, dll.) dilindungi oleh PIN Kaprodi 6-digit (default: `404040` yang dapat diatur di `config/identitas.json`).
+

@@ -1,0 +1,36 @@
+{
+  "versi": 1,
+  "angkatan": 2020,
+  "prodi": "Arsitektur",
+  "keterangan": "Arsip Partisi Mahasiswa Senior Kritis (Semester 12 - SP-1 Kaprodi)",
+  "mahasiswa": [
+    {
+      "npm": "2010015410001",
+      "nama": "IKHSANUL FIKRI",
+      "angkatan": 2020,
+      "status": "KRITIS_SP",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2010015410002",
+      "nama": "JULIA ANGGRAENI",
+      "angkatan": 2020,
+      "status": "KRITIS_SP",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2010015410003",
+      "nama": "KIKI FATMAWATI",
+      "angkatan": 2020,
+      "status": "KRITIS_SP",
+      "riwayat_bss": []
+    },
+    {
+      "npm": "2010015410004",
+      "nama": "LUKMAN HAKIM",
+      "angkatan": 2020,
+      "status": "KRITIS_SP",
+      "riwayat_bss": []
+    }
+  ]
+}

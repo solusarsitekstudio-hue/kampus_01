@@ -33,3 +33,18 @@ data/_staging/
 
 # Preview PNG hasil inspeksi visual
 public/preview_pdf_*.png
+
+# Binary Tooling (Cloudflare Tunnel exe dll - anti-bloat)
+bin/
+
+# Static Showcase Bundle (disalurkan terpisah ke branch gh-pages)
+dist_gh_pages/
+
+# Output distribusi dokumen massal
+output/distribusi_*/
+output/kirim/
+output/sample_master/
+
+# Work memory AI
+.diskuss/
+.loop_logic/

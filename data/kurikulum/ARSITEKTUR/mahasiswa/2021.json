@@ -1,0 +1,38 @@
+{
+  "versi": 1,
+  "prodi": "ARSITEKTUR",
+  "angkatan": 2021,
+  "total_mahasiswa": 2,
+  "mahasiswa": [
+    {
+      "npm": "2110015411001",
+      "nama": "RIKO FEBRIANTO",
+      "angkatan": 2021,
+      "semester_ke": 10,
+      "status": "AKTIF",
+      "zona": {
+        "zona": 2,
+        "kode": "EXTENDED",
+        "label": "Zona 2 - Extended Studio",
+        "keterangan": "Masa penyelesaian Tugas Akhir & sisa studio normal UBH",
+        "color": "amber",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2110015411002",
+      "nama": "SITI NURHALIZA",
+      "angkatan": 2021,
+      "semester_ke": 10,
+      "status": "AKTIF",
+      "zona": {
+        "zona": 2,
+        "kode": "EXTENDED",
+        "label": "Zona 2 - Extended Studio",
+        "keterangan": "Masa penyelesaian Tugas Akhir & sisa studio normal UBH",
+        "color": "amber",
+        "at_risk_do": false
+      }
+    }
+  ]
+}

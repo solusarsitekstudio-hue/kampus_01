@@ -1,0 +1,218 @@
+{
+  "versi": 1,
+  "prodi": "ARSITEKTUR",
+  "angkatan": 2026,
+  "total_mahasiswa": 15,
+  "mahasiswa": [
+    {
+      "npm": "2610015410001",
+      "nama": "ARKAN NAUFAL FIRDAUS",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410002",
+      "nama": "ZAHRA AMALIA SYAHRIR",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410003",
+      "nama": "RANGGA ADIPUTRA NUGROHO",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410004",
+      "nama": "TASYA KAMILA HERMAWAN",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410005",
+      "nama": "DAFFA IBNU ALKAUTSAR",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410006",
+      "nama": "SALMA KHAIRUNNISA",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410007",
+      "nama": "ALIF RAMADHAN SUPRIADI",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410008",
+      "nama": "NAYLA AZZAHRA",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410009",
+      "nama": "RYAN HIDAYATULLAH",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410010",
+      "nama": "AULIA RAHMADHANI",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410011",
+      "nama": "FATIH AL FARUQ",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410012",
+      "nama": "KEYLA PUTRI ANDRIANI",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410013",
+      "nama": "RAFI ATHALLAH",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410014",
+      "nama": "DEWI LESTARI KURNIA",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2610015410015",
+      "nama": "HILMI SYAHPUTRA",
+      "angkatan": 2026,
+      "semester_ke": 1,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    }
+  ]
+}

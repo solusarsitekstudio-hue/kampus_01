@@ -54,15 +54,17 @@ check(" duplikat npm: 2 pertemuan", list(m["A1"]) == [1, 2], str(list(m["A1"])))
 check(" npm kosong tidak masuk", "" not in m)
 
 print("\n3. Agregasi MK aktif <=> master (data live)")
-prodi = KT.daftar_prodi()[:1] and KT.daftar_prodi()[0]
-mk_aktif = KT.daftar_mk(prodi, "2025-2026", "GENAP")
-dok = P.agregat_semester(prodi, "2025-2026", "GENAP")
-baris_by_kunci = {b["kunci_mk"]: b for b in dok["baris"]}
 master_path = os.path.join(HERE, "data", "academic_data.json")
 try:
     with open(master_path, "r", encoding="utf-8") as f:
         master = json.load(f)
-    kunci_master = (master.get("metadata") or {}).get("kunci_mk")
+    meta = master.get("metadata") or {}
+    prodi = meta.get("prodi") or (KT.daftar_prodi()[:1] and KT.daftar_prodi()[0])
+    tahun = (meta.get("tahun_ajar") or "2025-2026").replace("/", "-")
+    sem = (meta.get("semester") or "GENAP").upper()
+    kunci_master = meta.get("kunci_mk")
+    dok = P.agregat_semester(prodi, tahun, sem)
+    baris_by_kunci = {b["kunci_mk"]: b for b in dok.get("baris", [])}
     cb = baris_by_kunci.get(kunci_master)
     check(" MK master ada di agregat", cb is not None, kunci_master)
     if cb:
@@ -173,6 +175,7 @@ check(" at-risk unik <= jumlah mahasiswa",
       str(roll["ringkas"]["jumlah_at_risk"]))
 
 print("\n7. Cache: tanda mtime mengusangkan rekap")
+mk_aktif = KT.daftar_mk(prodi, "2025-2026", "GENAP")
 b1 = P.agregat_mk(prodi, "2025-2026", "GENAP", mk_aktif[0])
 kcache = (prodi, "2025-2026", "GENAP", mk_aktif[0])
 eusi = P._REKAP_CACHE.get(kcache)

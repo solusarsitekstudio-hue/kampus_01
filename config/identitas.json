@@ -12,6 +12,10 @@
   "dokumen": {
     "tanggal_tanda_tangan": "18 Oktober 2026"
   },
+  "keamanan": {
+    "pin_kaprodi": "404040",
+    "catatan": "PIN 6 digit untuk proteksi akses mutasi data (POST) saat server dibuka via Cloudflare Tunnel atau publik."
+  },
   "dashboard": {
     "judul": "Rekap Monitoring Perkuliahan",
     "subjudul": "Executive Academic Suite — Prodi {prodi}",
@@ -416,5 +420,9 @@
       "asisten_dosen": "-",
       "asisten_nip": ""
     }
+  },
+  "keuangan": {
+    "spp_per_semester": 6500000,
+    "sisa_semester_standar": 6
   }
 }

@@ -51,9 +51,15 @@ import kelas_rules as KR  # noqa: E402
 # Begitu satu mahasiswa ditambah/dihapus/diurutkan ulang, SEMUA posisi bergeser
 # satu langkah dan mahasiswa yang sama berubah persona tanpa ada yang sadar.
 ARCHETYPE_BY_NPM = {
-    "2510015410010": "star",      # M YAZID ZIDANE MULYADI
-    "2510015410011": "at_risk",   # ROZI ANDRIAN SURVA
-    "2510015410001": "high",      # ALSA DMI YESYA PUTRI
+    "2510015410010": "star",      # M YAZID ZIDANE MULYADI (Angkatan 2025)
+    "2510015410011": "at_risk",   # ROZI ANDRIAN SURVA (Angkatan 2025)
+    "2510015410001": "high",      # ALSA DMI YESYA PUTRI (Angkatan 2025)
+    "2410015410001": "star",      # FAJAR ADITYA PRATAMA (Angkatan 2024)
+    "2410015410002": "at_risk",   # DINA SALSABILA PUTRI (Angkatan 2024 - Retake)
+    "2410015410005": "at_risk",   # BAGAS WICAKSONO (Angkatan 2024 - Retake)
+    "2610015410001": "star",      # ARKAN NAUFAL FIRDAUS (Angkatan 2026)
+    "2610015410003": "at_risk",   # RANGGA ADIPUTRA NUGROHO (Angkatan 2026)
+    "2610015410007": "at_risk",   # ALIF RAMADHAN SUPRIADI (Angkatan 2026)
 }
 
 

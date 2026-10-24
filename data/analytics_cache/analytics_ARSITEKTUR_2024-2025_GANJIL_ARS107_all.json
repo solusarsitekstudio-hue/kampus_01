@@ -1,0 +1,537 @@
+{
+  "grafik_cohort_comparison": {
+    "categories": [
+      "Angkatan 2024 (Sem 4)",
+      "Angkatan 2025 (Sem 2)",
+      "Angkatan 2026 (Sem 1)"
+    ],
+    "series": [
+      {
+        "name": "Total Mahasiswa",
+        "data": [
+          15,
+          35,
+          15
+        ]
+      },
+      {
+        "name": "Tingkat Kehadiran (%)",
+        "data": [
+          86.8,
+          88.4,
+          92.0
+        ]
+      },
+      {
+        "name": "Rasio Mahasiswa Aman (%)",
+        "data": [
+          80.0,
+          80.0,
+          73.3
+        ]
+      },
+      {
+        "name": "Mahasiswa At-Risk",
+        "data": [
+          3,
+          7,
+          4
+        ]
+      }
+    ],
+    "kpi": {
+      "2024": {
+        "mhs": 15,
+        "ipk": "3.38",
+        "kehadiran": "86.8%",
+        "at_risk": 3,
+        "retensi": "80.0%"
+      },
+      "2025": {
+        "mhs": 35,
+        "ipk": "3.46",
+        "kehadiran": "88.4%",
+        "at_risk": 7,
+        "retensi": "80.0%"
+      },
+      "2026": {
+        "mhs": 15,
+        "ipk": "3.52",
+        "kehadiran": "92.0%",
+        "at_risk": 4,
+        "retensi": "73.3%"
+      }
+    },
+    "total_prodi": 65
+  },
+  "status": "success",
+  "prodi": "ARSITEKTUR",
+  "tahun_ajar": "2024-2025",
+  "semester": "GANJIL",
+  "kunci_mk": "ARS107",
+  "nama_mk": "Studio Perancangan Arsitektur 1",
+  "kode_mk": "5412512101",
+  "rumpun": "Studio Perancangan & CAD",
+  "grafik_1_mahasiswa_aktif": {
+    "categories": [
+      "Sem 1",
+      "Sem 2",
+      "Sem 3",
+      "Sem 4",
+      "Sem 5",
+      "Sem 6",
+      "Sem 7",
+      "Sem 8"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Aktif Penuh",
+        "data": [
+          31,
+          29,
+          27,
+          28,
+          29,
+          27,
+          27,
+          26
+        ]
+      },
+      {
+        "name": "Cuti / Izin Akademik",
+        "data": [
+          1,
+          2,
+          2,
+          1,
+          2,
+          1,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Mahasiswa At-Risk / Kritis",
+        "data": [
+          3,
+          3,
+          4,
+          3,
+          2,
+          3,
+          2,
+          1
+        ]
+      }
+    ],
+    "total_aktif": 224,
+    "total_terdaftar": 257,
+    "total_cuti": 12,
+    "total_at_risk": 21,
+    "retensi_rata_pct": 87.2
+  },
+  "grafik_2_kapasitas_mk": {
+    "categories": [
+      "Dasar Desain",
+      "Studio 1",
+      "Struktur 1",
+      "Studio 2",
+      "Struktur 2",
+      "Tropis",
+      "Studio 4",
+      "Studio 5 (TA)"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Reguler",
+        "data": [
+          31,
+          29,
+          32,
+          28,
+          30,
+          33,
+          29,
+          31
+        ]
+      },
+      {
+        "name": "Mahasiswa Mengulang",
+        "data": [
+          4,
+          6,
+          3,
+          7,
+          5,
+          2,
+          6,
+          4
+        ]
+      }
+    ],
+    "kapasitas_maksimal": 35,
+    "total_mk": 30,
+    "status_prodi": "OPTIMAL"
+  },
+  "grafik_3_rumpun": {
+    "categories": [
+      "Studio Perancangan & CAD",
+      "Struktur & Rekayasa Konstruksi",
+      "Teori & Sejarah Arsitektur",
+      "Sains & Fisika Bangunan"
+    ],
+    "series": [
+      {
+        "name": "Rata-rata Nilai",
+        "data": [
+          77.1,
+          78.2,
+          75.6,
+          76.3
+        ]
+      },
+      {
+        "name": "Rata-rata Kehadiran (%)",
+        "data": [
+          83.4,
+          84.5,
+          81.6,
+          81.5
+        ]
+      }
+    ]
+  },
+  "grafik_4_kesehatan_prodi": {
+    "labels": [
+      "Retensi Mahasiswa",
+      "Presensi Kuliah",
+      "Kelulusan Tepat Waktu",
+      "Mutu Studio"
+    ],
+    "series": [
+      94,
+      88,
+      85,
+      92
+    ],
+    "indeks_komposit": 89.8
+  },
+  "grafik_1_kehadiran": {
+    "categories": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "P6",
+      "P7",
+      "P8",
+      "P9",
+      "P10",
+      "P11",
+      "P12",
+      "P13",
+      "P14",
+      "P15",
+      "P16"
+    ],
+    "series": [
+      {
+        "name": "Tingkat Kehadiran Kelas (%)",
+        "data": [
+          86.7,
+          100.0,
+          86.7,
+          86.7,
+          86.7,
+          86.7,
+          86.7,
+          100.0,
+          93.3,
+          80.0,
+          73.3,
+          73.3,
+          93.3,
+          100.0,
+          86.7,
+          100.0
+        ]
+      },
+      {
+        "name": "Ambang Batas Minimum (75%)",
+        "data": [
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0,
+          75.0
+        ]
+      }
+    ],
+    "ambang": 75.0,
+    "titik_kritis": [
+      {
+        "pertemuan": "P11",
+        "persen": 73.3
+      },
+      {
+        "pertemuan": "P12",
+        "persen": 73.3
+      }
+    ],
+    "nama_mk": "Studio Perancangan Arsitektur 1"
+  },
+  "grafik_2_retensi": {
+    "categories": [
+      "Sem 1",
+      "Sem 2",
+      "Sem 3",
+      "Sem 4",
+      "Sem 5",
+      "Sem 6",
+      "Sem 7",
+      "Sem 8"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Aktif Penuh",
+        "data": [
+          31,
+          29,
+          27,
+          28,
+          29,
+          27,
+          27,
+          26
+        ]
+      },
+      {
+        "name": "Cuti / Izin Akademik",
+        "data": [
+          1,
+          2,
+          2,
+          1,
+          2,
+          1,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Mahasiswa At-Risk / Kritis",
+        "data": [
+          3,
+          3,
+          4,
+          3,
+          2,
+          3,
+          2,
+          1
+        ]
+      }
+    ],
+    "total_aktif": 224,
+    "total_terdaftar": 257,
+    "total_cuti": 12,
+    "total_at_risk": 21,
+    "retensi_rata_pct": 87.2
+  },
+  "grafik_4_scatter": {
+    "points": [
+      {
+        "x": 100.0,
+        "y": 95.6,
+        "nama": "FAJAR ADITYA PRATAMA",
+        "npm": "2410015410001",
+        "grade": "A",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 62.5,
+        "y": 61.2,
+        "nama": "DINA SALSABILA PUTRI",
+        "npm": "2410015410002",
+        "grade": "C",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 96.9,
+        "y": 79.6,
+        "nama": "RIZKY ANANDA MAULANA",
+        "npm": "2410015410003",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 82.3,
+        "nama": "MEUTIA KHAIRUNNISA",
+        "npm": "2410015410004",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 62.5,
+        "y": 61.4,
+        "nama": "BAGAS WICAKSONO",
+        "npm": "2410015410005",
+        "grade": "C",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 93.8,
+        "y": 80.7,
+        "nama": "ANISA RAHMAWATI",
+        "npm": "2410015410006",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 81.2,
+        "y": 71.3,
+        "nama": "DAFFA RAYHAN KURNIAWAN",
+        "npm": "2410015410007",
+        "grade": "B",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 79.9,
+        "nama": "SHINTA BELLA LESTARI",
+        "npm": "2410015410008",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 87.5,
+        "y": 84.2,
+        "nama": "GILANG RAMADHAN",
+        "npm": "2410015410009",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 87.5,
+        "y": 83.7,
+        "nama": "NAFISAH AULIA DEWI",
+        "npm": "2410015410010",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 100.0,
+        "y": 80.8,
+        "nama": "ILHAM BUDI SANTOSO",
+        "npm": "2410015410011",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 68.8,
+        "y": 72.7,
+        "nama": "CLARA AYUNDA",
+        "npm": "2410015410012",
+        "grade": "B",
+        "kuadran": "Zona Bahaya Drop-Out (Rawan DO)"
+      },
+      {
+        "x": 84.4,
+        "y": 78.0,
+        "nama": "RENDY PRASITYA",
+        "npm": "2410015410013",
+        "grade": "B+",
+        "kuadran": "Butuh Bimbingan (Rajin tapi Nilai Rendah)"
+      },
+      {
+        "x": 93.8,
+        "y": 82.2,
+        "nama": "CITRA MAHARANI",
+        "npm": "2410015410014",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      },
+      {
+        "x": 96.9,
+        "y": 81.9,
+        "nama": "HENDRA WIJAYA",
+        "npm": "2410015410015",
+        "grade": "A-",
+        "kuadran": "Pilar Prestasi (Rajin & Nilai Tinggi)"
+      }
+    ],
+    "threshold_kehadiran": 75.0,
+    "threshold_nilai": 80.0
+  },
+  "grafik_5_workload": {
+    "categories": [
+      "Dasar Desain",
+      "Studio 1",
+      "Struktur 1",
+      "Studio 2",
+      "Struktur 2",
+      "Tropis",
+      "Studio 4",
+      "Studio 5 (TA)"
+    ],
+    "series": [
+      {
+        "name": "Mahasiswa Reguler",
+        "data": [
+          31,
+          29,
+          32,
+          28,
+          30,
+          33,
+          29,
+          31
+        ]
+      },
+      {
+        "name": "Mahasiswa Mengulang",
+        "data": [
+          4,
+          6,
+          3,
+          7,
+          5,
+          2,
+          6,
+          4
+        ]
+      }
+    ],
+    "kapasitas_maksimal": 35,
+    "total_mk": 30,
+    "status_prodi": "OPTIMAL"
+  },
+  "grafik_6_pareto": {
+    "labels": [
+      "Retensi Mahasiswa",
+      "Presensi Kuliah",
+      "Kelulusan Tepat Waktu",
+      "Mutu Studio"
+    ],
+    "series": [
+      94,
+      88,
+      85,
+      92
+    ],
+    "indeks_komposit": 89.8
+  }
+}

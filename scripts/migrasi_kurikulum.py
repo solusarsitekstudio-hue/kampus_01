@@ -1,4 +1,4 @@
-﻿"""MIGRASI SEKALI JALAN: data lama -> tree kurikulum bertingkat.
+"""MIGRASI SEKALI JALAN: data lama -> tree kurikulum bertingkat.
 
 Jalankan:  python scripts\\migrasi_kurikulum.py            (tolak kalau sudah ada)
            python scripts\\migrasi_kurikulum.py --force    (bangun ulang struktur)
@@ -173,11 +173,14 @@ def slot_absen_lama(baris_lama):
 
 def bobot_lama(baris_lama):
     """Bobot pertemuan yang sudah ada, kalau angkanya masuk akal; selain itu None."""
+    val = (baris_lama or {}).get("bobot")
     try:
-        b = int((baris_lama or {}).get("bobot"))
+        b = float(val)
     except (TypeError, ValueError):
         return None
-    return b if 0 <= b <= 100 else None
+    if 0 <= b <= 100:
+        return int(b) if b.is_integer() else round(b, 2)
+    return None
 
 
 # Teks topik yang BUKAN topik asli + aturan penandanya SEKARANG hidup di

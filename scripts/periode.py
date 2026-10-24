@@ -166,7 +166,9 @@ def _rekap_mk_dalam(prodi, ta, sem, kunci, data):
         "pertemuan_standar": AT.pertemuan_total(),
         "topik_terisi": topik_terisi,
         "topik_placeholder": len(sesi_rows) - topik_terisi,
-        "bobot_total": sum(int(r.get("bobot") or 0) for r in sesi_rows),
+        "bobot_total": (int(round(sum(float(r.get("bobot") or 0) for r in sesi_rows), 2))
+                        if round(sum(float(r.get("bobot") or 0) for r in sesi_rows), 2).is_integer()
+                        else round(sum(float(r.get("bobot") or 0) for r in sesi_rows), 2)),
         "kehadiran_rata": (round(jumlah_kehadiran / jumlah_percen, 1)
                            if jumlah_percen else None),
         "nilai_rata": (round(jumlah_nilai / dihitung_nilai, 1)

@@ -307,7 +307,7 @@ class GradeTanpaTeks(KeyError):
 TEKS_GRADE = {
     "A": (
         "Sangat Memuaskan / Kompeten Unggul",
-        "Kompeten Unggul (Memenuhi Standar Studio IAI)",
+        "Kompeten Unggul (Standar Rancang Bangun & Industri Kreatif)",
         "Sangat Siap & Siap Magang di Konsultan Arsitektur",
     ),
     "A-": (

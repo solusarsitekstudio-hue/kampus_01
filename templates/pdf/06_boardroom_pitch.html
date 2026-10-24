@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumen 06: Boardroom Executive Pitch Deck Yayasan</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 8mm 10mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 8px;
+    }
+    .page {
+      width: 100%;
+      height: 100%;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .kop-surat {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 5px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-clean {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.2px;
+      border: 1px solid #cbd5e1;
+    }
+    .table-clean th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 3px 5px;
+      font-family: monospace;
+      font-size: 6.8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .table-clean td {
+      padding: 2.5px 5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== SLIDE 1: 5 KARTU TRUF EKSEKUTIF ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 06: Boardroom Pitch Deck (Slide 1/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Laporan Kinerja Strategis & 5 Kartu Truf Finansial Program Studi Arsitektur untuk Yayasan
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">BOARDROOM DECK</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.semester }}</div>
+        </div>
+      </div>
+
+      <!-- 5 KARTU TRUF -->
+      <div style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; text-transform: uppercase;">
+          5 Indikator Kunci Kinerja & Pertumbuhan Finansial (Executive Trump Cards):
+        </div>
+        <div style="display: flex; gap: 6px;">
+          {% for t in truf_list %}
+          <div style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-top: 3px solid #0284c7; border-radius: 5px; padding: 6px 8px;">
+            <div style="font-size: 6.8px; font-weight: bold; color: #64748b; text-transform: uppercase;">{{ t.kategori or 'KPI Kunci' }}</div>
+            <div style="font-size: 11px; font-weight: 900; color: #0f172a; margin: 2px 0;">{{ t.judul }}</div>
+            <div style="font-size: 13px; font-weight: 900; font-family: monospace; color: #0284c7; margin-bottom: 3px;">{{ t.nilai }}</div>
+            <div style="font-size: 6.5px; color: #475569; line-height: 1.25;">{{ t.keterangan }}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER SLIDE 1 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Bahan Rapat Dewan Pembina & Pengurus Yayasan Pendidikan</div>
+      <div>Slide 1 dari 3 (5 Kartu Truf Eksekutif)</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 2: MATRIKS MATA KULIAH INTI ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 06: Boardroom Pitch Deck (Slide 2/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Tingkat Penyerapan Kurikulum & Kebutuhan Ruang Studio Mata Kuliah Inti
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0284c7; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">KAPASITAS STUDIO</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.semester }}</div>
+        </div>
+      </div>
+
+      <!-- TABEL MATRIKS MK INTI -->
+      <div>
+        <table class="table-clean" style="font-size: 6.8px;">
+          <thead>
+            <tr>
+              <th style="width: 20px; text-align: center;">No</th>
+              <th style="width: 50px; text-align: center;">Kode</th>
+              <th style="text-align: left;">Mata Kuliah & Dosen</th>
+              <th style="width: 30px; text-align: center;">SKS</th>
+              <th style="width: 80px; text-align: center;">Periode</th>
+              <th style="width: 50px; text-align: center;">Peserta</th>
+              <th style="width: 60px; text-align: center;">Penyerapan</th>
+              <th style="width: 50px; text-align: center;">Beban (L)</th>
+              <th style="text-align: left;">Evaluasi Studio</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in matriks_mk %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ loop.index }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ m.kode_mk }}</td>
+              <td style="font-weight: 600; color: #0f172a;">{{ m.nama_mk }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">{{ m.sks }}</td>
+              <td style="text-align: center; font-family: monospace;">{{ m.tahun_ajar or '2025/2026' }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0284c7;">{{ m.peserta or 15 }}</td>
+              <td style="text-align: center; font-family: monospace; font-weight: bold; color: #16a34a;">{{ m.penyerapan_pct or '100.0%' }}</td>
+              <td style="text-align: center; font-family: monospace; color: #b45309;">{{ m.beban or '2.25' }}</td>
+              <td style="font-size: 6.5px; color: #475569;">{{ m.evaluasi or 'Beroperasi pada kapasitas penuh meja gambar' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOOTER SLIDE 2 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>Rasio ruang studio per mahasiswa mencapai 1:1 meja asistensi.</div>
+      <div>Slide 2 dari 3 (Kapasitas Studio & Matriks MK)</div>
+    </div>
+  </div>
+
+  <!-- ==================== SLIDE 3: PROSPEK ANGGARAN & PENGESAHAN ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 06: Boardroom Pitch Deck (Slide 3/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Rekomendasi Investasi Fasilitas Studio & Pengesahan Direksi Yayasan
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">PENGESAHAN DECK</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+        </div>
+      </div>
+
+      <!-- KOTAK USULAN INVESTASI -->
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <div style="flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 8px;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #166534; text-transform: uppercase; margin-bottom: 3px;">
+            1. Peningkatan Lisensi BIM & VR Studio
+          </div>
+          <div style="font-size: 7.2px; color: #14532d; line-height: 1.3;">
+            Alokasi anggaran Rp 180.000.000 untuk pengadaan lisensi pendidikan software perancangan BIM terkini guna mempertahankan daya saing lulusan arsitektur di pasar kerja global.
+          </div>
+        </div>
+        <div style="flex: 1; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 8px;">
+          <div style="font-size: 8.5px; font-weight: bold; color: #1e40af; text-transform: uppercase; margin-bottom: 3px;">
+            2. Workshop Pembuatan Maket & 3D Printing
+          </div>
+          <div style="font-size: 7.2px; color: #1e3a8a; line-height: 1.3;">
+            Pengembangan ruang prototyping fisik untuk menguji struktur tektonika rancangan mahasiswa secara presisi sebelum pameran tahunan.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGESAHAN DUA TANDA TANGAN (KAPRODI & KETUA YAYASAN) -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="font-size: 7px; color: #64748b; max-width: 480px;">
+          Boardroom Pitch Deck ini disampaikan dalam forum evaluasi strategis Yayasan Pendidikan untuk persetujuan alokasi anggaran tahun berikutnya.
+        </div>
+        <div style="display: flex; gap: 40px; text-align: center;">
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Disusun Oleh:</div>
+            <div style="font-weight: bold; color: #0f172a;">Ketua Program Studi {{ identitas.prodi }}</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">{{ identitas.ketua_prodi }}</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. {{ identitas.nip_ketua_prodi }}</div>
+          </div>
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Disetujui Oleh:</div>
+            <div style="font-weight: bold; color: #0f172a;">Ketua Yayasan Pendidikan</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">Prof. Ir. H. Fachruddin, Ph.D.</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. 19570912.198303.1.001</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

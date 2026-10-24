@@ -1,0 +1,57 @@
+{
+  "course_name": "Aplikasi Komputer Arsitektur & QS",
+  "course_code": "5412522233",
+  "program_studi": "ARSITEKTUR",
+  "generated_at": "2026-10-22 21:43:31",
+  "timestamp_id": "2026-10-22_21-43-18",
+  "target_directory": "E:\\WORKSPACE\\KAMPUS_01\\output\\APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS\\2026-10-22_21-43-18",
+  "total_files": 11,
+  "data_stamp": "c5c0fd42e6c7",
+  "format_v": "v1",
+  "files": [
+    {
+      "filename": "01_rekap_kehadiran_bulanan_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+      "size_kb": 272.1
+    },
+    {
+      "filename": "01_rekap_kehadiran_bulanan_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+      "size_kb": 260.7
+    },
+    {
+      "filename": "01_rekap_kehadiran_bulanan_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+      "size_kb": 278.1
+    },
+    {
+      "filename": "02_rapor_akhir_semester_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+      "size_kb": 560.1
+    },
+    {
+      "filename": "02_rapor_akhir_semester_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+      "size_kb": 560.4
+    },
+    {
+      "filename": "02_rapor_akhir_semester_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+      "size_kb": 554.4
+    },
+    {
+      "filename": "03_laporan_penilaian_kaprodi_master_gradebook.pdf",
+      "size_kb": 239.3
+    },
+    {
+      "filename": "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf",
+      "size_kb": 267.2
+    },
+    {
+      "filename": "05_deckcraft_portofolio_arsitektur_2510015410001_ALSA_DMI_YESYA_PUTRI.pdf",
+      "size_kb": 1327.4
+    },
+    {
+      "filename": "05_deckcraft_portofolio_arsitektur_2510015410010_M_YAZID_ZIDANE_MULYADI.pdf",
+      "size_kb": 1328.9
+    },
+    {
+      "filename": "05_deckcraft_portofolio_arsitektur_2510015410011_ROZI_ANDRIAN_SURVA.pdf",
+      "size_kb": 1328.2
+    }
+  ]
+}

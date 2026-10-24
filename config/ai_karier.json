@@ -1,7 +1,5 @@
 {
-  // LAPIS B potensi karier (keputusan user 2026-10-21).
-  // aktif=false = server tidak pernah memanggil engine (fail-closed default).
-  // max_karier = hanya karier terata N yang narasinya dirapikan AI (hemat kuota).
+  "_keterangan": "LAPIS B potensi karier. aktif=true mengizinkan perapian AI narasi karier teratas. max_karier membatasi jumlah karier.",
   "aktif": true,
   "max_karier": 3,
   "suhu": 0.2

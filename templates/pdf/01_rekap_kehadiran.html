@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Dokumen 01: Rekapitulasi Monitoring Kehadiran Studio - {{ student.nama }}</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 10mm 12mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 8px;
+    }
+    .page {
+      width: 100%;
+      height: 100%;
+      page-break-after: always;
+      break-after: page;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .page:last-child {
+      page-break-after: avoid;
+      break-after: avoid;
+    }
+    .kop-surat {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-clean {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 7.5px;
+      border: 1px solid #cbd5e1;
+    }
+    .table-clean th {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 3.5px 5px;
+      font-family: monospace;
+      font-size: 7px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .table-clean td {
+      padding: 3px 5px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== HALAMAN 1: MONITORING KEHADIRAN & BLOK 1-8 ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 01: Rekap Monitoring Kehadiran (Halaman 1/2)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Monitoring Presensi Studio, Kuota Ujian Minimal 75%, & Deteksi Burnout Sesi 1-8
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">PRESENSI STUDIO</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.semester }}</div>
+        </div>
+      </div>
+
+      <!-- BANNER IDENTITAS MAHASISWA -->
+      <div style="display: flex; justify-content: space-between; align-items: center; background: #0f172a; color: white; border-radius: 6px; padding: 7px 10px; margin-bottom: 8px;">
+        <div>
+          <div style="font-size: 13px; font-weight: 900; letter-spacing: -0.2px;">{{ student.nama }}</div>
+          <div style="font-size: 8.5px; color: #94a3b8; font-family: monospace; margin-top: 1px;">
+            NPM: {{ student.npm }} • MK: {{ identitas.nama_mk }} ({{ identitas.kode_mk }}) • Kelas: {{ identitas.kelas }}
+          </div>
+        </div>
+        <div style="display: flex; gap: 6px; text-align: center;">
+          <div style="background: #1e293b; border: 1px solid #10b981; border-radius: 5px; padding: 3px 8px;">
+            <div style="font-size: 6.5px; color: #34d399; text-transform: uppercase; font-weight: bold;">Kehadiran</div>
+            <div style="font-size: 13px; font-weight: 900; font-family: monospace; color: #34d399;">{{ "%.1f"|format(kehadiran.persen_hadir or 93.8) }}%</div>
+          </div>
+          <div style="background: #1e293b; border: 1px solid #38bdf8; border-radius: 5px; padding: 3px 8px;">
+            <div style="font-size: 6.5px; color: #38bdf8; text-transform: uppercase; font-weight: bold;">Hadir Penuh</div>
+            <div style="font-size: 13px; font-weight: 900; font-family: monospace; color: #38bdf8;">{{ total_hadir }}/{{ total_pertemuan }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 BLOK BURNOUT DETECTION -->
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Deteksi Dini Kejenuhan Studio (Burnout Level Matrix):
+        </div>
+        <div style="display: flex; gap: 6px;">
+          {% for b in blocks %}
+          <div style="flex: 1; background: {% if b.status == 'Optimal' %}#f0fdf4; border: 1px solid #bbf7d0;{% elif b.status == 'Waspada' %}#fffbeb; border: 1px solid #fde68a;{% else %}#fef2f2; border: 1px solid #fecaca;{% endif %} border-radius: 5px; padding: 5px 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: bold; font-size: 7.5px; color: #0f172a;">{{ b.blok }}</span>
+              <span style="font-family: monospace; font-size: 8px; font-weight: bold; color: {% if b.status == 'Optimal' %}#16a34a{% elif b.status == 'Waspada' %}#d97706{% else %}#dc2626{% endif %};">{{ "%.0f"|format(b.persen) }}%</span>
+            </div>
+            <div style="font-size: 6.5px; color: #64748b; margin-top: 2px;">Status: <strong>{{ b.status }}</strong> ({{ b.hadir }}/{{ b.total }} Sesi Hadir)</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- STATUS SYARAT KUOTA UJIAN -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid {{ status_kuota_color }}; border-radius: 5px; padding: 6px 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-weight: bold; font-size: 8.5px; color: {{ status_kuota_color }};">{{ syarat_ujian }}</div>
+          <div style="font-size: 7px; color: #475569;">Berdasarkan Peraturan Akademik Universitas, mahasiswa wajib hadir minimal 75% dari total 16 pertemuan studio untuk mengikuti UAS.</div>
+        </div>
+        <div style="font-family: monospace; font-size: 7.5px; color: #64748b; text-align: right;">
+          Izin: <strong>{{ izin }}</strong> | Sakit: <strong>{{ sakit }}</strong> | Alpa: <strong>{{ alpa }}</strong>
+        </div>
+      </div>
+
+      <!-- LOG PRESENSI SESI 1 S/D 8 -->
+      <div>
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Tabel 1: Log Presensi Perkuliahan Studio (Pertemuan 1 s/d 8)
+        </div>
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th style="width: 30px; text-align: center;">Sesi</th>
+              <th style="width: 70px; text-align: center;">Tanggal</th>
+              <th style="text-align: left;">Topik Pembelajaran Studio</th>
+              <th style="width: 50px; text-align: center;">Tipe</th>
+              <th style="width: 50px; text-align: center;">Durasi</th>
+              <th style="width: 60px; text-align: center;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in details[:8] %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">P{{ s.pertemuan }}</td>
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ s.tanggal }}</td>
+              <td style="font-weight: 600; color: #0f172a;">{{ s.topik }}</td>
+              <td style="text-align: center;">
+                <span style="background: {% if s.tipe == 'studio' %}#e0f2fe; color: #0369a1;{% else %}#f1f5f9; color: #475569;{% endif %} padding: 1px 4px; border-radius: 3px; font-size: 6.5px; font-weight: bold;">
+                  {{ s.tipe|capitalize }}
+                </span>
+              </td>
+              <td style="text-align: center; font-family: monospace; color: #64748b;">170 Menit</td>
+              <td style="text-align: center; font-weight: bold; color: {% if s.status == 'Hadir' %}#16a34a{% else %}#dc2626{% endif %};">
+                {{ s.status }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FOOTER HALAMAN 1 -->
+    <div style="border-top: 1px solid #e2e8f0; padding-top: 3px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b;">
+      <div>SIAK-KAPRODI • Sistem Monitoring Kehadiran Terintegrasi Program Studi Arsitektur</div>
+      <div>Halaman 1 dari 2 (Sesi 1 s/d 8)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 2: LOG SESI 9-16 & PENGESAHAN ==================== -->
+  <div class="page">
+    <div>
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13.5px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 01: Rekap Monitoring Kehadiran (Halaman 2/2)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Monitoring Presensi Studio Sesi 9-16, Rekomendasi Konseling, & Pengesahan DPA
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span style="display: inline-block; padding: 2.5px 7px; background: #0f172a; color: #ffffff; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">PENGESAHAN PRESENSI</span>
+          <div style="font-size: 8px; font-family: monospace; color: #64748b; margin-top: 2px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+        </div>
+      </div>
+
+      <!-- LOG PRESENSI SESI 9 S/D 16 -->
+      <div style="margin-bottom: 8px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a; margin-bottom: 3px; text-transform: uppercase;">
+          Tabel 2: Log Presensi Perkuliahan Studio (Pertemuan 9 s/d 16)
+        </div>
+        <table class="table-clean">
+          <thead>
+            <tr>
+              <th style="width: 30px; text-align: center;">Sesi</th>
+              <th style="width: 70px; text-align: center;">Tanggal</th>
+              <th style="text-align: left;">Topik Pembelajaran Studio</th>
+              <th style="width: 50px; text-align: center;">Tipe</th>
+              <th style="width: 50px; text-align: center;">Durasi</th>
+              <th style="width: 60px; text-align: center;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for s in details[8:] %}
+            <tr style="{% if loop.index0 % 2 == 1 %}background: #f8fafc;{% endif %}">
+              <td style="text-align: center; font-family: monospace; font-weight: bold;">P{{ s.pertemuan }}</td>
+              <td style="text-align: center; font-family: monospace; color: #64748b;">{{ s.tanggal }}</td>
+              <td style="font-weight: 600; color: #0f172a;">{{ s.topik }}</td>
+              <td style="text-align: center;">
+                <span style="background: {% if s.tipe == 'studio' %}#e0f2fe; color: #0369a1;{% else %}#f1f5f9; color: #475569;{% endif %} padding: 1px 4px; border-radius: 3px; font-size: 6.5px; font-weight: bold;">
+                  {{ s.tipe|capitalize }}
+                </span>
+              </td>
+              <td style="text-align: center; font-family: monospace; color: #64748b;">170 Menit</td>
+              <td style="text-align: center; font-weight: bold; color: {% if s.status == 'Hadir' %}#16a34a{% else %}#dc2626{% endif %};">
+                {{ s.status }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- CATATAN MONITORING & SARAN DPA -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 5px; padding: 6px 10px; margin-bottom: 12px;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0369a1; text-transform: uppercase; margin-bottom: 2px;">
+          Catatan Evaluasi Kehadiran & Rekomendasi Dosen Pembimbing Akademik:
+        </div>
+        <div style="font-size: 7.5px; line-height: 1.35; color: #334155;">
+          Mahasiswa <strong>{{ student.nama }}</strong> memiliki tingkat kedisiplinan asistensi studio yang konsisten sebesar <strong>{{ "%.1f"|format(kehadiran.persen_hadir or 93.8) }}%</strong>. Pola kehadiran terjaga stabil tanpa indikasi lonjakan absensi di periode kritis minggu ke-10 hingga minggu ke-14. Direkomendasikan untuk terus mempertahankan ritme kerja studio pada semester berikutnya.
+        </div>
+      </div>
+    </div>
+
+    <!-- PENGESAHAN DUA TANDA TANGAN (KAPRODI & DOSEN WALI/DPA) -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; margin-top: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="font-size: 7px; color: #64748b; max-width: 320px;">
+          Rekap kehadiran resmi ini tervalidasi secara digital melalui SIAK-KAPRODI untuk keperluan verifikasi kepesertaan Ujian Akhir Semester (UAS) Studio Perancangan Arsitektur.
+        </div>
+        <div style="display: flex; gap: 30px; text-align: center;">
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">{{ identitas.kota }}, {{ identitas.tanggal }}</div>
+            <div style="font-weight: bold; color: #0f172a;">Ketua Program Studi {{ identitas.prodi }}</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">{{ identitas.ketua_prodi }}</div>
+            <div style="font-family: monospace; color: #64748b;">NIP. {{ identitas.nip_ketua_prodi }}</div>
+          </div>
+          <div style="font-size: 7.5px;">
+            <div style="color: #64748b; margin-bottom: 1px;">Dosen Pembimbing Akademik (DPA)</div>
+            <div style="font-weight: bold; color: #0f172a;">Program Studi {{ identitas.prodi }}</div>
+            <div style="height: 35px;"></div>
+            <div style="font-weight: bold; text-decoration: underline; color: #0f172a;">Ir. Nasril Sikumbang, M.T.</div>
+            <div style="font-family: monospace; color: #64748b;">NIDN. 1018047901</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

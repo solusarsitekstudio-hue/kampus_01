@@ -88,6 +88,18 @@ eksternal seperti di atas.
 | `/api/engine/input` | **Engine Input** (terpisah): pindai `input/inbox/` + arsip `input/raw/`, deteksi data masuk yang pernah diproses via SHA-256 (`scripts/engine_input.py`); status `baru`/`terdaftar`/`duplikat` + kembaran dilaporkan |
 | `/api/engine/output` | **Engine Output** (terpisah): audit integritas output - utuh/rusak/hilang/belum terdaftar + `salinan_usang` (salinan beda SHA run terbaru) + `sisa_root` + status run masih sah + lapis kirim `output/kirim/` untuk mesin kirim otomatis (`scripts/engine_output.py`); aturan tulis: berkas lama utuh & tanda sama **diberikan apa adanya** - tanda memuat `FORMAT_V` + **stempel data master+katalog** - overwrite hanya bila tanda maju atau ukuran tak cocok |
 | `/api/switch_course?course=<KUNCI_MK>` | Pindah MK aktif (memicu kompilasi ulang master) |
+| `/api/bridge/summary` | Ringkasan audit presensi & keterlaksanaan RPS dosen (`scripts/academic_bridge.py`) |
+| `/api/bridge/nilai` | Rincian nilai mahasiswa per mata kuliah dari bridge (`/api/bridge/nilai?npm=...`) |
+| `/api/bridge/presensi` | Rincian kehadiran mahasiswa per mata kuliah dari bridge (`/api/bridge/presensi?npm=...`) |
+| `/api/bridge/retakes` | Analisis tren perbaikan nilai dan mahasiswa mengulang lintas tahun ajaran |
+| `/api/bridge/course_detail` | Rincian data MK & daftar mahasiswa at-risk/remedial (`/api/bridge/course_detail?id=...`) |
+| `/api/executive_cockpit` | Data 5 Kartu Truf Eksekutif Yayasan & Investor (`scripts/executive_bridge.py`) |
+| `/api/analytics/growth` | Metrik pertumbuhan PMB multi-tahun & penyerapan kurikulum 30 MK (`scripts/growth_engine.py`) |
+| `/api/analytics/overview` | Ringkasan observatorium analitik 4 pilar visual (`scripts/analytics_engine.py`) |
+| `/api/registry/cohorts` | Ringkasan kohort multi-tahun registri universal (`scripts/registry_parser.py`) |
+| `/api/registry/student` | Rincian data mahasiswa multi-angkatan & status BSS (`scripts/registry_parser.py`) |
+| `/api/health` | Pemeriksaan kesehatan server & integritas metadata runtime |
+| `/api/auth/status` | Status koneksi eksternal & verifikasi PIN Kaprodi |
 | `/api/video/generate?npm=...` | Render video 9:16 |
 | `/api/open_folder?path=...` | Membuka folder hasil di Explorer |
 | `/output/...`, `/generated_pdfs/...`, `/videos/...` | Penyajian berkas statis hasil |
@@ -100,6 +112,7 @@ eksternal seperti di atas.
 | `/api/identitas/simpan` | Simpan identitas (backup dulu, tulis atomik) |
 | `/api/identitas/terapkan` | Terapkan identitas ke data master |
 | `/api/identitas/regenerasi-pdf` | Cetak ulang 11 PDF; **409** kalau identitas belum diterapkan |
+| `/api/auth/verify_pin` | Verifikasi PIN Kaprodi untuk akses mutasi data via jaringan luar/tunnel |
 | `/api/engine/input` | `{"sha": ..., "keterangan": ...}` — tandai satu masukan **sudah diproses** supaya salinan berikutnya terdeteksi duplikat; sha nyasar → **404** |
 | `/api/engine/output` | `{"aksi": "rapikan", "arsipkan_lama": true}` - sapu brokat root `output/` + arsip-kan run lama & sisa folder tanpa manifest ke `data/_backup/` (run terbaru selamat) + siapkan lapis kirim `output/kirim/{kaprodi,wali}/manifest.json` (wali = SEMUA mahasiswa tree); aksi lain → **400** |
 

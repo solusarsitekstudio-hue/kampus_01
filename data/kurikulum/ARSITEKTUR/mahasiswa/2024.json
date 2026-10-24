@@ -1,0 +1,218 @@
+{
+  "versi": 1,
+  "prodi": "ARSITEKTUR",
+  "angkatan": 2024,
+  "total_mahasiswa": 15,
+  "mahasiswa": [
+    {
+      "npm": "2410015410001",
+      "nama": "FAJAR ADITYA PRATAMA",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410002",
+      "nama": "DINA SALSABILA PUTRI",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410003",
+      "nama": "RIZKY ANANDA MAULANA",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410004",
+      "nama": "MEUTIA KHAIRUNNISA",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410005",
+      "nama": "BAGAS WICAKSONO",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410006",
+      "nama": "ANISA RAHMAWATI",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410007",
+      "nama": "DAFFA RAYHAN KURNIAWAN",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410008",
+      "nama": "SHINTA BELLA LESTARI",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410009",
+      "nama": "GILANG RAMADHAN",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410010",
+      "nama": "NAFISAH AULIA DEWI",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410011",
+      "nama": "ILHAM BUDI SANTOSO",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410012",
+      "nama": "CLARA AYUNDA",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410013",
+      "nama": "RENDY PRASITYA",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410014",
+      "nama": "CITRA MAHARANI",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    },
+    {
+      "npm": "2410015410015",
+      "nama": "HENDRA WIJAYA",
+      "angkatan": 2024,
+      "semester_ke": 4,
+      "zona": {
+        "zona": 1,
+        "kode": "REGULER",
+        "label": "Zona 1 - Reguler Ideal",
+        "keterangan": "Masa studi standar 144 SKS tepat waktu",
+        "color": "emerald",
+        "at_risk_do": false
+      }
+    }
+  ]
+}
