@@ -2,8 +2,8 @@
   "metadata": {
     "sistem": "SIAK-KAPRODI ARSITEKTUR INTELLIGENCE",
     "versi": "2.6-KURIKULUM-BERTINGKAT",
-    "generated_at": "2026-10-24T15:24:10+07:00",
-    "build_id": "20261024_152410",
+    "generated_at": "2026-10-24T19:39:17+07:00",
+    "build_id": "20261024_193917",
     "target_port": 40404,
     "metodologi_nilai": "Rata-rata TERBEBOT per pertemuan. Alpha bernilai 0 dan ikut dihitung. Nilai satu pertemuan = rata-rata nilai seluruh slot absennya. Pertemuan yang presensinya BELUM DIINPUT tidak dihitung 0 (dikeluarkan dari rata-rata dan bobotnya dinormalisasi ulang); grade ditahan 'Belum Lengkap' sampai seluruh pertemuan terisi.",
     "aturan_at_risk": "Alpha >= 2x ATAU Kehadiran < 75%",

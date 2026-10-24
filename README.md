@@ -606,12 +606,12 @@ Matriks karier sepanjang kuliah (Tab 9, PDF 06) direkonstruksi "berbukti":
 
 | Metrik | Nilai |
 |---|---|
-| Total Mahasiswa | 35 |
-| Rata-rata Kehadiran | 85.8% (dihitung per **slot** absen, 16 pertemuan) |
-| Rata-rata Nilai Studio | **77.7** (predikat dominan A-, 14 mahasiswa) |
-| Mahasiswa At-Risk | **5** (semuanya kehadiran < 75% **dan** Alpha ≥ 2x) |
-| Distribusi Grade | A=2, A-=14, B+=6, B=10, C=3, D=0 |
-| Tingkat Kelulusan | 80.0% (28 dari 35 memenuhi: tidak At-Risk **dan** nilai ≥ 70) |
+| Total Mahasiswa | 37 |
+| Rata-rata Kehadiran | 85.6% (dihitung per **slot** absen, 16 pertemuan) |
+| Rata-rata Nilai Studio | **77.6** (predikat dominan A-, 14 mahasiswa) |
+| Mahasiswa At-Risk | **6** (semuanya kehadiran < 75% **dan** Alpha ≥ 2x) |
+| Distribusi Grade | A=3, A-=14, B+=6, B=10, C=4, D=0 |
+| Tingkat Kelulusan | 78.4% (29 dari 37 memenuhi: tidak At-Risk **dan** nilai ≥ 70) |
 
 > Angka di atas adalah angka **mata kuliah aktif** (Aplikasi Komputer Arsitektur
 > & QS). Karena nilai sintetis kini dibangkitkan **per mata kuliah**

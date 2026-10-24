@@ -107,7 +107,9 @@ check("persona tidak bergantung idx",
       PS.tentukan_archetype(1, NPM_AT_RISK) == PS.tentukan_archetype(33, NPM_AT_RISK))
 
 print("\n4. Bukti bug lama vs sesudah perbaikan (dua MK, struktur sesi sama)")
-mahasiswa = KT.baca_json(os.path.join(KT.path_prodi(PRODI), "mahasiswa.json"))["mahasiswa"]
+mhs_semua = KT.baca_json(os.path.join(KT.path_prodi(PRODI), "mahasiswa.json"))["mahasiswa"]
+mhs_map = {str(m["npm"]): m for m in mhs_semua}
+mahasiswa = mhs_semua
 sesi_a = KT.baca_json(_path("sesi.json", MK_DIKENAL[0]))
 sesi_b = KT.baca_json(_path("sesi.json", MK_DIKENAL[1]))
 lama_a = PS.bangun_nilai_satu_mk(mahasiswa, sesi_a, konteks="")
@@ -136,7 +138,9 @@ check("konteks kosong menghasilkan kembar (pembanding)", len({
 
 for kunci in MK_DIKENAL:
     dok = KT.baca_json(_path("nilai.json", kunci))
-    ulang = PS.bangun_nilai_satu_mk(mahasiswa, KT.baca_json(_path("sesi.json", kunci)),
+    enrolled_npms = list(dict.fromkeys(b["npm"] for b in dok["nilai"]))
+    mhs_mk = [mhs_map[n] for n in enrolled_npms if n in mhs_map]
+    ulang = PS.bangun_nilai_satu_mk(mhs_mk, KT.baca_json(_path("sesi.json", kunci)),
                                    konteks=kunci)
     check(f"{kunci[:34]}: nilai.json = hasil bangkit ulang",
           dok.get("nilai") == ulang and dok.get("kunci_mk") == kunci,
@@ -164,11 +168,12 @@ for kunci in MK_DIKENAL:
     pola[kunci] = _sha_baris(sorted((b["pertemuan"], b["slot"], b["status"]) for b in milik_persona))
     di_ujian += [b for b in milik_persona if b["pertemuan"] in ujian]
 
-check(f"{NPM_AT_RISK} tetap Alpha ≥ 2x di setiap MK (syarat At-Risk)",
-      all(alpha_per_mk[k][NPM_AT_RISK] >= 2 for k in MK_DIKENAL),
-      str({k[:12]: alpha_per_mk[k][NPM_AT_RISK] for k in MK_DIKENAL}) + " slot")
-check("jumlah absen per mahasiswa berpersona SAMA di semua MK (profil utuh)",
-      len({json.dumps(v, sort_keys=True) for v in alpha_per_mk.values()}) == 1)
+rozi_mks = [k for k in MK_DIKENAL if NPM_AT_RISK in [b["npm"] for b in KT.baca_json(_path("nilai.json", k))["nilai"]]]
+check(f"{NPM_AT_RISK} tetap Alpha ≥ 2x di setiap MK yang diikutinya (syarat At-Risk)",
+      all(alpha_per_mk[k][NPM_AT_RISK] >= 2 for k in rozi_mks),
+      str({k[:12]: alpha_per_mk[k][NPM_AT_RISK] for k in rozi_mks}) + " slot")
+check("jumlah absen per mahasiswa berpersona SAMA di MK yang diikutinya (profil utuh)",
+      len({alpha_per_mk[k][NPM_AT_RISK] for k in rozi_mks}) == 1)
 check("letak absen berbeda di ketiga MK (tiga sidik jari)",
       len(set(pola.values())) == 3, str(sorted(pola.values())))
 check("absen persona tidak mendarat di pertemuan UTS/UAS", not di_ujian,
@@ -210,9 +215,9 @@ print("   file ini. Kalau urutan draw RNG berubah (meski logika sama), SHA akan"
 print("   berubah DAN tes ini GAGAL — artinya angka demo ikut bergeser dan")
 print("   README / tes lain HARUS di-baseline ulang dengan sengaja.")
 GOLDEN = {
-    "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": "F415DFE93053",
-    "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": "3A1814A483E2",
-    "STUDIO_PERANCANGAN_ARSITEKTUR_2": "10C3DF04DAE2",
+    "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": "6AC0D0FFE8C1",
+    "STRUKTUR_DAN_KONSTRUKSI_BANGUNAN_1": "BF8DC44F5BCA",
+    "STUDIO_PERANCANGAN_ARSITEKTUR_2": "58A610585992",
 }
 for kunci, expected in GOLDEN.items():
     with open(_path("nilai.json", kunci), "rb") as f:

@@ -170,9 +170,10 @@ check(" rollup at-risk = mahasiswa UNIK (bukan jumlah kemunculan)",
 check(" rollup menyimpan jumlah kejadian per MK terpisah",
       roll["ringkas"].get("jumlah_kejadian_at_risk") == kejadian,
       f"{roll['ringkas'].get('jumlah_kejadian_at_risk')} vs {kejadian}")
+total_mhs = len(KT.muat_daftar_mahasiswa_prodi(prodi))
 check(" at-risk unik <= jumlah mahasiswa",
-      roll["ringkas"]["jumlah_at_risk"] <= 35,
-      str(roll["ringkas"]["jumlah_at_risk"]))
+      roll["ringkas"]["jumlah_at_risk"] <= total_mhs,
+      f"{roll['ringkas']['jumlah_at_risk']} <= {total_mhs}")
 
 print("\n7. Cache: tanda mtime mengusangkan rekap")
 mk_aktif = KT.daftar_mk(prodi, "2025-2026", "GENAP")

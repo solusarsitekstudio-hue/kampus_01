@@ -127,7 +127,8 @@ check("kembali 'belum_diinput': P2 Belum Diinput lagi",
 print("\n6. End-to-end dengan data nyata (satu mahasiswa kehilangan 1 pertemuan)")
 ctx = PD.muat_kurikulum()
 nilai_awal = PD.kelompokkan_nilai(ctx["nilai_dokumen"])
-base = PD.generate_student_profiles(ctx["mahasiswa"], ctx["sessions"], nilai_awal, ctx)["students"]
+mhs_enrolled = [s for s in ctx["mahasiswa"] if str(s.get("npm")) in nilai_awal]
+base = PD.generate_student_profiles(mhs_enrolled, ctx["sessions"], nilai_awal, ctx)["students"]
 
 # Pilih mahasiswa yang pertemuan 1-nya HADIR - biar perbedaannya jelas.
 target = next(s for s in base if s["kehadiran"]["detail"][0]["status"] == "Hadir")
@@ -137,7 +138,7 @@ nilai_baru = {k: list(v) for k, v in nilai_awal.items()}
 nilai_baru[npm_target] = [r for r in nilai_baru[npm_target]
                           if int(r.get("pertemuan") or 0) != 1]
 hasil = PD.generate_student_profiles(
-    ctx["mahasiswa"], ctx["sessions"], nilai_baru, ctx)["students"]
+    mhs_enrolled, ctx["sessions"], nilai_baru, ctx)["students"]
 baru = next(s for s in hasil if s["npm"] == npm_target)
 
 check("data_lengkap = False", baru["kehadiran"]["data_lengkap"] is False)

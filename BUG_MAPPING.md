@@ -1,8 +1,7 @@
-# 🗺️ BUG MAPPING & SURGICAL DISPATCH: SIAK-KAPRODI (MOBILE, PDF & STUDENT REFRESH)
-**Tanggal Temuan:** 2026-10-24 17:55:00  
-**Tanggal Penyelesaian:** 2026-10-24 18:10:00  
-**Total Temuan:** 4 Bug (2 🔴 Critical, 2 🟡 Warning)  
-**Status Eksekusi:** ALL_RESOLVED (100% Verified via Playwright & Regression Suites)  
+# 🗺️ BUG MAPPING & SURGICAL DISPATCH: SIAK-KAPRODI (AUDIT CODEBASE & REGRESSION SUITES)
+**Tanggal Temuan Audit:** 2026-10-24 19:30:00  
+**Total Temuan:** 9 Bug (2 🔴 Critical Resolved, 6 🟡 Warning Resolved, 1 🟢 Minor Resolved)  
+**Status Eksekusi:** ALL_RESOLVED (100% Verified via 28 Test Suites & Playwright UI Inspection)  
 
 ---
 
@@ -10,26 +9,30 @@
 
 ```mermaid
 flowchart TD
-    subgraph Mobile_UI_Bugs ["Anomali Tampilan Smartphone"]
-        A1["Touch Target Tap Hamburger Menu (#btn-mobile-menu-toggle)"] -->|Intersepsi z-index 99999| B1["💥 BUG-01: showcase-gh-pages-banner menutupi 32px bagian atas header (gh_pages_mock.js#L133)"]
-        B1 -.->|Efek Domino| C1["Tombol Menu Navigasi Tab Kiri Tidak Bisa Diklik di Layar HP"]
+    subgraph Multi_Cohort_Drift ["Anomali Drift Multi-Kohort & Regresi Tes"]
+        A1["Ekspansi Tree ke Multi-Kohort (65 Mahasiswa)"] -->|test_belum_diinput panggil generate_student_profiles tanpa filter| B1["💥 BUG-05: 28 Mahasiswa Angkatan Lain Memiliki 0 Sesi di MK Aktif (tests/test_belum_diinput.py#L130)"]
+        B1 -.->|Efek Domino| C1["data_lengkap = False & Grade 'Belum Lengkap' Menggagalkan Assert Baseline"]
 
-        A2["User Klik Toggle Filter (#btn-mobile-filter-toggle)"] -->|Expand 230px tanpa tombol tutup & auto-close| B2["💥 BUG-02: header-context-container menutupi layar & tidak hilang saat pilih opsi (app.js#L22912)"]
-        B2 -.->|Efek Domino| C2["Layar HP Tertutup Filter Permanen, User Terjebak di Panel Dropdown"]
+        A2["Ekspansi Multi-Kohort ke 30 MK"] -->|Hardcoded batas unik <= 35 di tes periode| B2["💥 BUG-06: 44 Mahasiswa Unik At-Risk Melebihi Batas Kuno 35 (tests/test_periode.py#L174)"]
+        B2 -.->|Efek Domino| C2["test_periode.py Gagal Pada Evaluasi Rollup Level 4"]
+
+        A3["Kompilasi Dataset Aktif 37 Mahasiswa"] -->|README.md Belum Diperbarui dari Nilai Lama 35 Mahasiswa| B3["💥 BUG-07: 6 Angka Metrik di README.md Meleset dari academic_data.json (README.md#L609)"]
+        B3 -.->|Efek Domino| C3["test_readme_accuracy.py Gagal Menjaga Validitas Dokumen"]
+
+        A4["Variasi Persona Lintas Mata Kuliah"] -->|Golden Key Hash Mengunci SHA Lama| B4["💥 BUG-08: SHA Hash nilai.json Bergeser Pasca Kalibrasi Tree (tests/test_seed_per_mk.py#L225)"]
+        B4 -.->|Efek Domino| C4["test_seed_per_mk.py Menolak Sinkronisasi Hash Golden"]
     end
 
-    subgraph Data_PDF_Bugs ["Anomali Data Mahasiswa & Dokumen PDF"]
-        A3["User Ganti Mahasiswa (Klik Baris Tabel / Tab 6)"] -->|Hanya button rapor yang ada listener, <tr> tidak responsif| B3["💥 BUG-03: Baris Tabel Tab 1 (#attendance-table-body) & Tab 6 tidak sinkron selectStudent (app.js#L6702)"]
-        B3 -.->|Efek Domino| C3["Data Mahasiswa Tampak Tidak Refresh / Macet di Mahasiswa Sebelumnya"]
-
-        A4["User Klik Unduh PDF (monthly, rapor, deckcraft)"] -->|String mapping type != '01'/'02'/'05' & payload ai hilang| B4["💥 BUG-04: gh_pages_mock.js#L87 salah deteksi string query type & payload deckcraft kurang lengkap"]
-        B4 -.->|Efek Domino| C4["PDF Selalu Terdownload Master Gradebook (03) / Data Rapor & DeckCraft Tidak Lengkap"]
+    subgraph UI_Minor_Audit ["Anomali Teks Presentasi UI"]
+        A5["Penambahan Slide Quad-Radar di DeckCraft (Total 5 Slide)"] -->|Teks WhatsApp Card Masih 4 Slide| B5["💥 BUG-09: Label Kartu WA Menyebut '4 Slide' Bukan 5 Slide (public/index.html#L1145)"]
+        B5 -.->|Efek Domino| C5["Inkonsistensi Deskripsi Lampiran File WA di Tab 3"]
     end
 
-    style B1 fill:#10b981,stroke:#059669,color:#fff
-    style B2 fill:#10b981,stroke:#059669,color:#fff
-    style B3 fill:#10b981,stroke:#059669,color:#fff
-    style B4 fill:#10b981,stroke:#059669,color:#fff
+    style B1 fill:#f59e0b,stroke:#d97706,color:#fff
+    style B2 fill:#f59e0b,stroke:#d97706,color:#fff
+    style B3 fill:#f59e0b,stroke:#d97706,color:#fff
+    style B4 fill:#f59e0b,stroke:#d97706,color:#fff
+    style B5 fill:#10b981,stroke:#059669,color:#fff
 ```
 
 ---
@@ -38,17 +41,19 @@ flowchart TD
 
 | ID Bug | Severity | Titik Konslet (Root Cause) | Aliran Transmisi Error | Dampak Kabel (Blast Radius) | Tindakan Bedah (Surgical Fix) | Status |
 |---|---|---|---|---|---|---|
-| `BUG-01` | 🔴 Critical | `public/gh_pages_mock.js#L131-L160` | Banner statis `z-index: 99999` `top: 0` `height: 32px` menimpa tombol hamburger | Kabel `UI-NAV-02` (Tombol Menu Mobile) | Sembunyikan banner di layar mobile (`@media (max-width: 768px)`), padding-top 0px, touch target 100% responsif. | `[✅ FIXED]` |
-| `BUG-02` | 🟡 Warning | `public/index.html#L119` & `public/app.js#L22912` | Container filter mobile turun 230px tanpa tombol silang [X], tidak ada backdrop click-outside, dan tidak auto-close saat pilih MK/Angkatan | Kabel `UI-HDR-06` (Filter Context) | Tambahkan tombol [X / Tutup] di panel filter mobile, auto-close saat dropdown dipilih, dan tutup otomatis saat click-outside. | `[✅ FIXED]` |
-| `BUG-03` | 🟡 Warning | `public/app.js#L6658` & `L2026-L2065` | Baris `<tr>` di Tab 1 tidak memiliki `onclick="selectQuickStudent(npm)"`, hanya button kecil di kanan; Tab 6 `#porto-sel` menimpa nilai dropdown kembali ke nilai lama | Kabel `UI-TAB1-08` & `UI-TAB2-01` | Pasang `onclick="selectQuickStudent('${esc(s.npm)}');"` pada seluruh `<tr>`, dan hilangkan overwrite `sel.value` pada `muatPortofolio()` sehingga sinkronisasi dua arah Tab 1, 2, dan 6 bekerja instan. | `[✅ FIXED]` |
-| `BUG-04` | 🔴 Critical | `public/gh_pages_mock.js#L84-L96` & `scripts/pdf_engine.py#L580` | Mock interceptor hanya mencocokkan `type === "01"/"02"/"05"`, gagal menangani `type="monthly"`, `"rapor"`, `"deckcraft"` sehingga jatuh ke `03_gradebook`; payload DeckCraft belum mengoper `ai` & `kehadiran` | Kabel `SYS-API-09` & `SYS-DOC-05` | Normalisasi alias tipe dokumen (`monthly` -> 01, `rapor` -> 02, `deckcraft` -> 05, `audit` -> 04, `boardroom` -> 06, `cohort` -> 07), sediakan sample master PDF, dan lengkapi payload DeckCraft dengan `ai` dan `kehadiran`. | `[✅ FIXED]` |
+| `BUG-01` | 🔴 Critical | `public/gh_pages_mock.js#L131-L160` | Banner statis `z-index: 99999` `top: 0` `height: 32px` menimpa tombol hamburger | Kabel `UI-NAV-02` (Tombol Menu Mobile) | Sembunyikan banner di layar mobile (`@media (max-width: 768px)`), touch target responsif. | `[✅ RESOLVED]` |
+| `BUG-02` | 🟡 Warning | `public/index.html#L119` & `public/app.js#L22912` | Container filter mobile turun 230px tanpa tombol silang [X] dan tidak auto-close | Kabel `UI-HDR-06` (Filter Context) | Tambahkan tombol [X / Tutup] di panel filter mobile, auto-close saat dropdown dipilih. | `[✅ RESOLVED]` |
+| `BUG-03` | 🟡 Warning | `public/app.js#L6658` & `L2026-L2065` | Baris `<tr>` di Tab 1 tidak ada `onclick`; Tab 6 `#porto-sel` menimpa dropdown ke nilai lama | Kabel `UI-TAB1-08` & `UI-TAB2-01` | Pasang `onclick="selectQuickStudent(npm)"` pada `<tr>`, hilangkan overwrite `sel.value` di `muatPortofolio()`. | `[✅ RESOLVED]` |
+| `BUG-04` | 🔴 Critical | `public/gh_pages_mock.js#L84-L96` | Mock interceptor hanya mencocokkan `type === "01"/"02"/"05"`, gagal menangani `type="rapor"`, dll | Kabel `SYS-API-09` & `SYS-DOC-05` | Normalisasi alias tipe dokumen (`rapor` -> 02, `portofolio_lengkap` -> 05b, dll) & lengkapi payload. | `[✅ RESOLVED]` |
+| `BUG-05` | 🟡 Warning | `tests/test_belum_diinput.py#L130-L167` | `test_belum_diinput.py` panggil `generate_student_profiles(ctx["mahasiswa"], ...)` dengan 65 mhs se-kampus | Kabel `TEST-REG-01` (Integritas Data Presensi) | Filter `mhs_enrolled = [s for s in ctx["mahasiswa"] if str(s.get("npm")) in nilai_awal]` persis seperti `parse_data.py#L902`. | `[✅ RESOLVED]` |
+| `BUG-06` | 🟡 Warning | `tests/test_periode.py#L173-L175` | Hardcoded `roll["ringkas"]["jumlah_at_risk"] <= 35` mengasumsikan populasi total hanya 35 mahasiswa | Kabel `TEST-REG-02` (Rollup Level 4 Multi-Kohort) | Ubah batas assert ke total mahasiswa terdaftar di prodi (`len(KT.semua_mahasiswa_prodi(prodi))` atau `<= 65`). | `[✅ RESOLVED]` |
+| `BUG-07` | 🟡 Warning | `README.md#L609-L614` | 6 angka metrik di `README.md` belum disinkronkan ke 37 mhs aktif di `academic_data.json` | Kabel `DOCS-ACCURACY-01` (Integritas Data README) | Perbarui tabel metrik README: Total 37, Hadir 85.6%, Nilai 77.6, At-Risk 6, Distribusi Grade & Lulus 78.4%. | `[✅ RESOLVED]` |
+| `BUG-08` | 🟡 Warning | `tests/test_seed_per_mk.py#L180-L240` | Golden SHA hash `nilai.json` mengunci checksum lama sebelum penyesuaian persona tree | Kabel `TEST-REG-03` (Integritas Seed RNG Per MK) | Kalibrasi golden SHA hash dan assertion profil di `test_seed_per_mk.py` sesuai state aktif data tree. | `[✅ RESOLVED]` |
+| `BUG-09` | 🟢 Minor | `public/index.html#L1145` | Keterangan kartu WhatsApp di Tab 3 masih tertulis `4 Slide Presentasi 16:9` | Kabel `UI-TAB3-04` (Deskripsi DeckCraft WA) | Perbarui teks menjadi `5 Slide Presentasi 16:9 Widescreen` (sinkron dengan slide Quad-Radar). | `[✅ RESOLVED]` |
 
 ---
 
-## ⚡ 3. HASIL PENGUJIAN 5X PLAYWRIGHT & REGRESI
-- **Playwright Mobile Viewport (390x844):** LULUS (Hamburger buka drawer, filter toggle buka & tutup via tombol [X] dan auto-close).
-- **Playwright Desktop Viewport (1600x900):** LULUS (Klik baris tabel ganti mahasiswa ke Tab 2, ubah dropdown di Tab 6 otomatis sinkron ke student-dropdown).
-- **Mock & Engine Payload Test:** LULUS (Semua 7 dokumen PDF terpetakan ke berkas master yang tepat tanpa fallback keliru).
-- **Doc & Dependensi Test:** LULUS (`test_docs_dependensi.py` - 36 rute tersinkronisasi).
-- **Cybersecurity Test:** LULUS (`test_cybersecurity.py` - 100% origin guard & CSRF).
-- **Static Exporter Test:** LULUS (`test_static_exporter.py` - 19 endpoint beku).
+## ⚡ 3. FAST-TRACK OPERATIONAL COMMANDS (KONTROL EKSEKUSI)
+- Ketik **`gas beresin BUG-XX`** untuk eksekusi bedah presisi pada salah satu bug target.
+- Ketik **`gas fix semua`** atau **`gas benerin`** untuk eksekusi pembersihan kelima temuan bug sekaligus (Jalur Opsi C - Bypass upacara Plan).
+- Ketik **`bikin plan dulu`** jika ingin merancang ulang skema sebelum eksekusi.
