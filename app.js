@@ -588,7 +588,7 @@ async function verifikasiPinGatekeeper(pinOverride = null) {
     window.KAPRODI_PIN = pin;
 
     if (statusEl && statusText) {
-      statusText.textContent = "✓ PIN Terverifikasi! Membuka dashboard...";
+      statusText.textContent = "✓ PIN Terverifikasi! Membuka sistem AL-ANALISIS...";
       statusEl.classList.remove("text-rose-400", "text-amber-400");
       statusEl.classList.add("text-emerald-400");
       statusEl.style.opacity = "1";
