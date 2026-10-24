@@ -136,6 +136,82 @@ def generate_radar_svg(comp):
     </svg>"""
     return svg
 
+def generate_custom_radar_svg(labels, values, stroke_color="#0284c7", glow_color="#38bdf8", grad_id="radarGlow", width=210, height=155):
+    """Menghasilkan SVG Radar Web Chart 5 Vertices kustom dengan dukungan warna dan tema gelap."""
+    cx, cy, r = width / 2.0, height / 2.0 - 2, 44.0
+    num_vars = len(labels)
+    angle_step = 2 * math.pi / num_vars
+
+    web_polygons = ""
+    for level in [0.25, 0.50, 0.75, 1.0]:
+        pts = []
+        for i in range(num_vars):
+            angle = -math.pi / 2 + i * angle_step
+            x = cx + r * level * math.cos(angle)
+            y = cy + r * level * math.sin(angle)
+            pts.append(f"{x:.1f},{y:.1f}")
+        dash = 'stroke-dasharray="2,2"' if level < 1.0 else ''
+        stroke_c = "#334155" if level < 1.0 else "#475569"
+        web_polygons += f'<polygon points="{" ".join(pts)}" fill="none" stroke="{stroke_c}" stroke-width="0.8" {dash} />\n'
+
+    axis_lines = ""
+    for i in range(num_vars):
+        angle = -math.pi / 2 + i * angle_step
+        x = cx + r * math.cos(angle)
+        y = cy + r * math.sin(angle)
+        axis_lines += f'<line x1="{cx:.1f}" y1="{cy:.1f}" x2="{x:.1f}" y2="{y:.1f}" stroke="#334155" stroke-width="0.8" />\n'
+
+    data_pts = []
+    points_svg = ""
+    for i, val in enumerate(values):
+        val_clamped = max(0, min(100, float(val)))
+        level = val_clamped / 100.0
+        angle = -math.pi / 2 + i * angle_step
+        x = cx + r * level * math.cos(angle)
+        y = cy + r * level * math.sin(angle)
+        data_pts.append(f"{x:.1f},{y:.1f}")
+        points_svg += f'<circle cx="{x:.1f}" cy="{y:.1f}" r="2.8" fill="{stroke_color}" stroke="#ffffff" stroke-width="1.2" />\n'
+
+    polygon_str = " ".join(data_pts)
+    
+    label_svg = ""
+    label_offsets = [
+        (cx, cy - r - 7, "middle"),
+        (cx + r + 5, cy - 1, "start"),
+        (cx + r * 0.65, cy + r + 7, "start"),
+        (cx - r * 0.65, cy + r + 7, "end"),
+        (cx - r - 5, cy - 1, "end")
+    ]
+    
+    short_labels = []
+    for l in labels:
+        if len(l) > 16:
+            parts = l.split(" ")
+            if len(parts) >= 2:
+                short_labels.append(f"{parts[0]} {parts[1][:4]}.")
+            else:
+                short_labels.append(l[:14] + "..")
+        else:
+            short_labels.append(l)
+
+    for i, (lx, ly, anchor) in enumerate(label_offsets):
+        label_svg += f'<text x="{lx:.1f}" y="{ly:.1f}" font-size="6.5" font-weight="600" fill="#94a3b8" text-anchor="{anchor}">{short_labels[i]}</text>\n'
+
+    svg = f"""<svg width="{width}" height="{height}" viewBox="0 0 {width} {height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="{grad_id}" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="{glow_color}" stop-opacity="0.40" />
+          <stop offset="100%" stop-color="{stroke_color}" stop-opacity="0.10" />
+        </radialGradient>
+      </defs>
+      {web_polygons}
+      {axis_lines}
+      <polygon points="{polygon_str}" fill="url(#{grad_id})" stroke="{stroke_color}" stroke-width="2" stroke-linejoin="round" />
+      {points_svg}
+      {label_svg}
+    </svg>"""
+    return svg
+
 def class_stats(master=None):
     """Menghitung statistik nilai kelas secara tunggal & terpadu."""
     if master is None:
@@ -404,16 +480,107 @@ def build_dosen_payload():
     }
 
 def build_deckcraft_payload(npm_or_student):
-    """Membangun payload lengkap Dokumen 05: Portofolio Studio DeckCraft (4 Slide A4 Landscape)."""
+    """Membangun payload lengkap Dokumen 05: Portofolio Studio DeckCraft (5 Slide A4 Landscape Widescreen)."""
     student = find_student(npm_or_student)
     if not student:
         raise ValueError(f"Mahasiswa {npm_or_student} tidak ditemukan.")
     d = get_identitas()
     akademik = student.get("akademik", {})
+    radars = student.get("radars", {})
+
+    # Generate 4 distinct SVG radars for 16:9 Quad-Radar Grid
+    # 1. Softskill (Amber)
+    soft = radars.get("softskill", {})
+    soft_labels = soft.get("dimensi", ["Daya Tahan Revisi", "Artikulasi Visual", "Problem Solving", "Ketelitian", "Adaptasi"])
+    soft_vals = soft.get("nilai", [88, 85, 90, 86, 92])
+    soft_svg = generate_custom_radar_svg(soft_labels, soft_vals, stroke_color="#f59e0b", glow_color="#fbbf24", grad_id="glowSoftskill")
+    soft_avg = round(sum(soft_vals) / len(soft_vals), 1) if soft_vals else 85.0
+
+    # 2. Modul MK (Emerald)
+    modul = radars.get("modul_mk", {})
+    modul_labels = modul.get("dimensi", ["Tata Ruang", "Hierarki Garis", "Konstruksi", "Layout Sheet", "Akurasi Dimensi"])
+    modul_vals = modul.get("nilai", [85, 88, 86, 85, 87])
+    modul_svg = generate_custom_radar_svg(modul_labels, modul_vals, stroke_color="#10b981", glow_color="#34d399", grad_id="glowModul")
+    modul_avg = round(sum(modul_vals) / len(modul_vals), 1) if modul_vals else 85.0
+
+    # 3. Semester (Cyan)
+    sem = radars.get("semester", {})
+    sem_labels = sem.get("dimensi", ["Studio Desain", "Rekayasa Struktur", "Komputasi Digital", "Sains Lingkungan", "Humaniora"])
+    sem_vals = sem.get("nilai", [86, 88, 90, 84, 88])
+    sem_svg = generate_custom_radar_svg(sem_labels, sem_vals, stroke_color="#06b6d4", glow_color="#22d3ee", grad_id="glowSemester")
+    sem_avg = round(sum(sem_vals) / len(sem_vals), 1) if sem_vals else 85.0
+
+    # 4. Potensi CR (Purple)
+    pcr = radars.get("potensi_cr", {})
+    pcr_labels = pcr.get("dimensi", ["Insting Komersial", "Pitching", "Adopsi AI", "Pragmatisme Lapangan", "Wirausaha Mandiri"])
+    pcr_vals = pcr.get("nilai", [90, 88, 92, 86, 90])
+    pcr_svg = generate_custom_radar_svg(pcr_labels, pcr_vals, stroke_color="#a855f7", glow_color="#c084fc", grad_id="glowPotensi")
+    pcr_avg = round(sum(pcr_vals) / len(pcr_vals), 1) if pcr_vals else 85.0
+
+    quad_radars = [
+        {
+            "key": "softskill",
+            "title": "Karakter Studio",
+            "subtitle": "Watak & Softskill",
+            "theme": "amber",
+            "badge_bg": "rgba(245, 158, 11, 0.15)",
+            "border_color": "rgba(245, 158, 11, 0.35)",
+            "text_color": "#fbbf24",
+            "bar_color": "#f59e0b",
+            "svg": soft_svg,
+            "avg": soft_avg,
+            "grade": "A" if soft_avg >= 85 else ("B" if soft_avg >= 70 else "C"),
+            "metrics": list(zip(soft_labels, soft_vals))
+        },
+        {
+            "key": "modul_mk",
+            "title": "Modul RPS (16 Sesi)",
+            "subtitle": "Praktikum & Slot",
+            "theme": "emerald",
+            "badge_bg": "rgba(16, 185, 129, 0.15)",
+            "border_color": "rgba(16, 185, 129, 0.35)",
+            "text_color": "#34d399",
+            "bar_color": "#10b981",
+            "svg": modul_svg,
+            "avg": modul_avg,
+            "grade": "A" if modul_avg >= 85 else ("B" if modul_avg >= 70 else "C"),
+            "metrics": list(zip(modul_labels, modul_vals))
+        },
+        {
+            "key": "semester",
+            "title": "Semester Lintas MK",
+            "subtitle": "Holistik Kurikulum",
+            "theme": "cyan",
+            "badge_bg": "rgba(6, 182, 212, 0.15)",
+            "border_color": "rgba(6, 182, 212, 0.35)",
+            "text_color": "#22d3ee",
+            "bar_color": "#06b6d4",
+            "svg": sem_svg,
+            "avg": sem_avg,
+            "grade": "A" if sem_avg >= 85 else ("B" if sem_avg >= 70 else "C"),
+            "metrics": list(zip(sem_labels, sem_vals))
+        },
+        {
+            "key": "potensi_cr",
+            "title": "Potensi Karir Otak-CR",
+            "subtitle": "Kesiapan Industri",
+            "theme": "purple",
+            "badge_bg": "rgba(168, 85, 247, 0.15)",
+            "border_color": "rgba(168, 85, 247, 0.35)",
+            "text_color": "#c084fc",
+            "bar_color": "#a855f7",
+            "svg": pcr_svg,
+            "avg": pcr_avg,
+            "grade": "A" if pcr_avg >= 85 else ("B" if pcr_avg >= 70 else "C"),
+            "metrics": list(zip(pcr_labels, pcr_vals))
+        }
+    ]
+
     return {
         "identitas": d,
         "student": student,
-        "akademik": akademik
+        "akademik": akademik,
+        "quad_radars": quad_radars
     }
 
 def build_boardroom_payload():

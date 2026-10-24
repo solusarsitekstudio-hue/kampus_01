@@ -198,7 +198,7 @@ def generate_all_masters(output_dir=None):
         ("02", "2510015410010", "Rapor Hasil Belajar Studio (3 Hal Portrait)"),
         ("03", None, "Master Gradebook Kaprodi (3 Hal Landscape)"),
         ("04", None, "Evaluasi Kinerja Dosen & Audit Modul RPS (3 Hal Portrait)"),
-        ("05", "2510015410010", "Portofolio Studio DeckCraft (4 Slide Landscape)"),
+        ("05", "2510015410010", "Portofolio Studio DeckCraft (5 Slide Landscape Widescreen)"),
         ("06", None, "Boardroom Pitch Deck Yayasan (3 Slide Landscape)"),
         ("07", None, "Laporan Audit Kohort & Kas BSS Yayasan (4 Hal Landscape)")
     ]

@@ -63,7 +63,14 @@ def build_showcase():
     # 1. Bersihkan & buat direktori tujuan
     if os.path.exists(DIST_DIR):
         print(f"[CLEAN] Membersihkan folder lama: {DIST_DIR}")
-        shutil.rmtree(DIST_DIR)
+        import stat
+        def _on_rm_error(func, path, exc_info):
+            try:
+                os.chmod(path, stat.S_IWRITE)
+                func(path)
+            except Exception:
+                pass
+        shutil.rmtree(DIST_DIR, onerror=_on_rm_error)
     os.makedirs(DIST_DIR, exist_ok=True)
     os.makedirs(STATIC_API_DIR, exist_ok=True)
     os.makedirs(GENERATED_PDFS_DIR, exist_ok=True)

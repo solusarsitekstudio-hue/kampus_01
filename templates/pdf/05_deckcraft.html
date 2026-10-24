@@ -68,7 +68,7 @@
 
     <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; border-top: 1px solid #334155; padding-top: 8px;">
       <div>Program Studi {{ identitas.prodi }}</div>
-      <div>Slide 1 dari 4 (Cover Portofolio)</div>
+      <div>Slide 1 dari 5 (Cover Portofolio)</div>
     </div>
   </div>
 
@@ -104,7 +104,7 @@
 
     <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; border-top: 1px solid #334155; padding-top: 8px;">
       <div>Evaluasi Asistensi: Orisinalitas ide dan penguasaan skala ruang sangat unggul.</div>
-      <div>Slide 2 dari 4 (Konsep & Denah)</div>
+      <div>Slide 2 dari 5 (Konsep & Denah)</div>
     </div>
   </div>
 
@@ -134,15 +134,81 @@
 
     <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; border-top: 1px solid #334155; padding-top: 8px;">
       <div>Modul Tektonika: Memenuhi standar sertifikasi kompetensi drafting IAI.</div>
-      <div>Slide 3 dari 4 (Detail Konstruksi)</div>
+      <div>Slide 3 dari 5 (Detail Konstruksi)</div>
     </div>
   </div>
 
-  <!-- SLIDE 4: VISUALISASI 3D & PENGESAHAN -->
+  <!-- SLIDE 4: QUAD-SPECTRUM RADAR ANALYTICS -->
+  <div class="slide" style="background: #0f172a;">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 8px;">
+      <div>
+        <div style="font-size: 13px; font-weight: 900; color: #ffffff; text-transform: uppercase; letter-spacing: 0.5px;">
+          03. Spektrum Analisis Kompetensi & Potensi Karir (Quad-Radar Array)
+        </div>
+        <div style="font-size: 8px; color: #94a3b8; margin-top: 1px;">
+          Evaluasi multi-dimensi studio: Karakter, Modul RPS 16 Pertemuan, Holistik Semester, dan Potensi Pasar Otak-CR
+        </div>
+      </div>
+      <div style="text-align: right;">
+        <span style="display: inline-block; padding: 2px 8px; background: rgba(56, 189, 248, 0.15); border: 1px solid #0284c7; color: #38bdf8; font-size: 8px; font-family: monospace; font-weight: bold; border-radius: 4px;">QUAD-RADAR ARRAY</span>
+        <div style="font-size: 9px; font-family: monospace; color: #cbd5e1; margin-top: 2px;">{{ student.nama }} • {{ student.npm }}</div>
+      </div>
+    </div>
+
+    <!-- 4-COLUMN HORIZONTAL GRID -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: auto 0; align-items: stretch;">
+      {% for r in quad_radars %}
+      <div style="background: #1e293b; border: 1px solid {{ r.border_color }}; border-radius: 8px; padding: 10px 8px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+        
+        <!-- CARD HEADER -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+            <div>
+              <div style="font-size: 10.5px; font-weight: 800; color: #ffffff; line-height: 1.2;">{{ r.title }}</div>
+              <div style="font-size: 7px; color: #94a3b8;">{{ r.subtitle }}</div>
+            </div>
+            <div style="background: {{ r.badge_bg }}; border: 1px solid {{ r.border_color }}; color: {{ r.text_color }}; font-family: monospace; font-size: 9px; font-weight: 900; padding: 1px 6px; border-radius: 4px;">
+              {{ r.avg }} ({{ r.grade }})
+            </div>
+          </div>
+
+          <!-- RADAR SVG CONTAINER -->
+          <div style="background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 2px; display: flex; align-items: center; justify-content: center; margin-bottom: 6px;">
+            {{ r.svg|safe }}
+          </div>
+        </div>
+
+        <!-- 5 DIMENSIONS BREAKDOWN -->
+        <div style="display: flex; flex-direction: column; gap: 3.5px; border-top: 1px solid #334155; padding-top: 6px;">
+          {% for dim_label, dim_val in r.metrics %}
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 7.2px; color: #cbd5e1; margin-bottom: 1.5px;">
+              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px;">{{ dim_label }}</span>
+              <span style="font-family: monospace; font-weight: bold; color: {{ r.text_color }};">{{ dim_val }}%</span>
+            </div>
+            <div style="width: 100%; height: 3px; background: #334155; border-radius: 2px; overflow: hidden;">
+              <div style="width: {{ dim_val }}%; height: 100%; background: {{ r.bar_color }}; border-radius: 2px;"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- SLIDE FOOTER -->
+    <div style="display: flex; justify-content: space-between; font-size: 8.5px; color: #64748b; border-top: 1px solid #334155; padding-top: 6px;">
+      <div>Evaluasi Terpadu: 4 Layer Radar diserap langsung dari log asistensi dan tree kurikulum studio.</div>
+      <div>Slide 4 dari 5 (Spektrum 4 Radar Studio)</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: VISUALISASI 3D & PENGESAHAN -->
   <div class="slide" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);">
     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 8px;">
       <div style="font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase;">
-        03. Visualisasi 3D Mahakarya & Pengesahan Studio
+        04. Visualisasi 3D Mahakarya & Pengesahan Studio
       </div>
       <div style="font-size: 10px; font-family: monospace; color: #38bdf8;">{{ student.nama }}</div>
     </div>
@@ -176,7 +242,7 @@
 
     <div style="display: flex; justify-content: space-between; font-size: 9px; color: #64748b; border-top: 1px solid #334155; padding-top: 8px;">
       <div>SIAK-KAPRODI DeckCraft Architecture Portfolio Edition</div>
-      <div>Slide 4 dari 4 (Pengesahan Karya)</div>
+      <div>Slide 5 dari 5 (Pengesahan Karya)</div>
     </div>
   </div>
 

@@ -69,7 +69,7 @@
 | `UI-TAB2-11` | `#mhs-badge-container` | Dynamic | `renderStudentUniverse()` | Local Gamification | Render 4 Dopamine Badges (✨ Unlocked / 🔒 Locked) |
 | `UI-TAB2-12` | `#btn-unduh-monthly` | `click` | `downloadCurrentStudentMonthlyPDF()` | `/api/pdf/download?type=monthly&npm=` | Unduh PDF 01 Rekap Kehadiran Bulanan |
 | `UI-TAB2-13` | `#btn-unduh-rapor` | `click` | `downloadCurrentStudentFinalPDF()` | `/api/pdf/download?type=rapor&npm=` | Unduh PDF 02 Rapor Akhir Semester |
-| `UI-TAB2-14` | Unduh PDF DeckCraft | `click` | `downloadCurrentStudentDeckcraftPDF()` | `/api/pdf/download?type=deckcraft&npm=`| Unduh PDF 05 DeckCraft Portofolio 16:9 |
+| `UI-TAB2-14` | Unduh PDF DeckCraft | `click` | `downloadCurrentStudentDeckcraftPDF()` | `/api/pdf/download?type=deckcraft&npm=`| Unduh PDF 05 DeckCraft Portofolio 16:9 (5 Slide Widescreen - Termasuk Quad-Radar Array) |
 | `UI-TAB2-15` | Unduh Paket 3-in-1 | `click` | `downloadAll3StudentPDFs()` | 3x `/api/pdf/download` | Mengunduh seluruh dokumen mahasiswa secara batch |
 
 ---
