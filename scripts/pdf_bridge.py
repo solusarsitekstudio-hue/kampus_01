@@ -72,8 +72,10 @@ def get_filename(doc_type, context):
         return "03_laporan_penilaian_kaprodi_master_gradebook.pdf"
     elif clean_type in ("04", "evaluasi", "audit", "dosen", "evaluasi_dosen"):
         return "04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf"
-    elif clean_type in ("05", "deckcraft", "portofolio", "deck"):
+    elif clean_type in ("05", "deckcraft", "deck"):
         return f"05_deckcraft_portofolio_arsitektur_{npm}_{nama_clean}.pdf"
+    elif clean_type in ("05b", "portofolio_lengkap", "porto4", "porto_lengkap", "portofolio"):
+        return f"05b_portofolio_lengkap_{npm}_{nama_clean}.pdf"
     elif clean_type in ("06", "boardroom", "boardroom_pitch", "executive_pitch"):
         return "06_boardroom_pitch_deck_yayasan.pdf"
     elif clean_type in ("07", "cohort", "cohort_report", "yayasan", "laporan_yayasan"):
@@ -199,6 +201,7 @@ def generate_all_masters(output_dir=None):
         ("03", None, "Master Gradebook Kaprodi (3 Hal Landscape)"),
         ("04", None, "Evaluasi Kinerja Dosen & Audit Modul RPS (3 Hal Portrait)"),
         ("05", "2510015410010", "Portofolio Studio DeckCraft (5 Slide Landscape Widescreen)"),
+        ("05b", "2510015410010", "Portofolio Mahasiswa 4 Lapis Lengkap (2 Hal Portrait)"),
         ("06", None, "Boardroom Pitch Deck Yayasan (3 Slide Landscape)"),
         ("07", None, "Laporan Audit Kohort & Kas BSS Yayasan (4 Hal Landscape)")
     ]

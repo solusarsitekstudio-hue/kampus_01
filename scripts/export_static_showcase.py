@@ -148,6 +148,8 @@ def build_showcase():
                     shutil.copy2(src, os.path.join(GENERATED_PDFS_DIR, "02_sample_master.pdf"))
                 elif f_name.startswith("05_"):
                     shutil.copy2(src, os.path.join(GENERATED_PDFS_DIR, "05_sample_master.pdf"))
+                elif f_name.startswith("05b_"):
+                    shutil.copy2(src, os.path.join(GENERATED_PDFS_DIR, "05b_sample_master.pdf"))
 
     # 6. Buat .nojekyll agar GitHub Pages tidak memfilter aset tertentu
     nojekyll_path = os.path.join(DIST_DIR, ".nojekyll")

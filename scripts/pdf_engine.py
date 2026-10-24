@@ -585,6 +585,39 @@ def build_deckcraft_payload(npm_or_student):
         "quad_radars": quad_radars
     }
 
+def build_portofolio_lengkap_payload(npm_or_student):
+    """Membangun payload lengkap Dokumen 05-B: Portofolio Mahasiswa 4 Lapis (A4 Portrait)."""
+    import portofolio as pf
+    student = find_student(npm_or_student)
+    npm = student.get("npm", "2510015410010") if student else "2510015410010"
+    d = get_identitas()
+    
+    data_porto = pf.kumpulan_portofolio(npm)
+    if not data_porto:
+        data_porto = {
+            "npm": npm,
+            "nama": student.get("nama", "-") if student else "-",
+            "prodi": d.get("prodi", "ARSITEKTUR"),
+            "jumlah_mk": 0,
+            "rata_nilai": 0.0,
+            "rata_kehadiran": 0.0,
+            "total_alpha": 0,
+            "arah_nilai": "stabil",
+            "semester": [],
+            "analisis_potensi": {}
+        }
+    
+    pot = data_porto.get("analisis_potensi", {})
+    comp = pot.get("radar", {})
+    radar_svg = generate_radar_svg(comp)
+    
+    return {
+        "identitas": d,
+        "student": student or {"npm": npm, "nama": data_porto.get("nama", "-")},
+        "porto": data_porto,
+        "radar_svg": radar_svg
+    }
+
 def build_boardroom_payload():
     """Membangun payload lengkap Dokumen 06: Boardroom Pitch Deck (3 Slide A4 Landscape)."""
     import executive_bridge as eb
@@ -654,9 +687,13 @@ def build_payload(doc_type, npm=None):
         ctx = build_dosen_payload()
         return "04_evaluasi_dosen.html", ctx, {"format": "A4", "landscape": False, "margin": {"top": "10mm", "bottom": "10mm", "left": "12mm", "right": "12mm"}}
     
-    elif clean_type in ("05", "deckcraft", "portofolio", "deck"):
+    elif clean_type in ("05", "deckcraft", "deck"):
         ctx = build_deckcraft_payload(npm or "2510015410010")
         return "05_deckcraft.html", ctx, {"format": "A4", "landscape": True, "margin": {"top": "0mm", "bottom": "0mm", "left": "0mm", "right": "0mm"}}
+    
+    elif clean_type in ("05b", "portofolio_lengkap", "porto4", "porto_lengkap", "portofolio"):
+        ctx = build_portofolio_lengkap_payload(npm or "2510015410010")
+        return "05b_portofolio_lengkap.html", ctx, {"format": "A4", "landscape": False, "margin": {"top": "8mm", "bottom": "8mm", "left": "10mm", "right": "10mm"}}
     
     elif clean_type in ("06", "boardroom", "boardroom_pitch", "executive_pitch"):
         ctx = build_boardroom_payload()
