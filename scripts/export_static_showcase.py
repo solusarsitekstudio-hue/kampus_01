@@ -44,6 +44,7 @@ API_ENDPOINTS = [
     ("/api/student/2410015410001", "student_sample.json"),
     ("/api/registry/student?npm=2510015410010", "registry_student.json"),
     ("/api/kurikulum/detail?prodi=ARSITEKTUR&tahun_ajar=2024-2025&semester=GANJIL&kunci_mk=ARS101", "kurikulum_detail.json"),
+    ("/api/bridge/course_detail?id=APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS", "bridge_course_detail.json"),
     ("/api/bridge/presensi?npm=2410015410001", "bridge_presensi.json"),
     ("/api/bridge/nilai?npm=2410015410001", "bridge_nilai.json"),
 ]
@@ -89,6 +90,33 @@ def build_showcase():
             berhasil_api += 1
         except Exception as e:
             print(f"  [WARN] Gagal fetch {endpoint}: {e}")
+
+    # Pre-bake semua 30 course_detail untuk modal asistensi di showcase statis
+    try:
+        import sys
+        if os.path.join(BASE_DIR, "scripts") not in sys.path:
+            sys.path.insert(0, os.path.join(BASE_DIR, "scripts"))
+        import academic_bridge
+        all_details = {}
+        retakes_data = academic_bridge.RetakeHistoryBridge.get_retake_students()
+        ringkas = retakes_data.get("matriks_prodi_ringkas", {})
+        mks = ringkas.get("matriks_per_mk", [])
+        for m in mks:
+            cid = m.get("id")
+            kmk = m.get("kode_mk")
+            if cid:
+                det = academic_bridge.RetakeHistoryBridge.get_course_detail(cid)
+                if det.get("status") == "success":
+                    all_details[cid] = det
+                    if kmk:
+                        all_details[kmk] = det
+        out_all_path = os.path.join(STATIC_API_DIR, "bridge_course_detail_all.json")
+        with open(out_all_path, "w", encoding="utf-8") as f:
+            json.dump(all_details, f, ensure_ascii=False, indent=2)
+        print(f"  [OK] 30 MK course_detail pre-baked   -> static_api/bridge_course_detail_all.json ({os.path.getsize(out_all_path) / 1024.0:.1f} KB)")
+        berhasil_api += 1
+    except Exception as e:
+        print(f"  [WARN] Gagal pre-bake course_detail_all: {e}")
 
     # 3. Salin aset frontend dari public/
     print("\n[STEP 2] Menyalin aset antarmuka publik...")

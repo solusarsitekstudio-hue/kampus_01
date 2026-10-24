@@ -1,6 +1,6 @@
 # 🗺️ BUG MAPPING & SURGICAL DISPATCH: SIAK-KAPRODI (AUDIT CODEBASE & REGRESSION SUITES)
 **Tanggal Temuan Audit:** 2026-10-24 19:30:00  
-**Total Temuan:** 9 Bug (2 🔴 Critical Resolved, 6 🟡 Warning Resolved, 1 🟢 Minor Resolved)  
+**Total Temuan:** 10 Bug (3 🔴 Critical Resolved, 6 🟡 Warning Resolved, 1 🟢 Minor Resolved)  
 **Status Eksekusi:** ALL_RESOLVED (100% Verified via 28 Test Suites & Playwright UI Inspection)  
 
 ---
@@ -50,6 +50,7 @@ flowchart TD
 | `BUG-07` | 🟡 Warning | `README.md#L609-L614` | 6 angka metrik di `README.md` belum disinkronkan ke 37 mhs aktif di `academic_data.json` | Kabel `DOCS-ACCURACY-01` (Integritas Data README) | Perbarui tabel metrik README: Total 37, Hadir 85.6%, Nilai 77.6, At-Risk 6, Distribusi Grade & Lulus 78.4%. | `[✅ RESOLVED]` |
 | `BUG-08` | 🟡 Warning | `tests/test_seed_per_mk.py#L180-L240` | Golden SHA hash `nilai.json` mengunci checksum lama sebelum penyesuaian persona tree | Kabel `TEST-REG-03` (Integritas Seed RNG Per MK) | Kalibrasi golden SHA hash dan assertion profil di `test_seed_per_mk.py` sesuai state aktif data tree. | `[✅ RESOLVED]` |
 | `BUG-09` | 🟢 Minor | `public/index.html#L1145` | Keterangan kartu WhatsApp di Tab 3 masih tertulis `4 Slide Presentasi 16:9` | Kabel `UI-TAB3-04` (Deskripsi DeckCraft WA) | Perbarui teks menjadi `5 Slide Presentasi 16:9 Widescreen` (sinkron dengan slide Quad-Radar). | `[✅ RESOLVED]` |
+| `BUG-10` | 🔴 Critical | `public/app.js#L22759` & `scripts/academic_bridge.py#L461` | Tombol Asistensi Tab 8 mengirim `kode_mk` numerik (cth: `5412522404`), backend mencari `f"{clean_id}.json"` menghasilkan 404 | Kabel `UI-TAB8-03` & `SYS-BRDG-04` | 1. Gunakan `r.id || r.kode_mk` pada onclick; 2. Tambah fallback resolving `kode_mk` di `academic_bridge.py`; 3. Pre-bake all 30 MK detail di GH Pages mock. | `[✅ RESOLVED]` |
 
 ---
 

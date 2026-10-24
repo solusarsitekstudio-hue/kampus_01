@@ -460,7 +460,24 @@ class RetakeHistoryBridge:
 
         target_file = os.path.join(COURSES_DIR, f"{clean_id}.json")
         if not os.path.isfile(target_file):
-            return {"status": "error", "message": f"Mata kuliah '{clean_id}' tidak ditemukan"}
+            # Fallback: jika course_id yang dikirim adalah kode_mk numerik
+            found_file = None
+            for fname in os.listdir(COURSES_DIR):
+                if fname.endswith(".json"):
+                    fpath = os.path.join(COURSES_DIR, fname)
+                    try:
+                        jd = _muat_json(fpath)
+                        jc = jd.get("course", {})
+                        kmk = str(jc.get("kode_mk") or jd.get("kode_mk") or "").strip()
+                        if kmk == str(clean_id).strip():
+                            found_file = fpath
+                            break
+                    except Exception:
+                        pass
+            if found_file and os.path.isfile(found_file):
+                target_file = found_file
+            else:
+                return {"status": "error", "message": f"Mata kuliah '{clean_id}' tidak ditemukan"}
 
         d = _muat_json(target_file)
         c = d.get("course", {})
