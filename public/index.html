@@ -59,39 +59,67 @@
 <body class="bg-[#0b0f19] text-slate-100 font-sans antialiased min-h-screen selection:bg-amber-500 selection:text-slate-950">
 
   <!-- TOP NAVIGATION HEADER -->
-  <header class="sticky top-0 z-50 bg-[#0f172a]/90 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-8 py-3.5 safe-top">
-    <div class="w-full max-w-[1850px] mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-      <div class="flex items-center gap-3.5">
-        <!-- MOBILE MENU TOGGLE (UI-NAV-02) -->
-        <button id="btn-mobile-menu-toggle" onclick="toggleMobileSidebar()" type="button" aria-label="Buka Menu Navigasi" class="lg:hidden p-2 rounded-xl bg-slate-800/90 border border-slate-700/80 text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition active:scale-95 cursor-pointer shadow-sm flex items-center justify-center">
-          <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-500/20 text-slate-950 font-black text-xl">
-          🏛️
-        </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-2">
-              SIAK-KAPRODI <span class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-medium border border-amber-500/30">GOLDEN DEMO v2.6</span>
-            </h1>
-            <span class="inline-flex items-center gap-1 text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE :40404
-            </span>
+  <header class="sticky top-0 z-50 bg-[#0f172a]/95 border-b border-slate-800/80 px-3 lg:px-8 py-2.5 safe-top transition-all">
+    <div class="w-full max-w-[1850px] mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-2.5">
+      
+      <!-- MAIN ROW: HAMBURGER, LOGO, TITLE & QUICK ACTIONS -->
+      <div class="flex items-center justify-between w-full lg:w-auto gap-2">
+        <div class="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+          <!-- MOBILE MENU TOGGLE (UI-NAV-02) -->
+          <button id="btn-mobile-menu-toggle" onclick="toggleMobileSidebar()" type="button" aria-label="Buka Menu Navigasi" class="lg:hidden p-2 rounded-xl bg-slate-800/90 border border-slate-700/80 text-amber-400 hover:text-amber-300 hover:bg-slate-800 transition active:scale-95 cursor-pointer shadow-sm flex items-center justify-center shrink-0">
+            <i data-lucide="menu" class="w-5 h-5"></i>
+          </button>
+          
+          <!-- LOGO CYBER-CAD KONOHA CORET (AMBER GOLD OBSIDIAN) -->
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-slate-900 to-slate-950 p-1 border border-amber-500/40 flex items-center justify-center shadow-lg shadow-amber-500/10 shrink-0 group" id="app-campus-logo" title="SIAK-KAPRODI Special Edition: Konoha Coret">
+            <svg viewBox="0 0 100 100" class="w-6 h-6 sm:w-7 sm:h-7 text-amber-400" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="50" cy="50" r="44" stroke="#fbbf24" stroke-opacity="0.25" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <circle cx="50" cy="50" r="38" stroke="#fbbf24" stroke-opacity="0.1" stroke-width="1"/>
+              <!-- Konoha Leaf Spiral Path -->
+              <path d="M 50 32 C 62 32, 70 40, 70 50 C 70 61, 60 70, 48 70 C 37 70, 30 61, 30 50 C 30 42, 36 36, 44 36 C 50 36, 54 40, 54 46 C 54 50, 50 54, 46 54 C 43 54, 41 52, 41 49" stroke="#fbbf24" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <!-- Leaf Tip (Upper Right) -->
+              <path d="M 68 38 L 78 28 L 65 30 Z" fill="#fbbf24" stroke="#fbbf24" stroke-width="1.5" stroke-linejoin="round"/>
+              <!-- Leaf Stem (Bottom Left) -->
+              <path d="M 33 65 L 24 75 L 36 71 Z" fill="#fbbf24" stroke="#fbbf24" stroke-width="1" stroke-linejoin="round"/>
+              <!-- The Nukenin Slash (Akatsuki Rogue Cutline) -->
+              <line x1="16" y1="50" x2="84" y2="50" stroke="#fef08a" stroke-width="4" stroke-linecap="round"/>
+              <line x1="14" y1="50" x2="86" y2="50" stroke="#fbbf24" stroke-width="1.5" stroke-opacity="0.8"/>
+            </svg>
           </div>
-          <p class="text-xs text-slate-400">
-            <span id="header-institusi" class="text-slate-400">-</span> • Mata Kuliah: <span id="current-course-title" class="text-slate-200 font-semibold">-</span>
-          </p>
-          <p class="text-[11px] text-slate-500 font-mono" id="kpi-jadwal-desc">-</p>
+
+          <!-- BRAND & TITLE -->
+          <div class="min-w-0 flex-1 overflow-hidden">
+            <div class="flex items-center gap-1.5 flex-nowrap overflow-hidden">
+              <h1 class="text-xs sm:text-sm lg:text-base font-bold tracking-tight text-white flex items-center gap-1.5 shrink-0">
+                SIAK-KAPRODI <span class="hidden sm:inline-block text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 font-mono font-medium border border-amber-500/30">v2.6 NUKENIN</span>
+              </h1>
+              <span class="inline-flex items-center gap-1 text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/20 shrink-0">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE
+              </span>
+            </div>
+            <p class="text-[10px] sm:text-[11px] text-slate-400 truncate">
+              <span id="header-institusi" class="text-slate-400">Univ Bung Hatta</span> &bull; <span id="current-course-title" class="text-slate-200 font-semibold">-</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- MOBILE QUICK ACTIONS: FILTER TOGGLE & KUNCI SESI -->
+        <div class="flex items-center gap-1.5 lg:hidden shrink-0">
+          <button id="btn-mobile-filter-toggle" onclick="toggleMobileFilterBar()" type="button" aria-label="Toggle Filter Konteks" class="px-2 py-1.5 rounded-lg bg-slate-800/90 border border-slate-700/80 text-cyan-300 text-xs font-semibold flex items-center gap-1.5 hover:bg-slate-700 transition active:scale-95 cursor-pointer shadow-sm shrink-0">
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <span class="text-[11px]">Filter</span>
+          </button>
+          <button onclick="kunciSesiDashboard()" title="Kunci Dashboard (Gatekeeper)" class="p-2 rounded-lg bg-slate-800/90 border border-slate-700 text-slate-300 hover:text-rose-400 transition cursor-pointer shrink-0">
+            <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Course Selector & Governance Badges -->
-      <div class="flex items-center flex-wrap gap-2 text-xs text-slate-300">
-        <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex items-center gap-2 flex-wrap">
-          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
+      <!-- CONTEXT FILTERS (COLLAPSIBLE ON MOBILE, WIDESCREEN ON DESKTOP) -->
+      <div id="header-context-container" class="hidden lg:flex items-center flex-wrap gap-2 text-xs text-slate-300 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-800">
+        <div class="bg-slate-800/90 px-3 py-1.5 rounded-lg border border-cyan-500/40 flex items-center gap-2 flex-wrap w-full lg:w-auto">
+          <i data-lucide="book-open" class="w-4 h-4 text-cyan-400 shrink-0"></i>
           <span class="text-slate-400 font-medium">Konteks:</span>
-          <!-- TAHAP E: mata kuliah tidak lagi berdiri sendiri. Konteksnya berjenjang
-               PRODI > TAHUN AJAR > SEMESTER > MK, dan pilihan diambil dari tree. -->
           <select id="sel-prodi" onchange="onKonteksBerubah('prodi')" title="Program studi"
             class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer"></select>
           <select id="sel-tahun" onchange="onKonteksBerubah('tahun')" title="Tahun ajar"
@@ -109,19 +137,20 @@
           <select id="course-selector" onchange="onKonteksBerubah('mk')" title="Mata kuliah"
             class="touch-target bg-slate-900 text-cyan-300 text-xs font-bold rounded px-2 py-1.5 border border-slate-700 focus:outline-none focus:border-cyan-400 cursor-pointer max-w-[22rem]"></select>
         </div>
-        <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
+        <div class="hidden xl:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
           <i data-lucide="user-check" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>Kaprodi: <strong class="text-white" id="header-kaprodi">-</strong></span>
         </div>
-        <div class="bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
+        <div class="hidden xl:flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/60">
           <i data-lucide="shield" class="w-3.5 h-3.5 text-sky-400"></i>
           <span>Asisten: <strong class="text-white" id="header-asisten">-</strong></span>
         </div>
-        <button id="btn-lock-session" onclick="kunciSesiDashboard()" title="Kunci Dashboard (Gatekeeper)" class="px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500/50 text-slate-300 hover:text-rose-400 text-xs font-semibold flex items-center gap-1.5 transition shadow-sm cursor-pointer">
+        <button id="btn-lock-session" onclick="kunciSesiDashboard()" title="Kunci Dashboard (Gatekeeper)" class="hidden lg:flex px-2.5 py-1.5 rounded-lg bg-slate-800/90 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-500/50 text-slate-300 hover:text-rose-400 text-xs font-semibold items-center gap-1.5 transition shadow-sm cursor-pointer">
           <i data-lucide="lock" class="w-3.5 h-3.5 text-amber-400"></i>
           <span>Kunci Sesi</span>
         </button>
       </div>
+
     </div>
   </header>
 

@@ -9,11 +9,13 @@
 
 | ID Kabel | Elemen UI (HTML ID / Class) | Event | Target Handler (JS) | Endpoint Backend | Output Tampilan / Efek |
 |---|---|---|---|---|---|
+| `UI-HDR-00` | `#app-campus-logo` | Render | Brand Logo | Static SVG | Special Edition Cyber-CAD Konoha Coret (Amber Gold Obsidian) dengan nukenin slash & anime aesthetic Kaprodi |
 | `UI-HDR-01` | `#sel-prodi` | `change` | `onKonteksBerubah('prodi')` | `/api/kurikulum` | Mengubah prodi aktif di dropdown konteks |
 | `UI-HDR-02` | `#sel-tahun` | `change` | `onKonteksBerubah('tahun')` | `/api/kurikulum` | Mengubah tahun ajar di dropdown konteks |
 | `UI-HDR-03` | `#sel-semester` | `change` | `onKonteksBerubah('semester')` | `/api/kurikulum` | Mengubah semester di dropdown konteks |
 | `UI-HDR-04` | `#course-selector` | `change` | `onKonteksBerubah('mk')` | `/api/switch_course?course=<KUNCI>` | Beralih mata kuliah aktif, reload dataset & rekap |
 | `UI-HDR-05` | `#sel-angkatan` / `.pill-angkatan` | `change / click` | `onKonteksBerubah('angkatan')` | Local filter / `/api/data` | **Global Context Filter:** Filter data seluruh tab ke Angkatan terpilih (Semua / 2024 / 2025 / 2026 / 🚨 Senior Kritis Sem 9+) |
+| `UI-HDR-06` | `#btn-mobile-filter-toggle` | `click` | `toggleMobileFilterBar()` | Local UI State | Tombol filter collapsible di header mobile untuk memunculkan/menyembunyikan panel konteks |
 | `UI-NAV-01` | `.tab-btn` (Sidebar Tabs 1-14) | `click` | `switchTab(tabId)` | Local UI State | Menampilkan `#section-<tabId>` & menyembunyikan tab lain |
 | `UI-NAV-02` | `#btn-mobile-menu-toggle` | `click` | `toggleMobileSidebar()` | Local UI State | Tombol hamburger mobile (lg:hidden) untuk membuka/menutup drawer navigasi |
 | `UI-NAV-03` | `#sidebar-backdrop` | `click` | `closeMobileSidebar()` | Local UI State | Backdrop overlay gelap blur yang menutup drawer mobile saat disentuh |

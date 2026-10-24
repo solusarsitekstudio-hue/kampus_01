@@ -22904,3 +22904,21 @@ function closeMobileSidebar() {
 
 window.toggleMobileSidebar = toggleMobileSidebar;
 window.closeMobileSidebar = closeMobileSidebar;
+
+
+// =============================================================================
+// 📱 MOBILE CONTEXT FILTER TOGGLE
+// =============================================================================
+function toggleMobileFilterBar() {
+  const container = document.getElementById("header-context-container");
+  if (!container) return;
+  const isHidden = container.classList.contains("hidden");
+  if (isHidden) {
+    container.classList.remove("hidden");
+    container.classList.add("flex");
+  } else {
+    container.classList.add("hidden");
+    container.classList.remove("flex");
+  }
+}
+window.toggleMobileFilterBar = toggleMobileFilterBar;
