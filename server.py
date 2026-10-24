@@ -983,23 +983,23 @@ def atomic_write_json(path: str, payload) -> None:
 
 
 
+_JSON_CACHE = {}
+_DATA_RAW_CACHE = None
+
 def read_json_safe(path: str):
-
-
-
-
-
-
-
-    with open(path, "r", encoding="utf-8") as f:
-
-
-
-
-
-
-
-        return json.load(f)
+    import copy
+    try:
+        mtime = os.path.getmtime(path)
+        cached = _JSON_CACHE.get(path)
+        if cached and cached[0] == mtime:
+            return copy.deepcopy(cached[1])
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        _JSON_CACHE[path] = (mtime, data)
+        return copy.deepcopy(data)
+    except Exception:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
 
 
 
@@ -5500,15 +5500,14 @@ class KampusIntelligenceHandler(http.server.SimpleHTTPRequestHandler):
 
 
 
-            with DATA_LOCK, open(DATA_FILE, "r", encoding="utf-8") as f:
-
-
-
-
-
-
-
-                content = f.read().encode("utf-8")
+            global _DATA_RAW_CACHE
+            mtime = os.path.getmtime(DATA_FILE)
+            if _DATA_RAW_CACHE and _DATA_RAW_CACHE[0] == mtime:
+                content = _DATA_RAW_CACHE[1]
+            else:
+                with DATA_LOCK, open(DATA_FILE, "r", encoding="utf-8") as f:
+                    content = f.read().encode("utf-8")
+                _DATA_RAW_CACHE = (mtime, content)
 
 
 
