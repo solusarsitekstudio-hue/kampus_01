@@ -2,17 +2,17 @@
   "npm": "2410015410001",
   "nama": "FAJAR ADITYA PRATAMA",
   "grade": "A",
-  "nilai_akhir": 95.6,
+  "nilai_akhir": 94.6,
   "rata_teori": 0.0,
-  "rata_studio": 95.4,
+  "rata_studio": 94.1,
   "uts": null,
   "uas": null,
   "total_sesi_dinilai": 16,
   "kompetensi": {
-    "penguasaan_cad": 96,
-    "ketelitian_detail": 82,
+    "penguasaan_cad": 95,
+    "ketelitian_detail": 83,
     "kedisiplinan_asistensi": 100,
-    "logika_ruang_struktur": 98,
+    "logika_ruang_struktur": 97,
     "manajemen_waktu": 97
   }
 }

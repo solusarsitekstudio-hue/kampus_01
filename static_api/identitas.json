@@ -22,7 +22,7 @@
       "subjudul": "Executive Academic Suite — Prodi {prodi}",
       "deskripsi": "Pemantauan terpusat dosen, mahasiswa, capaian pembelajaran, dan analisis."
     },
-    "mata_kuliah_aktif": "ARS107",
+    "mata_kuliah_aktif": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
     "mata_kuliah": {
       "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS": {
         "kode_mk": "5412522233",
@@ -438,7 +438,7 @@
     "universitas": "UNIVERSITAS BUNG HATTA",
     "baris_prodi_fakultas": "PROGRAM STUDI ARSITEKTUR — FAKULTAS TEKNIK & DESAIN"
   },
-  "mk_aktif": "ARS107",
+  "mk_aktif": "APLIKASI_KOMPUTER_ARSITEKTUR_DAN_QS",
   "tanggal_tanda_tangan": "18 Oktober 2026",
   "jalur": "config/identitas.json",
   "perlu_diterapkan": []

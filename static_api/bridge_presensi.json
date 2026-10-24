@@ -14,7 +14,7 @@
       "pertemuan": [
         {
           "pertemuan": 1,
-          "topik": "Pertemuan 1: Studio Perancangan Arsitektur 1 - Materi Minggu 1",
+          "topik": "Pengenalan AutoCAD & Gambar Denah Dasar",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -22,7 +22,7 @@
         },
         {
           "pertemuan": 2,
-          "topik": "Pertemuan 2: Studio Perancangan Arsitektur 1 - Materi Minggu 2",
+          "topik": "Medium Drawing: Kolom, Dinding & Dimensi",
           "tipe": "studio",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -30,7 +30,7 @@
         },
         {
           "pertemuan": 3,
-          "topik": "Pertemuan 3: Studio Perancangan Arsitektur 1 - Materi Minggu 3",
+          "topik": "Medium Drawing: Layer, Arsiran & Blok Pintu/Jendela",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -38,7 +38,7 @@
         },
         {
           "pertemuan": 4,
-          "topik": "Pertemuan 4: Studio Perancangan Arsitektur 1 - Materi Minggu 4",
+          "topik": "Medium Drawing: Gambar Potongan & Detail Pondasi",
           "tipe": "studio",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -57,7 +57,7 @@
       "pertemuan": [
         {
           "pertemuan": 5,
-          "topik": "Pertemuan 5: Studio Perancangan Arsitektur 1 - Materi Minggu 5",
+          "topik": "Publishing Drawing: Layout, Sheet & Plotting PDF",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -65,7 +65,7 @@
         },
         {
           "pertemuan": 6,
-          "topik": "Pertemuan 6: Studio Perancangan Arsitektur 1 - Materi Minggu 6",
+          "topik": "Scheduling Drawing: Perhitungan Volume & Evaluasi Final",
           "tipe": "studio",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -73,7 +73,7 @@
         },
         {
           "pertemuan": 7,
-          "topik": "Pertemuan 7: Studio Perancangan Arsitektur 1 - Materi Minggu 7",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -100,7 +100,7 @@
       "pertemuan": [
         {
           "pertemuan": 9,
-          "topik": "Pertemuan 9: Studio Perancangan Arsitektur 1 - Materi Minggu 9",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -108,7 +108,7 @@
         },
         {
           "pertemuan": 10,
-          "topik": "Pertemuan 10: Studio Perancangan Arsitektur 1 - Materi Minggu 10",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "studio",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -116,7 +116,7 @@
         },
         {
           "pertemuan": 11,
-          "topik": "Pertemuan 11: Studio Perancangan Arsitektur 1 - Materi Minggu 11",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -124,7 +124,7 @@
         },
         {
           "pertemuan": 12,
-          "topik": "Pertemuan 12: Studio Perancangan Arsitektur 1 - Materi Minggu 12",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "studio",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -143,7 +143,7 @@
       "pertemuan": [
         {
           "pertemuan": 13,
-          "topik": "Pertemuan 13: Studio Perancangan Arsitektur 1 - Materi Minggu 13",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -151,7 +151,7 @@
         },
         {
           "pertemuan": 14,
-          "topik": "Pertemuan 14: Studio Perancangan Arsitektur 1 - Materi Minggu 14",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "studio",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
@@ -159,7 +159,7 @@
         },
         {
           "pertemuan": 15,
-          "topik": "Pertemuan 15: Studio Perancangan Arsitektur 1 - Materi Minggu 15",
+          "topik": "(belum diisi - menunggu RPS)",
           "tipe": "teori",
           "status_pertemuan": "Hadir",
           "slot_hadir": 0,
