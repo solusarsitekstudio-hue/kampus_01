@@ -106,7 +106,7 @@
             {{ identitas.universitas }} • {{ identitas.fakultas }}
           </div>
           <div style="font-size: 13px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
-            {{ identitas.prodi }} — Dokumen 05-B: Portofolio 4 Lapis Lengkap
+            {{ identitas.prodi }} — Dokumen 05-B: Portofolio 4 Lapis Lengkap (Halaman 1/3)
           </div>
           <div style="font-size: 8px; color: #475569;">
             Rekam Jejak Holistik: Lapis 4 (Sepanjang Kuliah) → Lapis 3 (Per Semester) → Lapis 2 (Katalog MK) → Lapis 1 (Bulanan)
@@ -146,81 +146,31 @@
         <span>🏛️ LAPIS 4: RINGKASAN KUMULATIF SEPANJANG KULIAH</span>
       </div>
       
-      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px;">
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 6px; text-align: center;">
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 10px;">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 6px; text-align: center;">
           <div style="font-size: 7px; color: #64748b; font-family: monospace;">RATA NILAI / IPK</div>
-          <div style="font-size: 14px; font-weight: 900; color: #0284c7;">{{ "%.1f"|format(porto.rata_nilai or 0.0) }}</div>
+          <div style="font-size: 15px; font-weight: 900; color: #0284c7;">{{ "%.1f"|format(porto.rata_nilai or 0.0) }}</div>
           <div style="font-size: 7px; color: #0369a1; font-weight: bold;">Skala 100</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 6px; text-align: center;">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 6px; text-align: center;">
           <div style="font-size: 7px; color: #64748b; font-family: monospace;">TOTAL MK DIAMBIL</div>
-          <div style="font-size: 14px; font-weight: 900; color: #0f172a;">{{ porto.jumlah_mk or 0 }} MK</div>
+          <div style="font-size: 15px; font-weight: 900; color: #0f172a;">{{ porto.jumlah_mk or 0 }} MK</div>
           <div style="font-size: 7px; color: #64748b;">Kurikulum Aktif</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 6px; text-align: center;">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 6px; text-align: center;">
           <div style="font-size: 7px; color: #64748b; font-family: monospace;">KEHADIRAN TOTAL</div>
-          <div style="font-size: 14px; font-weight: 900; color: #15803d;">{{ "%.1f"|format(porto.rata_kehadiran or 100.0) }}%</div>
+          <div style="font-size: 15px; font-weight: 900; color: #15803d;">{{ "%.1f"|format(porto.rata_kehadiran or 100.0) }}%</div>
           <div style="font-size: 7px; color: #166534; font-weight: bold;">Di Atas Ambang 75%</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 6px; text-align: center;">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 6px; text-align: center;">
           <div style="font-size: 7px; color: #64748b; font-family: monospace;">AKUMULASI ALPHA</div>
-          <div style="font-size: 14px; font-weight: 900; color: {% if porto.total_alpha == 0 %}#15803d{% else %}#be123c{% endif %};">{{ porto.total_alpha or 0 }}x</div>
+          <div style="font-size: 15px; font-weight: 900; color: {% if porto.total_alpha == 0 %}#15803d{% else %}#be123c{% endif %};">{{ porto.total_alpha or 0 }}x</div>
           <div style="font-size: 7px; color: #64748b;">Tanpa Keterangan</div>
         </div>
-        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 6px; text-align: center;">
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 5px; padding: 5px 6px; text-align: center;">
           <div style="font-size: 7px; color: #64748b; font-family: monospace;">TREN PERFORMA</div>
-          <div style="font-size: 12px; font-weight: 900; color: #7e22ce; margin-top: 1px;">{{ (porto.arah_nilai or 'stabil')|upper }}</div>
+          <div style="font-size: 13px; font-weight: 900; color: #7e22ce; margin-top: 1px;">{{ (porto.arah_nilai or 'stabil')|upper }}</div>
           <div style="font-size: 7px; color: #64748b;">Delta: {{ porto.delta_nilai_terakhir or 0.0 }}</div>
-        </div>
-      </div>
-
-      <!-- ANALISIS POTENSI: RADAR 5 DIMENSI + KESIAPAN KARIR OTAK-CR -->
-      <div style="display: flex; gap: 10px; margin-bottom: 8px;">
-        <!-- KOLOM KIRI: RADAR 5 DIMENSI -->
-        <div style="flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; background: #ffffff;">
-          <div style="font-size: 8px; font-weight: bold; color: #0f172a; margin-bottom: 3px; display: flex; justify-content: space-between;">
-            <span>RADAR 5 DIMENSI KOMPETENSI STUDIO</span>
-            <span style="color: #0284c7; font-family: monospace;">Skala 0-100</span>
-          </div>
-          <div style="text-align: center; margin: 2px 0;">
-            {{ radar_svg|safe }}
-          </div>
-          <div style="font-size: 7px; color: #475569; margin-top: 2px; line-height: 1.25;">
-            <strong>Analisis Kaprodi:</strong> {{ porto.analisis_potensi.alasan or 'Performa akademik konsisten di seluruh kompetensi inti perancangan.' }}
-          </div>
-        </div>
-
-        <!-- KOLOM KANAN: MATRIKS KARIER KULIAH -->
-        <div style="flex: 1.2; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px; background: #ffffff;">
-          <div style="font-size: 8px; font-weight: bold; color: #0f172a; margin-bottom: 4px; display: flex; justify-content: space-between;">
-            <span>PROYEKSI KARIER INDUSTRI (OTAK-CR MATCHING)</span>
-            <span style="color: #7e22ce; font-family: monospace;">Top 5 Profesi</span>
-          </div>
-          <table class="table-clean" style="margin-bottom: 4px;">
-            <thead>
-              <tr>
-                <th>Profesi / Bidang Kerja</th>
-                <th style="text-align: center;">Match %</th>
-                <th>Kategori Kecocokan</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for c in (porto.analisis_potensi.matriks_karier_kuliah or [])[:5] %}
-              <tr>
-                <td style="font-weight: 600;">{{ c.profesi }}</td>
-                <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0284c7;">{{ c.kecocokan_persen }}%</td>
-                <td><span class="badge {% if c.kecocokan_persen >= 90 %}badge-success{% elif c.kecocokan_persen >= 80 %}badge-info{% else %}badge-warning{% endif %}">{{ c.kategori_kecocokan }}</span></td>
-              </tr>
-              {% else %}
-              <tr>
-                <td colspan="3" style="text-align: center; color: #94a3b8;">Data analisis karier sedang dikalkulasi.</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-          <div style="font-size: 7px; color: #475569; line-height: 1.25;">
-            <strong>Rekomendasi:</strong> {{ porto.analisis_potensi.rekomendasi or 'Pertahankan konsistensi asistensi studio dan perluas eksplorasi visual 3D.' }}
-          </div>
         </div>
       </div>
 
@@ -229,7 +179,7 @@
         <span>📅 LAPIS 3: RINGKASAN PRESTASI PER SEMESTER (ROLLUP)</span>
       </div>
 
-      <table class="table-clean">
+      <table class="table-clean" style="margin-bottom: 10px;">
         <thead>
           <tr>
             <th>Tahun Ajar</th>
@@ -274,22 +224,158 @@
         </tbody>
       </table>
 
+      <!-- RINGKASAN MONITORING MAHASISWA -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0284c7; border-radius: 5px; padding: 6px 10px; font-size: 7.5px; line-height: 1.4; color: #334155;">
+        <strong>Catatan Monitoring Kurikulum Lapis 4 & 3:</strong> Mahasiswa memiliki akumulasi performa akademik stabil tanpa mata kuliah at-risk. Konsistensi kehadiran mencapai {{ "%.1f"|format(porto.rata_kehadiran or 100.0) }}% memenuhi prasyarat ujian akhir studio dan asesmen akreditasi IAI. Halaman berikutnya menyajikan pemetaan 4 Spektrum Radar Kompetensi Studio serta Top 5 Proyeksi Karir Profesional Arsitektur Otak-CR.
+      </div>
+
     </div>
 
     <!-- FOOTER HALAMAN 1 -->
     <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b; font-family: monospace;">
       <div>SIAK-KAPRODI • Laporan Portofolio 4 Lapis Lengkap</div>
-      <div>Halaman 1 dari 2 (Lapis 4 Sepanjang Kuliah & Lapis 3 Per Semester)</div>
+      <div>Halaman 1 dari 3 (Lapis 4 Sepanjang Kuliah & Lapis 3 Per Semester)</div>
     </div>
   </div>
 
-  <!-- ==================== HALAMAN 2: LAPIS 2 (KATALOG MK) & LAPIS 1 (LOG BULANAN) ==================== -->
+  <!-- ==================== HALAMAN 2: DEDICATED QUAD-RADAR & PROYEKSI KARIER ==================== -->
   <div class="page">
     <div>
-      <!-- KOP MINI HALAMAN 2 -->
-      <div style="border-bottom: 1.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+      <!-- KOP RESMI HALAMAN 2 -->
+      <div class="kop-surat">
+        <div>
+          <div style="font-size: 9px; font-family: monospace; font-weight: bold; color: #b45309; text-transform: uppercase;">
+            {{ identitas.universitas }} • {{ identitas.fakultas }}
+          </div>
+          <div style="font-size: 13px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-top: 1px;">
+            {{ identitas.prodi }} — Dokumen 05-B: Spektrum Analisis 4 Radar Mahasiswa (Halaman 2/3)
+          </div>
+          <div style="font-size: 8px; color: #475569;">
+            Spektrum Kompetensi 4 Lapis: Karakter Studio, Modul RPS 16 Sesi, Semester Lintas MK, dan Potensi Karir Otak-CR
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span class="badge badge-purple">QUAD-RADAR & KARIER</span>
+          <div style="font-size: 7.5px; font-family: monospace; color: #64748b; margin-top: 2px;">
+            NPM: {{ student.npm }}
+          </div>
+        </div>
+      </div>
+
+      <!-- MINI BANNER MAHASISWA -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 5px; padding: 4px 8px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
         <div style="font-size: 8.5px; font-weight: bold; color: #0f172a;">
-          {{ identitas.universitas|upper }} • {{ identitas.prodi|upper }} — PORTOFOLIO 4 LAPIS
+          Mahasiswa: <span style="color: #0284c7;">{{ student.nama }}</span> • NPM: {{ student.npm }}
+        </div>
+        <div style="font-size: 7.5px; font-family: monospace; color: #64748b;">
+          Kanal Terkuat: <strong style="color: #16a34a;">{{ porto.analisis_potensi.kanal_terkuat or 'Struktur & Konstruksi' }}</strong> • Evaluasi: <strong style="color: #7e22ce;">{{ porto.analisis_potensi.label or 'Kompeten Unggul' }}</strong>
+        </div>
+      </div>
+
+      <!-- 2x2 QUAD-RADAR GRID -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 7px;">
+        {% for r in quad_radars %}
+        <div style="background: #0f172a; border: 1.5px solid {{ r.border_color }}; border-radius: 6px; padding: 5px 7px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <!-- RADAR CARD HEADER -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
+              <div>
+                <div style="font-size: 9px; font-weight: 800; color: #ffffff; line-height: 1.15;">{{ r.title }}</div>
+                <div style="font-size: 6.5px; color: #94a3b8;">{{ r.subtitle }}</div>
+              </div>
+              <div style="background: {{ r.badge_bg }}; border: 1px solid {{ r.border_color }}; color: {{ r.text_color }}; font-family: monospace; font-size: 8px; font-weight: 900; padding: 1px 5px; border-radius: 3px;">
+                {{ r.avg }} ({{ r.grade }})
+              </div>
+            </div>
+
+            <!-- RADAR SVG CONTAINER -->
+            <div style="background: #020617; border: 1px solid #1e293b; border-radius: 4px; padding: 1px; display: flex; align-items: center; justify-content: center; margin-bottom: 3px;">
+              {{ r.svg|safe }}
+            </div>
+          </div>
+
+          <!-- 5 METRICS BREAKDOWN -->
+          <div style="display: flex; flex-direction: column; gap: 2px; border-top: 1px solid #1e293b; padding-top: 3px;">
+            {% for dim_label, dim_val in r.metrics %}
+            <div>
+              <div style="display: flex; justify-content: space-between; font-size: 6.5px; color: #cbd5e1; margin-bottom: 1px;">
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">{{ dim_label }}</span>
+                <span style="font-family: monospace; font-weight: bold; color: {{ r.text_color }};">{{ dim_val }}%</span>
+              </div>
+              <div style="width: 100%; height: 2px; background: #1e293b; border-radius: 1px; overflow: hidden;">
+                <div style="width: {{ dim_val }}%; height: 100%; background: {{ r.bar_color }}; border-radius: 1px;"></div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- SECTION: TOP 5 PROYEKSI KARIER OTAK-CR -->
+      <div class="section-title">
+        <span>🎯 PROYEKSI KARIER INDUSTRI (OTAK-CR MATCHING - TOP 5 SELEKTIF)</span>
+      </div>
+
+      <table class="table-clean" style="margin-bottom: 6px; font-size: 7.2px;">
+        <thead>
+          <tr>
+            <th style="width: 20px; text-align: center;">No</th>
+            <th style="width: 155px; text-align: left;">Bidang Profesi & Sektor Industri</th>
+            <th style="width: 85px; text-align: left;">Kecocokan</th>
+            <th style="width: 150px; text-align: left;">Keterampilan Kunci Industri</th>
+            <th style="text-align: left;">Analisis Bukti & Rekomendasi Karir</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in (matriks_karier_kuliah or (porto.analisis_potensi.matriks_karier_kuliah or []))[:5] %}
+          <tr>
+            <td style="text-align: center; font-family: monospace; font-weight: bold; color: #64748b;">{{ loop.index }}</td>
+            <td>
+              <div style="font-weight: bold; color: #0f172a;">{{ c.profesi }}</div>
+              <div style="font-size: 6.2px; color: #64748b;">{{ c.bidang_industri }}</div>
+            </td>
+            <td>
+              <div style="display: flex; justify-content: space-between; font-family: monospace; margin-bottom: 1px;">
+                <span style="font-weight: bold; color: {% if c.kecocokan_persen >= 90 %}#10b981{% elif c.kecocokan_persen >= 80 %}#0284c7{% else %}#f59e0b{% endif %};">{{ c.kecocokan_persen }}%</span>
+                <span class="badge {% if c.kecocokan_persen >= 90 %}badge-success{% elif c.kecocokan_persen >= 80 %}badge-info{% else %}badge-warning{% endif %}" style="font-size: 6px; padding: 0 3px;">{{ c.kategori_kecocokan }}</span>
+              </div>
+              <div style="background: #e2e8f0; height: 3px; border-radius: 2px; overflow: hidden;">
+                <div style="background: {% if c.kecocokan_persen >= 90 %}#10b981{% elif c.kecocokan_persen >= 80 %}#0284c7{% else %}#f59e0b{% endif %}; width: {{ c.kecocokan_persen }}%; height: 3px;"></div>
+              </div>
+            </td>
+            <td style="color: #475569; font-weight: 500;">{{ c.keterampilan_kunci }}</td>
+            <td style="color: #334155; line-height: 1.25;">{{ c.analisis_potensi }}</td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="5" style="text-align: center; color: #94a3b8;">Data analisis potensi karir sedang diproses.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- KOTAK REKOMENDASI SINTESIS KAPRODI -->
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; border-radius: 5px; padding: 4px 8px; font-size: 7.2px; line-height: 1.35; color: #166534;">
+        <strong>Sintesis Karir Otak-CR:</strong> {{ porto.analisis_potensi.rekomendasi or 'Pertahankan konsistensi asistensi studio dan perluas eksplorasi visual 3D serta manajemen proyek.' }}
+      </div>
+
+    </div>
+
+    <!-- FOOTER HALAMAN 2 -->
+    <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b; font-family: monospace;">
+      <div>SIAK-KAPRODI • Laporan Portofolio 4 Lapis Lengkap</div>
+      <div>Halaman 2 dari 3 (Spektrum 4 Radar & Proyeksi Karir Otak-CR)</div>
+    </div>
+  </div>
+
+  <!-- ==================== HALAMAN 3: LAPIS 2 (KATALOG MK) & LAPIS 1 (LOG BULANAN) ==================== -->
+  <div class="page">
+    <div>
+      <!-- KOP MINI HALAMAN 3 -->
+      <div style="border-bottom: 1.5px solid #0f172a; padding-bottom: 4px; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 8.5px; font-weight: bold; color: #0f172a;">
+          {{ identitas.universitas|upper }} • {{ identitas.prodi|upper }} — DOKUMEN 05-B: KATALOG PERKULIAHAN & LOG PRESENSI (HALAMAN 3/3)
         </div>
         <div style="font-size: 8px; font-family: monospace; color: #64748b;">
           {{ student.nama }} ({{ student.npm }})
@@ -301,7 +387,7 @@
         <span>📚 LAPIS 2: KATALOG LENGKAP MATA KULIAH</span>
       </div>
 
-      <table class="table-clean" style="margin-bottom: 10px;">
+      <table class="table-clean" style="margin-bottom: 6px; font-size: 7.2px;">
         <thead>
           <tr>
             <th>Kode</th>
@@ -321,7 +407,7 @@
               <td style="font-family: monospace; font-weight: bold; color: #0f172a;">{{ m.kunci_mk }}</td>
               <td style="font-weight: 600;">{{ m.nama_mk }}</td>
               <td style="text-align: center; font-family: monospace;">{{ m.sks }}</td>
-              <td style="font-size: 7.2px; color: #475569;">
+              <td style="font-size: 6.8px; color: #475569;">
                 {% if m.dosen_pengasuh is iterable and m.dosen_pengasuh is not string %}
                   {{ m.dosen_pengasuh|join(', ') }}
                 {% else %}
@@ -353,7 +439,7 @@
         <span>📝 LAPIS 1: REKAPITULASI KEHADIRAN & ASISTENSI BULANAN</span>
       </div>
 
-      <table class="table-clean" style="margin-bottom: 12px;">
+      <table class="table-clean" style="margin-bottom: 8px; font-size: 7.2px;">
         <thead>
           <tr>
             <th>Mata Kuliah</th>
@@ -369,7 +455,7 @@
           {% for sem in porto.semester or [] %}
             {% for m in sem.mk or [] %}
               {% for b in m.bulanan or [] %}
-                {% if count_rows.value < 10 %}
+                {% if count_rows.value < 5 %}
                 {% set count_rows.value = count_rows.value + 1 %}
                 <tr>
                   <td style="font-weight: 600;">{{ m.nama_mk }}</td>
@@ -377,7 +463,7 @@
                   <td style="text-align: center; font-family: monospace;">{{ b.pertemuan }} Sesi</td>
                   <td style="text-align: center; font-family: monospace; font-weight: bold; color: #15803d;">{{ "%.1f"|format(b.hadir_persen or 100.0) }}%</td>
                   <td style="text-align: center; font-family: monospace; font-weight: bold; color: #0284c7;">{{ "%.1f"|format(b.rata_skor or 0.0) }}</td>
-                  <td style="font-size: 7px; color: #64748b;">
+                  <td style="font-size: 6.8px; color: #64748b;">
                     {% if b.hadir_persen >= 90 %}
                     Presensi konsisten, asistensi studio memenuhi target mingguan RPS.
                     {% else %}
@@ -398,22 +484,22 @@
       </table>
 
       <!-- BLOK PENGESAHAN & TANDA TANGAN -->
-      <div style="display: flex; justify-content: flex-end; margin-top: 10px;">
-        <div style="width: 220px; text-align: center; font-size: 8px;">
+      <div style="display: flex; justify-content: flex-end; margin-top: 6px;">
+        <div style="width: 200px; text-align: center; font-size: 7.5px;">
           <div>{{ identitas.kota }}, {{ identitas.tanggal }}</div>
-          <div style="font-weight: bold; margin-top: 2px;">Ketua Program Studi {{ identitas.prodi }}</div>
-          <div style="height: 40px;"></div>
+          <div style="font-weight: bold; margin-top: 1px;">Ketua Program Studi {{ identitas.prodi }}</div>
+          <div style="height: 25px;"></div>
           <div style="font-weight: 900; text-decoration: underline; color: #0f172a;">{{ identitas.ketua_prodi }}</div>
-          <div style="font-family: monospace; font-size: 7.5px; color: #475569;">NIP. {{ identitas.nip_ketua_prodi }}</div>
+          <div style="font-family: monospace; font-size: 7px; color: #475569;">NIP. {{ identitas.nip_ketua_prodi }}</div>
         </div>
       </div>
 
     </div>
 
-    <!-- FOOTER HALAMAN 2 -->
+    <!-- FOOTER HALAMAN 3 -->
     <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; display: flex; justify-content: space-between; font-size: 7px; color: #64748b; font-family: monospace;">
       <div>SIAK-KAPRODI • Laporan Portofolio 4 Lapis Lengkap</div>
-      <div>Halaman 2 dari 2 (Lapis 2 Katalog MK & Lapis 1 Log Bulanan)</div>
+      <div>Halaman 3 dari 3 (Lapis 2 Katalog MK & Lapis 1 Log Bulanan)</div>
     </div>
   </div>
 

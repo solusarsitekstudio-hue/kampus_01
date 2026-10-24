@@ -212,6 +212,99 @@ def generate_custom_radar_svg(labels, values, stroke_color="#0284c7", glow_color
     </svg>"""
     return svg
 
+def get_quad_radars_payload(student):
+    """Membangun payload 4 Radar Spektrum Kompetensi (Softskill, Modul RPS, Semester, Potensi CR)."""
+    if not student:
+        return []
+    radars = student.get("radars", {})
+
+    # 1. Softskill (Amber)
+    soft = radars.get("softskill", {})
+    soft_labels = soft.get("dimensi", ["Daya Tahan Revisi", "Artikulasi Visual", "Problem Solving", "Ketelitian", "Adaptasi"])
+    soft_vals = soft.get("nilai", [88, 85, 90, 86, 92])
+    soft_svg = generate_custom_radar_svg(soft_labels, soft_vals, stroke_color="#f59e0b", glow_color="#fbbf24", grad_id="glowSoftskill")
+    soft_avg = round(sum(soft_vals) / len(soft_vals), 1) if soft_vals else 85.0
+
+    # 2. Modul MK (Emerald)
+    modul = radars.get("modul_mk", {})
+    modul_labels = modul.get("dimensi", ["Tata Ruang", "Hierarki Garis", "Konstruksi", "Layout Sheet", "Akurasi Dimensi"])
+    modul_vals = modul.get("nilai", [85, 88, 86, 85, 87])
+    modul_svg = generate_custom_radar_svg(modul_labels, modul_vals, stroke_color="#10b981", glow_color="#34d399", grad_id="glowModul")
+    modul_avg = round(sum(modul_vals) / len(modul_vals), 1) if modul_vals else 85.0
+
+    # 3. Semester (Cyan)
+    sem = radars.get("semester", {})
+    sem_labels = sem.get("dimensi", ["Studio Desain", "Rekayasa Struktur", "Komputasi Digital", "Sains Lingkungan", "Humaniora"])
+    sem_vals = sem.get("nilai", [86, 88, 90, 84, 88])
+    sem_svg = generate_custom_radar_svg(sem_labels, sem_vals, stroke_color="#06b6d4", glow_color="#22d3ee", grad_id="glowSemester")
+    sem_avg = round(sum(sem_vals) / len(sem_vals), 1) if sem_vals else 85.0
+
+    # 4. Potensi CR (Purple)
+    pcr = radars.get("potensi_cr", {})
+    pcr_labels = pcr.get("dimensi", ["Insting Komersial", "Pitching", "Adopsi AI", "Pragmatisme Lapangan", "Wirausaha Mandiri"])
+    pcr_vals = pcr.get("nilai", [90, 88, 92, 86, 90])
+    pcr_svg = generate_custom_radar_svg(pcr_labels, pcr_vals, stroke_color="#a855f7", glow_color="#c084fc", grad_id="glowPotensi")
+    pcr_avg = round(sum(pcr_vals) / len(pcr_vals), 1) if pcr_vals else 85.0
+
+    return [
+        {
+            "key": "softskill",
+            "title": "Karakter Studio",
+            "subtitle": "Watak & Softskill",
+            "theme": "amber",
+            "badge_bg": "rgba(245, 158, 11, 0.15)",
+            "border_color": "rgba(245, 158, 11, 0.35)",
+            "text_color": "#fbbf24",
+            "bar_color": "#f59e0b",
+            "svg": soft_svg,
+            "avg": soft_avg,
+            "grade": "A" if soft_avg >= 85 else ("B" if soft_avg >= 70 else "C"),
+            "metrics": list(zip(soft_labels, soft_vals))
+        },
+        {
+            "key": "modul_mk",
+            "title": "Modul RPS (16 Sesi)",
+            "subtitle": "Praktikum & Slot",
+            "theme": "emerald",
+            "badge_bg": "rgba(16, 185, 129, 0.15)",
+            "border_color": "rgba(16, 185, 129, 0.35)",
+            "text_color": "#34d399",
+            "bar_color": "#10b981",
+            "svg": modul_svg,
+            "avg": modul_avg,
+            "grade": "A" if modul_avg >= 85 else ("B" if modul_avg >= 70 else "C"),
+            "metrics": list(zip(modul_labels, modul_vals))
+        },
+        {
+            "key": "semester",
+            "title": "Semester Lintas MK",
+            "subtitle": "Holistik Kurikulum",
+            "theme": "cyan",
+            "badge_bg": "rgba(6, 182, 212, 0.15)",
+            "border_color": "rgba(6, 182, 212, 0.35)",
+            "text_color": "#22d3ee",
+            "bar_color": "#06b6d4",
+            "svg": sem_svg,
+            "avg": sem_avg,
+            "grade": "A" if sem_avg >= 85 else ("B" if sem_avg >= 70 else "C"),
+            "metrics": list(zip(sem_labels, sem_vals))
+        },
+        {
+            "key": "potensi_cr",
+            "title": "Potensi Karir Otak-CR",
+            "subtitle": "Kesiapan Industri",
+            "theme": "purple",
+            "badge_bg": "rgba(168, 85, 247, 0.15)",
+            "border_color": "rgba(168, 85, 247, 0.35)",
+            "text_color": "#c084fc",
+            "bar_color": "#a855f7",
+            "svg": pcr_svg,
+            "avg": pcr_avg,
+            "grade": "A" if pcr_avg >= 85 else ("B" if pcr_avg >= 70 else "C"),
+            "metrics": list(zip(pcr_labels, pcr_vals))
+        }
+    ]
+
 def class_stats(master=None):
     """Menghitung statistik nilai kelas secara tunggal & terpadu."""
     if master is None:
@@ -426,6 +519,7 @@ def build_rapor_payload(npm_or_student):
         "kehadiran": kehadiran,
         "kompetensi": kompetensi,
         "radar_svg": radar_svg,
+        "quad_radars": get_quad_radars_payload(student),
         "sessions": sessions,
         "total_bobot": round(total_bobot, 1),
         "total_skor_bobot": round(total_skor_bobot, 2),
@@ -486,95 +580,7 @@ def build_deckcraft_payload(npm_or_student):
         raise ValueError(f"Mahasiswa {npm_or_student} tidak ditemukan.")
     d = get_identitas()
     akademik = student.get("akademik", {})
-    radars = student.get("radars", {})
-
-    # Generate 4 distinct SVG radars for 16:9 Quad-Radar Grid
-    # 1. Softskill (Amber)
-    soft = radars.get("softskill", {})
-    soft_labels = soft.get("dimensi", ["Daya Tahan Revisi", "Artikulasi Visual", "Problem Solving", "Ketelitian", "Adaptasi"])
-    soft_vals = soft.get("nilai", [88, 85, 90, 86, 92])
-    soft_svg = generate_custom_radar_svg(soft_labels, soft_vals, stroke_color="#f59e0b", glow_color="#fbbf24", grad_id="glowSoftskill")
-    soft_avg = round(sum(soft_vals) / len(soft_vals), 1) if soft_vals else 85.0
-
-    # 2. Modul MK (Emerald)
-    modul = radars.get("modul_mk", {})
-    modul_labels = modul.get("dimensi", ["Tata Ruang", "Hierarki Garis", "Konstruksi", "Layout Sheet", "Akurasi Dimensi"])
-    modul_vals = modul.get("nilai", [85, 88, 86, 85, 87])
-    modul_svg = generate_custom_radar_svg(modul_labels, modul_vals, stroke_color="#10b981", glow_color="#34d399", grad_id="glowModul")
-    modul_avg = round(sum(modul_vals) / len(modul_vals), 1) if modul_vals else 85.0
-
-    # 3. Semester (Cyan)
-    sem = radars.get("semester", {})
-    sem_labels = sem.get("dimensi", ["Studio Desain", "Rekayasa Struktur", "Komputasi Digital", "Sains Lingkungan", "Humaniora"])
-    sem_vals = sem.get("nilai", [86, 88, 90, 84, 88])
-    sem_svg = generate_custom_radar_svg(sem_labels, sem_vals, stroke_color="#06b6d4", glow_color="#22d3ee", grad_id="glowSemester")
-    sem_avg = round(sum(sem_vals) / len(sem_vals), 1) if sem_vals else 85.0
-
-    # 4. Potensi CR (Purple)
-    pcr = radars.get("potensi_cr", {})
-    pcr_labels = pcr.get("dimensi", ["Insting Komersial", "Pitching", "Adopsi AI", "Pragmatisme Lapangan", "Wirausaha Mandiri"])
-    pcr_vals = pcr.get("nilai", [90, 88, 92, 86, 90])
-    pcr_svg = generate_custom_radar_svg(pcr_labels, pcr_vals, stroke_color="#a855f7", glow_color="#c084fc", grad_id="glowPotensi")
-    pcr_avg = round(sum(pcr_vals) / len(pcr_vals), 1) if pcr_vals else 85.0
-
-    quad_radars = [
-        {
-            "key": "softskill",
-            "title": "Karakter Studio",
-            "subtitle": "Watak & Softskill",
-            "theme": "amber",
-            "badge_bg": "rgba(245, 158, 11, 0.15)",
-            "border_color": "rgba(245, 158, 11, 0.35)",
-            "text_color": "#fbbf24",
-            "bar_color": "#f59e0b",
-            "svg": soft_svg,
-            "avg": soft_avg,
-            "grade": "A" if soft_avg >= 85 else ("B" if soft_avg >= 70 else "C"),
-            "metrics": list(zip(soft_labels, soft_vals))
-        },
-        {
-            "key": "modul_mk",
-            "title": "Modul RPS (16 Sesi)",
-            "subtitle": "Praktikum & Slot",
-            "theme": "emerald",
-            "badge_bg": "rgba(16, 185, 129, 0.15)",
-            "border_color": "rgba(16, 185, 129, 0.35)",
-            "text_color": "#34d399",
-            "bar_color": "#10b981",
-            "svg": modul_svg,
-            "avg": modul_avg,
-            "grade": "A" if modul_avg >= 85 else ("B" if modul_avg >= 70 else "C"),
-            "metrics": list(zip(modul_labels, modul_vals))
-        },
-        {
-            "key": "semester",
-            "title": "Semester Lintas MK",
-            "subtitle": "Holistik Kurikulum",
-            "theme": "cyan",
-            "badge_bg": "rgba(6, 182, 212, 0.15)",
-            "border_color": "rgba(6, 182, 212, 0.35)",
-            "text_color": "#22d3ee",
-            "bar_color": "#06b6d4",
-            "svg": sem_svg,
-            "avg": sem_avg,
-            "grade": "A" if sem_avg >= 85 else ("B" if sem_avg >= 70 else "C"),
-            "metrics": list(zip(sem_labels, sem_vals))
-        },
-        {
-            "key": "potensi_cr",
-            "title": "Potensi Karir Otak-CR",
-            "subtitle": "Kesiapan Industri",
-            "theme": "purple",
-            "badge_bg": "rgba(168, 85, 247, 0.15)",
-            "border_color": "rgba(168, 85, 247, 0.35)",
-            "text_color": "#c084fc",
-            "bar_color": "#a855f7",
-            "svg": pcr_svg,
-            "avg": pcr_avg,
-            "grade": "A" if pcr_avg >= 85 else ("B" if pcr_avg >= 70 else "C"),
-            "metrics": list(zip(pcr_labels, pcr_vals))
-        }
-    ]
+    quad_radars = get_quad_radars_payload(student)
 
     return {
         "identitas": d,
@@ -610,12 +616,16 @@ def build_portofolio_lengkap_payload(npm_or_student):
     pot = data_porto.get("analisis_potensi", {})
     comp = pot.get("radar", {})
     radar_svg = generate_radar_svg(comp)
+    quad_radars = get_quad_radars_payload(student)
+    matriks_karier = pot.get("matriks_karier_kuliah", [])
     
     return {
         "identitas": d,
         "student": student or {"npm": npm, "nama": data_porto.get("nama", "-")},
         "porto": data_porto,
-        "radar_svg": radar_svg
+        "radar_svg": radar_svg,
+        "quad_radars": quad_radars,
+        "matriks_karier_kuliah": matriks_karier
     }
 
 def build_boardroom_payload():
