@@ -2023,7 +2023,7 @@ function muatPortofolio(npmTarget) {
 
 
 
-  const target = npmTarget || _targetPortofolio();
+  const target = npmTarget;
 
 
 
@@ -2096,6 +2096,8 @@ function muatPortofolio(npmTarget) {
 
 
       if (input && !input.matches(":focus")) input.value = `${s.nama} (${s.npm})`;
+      const dropdown = document.getElementById("student-dropdown");
+      if (dropdown && dropdown.value !== String(s.npm)) dropdown.value = String(s.npm);
 
 
 
@@ -2156,6 +2158,8 @@ function onPortoSelChange() {
 
 
       if (input && !input.matches(":focus")) input.value = `${s.nama} (${s.npm})`;
+      const dropdown = document.getElementById("student-dropdown");
+      if (dropdown && dropdown.value !== String(s.npm)) dropdown.value = String(s.npm);
 
 
 
@@ -6655,7 +6659,10 @@ function renderAttendanceTable() {
 
 
 
-      tr.className = "hover:bg-slate-800/40 transition";
+      tr.className = "hover:bg-slate-800/60 transition cursor-pointer group";
+      tr.setAttribute("data-npm", esc(s.npm));
+      tr.title = `Buka Rapor & Analisis: ${esc(s.nama)} (${esc(s.npm)})`;
+      tr.onclick = () => selectQuickStudent(s.npm);
 
 
 
@@ -6699,7 +6706,7 @@ function renderAttendanceTable() {
 
 
 
-          <button onclick="selectQuickStudent('${esc(s.npm)}')" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-300 rounded-lg text-[11px] font-medium transition flex items-center gap-1 ml-auto">
+          <button onclick="event.stopPropagation(); selectQuickStudent('${esc(s.npm)}')" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-slate-300 rounded-lg text-[11px] font-medium transition flex items-center gap-1 ml-auto">
 
 
 
@@ -12316,6 +12323,17 @@ async function onKonteksBerubah(level) {
 
   if (level === "prodi") { isiTahun(); isiSemester(); isiMk(); }
 
+  if (level === "angkatan") {
+    const val = _nilai("sel-angkatan");
+    if (typeof onAngkatanBerubah === "function") {
+      onAngkatanBerubah(val);
+    }
+    if (window.innerWidth < 1024 && typeof closeMobileFilterBar === "function") {
+      closeMobileFilterBar();
+    }
+    return;
+  }
+
 
 
 
@@ -12403,6 +12421,9 @@ async function onKonteksBerubah(level) {
 
 
       sinkronkanTabRekapKeKonteks(kunci);
+      if (window.innerWidth < 1024 && typeof closeMobileFilterBar === "function") {
+        closeMobileFilterBar();
+      }
 
 
 
@@ -22921,4 +22942,24 @@ function toggleMobileFilterBar() {
     container.classList.remove("flex");
   }
 }
+
+function closeMobileFilterBar() {
+  const container = document.getElementById("header-context-container");
+  if (!container) return;
+  container.classList.add("hidden");
+  container.classList.remove("flex");
+}
+
 window.toggleMobileFilterBar = toggleMobileFilterBar;
+window.closeMobileFilterBar = closeMobileFilterBar;
+
+// Auto-close filter container when clicking outside on mobile
+document.addEventListener("click", function (e) {
+  if (window.innerWidth >= 1024) return;
+  const container = document.getElementById("header-context-container");
+  const toggleBtn = document.getElementById("btn-mobile-filter-toggle");
+  if (!container || container.classList.contains("hidden")) return;
+  if (!container.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+    closeMobileFilterBar();
+  }
+});

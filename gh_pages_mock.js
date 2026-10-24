@@ -82,14 +82,21 @@
       // Handle PDF Download redirection in showcase
       if (parsedPath.includes("/api/pdf/download")) {
         const urlParams = new URLSearchParams(url.split("?")[1] || "");
-        const docType = urlParams.get("type") || "03";
+        const rawType = (urlParams.get("type") || "03").toLowerCase();
         let targetPdf = "./generated_pdfs/03_laporan_penilaian_kaprodi_master_gradebook.pdf";
-        if (docType === "01") targetPdf = "./generated_pdfs/01_sample_master.pdf";
-        if (docType === "02") targetPdf = "./generated_pdfs/02_sample_master.pdf";
-        if (docType === "04") targetPdf = "./generated_pdfs/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf";
-        if (docType === "05") targetPdf = "./generated_pdfs/05_sample_master.pdf";
-        if (docType === "06") targetPdf = "./generated_pdfs/06_boardroom_pitch_deck_yayasan.pdf";
-        if (docType === "07") targetPdf = "./generated_pdfs/07_laporan_audit_kohort_multitahun_dan_kas_bss.pdf";
+        if (["01", "monthly", "presensi", "rekap", "rekap_kehadiran"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/01_sample_master.pdf";
+        } else if (["02", "rapor", "final", "rapor_studio"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/02_sample_master.pdf";
+        } else if (["04", "evaluasi", "dosen", "audit", "evaluasi_dosen"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/04_laporan_evaluasi_dosen_dan_kurikulum_rps.pdf";
+        } else if (["05", "deckcraft", "portofolio", "deck", "portofolio_lengkap", "porto4"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/05_sample_master.pdf";
+        } else if (["06", "boardroom", "boardroom_pitch", "executive_pitch"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/06_boardroom_pitch_deck_yayasan.pdf";
+        } else if (["07", "cohort", "cohort_report", "laporan_kohort", "yayasan", "laporan_yayasan"].includes(rawType)) {
+          targetPdf = "./generated_pdfs/07_laporan_audit_kohort_multitahun_dan_kas_bss.pdf";
+        }
         
         window.open(targetPdf, "_blank");
         return new Response(new Blob(["mock"]), { status: 200 });
@@ -126,8 +133,22 @@
     return _origFetch(input, init);
   };
 
-  // Tampilkan Banner Showcase Halus di Atas Layar
+  // Tampilkan Banner Showcase Halus di Atas Layar (Desktop only, disembunyikan di Mobile)
   window.addEventListener("DOMContentLoaded", function () {
+    const bannerStyle = document.createElement("style");
+    bannerStyle.textContent = `
+      @media (max-width: 768px) {
+        #showcase-gh-pages-banner {
+          display: none !important;
+          pointer-events: none !important;
+        }
+        body {
+          padding-top: 0px !important;
+        }
+      }
+    `;
+    document.head.appendChild(bannerStyle);
+
     const banner = document.createElement("div");
     banner.id = "showcase-gh-pages-banner";
     banner.style.cssText = "position:fixed;top:0;left:0;right:0;height:32px;background:linear-gradient(90deg,#0f172a,#1e293b);color:#38bdf8;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:99999;border-bottom:1px solid #334155;box-shadow:0 2px 8px rgba(0,0,0,0.4);font-family:ui-sans-serif,system-ui,sans-serif;";
@@ -143,6 +164,8 @@
       </div>
     `;
     document.body.prepend(banner);
-    document.body.style.paddingTop = "32px";
+    if (window.innerWidth > 768) {
+      document.body.style.paddingTop = "32px";
+    }
   });
 })();
